@@ -1,10 +1,10 @@
 # Table of contents
 
-* [ReadMe](README.md)
+* [PTGuide](README.md)
 
 ## Web
 
-* [Recon & Enum](web/recon-and-enum.md)
+* [Recon & Enum](web/recon.md)
 
 ***
 
