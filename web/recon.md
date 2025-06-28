@@ -11,7 +11,7 @@
 #### Automated Scan
 
 ```
-nikto -h
+nikto -h <target> -Tuning x 6 -port 80,443 -nossl/ssl -Cgidirs all -Format htm -output nikto-report.html
 nuclei -h
 ```
 
