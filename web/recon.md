@@ -29,11 +29,14 @@ nuclei -h
 
 #### Google Dorking
 
-<pre data-line-numbers><code>site:target.com inurl:admin | inurl:.git
-<strong>site:target.com ext:sql | ext:log
-</strong>site:target.com intitle:"index of"
+{% code lineNumbers="true" %}
+```
+site:target.com inurl:admin | inurl:.git
+site:target.com ext:sql | ext:log
+site:target.com intitle:"index of"
 site:target.com filetype:env
-</code></pre>
+```
+{% endcode %}
 
 #### S3 Bucket Enum
 
