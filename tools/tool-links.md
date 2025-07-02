@@ -16,7 +16,7 @@ icon: link
 
 <summary>Web</summary>
 
-
+* httptoolkit - [https://httptoolkit.com/](https://httptoolkit.com/)
 
 </details>
 
