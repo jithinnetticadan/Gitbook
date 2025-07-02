@@ -15,3 +15,11 @@
 {% content-ref url="file-upload.md" %}
 [file-upload.md](file-upload.md)
 {% endcontent-ref %}
+
+{% content-ref url="content-security-policy-bypass.md" %}
+[content-security-policy-bypass.md](content-security-policy-bypass.md)
+{% endcontent-ref %}
+
+{% content-ref url="graphql-injection.md" %}
+[graphql-injection.md](graphql-injection.md)
+{% endcontent-ref %}
