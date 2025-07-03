@@ -37,6 +37,10 @@
 * [Recon](thickclient/recon.md)
 * [Traffic Analysis](thickclient/traffic-analysis.md)
 
+***
+
+* [Reverse Engineering](reverse-engineering.md)
+
 ## Mobile
 
 * [Android](mobile/android.md)
