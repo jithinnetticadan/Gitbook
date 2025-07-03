@@ -35,6 +35,7 @@
 ## ThickClient
 
 * [Recon](thickclient/recon.md)
+* [Traffic Analysis](thickclient/traffic-analysis.md)
 
 ## Mobile
 
