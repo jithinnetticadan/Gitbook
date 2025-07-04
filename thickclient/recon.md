@@ -1,6 +1,6 @@
 # Recon
 
-#### Tools used :&#xD;
+#### Tools:&#xD;
 
 * **TCPView** - View the ip of remote server
 * **CFF Explorer** - Understand how the binary is built
