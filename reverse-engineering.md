@@ -15,4 +15,14 @@
 
 * [https://www.jetbrains.com/decompiler/](https://www.jetbrains.com/decompiler/)
 * [https://github.com/dnSpy/dnSpy](https://github.com/dnSpy/dnSpy)
-* [https://github.com/icsharpcode/ILSpy](https://github.com/icsharpcode/ILSpy) &&#x20;
+* [https://github.com/icsharpcode/ILSpy](https://github.com/icsharpcode/ILSpy) & [https://github.com/sailro/Reflexil](https://github.com/sailro/Reflexil)
+* [https://learn.microsoft.com/en-us/dotnet/framework/tools/ilasm-exe-il-assembler](https://learn.microsoft.com/en-us/dotnet/framework/tools/ilasm-exe-il-assembler)\
+  [https://learn.microsoft.com/en-us/dotnet/framework/tools/ildasm-exe-il-disassembler](https://learn.microsoft.com/en-us/dotnet/framework/tools/ildasm-exe-il-disassembler)\
+  C:\Windows\Microsoft.NET\Framework\\\<version>
+* [https://github.com/java-decompiler/jd-gui/releases](https://github.com/java-decompiler/jd-gui/releases)
+* [https://hex-rays.com/ida-pro](https://hex-rays.com/ida-pro)
+* [https://github.com/decompiler-explorer/decompiler-explorer](https://github.com/decompiler-explorer/decompiler-explorer) & [https://dogbolt.org/](https://dogbolt.org/)
+
+#### References
+
+* [https://www.pentesting.org/binary-analysis-guide/](https://www.pentesting.org/binary-analysis-guide/)
