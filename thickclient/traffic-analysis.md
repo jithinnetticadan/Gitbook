@@ -5,7 +5,7 @@
 * Burp -> Use the invisible proxy -> Set the Redirect Host/Host Resolution Override option depending on the numbers of hosts communicated.
 * [https://portswigger.net/support/using-burp-suites-invisible-proxy-settings-to-test-a-non-proxy-aware-thick-client-application](https://portswigger.net/support/using-burp-suites-invisible-proxy-settings-to-test-a-non-proxy-aware-thick-client-application)
 * Modify the C:\Windows\System32\drivers\etc\hosts file\
-  eg: `127.0.0.1 <target-host-url>`
+  `127.0.0.1 <target-host-url>`
 
 #### Intercept TCP/UDP traffic using Echo mirage
 
