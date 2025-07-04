@@ -15,6 +15,6 @@
 #### Intercept TCP/UDP traffic MitM-Relay+Burp&#x20;
 
 * Modify the C:\Windows\System32\drivers\etc\hosts file\
-  eg: `127.0.0.1 <target-host-url>`
+  `127.0.0.1 <target-host-url>`
 * `python mitm_relay.py -l 0.0.0.0 -r tcp/udp:LPORT:RHOST:RPORT -p 127.0.0.1:8080`  //LPORT should be same as RPORT
 * [https://github.com/jrmdev/mitm\_relay](https://github.com/jrmdev/mitm_relay)
