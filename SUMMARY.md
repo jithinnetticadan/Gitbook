@@ -9,6 +9,7 @@
 ***
 
 * [Vulnerabilities](vulnerabilities/README.md)
+  * [Brute Force](vulnerabilities/brute-force.md)
   * [SQL Injection](vulnerabilities/sql-injection.md)
   * [Cross-Site Request Forgery (CSRF)](vulnerabilities/cross-site-request-forgery-csrf.md)
   * [Cross-Site Scripting (XSS)](vulnerabilities/cross-site-scripting-xss.md)
