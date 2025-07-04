@@ -27,9 +27,31 @@ nuclei -h
 
 #### List Directories/Pages
 
+{% code lineNumbers="true" fullWidth="true" %}
+```
+gobuster dir -u "url" -w <wordlist> //"gobuster dir --help"
+```
+{% endcode %}
+
+#### Subdomain Enumeration
+
+{% code lineNumbers="true" fullWidth="true" %}
+```
+gobuster dns -d <domain.com> -w <wordlist> //gobuster dns --help
+```
+{% endcode %}
+
+#### vHost Enumeration
+
+{% code lineNumbers="true" fullWidth="true" %}
+```
+gobuster vhost -u "url" --domain domain.com -w <wordlist> --append-domain //gobuster vhost --help
+```
+{% endcode %}
+
 #### Google Dorking
 
-{% code lineNumbers="true" %}
+{% code lineNumbers="true" fullWidth="true" %}
 ```
 site:target.com inurl:admin | inurl:.git
 site:target.com ext:sql | ext:log
