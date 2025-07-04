@@ -12,11 +12,9 @@
 * Inject into the Process ID of target application.
 * [https://sourceforge.net/projects/echomirage.oldbutgold.p/](https://sourceforge.net/projects/echomirage.oldbutgold.p/)
 
-#### Intercept TCP/UDP traffic MITM-Relay+Burp&#x20;
+#### Intercept TCP/UDP traffic MitM-Relay+Burp&#x20;
 
-* Prerequisite - `pip install requests`
-* Local Port Forwarding \
-  Add Rule: `netsh interface portproxy add v4tov4 listenport=LPORT listenaddress=0.0.0.0 connectport=LPORT1 connectaddress=127.0.0.1`\
-  Delete Rule: `netsh interface portproxy delete v4tov4 listenport=LPORT listenaddress=0.0.0.0`
-* `python mitm_relay.py -l 0.0.0.0 -r tcp/udp:LPORT1:RHOST:RPORT -p 127.0.0.0.1:8080`
+* Modify the C:\Windows\System32\drivers\etc\hosts file\
+  eg: `127.0.0.1 <target-host-url>`
+* `python mitm_relay.py -l 0.0.0.0 -r tcp/udp:LPORT:RHOST:RPORT -p 127.0.0.1:8080`  //LPORT should be same as RPORT
 * [https://github.com/jrmdev/mitm\_relay](https://github.com/jrmdev/mitm_relay)
