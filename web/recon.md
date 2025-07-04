@@ -40,10 +40,7 @@ site:target.com filetype:env
 
 #### S3 Bucket Enum
 
-{% code title="find subs -> find alive hosts -> sort & add hosts to file (output to terminal) -> fetch paths -> grep patterns" lineNumbers="true" fullWidth="true" %}
-```
-assetfinder --subs-only <domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s3-buckets
-```
-{% endcode %}
+<pre data-title="find subs -> find alive hosts -> sort &#x26; add hosts to file (output to terminal) -> fetch paths -> grep patterns" data-full-width="true"><code><strong>assetfinder --subs-only &#x3C;domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s3-buckets
+</strong></code></pre>
 
 ####

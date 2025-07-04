@@ -1,5 +1,13 @@
 # Vulnerabilities
 
+{% content-ref url="brute-force-attack.md" %}
+[brute-force-attack.md](brute-force-attack.md)
+{% endcontent-ref %}
+
+{% content-ref url="sql-injection.md" %}
+[sql-injection.md](sql-injection.md)
+{% endcontent-ref %}
+
 {% content-ref url="cross-site-request-forgery-csrf.md" %}
 [cross-site-request-forgery-csrf.md](cross-site-request-forgery-csrf.md)
 {% endcontent-ref %}
@@ -8,8 +16,8 @@
 [cross-site-scripting-xss.md](cross-site-scripting-xss.md)
 {% endcontent-ref %}
 
-{% content-ref url="sql-injection.md" %}
-[sql-injection.md](sql-injection.md)
+{% content-ref url="cross-origin-resource-sharing-cors.md" %}
+[cross-origin-resource-sharing-cors.md](cross-origin-resource-sharing-cors.md)
 {% endcontent-ref %}
 
 {% content-ref url="file-upload.md" %}
