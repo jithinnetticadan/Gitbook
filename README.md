@@ -1,5 +1,6 @@
 ---
 hidden: true
+icon: user-hoodie
 ---
 
 # PTGuide
