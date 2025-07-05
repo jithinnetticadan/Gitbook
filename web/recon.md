@@ -40,6 +40,10 @@ dirb <url> <wordlist>
 {% code lineNumbers="true" fullWidth="true" %}
 ```
 gobuster dns -d <domain.com> -w <wordlist> //gobuster dns --help
+https://crt.sh/
+site:*.domain.com -site:www.domain.com
+dnsrecon -t brt -d <domain.com>
+sublist3r.py -d <domain.com>
 ```
 {% endcode %}
 
