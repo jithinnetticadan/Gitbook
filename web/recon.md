@@ -30,6 +30,8 @@ nuclei -h
 {% code lineNumbers="true" fullWidth="true" %}
 ```
 gobuster dir -u "url" -w <wordlist> //"gobuster dir --help"
+ffuf -w <worslist>:FUZZ -u http://<host>/FUZZ
+dirb <url> <wordlist>
 ```
 {% endcode %}
 
