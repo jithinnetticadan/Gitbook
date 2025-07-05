@@ -47,7 +47,8 @@
 
 ## Mobile
 
-* [Android](mobile/android.md)
+* [Android](mobile/android/README.md)
+  * [References](mobile/android/references.md)
 * [iOS](mobile/ios.md)
 
 ## Tools
