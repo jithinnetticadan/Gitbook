@@ -52,6 +52,7 @@ sublist3r.py -d <domain.com>
 {% code lineNumbers="true" fullWidth="true" %}
 ```
 gobuster vhost -u "url" --domain domain.com -w <wordlist> --append-domain //gobuster vhost --help
+ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
 ```
 {% endcode %}
 
