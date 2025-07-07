@@ -28,7 +28,7 @@
 ***
 
 * [Enumeration](enumeration/README.md)
-  * [FTP - 21](enumeration/ftp-21.md)
+  * [FTP/FTPS - 21,990](enumeration/ftp-ftps-21-990.md)
   * [SSH - 22](enumeration/ssh-22.md)
   * [Telnet - 23](enumeration/telnet-23.md)
   * [SMTP - 25,465,587,2525](enumeration/smtp-25-465-587-2525.md)
