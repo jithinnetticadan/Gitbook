@@ -76,3 +76,17 @@ nmap -v -sS -Pn -sV -sC --max-retries 2 --open -p T:1,7,9,11,13,15,19,21,22,23,2
 ```
 nmap -Pn -sV -sU -sC -v -T3 --max-retries 2 --host-timeout 15m --open -p U:53,69,88,111,123,137,161,427,500,623,942,1434,1900,2228,3702,5060,5351,5353,5632,10001,11211,30718,41794,65535,65535 --script "banner,ipmi-version,tftp-enum,upnp-info,snmp-brute,snmp-hh3c-logins,snmp-info,snmp-interfaces,snmp-ios-config,snmp-netstat,snmp-processes,snmp-sysdescr,snmp-win32-services,snmp-win32-shares,snmp-win32-software,snmp-win32-users" --script-timeout 60s --min-hostgroup 128 --version-intensity 0 -iL target(from-hostdoscovery).txt --excludefile exclude.txt -oA udp_liveonly
 ```
+
+<details>
+
+<summary>Metasploit Setup</summary>
+
+1. workspace -a \<name>
+2. workspace \<name>
+3. db\_import \*.xml
+4. load alias
+5. alias sv services
+
+
+
+</details>
