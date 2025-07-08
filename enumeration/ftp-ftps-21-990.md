@@ -16,7 +16,7 @@ service -p 21 -R
 {% tab title="Nmap" %}
 {% code fullWidth="true" %}
 ```
-nmap --script ftp-* -p 21 <ip>
+nmap --script ftp-anon -p 21 <ip>
 ```
 {% endcode %}
 {% endtab %}
@@ -34,6 +34,6 @@ ftp://anonymous:anonymous@<ip>
 
 {% code fullWidth="true" %}
 ```
-sudo nmap -sV -p21 -sC -A <ip>
+sudo nmap -sV -p21 --script ftp-* -A <ip>
 ```
 {% endcode %}
