@@ -18,7 +18,7 @@ set password <>
 {% tab title="Nmap" %}
 ```
 nmap -p 22 --script ssh-brute <ip>
-nmap -p 22 --script ssh* <ip>
+nmap -p 22 --script "ssh*" <ip>
 ```
 {% endtab %}
 {% endtabs %}
