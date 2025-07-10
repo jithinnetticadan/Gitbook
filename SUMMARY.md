@@ -50,6 +50,7 @@
   * [Postgres DB - 5432](enumeration/postgres-db-5432.md)
   * [VNC - 5900](enumeration/vnc-5900.md)
   * [Webmin - 10000](enumeration/webmin-10000.md)
+  * [SMB - 139,445](enumeration/smb-139-445.md)
 * [Exploitation](exploitation/README.md)
   * [iPMI](exploitation/ipmi.md)
 
