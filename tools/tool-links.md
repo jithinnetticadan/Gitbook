@@ -8,7 +8,7 @@ icon: link
 
 <summary>Network</summary>
 
-
+* [https://github.com/sc0tfree/updog](https://github.com/sc0tfree/updog) //alternative to python web server
 
 </details>
 
