@@ -55,7 +55,7 @@ ftp://anonymous:anonymous@<ip>
 
 {% code fullWidth="true" %}
 ```
-sudo nmap -sV -p21 --script ftp-* -A <ip>
+sudo nmap -sV -p21 --script "ftp-*" -A <ip>
 ```
 {% endcode %}
 
