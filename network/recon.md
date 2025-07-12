@@ -2,8 +2,11 @@
 
 #### Host Discovery Scan
 
-<pre data-line-numbers data-full-width="true"><code><strong>nmap -n -sn -PE -PP -PS22,80,443,445,3389 -PA22,80,443,445  --max-retries 2 --open -iL target.txt --excludefile exclude.txt -oA livehosts
-</strong></code></pre>
+{% code lineNumbers="true" fullWidth="true" %}
+```
+nmap -n -sn -PE -PP -PS22,80,443,445,3389 -PA22,80,443,445  --max-retries 2 --open -iL target.txt --excludefile exclude.txt -oA livehosts
+```
+{% endcode %}
 
 #### LiveHost Scan
 
