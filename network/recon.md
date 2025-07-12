@@ -21,6 +21,7 @@ nmap -p T:22,80-90,8080,445,443,8443,3389 -sV -sS -n -Pn --max-retries 2 --open 
 <summary>Segregate IP's based on services</summary>
 
 ```
+#save as hosts.sh
 grep 445 */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > smb_hosts.txt
 wc -l smb_hosts.txt
 grep " 135/open" */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > msrpc_hosts.txt
