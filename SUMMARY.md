@@ -53,6 +53,7 @@
   * [SMB - 139,445](enumeration/smb-139-445.md)
 * [Exploitation](exploitation/README.md)
   * [iPMI](exploitation/ipmi.md)
+  * [Reverse Shells & Listeners](exploitation/reverse-shells-and-listeners.md)
 
 ## ThickClient
 
