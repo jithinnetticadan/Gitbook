@@ -54,6 +54,8 @@
 * [Exploitation](exploitation/README.md)
   * [iPMI](exploitation/ipmi.md)
   * [Reverse Shells & Listeners](exploitation/reverse-shells-and-listeners.md)
+  * [Linux PrivEsc](exploitation/linux-privesc.md)
+  * [Windows PrivEsc](exploitation/windows-privesc.md)
 
 ## ThickClient
 
