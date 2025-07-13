@@ -15,7 +15,7 @@ set rhosts <ip>
 {% tab title="Nmap" %}
 {% code fullWidth="true" %}
 ```
-nmap -p 2-sV <ip>
+nmap -p 21 -sV <ip>
 ```
 {% endcode %}
 {% endtab %}
