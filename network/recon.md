@@ -94,3 +94,12 @@ nmap -Pn -sV -sU -sC -v -T3 --max-retries 2 --host-timeout 15m --open -p U:53,69
 
 
 </details>
+
+#### Automated HTTP/S Scan
+
+{% code overflow="wrap" lineNumbers="true" %}
+```
+nuclei -l targets.txt -t http/cves/,http/default-logins/,http/exposed-panels/,http/exposures/,http/iot/,http/misconfiguration/,http/takeovers/,http/technologies/,http/vulnerabilities/ -severity critical,high -o nuclei-output.txt -rl 150 -c 50 -ni -stats
+nuclei -l targets.txt -as -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
+```
+{% endcode %}
