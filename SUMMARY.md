@@ -17,6 +17,7 @@
   * [File Upload](vulnerabilities/file-upload.md)
   * [Content-Security-Policy Bypass](vulnerabilities/content-security-policy-bypass.md)
   * [GraphQL Injection](vulnerabilities/graphql-injection.md)
+  * [OAuth 2.0](vulnerabilities/oauth-2.0.md)
 * [BurpSuite Tricks](burpsuite-tricks/README.md)
   * [Extensions](burpsuite-tricks/extensions.md)
   * [Bambda Scripts](burpsuite-tricks/bambda-scripts.md)
