@@ -21,6 +21,7 @@
 * [BurpSuite Tricks](burpsuite-tricks/README.md)
   * [Extensions](burpsuite-tricks/extensions.md)
   * [Bambda Scripts](burpsuite-tricks/bambda-scripts.md)
+* [References](references.md)
 
 ## Network
 
@@ -57,6 +58,8 @@
   * [Reverse Shells & Listeners](exploitation/reverse-shells-and-listeners.md)
   * [Linux PrivEsc](exploitation/linux-privesc.md)
   * [Windows PrivEsc](exploitation/windows-privesc.md)
+* [Active Directory](active-directory.md)
+* [References](references-1.md)
 
 ## ThickClient
 
@@ -68,13 +71,24 @@
 * [Reverse Engineering](reverse-engineering.md)
 * [Automated Source Code Review](automated-source-code-review.md)
 * [Memory Analysis](memory-analysis.md)
-* [References](references.md)
+* [References](references-2.md)
 
 ## Mobile
 
 * [Android](mobile/android/README.md)
   * [References](mobile/android/references.md)
 * [iOS](mobile/ios.md)
+
+## Cloud
+
+* [AWS](cloud/aws.md)
+* [GCP](cloud/gcp.md)
+* [Azure](cloud/azure.md)
+
+## Serverless
+
+* [Containers](serverless/containers.md)
+* [Kubernetes](serverless/kubernetes.md)
 
 ## Tools
 
