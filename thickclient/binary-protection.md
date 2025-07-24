@@ -17,7 +17,6 @@
   `Import-Module .\Get-PESecurity.psm1`\
   `Get-PESecurity -file <path-to-file>`\
   `Get-PESecurity -directory <path-todirectory> -recursive`
-* **DLLSPy :** [https://github.com/cyberark/DLLSpy](https://github.com/cyberark/DLLSpy)
 * **Binscoper** : [https://www.microsoft.com/en-us/download/details.aspx?id=44995](https://www.microsoft.com/en-us/download/details.aspx?id=44995)\
   `Binscope.exe /verbose /html /logfile outputfilepath.html <exe-file>`
 
