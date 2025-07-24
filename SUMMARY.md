@@ -62,6 +62,7 @@
 * [Reverse Engineering](thickclient/reverse-engineering.md)
 * [Automated Source Code Review](thickclient/automated-source-code-review.md)
 * [Memory Analysis](thickclient/memory-analysis.md)
+* [Binary Protection](thickclient/binary-protection.md)
 * [References](thickclient/references.md)
 
 ## Mobile
