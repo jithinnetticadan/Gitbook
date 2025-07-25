@@ -26,11 +26,7 @@
 
 #### Compatibility Chart
 
-|   |   |   |
-| - | - | - |
-|   |   |   |
-|   |   |   |
-|   |   |   |
+<table><thead><tr><th width="238.66668701171875">Protection</th><th width="56.66668701171875" data-type="checkbox">32-bit</th><th width="53.6666259765625" data-type="checkbox">64-bit</th><th width="355">Supported Technologies</th></tr></thead><tbody><tr><td>DEP / NX</td><td>true</td><td>true</td><td>C/C++, .NET, Java (JVM), Delphi, Go, Rust</td></tr><tr><td>ASLR</td><td>true</td><td>true</td><td>C/C++, .NET (native), Delphi, Go, Rust</td></tr><tr><td>High Entropy ASLR</td><td>false</td><td>true</td><td>C/C++, .NET (64-bit native)</td></tr><tr><td>Stack Canaries (/GS)</td><td>true</td><td>true</td><td>C/C++, Rust, Go</td></tr><tr><td>SafeSEH</td><td>true</td><td>false</td><td>C/C++ (MSVC, 32-bit only)</td></tr><tr><td>SEHOP</td><td>true</td><td>true</td><td>C/C++, .NET</td></tr><tr><td>Control Flow Guard (CFG)</td><td>false</td><td>true</td><td>C/C++ (MSVC), .NET Native</td></tr><tr><td>Control Flow Integrity (CFI)</td><td>true</td><td>true</td><td>C/C++ (Clang, MSVC), Rust</td></tr><tr><td>Image Rebase / Relocation</td><td>true</td><td>true</td><td>C/C++, .NET (native), Delphi</td></tr><tr><td>Code Signing (Authenticode)</td><td>true</td><td>true</td><td>C/C++, .NET, Java (JAR signing), Delphi</td></tr><tr><td>Strong Naming (.NET)</td><td>true</td><td>true</td><td>.NET Framework / Core</td></tr><tr><td>Exploit Protection</td><td>true</td><td>true</td><td>C/C++, .NET (via Defender), Java (sandboxing)</td></tr><tr><td>W^X (Write XOR Execute)</td><td>true</td><td>true</td><td>C/C++, Rust, Go</td></tr><tr><td>Guard Pages</td><td>true</td><td>true</td><td>C/C++, .NET, Java</td></tr><tr><td>Self-Integrity Checks</td><td>true</td><td>true</td><td>C/C++, .NET, Java</td></tr><tr><td>Anti-Debugging</td><td>true</td><td>true</td><td>C/C++, .NET, Java (via JVMTI), Delphi</td></tr><tr><td>Anti-Tamper</td><td>true</td><td>true</td><td>C/C++, .NET (Dotfuscator), Java (ProGuard), Delphi</td></tr></tbody></table>
 
 #### Tools
 
