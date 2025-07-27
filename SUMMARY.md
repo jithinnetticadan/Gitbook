@@ -74,9 +74,17 @@
 
 ## Cloud
 
-* [AWS](cloud/aws.md)
+* [AWS](cloud/aws/README.md)
+  * [Env Setup](cloud/aws/env-setup.md)
+  * [IAM Enum](cloud/aws/iam-enum.md)
+  * [S3 Buckets Enum](cloud/aws/s3-buckets-enum.md)
+  * [Lambda Enum](cloud/aws/lambda-enum.md)
+  * [EC2 Enum](cloud/aws/ec2-enum.md)
+  * [Privilege Escalation](cloud/aws/privilege-escalation.md)
+  * [References](cloud/aws/references.md)
 * [GCP](cloud/gcp.md)
-* [Azure](cloud/azure.md)
+* [Azure](cloud/azure/README.md)
+  * [References](cloud/azure/references.md)
 
 ## Serverless
 
