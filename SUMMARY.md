@@ -82,7 +82,8 @@
   * [EC2 Enum](cloud/aws/ec2-enum.md)
   * [Privilege Escalation](cloud/aws/privilege-escalation.md)
   * [References](cloud/aws/references.md)
-* [GCP](cloud/gcp.md)
+* [GCP](cloud/gcp/README.md)
+  * [References](cloud/gcp/references.md)
 * [Azure](cloud/azure/README.md)
   * [References](cloud/azure/references.md)
 
