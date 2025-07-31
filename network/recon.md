@@ -103,3 +103,11 @@ nuclei -l targets.txt -t http/cves/,http/default-logins/,http/exposed-panels/,ht
 nuclei -l targets.txt -as -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
 ```
 {% endcode %}
+
+#### Automated Exploit Scan
+
+{% code lineNumbers="true" fullWidth="true" %}
+```
+searchsploit -p -w -e --nmap nmap.xml -j searchsploit-output.json
+```
+{% endcode %}
