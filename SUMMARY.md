@@ -18,6 +18,7 @@
 * [BurpSuite Tricks](web/burpsuite-tricks/README.md)
   * [Extensions](web/burpsuite-tricks/extensions.md)
   * [Bambda Scripts](web/burpsuite-tricks/bambda-scripts.md)
+* [Interview](web/interview.md)
 * [References](web/references.md)
 
 ## Network
