@@ -1,6 +1,8 @@
 # References
 
-* [https://github.com/AlbusSec/Penetration-List/tree/main](https://github.com/AlbusSec/Penetration-List/tree/main)
-* [https://viperone.gitbook.io/pentest-everything](https://viperone.gitbook.io/pentest-everything)
-* [https://gowthams.gitbook.io/bughunter-handbook](https://gowthams.gitbook.io/bughunter-handbook)
-* [https://www.netrunners.in/](https://www.netrunners.in/)
+
+
+* [Penetration-List](https://github.com/AlbusSec/Penetration-List)
+* [Pentest Everything](https://viperone.gitbook.io/pentest-everything)
+* [Bug Hunter Handbook](https://gowthams.gitbook.io/bughunter-handbook)
+* [NetRunners](https://www.netrunners.in/)

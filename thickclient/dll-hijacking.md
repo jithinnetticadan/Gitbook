@@ -22,7 +22,7 @@
 
 * **DLLSPy** : [https://github.com/cyberark/DLLSpy](https://github.com/cyberark/DLLSpy)
 * **Procmon** : Filters ->  `Process Name contains "Process Name"` -> `Path ends with ".DLL"` -> `Result is "NAME NOT FOUND"` \
-  [https://learn.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite](https://learn.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite)
+  [Sysinternals Suite](https://learn.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite)
 * **MsfVenom** : `msfvenom -p windows/exec CMD="C:\windows\system32\calc.exe" -f dll -a x84 -o calc.dll`&#x20;
 
 
