@@ -53,8 +53,9 @@
   * [Reverse Shells & Listeners](network/exploitation/reverse-shells-and-listeners.md)
   * [Linux PrivEsc](network/exploitation/linux-privesc.md)
   * [Windows PrivEsc](network/exploitation/windows-privesc.md)
-* [Active Directory](network/active-directory.md)
 * [References](network/references.md)
+* [Active Directory](network/active-directory/README.md)
+  * [References](network/active-directory/references.md)
 
 ## ThickClient
 
@@ -65,6 +66,7 @@
 * [Memory Analysis](thickclient/memory-analysis.md)
 * [Binary Protection](thickclient/binary-protection.md)
 * [DLL Hijacking](thickclient/dll-hijacking.md)
+* [Unquoted Services](thickclient/unquoted-services.md)
 * [References](thickclient/references.md)
 
 ## Mobile
