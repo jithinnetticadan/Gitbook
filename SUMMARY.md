@@ -54,7 +54,7 @@
   * [Linux PrivEsc](network/exploitation/linux-privesc.md)
   * [Windows PrivEsc](network/exploitation/windows-privesc.md)
 * [References](network/references.md)
-* [Active Directory](network/active-directory/README.md)
+* [Active Directory](network/active-directory.md)
   * [References](network/active-directory/references.md)
 
 ## ThickClient
