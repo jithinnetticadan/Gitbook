@@ -1,3 +1,4 @@
 # References
 
-* [https://github.com/carlospolop/CloudPEASS](https://github.com/carlospolop/CloudPEASS)
+* [CloudPEASS](https://github.com/carlospolop/CloudPEASS)
+* [CloudPentestCheatsheets](https://github.com/dafthack/CloudPentestCheatsheets/blob/master/cheatsheets/GCP.md)

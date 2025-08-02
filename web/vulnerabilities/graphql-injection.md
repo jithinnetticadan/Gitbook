@@ -2,4 +2,4 @@
 
 #### Reference
 
-* How to Secure - [https://0xd33r.com/article/2025/graphql-security-guide-for-devs](https://0xd33r.com/article/2025/graphql-security-guide-for-devs)
+* [Securing Public GraphQL APIs - A Practical Guide for Developers](https://0xd33r.com/article/2025/graphql-security-guide-for-devs)

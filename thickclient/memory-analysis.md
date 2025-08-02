@@ -5,8 +5,8 @@ In scenarios where the string is encrypted, the value can be found decrypted and
 
 #### Tools:
 
-* **WinHex** - Disk editor and universal hex editor\
-  [https://www.x-ways.net/winhex/](https://www.x-ways.net/winhex/)
-* **SystemInformer/ProcessHacker**\
-  [https://systeminformer.sourceforge.io/downloads](https://systeminformer.sourceforge.io/downloads) or [https://github.com/winsiderss/systeminformer/](https://github.com/winsiderss/systeminformer/)
+* [WinHex](https://www.x-ways.net/winhex/) - Disk editor and universal hex editor\
+
+* [SystemInformer](https://systeminformer.sourceforge.io/downloads) & [ProcessHacker](https://github.com/winsiderss/systeminformer/)\
+
 * **ProcessExplorer -** [Sysinternals Suite](https://learn.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite)

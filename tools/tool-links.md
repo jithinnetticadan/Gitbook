@@ -8,7 +8,7 @@ icon: link
 
 <summary>Network</summary>
 
-* [https://github.com/sc0tfree/updog](https://github.com/sc0tfree/updog) //alternative to python web server
+* [updog](https://github.com/sc0tfree/updog) //alternative to python web server
 
 </details>
 
@@ -16,7 +16,7 @@ icon: link
 
 <summary>Web</summary>
 
-* httptoolkit - [https://httptoolkit.com/](https://httptoolkit.com/)
+* [HTTP Toolkit](https://httptoolkit.com/)
 
 </details>
 
