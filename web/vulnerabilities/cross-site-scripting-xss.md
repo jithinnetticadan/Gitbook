@@ -12,3 +12,7 @@
 
 </details>
 
+#### References
+
+* [Beyond XSS: Explore the Web Front-end Security Universe](https://aszx87410.github.io/beyond-xss/en/)
+
