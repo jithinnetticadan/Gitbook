@@ -9,7 +9,7 @@
 {% code lineNumbers="true" fullWidth="true" %}
 ```
 let username = "";
-let password = "":
+let password = "";
 let loginFaild = false;
 const login = () => {
     console. log("log in button pressed");
