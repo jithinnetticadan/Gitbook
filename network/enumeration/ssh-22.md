@@ -4,7 +4,7 @@
 
 {% tabs %}
 {% tab title="Metasploit" %}
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 use auxiliary/scanner/ssh/ssh_login
 set rhosts <ip>

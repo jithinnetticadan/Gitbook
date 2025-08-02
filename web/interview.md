@@ -6,7 +6,7 @@
 
 <summary>Admin Panel</summary>
 
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 let username = "";
 let password = "";

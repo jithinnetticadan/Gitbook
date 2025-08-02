@@ -4,7 +4,7 @@
 
 {% tabs %}
 {% tab title="Metasploit" %}
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 use auxiliary/scanner/ftp/ftp_version
 set rhosts <ip>
@@ -13,7 +13,7 @@ set rhosts <ip>
 {% endtab %}
 
 {% tab title="Nmap" %}
-{% code fullWidth="true" %}
+{% code fullWidth="false" %}
 ```
 nmap -p 21 -sV <ip>
 ```
@@ -25,7 +25,7 @@ nmap -p 21 -sV <ip>
 
 {% tabs %}
 {% tab title="Metasploit" %}
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 use auxiliary/scanner/ftp/anonymous
 set rhosts <ip>
@@ -35,7 +35,7 @@ services -p 21 -R
 {% endtab %}
 
 {% tab title="Nmap" %}
-{% code fullWidth="true" %}
+{% code fullWidth="false" %}
 ```
 nmap --script ftp-anon -p 21 <ip>
 ```
@@ -43,7 +43,7 @@ nmap --script ftp-anon -p 21 <ip>
 {% endtab %}
 
 {% tab title="Terminal" %}
-{% code fullWidth="true" %}
+{% code fullWidth="false" %}
 ```
 ftp://anonymous:anonymous@<ip>
 ```
@@ -53,7 +53,7 @@ ftp://anonymous:anonymous@<ip>
 
 #### Unauth Enum
 
-{% code fullWidth="true" %}
+{% code fullWidth="false" %}
 ```
 sudo nmap -sV -p21 --script "ftp-*" -A <ip>
 ```
@@ -63,7 +63,7 @@ sudo nmap -sV -p21 --script "ftp-*" -A <ip>
 
 {% tabs %}
 {% tab title="Metasploit" %}
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 use auxiliary/scanner/ftp/ftp_login
 set rhosts <ip>
@@ -75,7 +75,7 @@ set user_file
 {% endtab %}
 
 {% tab title="Hydra" %}
-{% code fullWidth="true" %}
+{% code fullWidth="false" %}
 ```
 hydra -t 1 -l {Username} -P {Passwordlist} -vV {IP} ftp
 ```

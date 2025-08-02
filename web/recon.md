@@ -18,7 +18,7 @@
 
 #### Automated Scan
 
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 nikto -h <target> -Tuning x 6 -port 80,443 -nossl/ssl -Cgidirs all -Format htm -output nikto-report.html
 nuclei -u <ip> -t http/,ssl/, -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
@@ -28,7 +28,7 @@ nuclei -u <ip> -as -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 5
 
 #### List Directories/Pages
 
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 gobuster dir -u "url" -w <wordlist> //"gobuster dir --help"
 ffuf -w <worslist>:FUZZ -u http://<host>/FUZZ
@@ -38,7 +38,7 @@ dirb <url> <wordlist>
 
 #### Subdomain Enumeration
 
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 gobuster dns -d <domain.com> -w <wordlist> //gobuster dns --help
 https://crt.sh/
@@ -50,7 +50,7 @@ sublist3r.py -d <domain.com>
 
 #### vHost Enumeration
 
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 gobuster vhost -u "url" --domain domain.com -w <wordlist> --append-domain //gobuster vhost --help
 ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
@@ -59,7 +59,7 @@ ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
 
 #### Google Dorking
 
-{% code lineNumbers="true" fullWidth="true" %}
+{% code lineNumbers="true" fullWidth="false" %}
 ```
 site:target.com inurl:admin | inurl:.git
 site:target.com ext:sql | ext:log
@@ -70,7 +70,7 @@ site:target.com filetype:env
 
 #### S3 Bucket Enum
 
-<pre data-title="find subs -> find alive hosts -> sort &#x26; add hosts to file (output to terminal) -> fetch paths -> grep patterns" data-full-width="true"><code><strong>assetfinder --subs-only &#x3C;domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s3-buckets
+<pre data-title="find subs -> find alive hosts -> sort &#x26; add hosts to file (output to terminal) -> fetch paths -> grep patterns" data-full-width="false"><code><strong>assetfinder --subs-only &#x3C;domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s3-buckets
 </strong></code></pre>
 
 ####
