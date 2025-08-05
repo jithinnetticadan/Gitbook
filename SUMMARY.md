@@ -50,6 +50,7 @@
   * [Webmin - 10000](network/enumeration/webmin-10000.md)
 * [Exploitation](network/exploitation/README.md)
   * [iPMI](network/exploitation/ipmi.md)
+  * [Lateral Movement and Pivoting](network/exploitation/lateral-movement-and-pivoting.md)
   * [Reverse Shells & Listeners](network/exploitation/reverse-shells-and-listeners.md)
   * [Linux PrivEsc](network/exploitation/linux-privesc.md)
   * [Windows PrivEsc](network/exploitation/windows-privesc.md)
