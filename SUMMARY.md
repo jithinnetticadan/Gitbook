@@ -66,6 +66,7 @@
 * [Memory Analysis](thickclient/memory-analysis.md)
 * [Binary Protection](thickclient/binary-protection.md)
 * [DLL Hijacking](thickclient/dll-hijacking.md)
+* [Fuzzing](thickclient/fuzzing.md)
 * [Unquoted Services](thickclient/unquoted-services.md)
 * [References](thickclient/references.md)
 

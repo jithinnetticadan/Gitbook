@@ -5,6 +5,7 @@
 * [CloudPEASS](https://github.com/carlospolop/CloudPEASS)
 * [AWS penetration testing: a step-by-step guide - HTB](https://www.hackthebox.com/blog/aws-pentesting-guide)
 * [Hands-On-AWS-Penetration-Testing-with-Kali-Linux](https://github.com/PacktPublishing/Hands-On-AWS-Penetration-Testing-with-Kali-Linux)
+* [ScoutSuite](https://github.com/nccgroup/ScoutSuite)
 
 
 
