@@ -10,4 +10,4 @@ nmap -p 88,135,139,389,445 -sV -sC -iL hosts.txt
 ```
 {% endcode %}
 
-#### Full Port Scan [#full-port-scan](../recon.md#full-port-scan "mention")
+#### Full Port Scan [#full-port-scan](../recon.md#full-port-scan "mention") / [#tcp-port-scan](../recon.md#tcp-port-scan "mention") / [#udp-scan](../recon.md#udp-scan "mention")
