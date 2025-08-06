@@ -58,6 +58,7 @@
   * [Windows PrivEsc](network/exploitation/windows-privesc.md)
 * [References](network/references.md)
 * [Active Directory](network/active-directory.md)
+  * [Recon](network/active-directory/recon.md)
   * [Enumeration](network/active-directory/enumeration.md)
   * [References](network/active-directory/references.md)
 
