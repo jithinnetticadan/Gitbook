@@ -5,6 +5,8 @@
 {% code lineNumbers="true" fullWidth="false" %}
 ```
 nmap -n -sn -PE -PP -PS22,80,443,445,3389 -PA22,80,443,445  --max-retries 2 --open -iL target.txt --excludefile exclude.txt -oA livehosts
+fping -agq <cidr-range>
+nmap -sn <cidr-range>
 ```
 {% endcode %}
 
@@ -66,6 +68,12 @@ done
 ```
 
 </details>
+
+#### Full Port Scan
+
+```
+nmap -sS -p- -T3 -iL hosts.txt -oA full_port_scan
+```
 
 #### TCP Port Scan
 
