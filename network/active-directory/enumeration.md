@@ -6,7 +6,7 @@
 
 #### RPC Enumeration [rpc-135.md](../enumeration/rpc-135.md "mention")
 
-#### Kerbose Enumeration [kerberos-88.md](../enumeration/kerberos-88.md "mention")
+#### Kerberose Enumeration [kerberos-88.md](../enumeration/kerberos-88.md "mention")
 
 #### Password Spraying
 
@@ -27,3 +27,4 @@ crackmapexec smb <target-ips> -u users.txt -p passwords.txt -d <domain>  //use -
 nxc smb <target-ips> -u users.txt -p passwords.txt -d <domain>  //use --local-auth
 ```
 {% endcode %}
+
