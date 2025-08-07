@@ -6,6 +6,7 @@
 * [AWS penetration testing: a step-by-step guide - HTB](https://www.hackthebox.com/blog/aws-pentesting-guide)
 * [Hands-On-AWS-Penetration-Testing-with-Kali-Linux](https://github.com/PacktPublishing/Hands-On-AWS-Penetration-Testing-with-Kali-Linux)
 * [ScoutSuite](https://github.com/nccgroup/ScoutSuite)
+* [my-arsenal-of-aws-security-tools](https://github.com/toniblyx/my-arsenal-of-aws-security-tools)
 
 
 
