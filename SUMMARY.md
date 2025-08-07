@@ -59,7 +59,9 @@
 * [References](network/references.md)
 * [Active Directory](network/active-directory.md)
   * [Recon](network/active-directory/recon.md)
-  * [Enumeration](network/active-directory/enumeration.md)
+  * [Enumeration](network/active-directory/enumeration/README.md)
+    * [AS-REP Roasting](network/active-directory/enumeration/as-rep-roasting.md)
+    * [BloodHound](network/active-directory/enumeration/bloodhound.md)
   * [References](network/active-directory/references.md)
 
 ## ThickClient
