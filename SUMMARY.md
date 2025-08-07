@@ -92,10 +92,13 @@
   * [Lambda Enum](cloud/aws/lambda-enum.md)
   * [EC2 Enum](cloud/aws/ec2-enum.md)
   * [Privilege Escalation](cloud/aws/privilege-escalation.md)
+  * [Audit](cloud/aws/audit.md)
   * [References](cloud/aws/references.md)
 * [GCP](cloud/gcp/README.md)
+  * [Audit](cloud/gcp/audit.md)
   * [References](cloud/gcp/references.md)
 * [Azure](cloud/azure/README.md)
+  * [Audit](cloud/azure/audit.md)
   * [References](cloud/azure/references.md)
 
 ## Serverless
