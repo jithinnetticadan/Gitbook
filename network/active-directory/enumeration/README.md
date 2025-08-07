@@ -22,8 +22,8 @@
 #### Understand the User Compromised
 
 * `whoami /all`&#x20;
-* _**Interesting Privileges**_
-  * SeImpersonatePrivilege [#windows-privileges](../../exploitation/windows-privesc.md#windows-privileges "mention")
+* _**Interesting Privileges**_ [#windows-privileges](../../exploitation/windows-privesc.md#windows-privileges "mention")
+  * SeImpersonatePrivilege
   * SeAssignPrimaryTokenPrivilege
   * SeBackupPrivilege
   * SeRestorePrivilege
