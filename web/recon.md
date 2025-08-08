@@ -13,6 +13,8 @@
 - Wappalyzer
 
 * TruffleHog
+* Teeto
+* Cookie-Editor
 
 </details>
 

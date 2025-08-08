@@ -12,13 +12,3 @@
 8. Reshaper
 9. Pentagrid Scan Controller
 10. AuthMatrix
-
-#### Browser
-
-1. Retire.js
-2. Teeto
-3. Shodan
-4. FoxyProxy
-5. Cookie-Editor
-6. Wappalyzer
-7. Trufflehog
