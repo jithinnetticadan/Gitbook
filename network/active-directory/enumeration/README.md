@@ -80,10 +80,10 @@
 
 #### Scheduled Tasks
 
-* `schtasks /query`&#x20;
+* `schtasks /query`
 * `schtasks /create`
 * `schtasks /run <task-name>`&#x20;
 
 #### [bloodhound.md](bloodhound.md "mention")
 
-####
+#### [ad-and-powerview-modules.md](ad-and-powerview-modules.md "mention")

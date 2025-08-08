@@ -62,6 +62,7 @@
   * [Enumeration](network/active-directory/enumeration/README.md)
     * [AS-REP Roasting](network/active-directory/enumeration/as-rep-roasting.md)
     * [BloodHound](network/active-directory/enumeration/bloodhound.md)
+    * [AD & PowerView Modules](network/active-directory/enumeration/ad-and-powerview-modules.md)
   * [References](network/active-directory/references.md)
 
 ## ThickClient
