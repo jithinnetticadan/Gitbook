@@ -63,6 +63,7 @@
     * [AS-REP Roasting](network/active-directory/enumeration/as-rep-roasting.md)
     * [BloodHound](network/active-directory/enumeration/bloodhound.md)
     * [AD & PowerView Modules](network/active-directory/enumeration/ad-and-powerview-modules.md)
+    * [Ways2Obtain Credentials](network/active-directory/enumeration/ways2obtain-credentials.md)
   * [References](network/active-directory/references.md)
 
 ## ThickClient
@@ -104,8 +105,10 @@
 
 ## Serverless
 
-* [Containers](serverless/containers.md)
+* [Containers](serverless/containers/README.md)
+  * [References](serverless/containers/references.md)
 * [Kubernetes](serverless/kubernetes.md)
+* [References](serverless/references.md)
 
 ## Tools
 

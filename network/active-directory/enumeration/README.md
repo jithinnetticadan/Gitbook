@@ -17,7 +17,7 @@
   * `crackmapexec smb <target-ips> -u users.txt -p passwords.txt -d <domain>`  //use --local-auth
   * `nxc smb <target-ips> -u users.txt -p passwords.txt -d <domain>`  //use --local-auth
 
-#### Spawn a Shell using credentials obtained using above or [as-rep-roasting.md](as-rep-roasting.md "mention")
+#### Spawn a Shell using credentials obtained using above or [as-rep-roasting.md](as-rep-roasting.md "mention") or [ways2obtain-credentials.md](ways2obtain-credentials.md "mention")
 
 #### Understand the User Compromised
 

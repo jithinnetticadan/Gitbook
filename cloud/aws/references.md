@@ -8,6 +8,8 @@
 * [ScoutSuite](https://github.com/nccgroup/ScoutSuite)
 * [my-arsenal-of-aws-security-tools](https://github.com/toniblyx/my-arsenal-of-aws-security-tools)
 * [awesome-cloud-security](https://github.com/4ndersonLin/awesome-cloud-security)
+* [boot2root](https://h3ll-ka1ser.gitbook.io/boot2root)
+* [InternalAllTheThings](https://swisskyrepo.github.io/InternalAllTheThings/)
 
 
 
