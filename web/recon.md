@@ -18,6 +18,16 @@
 
 </details>
 
+<details>
+
+<summary>Browser Tricks</summary>
+
+* chrome://net-internals/
+
+- edge://net-internals/
+
+</details>
+
 #### Automated Scan
 
 {% code lineNumbers="true" fullWidth="false" %}
