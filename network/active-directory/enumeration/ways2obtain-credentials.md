@@ -117,7 +117,7 @@ if __name__ == "__main__":
 ### Relay Attacks
 
 * **Server Message Block**
-  * `sudo responder -I <netwrok-iface>`  // -dPw DHCP, ProxyAuth, Wpad
+  * `sudo responder -I <network-iface>`  // -dPw DHCP, ProxyAuth, Wpad
   * `hashcat -m 5600 <hash-file> <passwords> --force`&#x20;
 * **Prerequisites to relay NTLM hash**
   * SMB Signing should either be disabled or enabled but not enforced
@@ -146,12 +146,3 @@ if __name__ == "__main__":
   * Registry keys
   * Centrally deployed applications
 * **Automated Scan** - [Seatbelt](https://github.com/GhostPack/Seatbelt)
-
-
-
-
-
-
-
-
-
