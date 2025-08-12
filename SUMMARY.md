@@ -83,7 +83,8 @@
 
 * [Android](mobile/android/README.md)
   * [References](mobile/android/references.md)
-* [iOS](mobile/ios.md)
+* [iOS](mobile/ios/README.md)
+  * [References](mobile/ios/references.md)
 
 ## Cloud
 
