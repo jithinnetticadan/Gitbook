@@ -55,7 +55,7 @@
   * [Reverse Shells & Listeners](network/exploitation/reverse-shells-and-listeners.md)
   * [Linux PrivEsc](network/exploitation/linux-privesc.md)
   * [Windows PrivEsc](network/exploitation/windows-privesc.md)
-  * [Lateral Movement](network/exploitation/lateral-movement.md)
+  * [Lateral Movement](network/exploitation/lateral-movement-and-pivoting.md)
   * [Pivoting](network/exploitation/pivoting.md)
 * [References](network/references.md)
 * [Active Directory](network/active-directory.md)
