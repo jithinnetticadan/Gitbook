@@ -14,6 +14,7 @@ Enumerates key AD elements such as:
 
 #### **Types of Data Collectors**
 
+* `nxc ldap <dc-ip> -u <username> -p <password> --bloodhound --collection All --dns-server <dc-ip>`
 * [SharpHound](https://github.com/SpecterOps/SharpHound)
   * `.\SharpHound.exe --CollectionMethods All --Domain tryhackme.loc --ExcludeDCs`  //domain joined machine
 * [AzureHound](https://github.com/SpecterOps/AzureHound)
