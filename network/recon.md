@@ -1,7 +1,3 @@
----
-hidden: true
----
-
 # Recon
 
 #### Host Discovery Scan
