@@ -27,43 +27,14 @@ nmap -p T:22,80-90,8080,445,443,8443,3389 -sV -sS -n -Pn --max-retries 2 --open 
 <summary>Segregate IP's based on services</summary>
 
 ```
-#save as hosts.sh
-grep 445 */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > smb_hosts.txt
-wc -l smb_hosts.txt
-grep " 135/open" */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > msrpc_hosts.txt
-wc -l msrpc_hosts.txt
-grep 554 */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > rtsp_hosts.txt
-wc -l rtsp_hosts.txt
-grep 502 */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > modbus_hosts.txt
-wc -l modbus_hosts.txt
-grep 5900 */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > vnc_hosts.txt
-wc -l vnc_hosts.txt
-grep 3389 */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > rdp_hosts.txt
-wc -l rdp_hosts.txt
-grep ssh */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > ssh_hosts.txt
-wc -l ssh_hosts.txt
-grep smtp */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > smtp_hosts.txt
-wc -l smtp_hosts.txt
-grep http */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > web_hosts.txt
-wc -l web_hosts.txt
-grep ftp */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > ftp_hosts.txt
-wc -l ftp_hosts.txt
-grep -vi nmap */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > target_ip.txt
-wc -l target_ip.txt
-grep -h "\\\\" */*.nmap *.nmap | grep "\: $" | cut -d ' ' -f4 |sort -g|uniq | grep -v "Nmap\|Ports" > smb2_hosts.txt
-wc -l smb2_hosts.txt
-grep " 23/open" */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > telnet_hosts.txt
-wc -l telnet_hosts.txt
-grep 21/open */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > ftp_hosts.txt
-wc -l ftp_hosts.txt
-grep 3260 */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > iscsi_hosts.txt
-wc -l iscsi_hosts.txt
-grep 2049 */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > nfs_hosts.txt
-wc -l nfs_hosts.txt
-grep '161/open/udp' */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > snmp_hosts.txt
-wc -l snmp_hosts.txt
+#save as ips.sh
+grep <port> */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > service_ips.txt
+grep "port-no/open/protocol" */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > service_ips.txt
+grep <service-nmae> */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > service_ips.txt
+grep -vi nmap */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > live_ips.txt
+grep -h "\\\\" */*.nmap *.nmap | grep "\: $" | cut -d ' ' -f4 |sort -g|uniq | grep -v "Nmap\|Ports" > smb2_ips.txt
 
-printf "\nnmap IP discovered summary:\n"
+printf "\nNmap IP Summary:\n"
 for i in *.gnmap; do
     [ -f "$i" ] || break
     sed '1d;$d' $i | cut -d ' ' -f2 |sort|uniq > $i.ip
