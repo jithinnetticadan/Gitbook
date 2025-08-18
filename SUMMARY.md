@@ -23,7 +23,6 @@
 
 ## Network
 
-* [Recon](network/recon.md)
 * [Enumeration](network/enumeration/README.md)
   * [FTP/FTPS - 21,990](network/enumeration/ftp-ftps-21-990.md)
   * [SSH - 22](network/enumeration/ssh-22.md)
@@ -67,6 +66,7 @@
     * [BloodHound](network/active-directory/enumeration/bloodhound.md)
     * [AD & PowerView Modules](network/active-directory/enumeration/ad-and-powerview-modules.md)
   * [References](network/active-directory/references.md)
+* [Recon](network/recon.md)
 
 ## ThickClient
 
