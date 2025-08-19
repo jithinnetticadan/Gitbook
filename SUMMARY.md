@@ -63,6 +63,7 @@
   * [Recon](network/active-directory/recon.md)
   * [Enumeration](network/active-directory/enumeration/README.md)
     * [AS-REP Roasting](network/active-directory/enumeration/as-rep-roasting.md)
+    * [Kerberoasting](network/active-directory/enumeration/kerberoasting.md)
     * [Ways2Obtain Initial Credentials](network/active-directory/enumeration/ways2obtain-initial-credentials.md)
     * [BloodHound](network/active-directory/enumeration/bloodhound.md)
     * [AD & PowerView Modules](network/active-directory/enumeration/ad-and-powerview-modules.md)
