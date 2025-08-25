@@ -1,7 +1,7 @@
 # Vulnerabilities
 
-{% content-ref url="brute-force-attack.md" %}
-[brute-force-attack.md](brute-force-attack.md)
+{% content-ref url="authentication/brute-force-attack.md" %}
+[brute-force-attack.md](authentication/brute-force-attack.md)
 {% endcontent-ref %}
 
 {% content-ref url="sql-injection.md" %}
