@@ -12,24 +12,24 @@
 
 </details>
 
-#### RCE via Web Shell
+### RCE via Web Shell
 
 * Upload payload file&#x20;
 * No restriction specified in accept-type header - all types (_/_) allowed
 
-#### Content-Type Restriction Bypass
+### Content-Type Restriction Bypass
 
 * Modify `Content-Type` header to allowed file types
 * Upload any php/similar file
 * Server does not validate content-type header with the file extension or contents
 
-#### Path Traversal Bypass
+### Path Traversal Bypass
 
 * Restrictions on user-directory for permitted file types&#x20;
 * Change the directory where files are uploaded
 * Filename contains -> `../../exploit.php` (try encoding for ../../)
 
-#### Extension Blacklist Bypass&#x20;
+### Extension Blacklist Bypass&#x20;
 
 * Overriding server configuration (etc/apache2/apache2.conf)&#x20;
 * `LoadModule php_module /usr/lib/apache2/modules/libphp.so`\
@@ -40,7 +40,7 @@
 * Modify `Content-Type` to text/plain&#x20;
 * Upload a php payload with extension .133t which will be treated as php file.
 
-#### Obfuscated File Extension&#x20;
+### Obfuscated File Extension&#x20;
 
 * Try following patterns&#x20;
   * filename.php.jpg, filename.jpg.php, filename.php., filename%2Ephp (url encode), filename.pphphp&#x20;
@@ -51,7 +51,7 @@
 * Try using multibyte Unicode characters, which may be converted to null bytes and dots after unicode conversion or normalization. (xC0 x2E, xC4 xAE or xC0 xAE translated to x2E if parsed as UTF-8 string)&#x20;
 * Use nested extensions to bypass stripping
 
-#### Flawed validation of the file's contents&#x20;
+### Flawed Validation of the File's Contents&#x20;
 
 * Certain file types may always contain a specific sequence of bytes in their header or footer&#x20;
 * eg -> JPEG files always begin with the bytes FF D8 FF&#x20;
@@ -60,8 +60,9 @@
   * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>`
   * Output between START and END strings
 
-#### Exploiting file upload race conditions
+### Exploiting File Upload Race Conditions&#x20;
 
+* [race-conditions.md](race-conditions.md "mention")
 * Uploads the file to a temp directory and perform validation - virus checks etc&#x20;
 * Uploaded file is moved to an accessible folder, where checked for viruses.&#x20;
 * Malicious files are removed once the virus check completes&#x20;
@@ -95,7 +96,7 @@ def handleResponse(req, interesting):
 
 </details>
 
-#### Malicious Client-Side Scripts
+### Malicious Client-Side Scripts
 
 * Upload HTML files or SVG images
 * Use tags to create stored XSS payloads
@@ -166,11 +167,11 @@ End Sub
 
 </details>
 
-#### Exploiting vulnerabilities in the parsing of uploaded files&#x20;
+### Exploiting Vulnerabilities in the Parsing of Uploaded Files&#x20;
 
 * Server parses XML-based files, such as Microsoft Office .doc or .xls files, this may be a potential vector for XXE injection attacks.
 
-#### Uploading files using PUT
+### Uploading Files using PUT
 
 <details>
 

