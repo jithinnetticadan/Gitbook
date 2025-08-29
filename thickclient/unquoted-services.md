@@ -1,8 +1,8 @@
 # Unquoted Services
 
 {% code lineNumbers="true" %}
-```
-wmic service get name,displayname,pathname,startmode |findstr /i "auto" |findstr /i /v "c:\windows\" |findstr /i /v """
+```batch
+wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "c:\windows\" | findstr /i /v """
 sc qc <service-name>
 ```
 {% endcode %}
