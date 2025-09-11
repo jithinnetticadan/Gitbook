@@ -74,3 +74,8 @@ JWTs are most commonly used in authentication, session management, and access co
   * Uses the JWTs that you provide to calculate one or more potential values of 'n'
   * For each potential value, our script outputs: % A Base64-encoded PEM key in both X.509 and PKCS1 format. % A forged JWT signed using each of these keys.
   * To identify correct key, use Repeater to send request containing each of the forged JWTs. Only one of these will be accepted by the server. Use the matching key to construct an alg confusion attack.
+
+Tools:
+
+* [JWTLens](https://jwtlens.netlify.app/)
+* [JWTAuditor](https://jwtauditor.com/)
