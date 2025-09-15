@@ -10,6 +10,7 @@
 * [awesome-cloud-security](https://github.com/4ndersonLin/awesome-cloud-security)
 * [boot2root](https://h3ll-ka1ser.gitbook.io/boot2root)
 * [InternalAllTheThings](https://swisskyrepo.github.io/InternalAllTheThings/)
+* [exploit-notes](https://exploit-notes.hdks.org/)
 
 
 
