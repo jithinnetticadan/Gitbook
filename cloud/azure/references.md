@@ -10,3 +10,4 @@
 * [InternalAllTheThings](https://swisskyrepo.github.io/InternalAllTheThings/)
 * [Azure-AppHunter](https://github.com/8ales/Azure-AppHunter)
 * [exploit-notes](https://exploit-notes.hdks.org/)
+* [senaykt/cloud-security-resources](https://github.com/senaykt/cloud-security-resources)
