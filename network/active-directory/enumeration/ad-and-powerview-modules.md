@@ -85,4 +85,12 @@ Download Remote Server Administration Tools (RSAT) for Windows. (Admin Priv)
   * `Get-NetLocalGroup -ComputerName <dc-name>`
   * `Get-NetLocalGroupMember -ComputerName <dc-name> -GroupName Administrators`
 * `Get-DomainUser -SPN` lists accounts with non-null SPN. Consider for [kerberoasting.md](../exploitation/kerberoasting.md "mention").
+* **Share Enumeration**
+  * `Invoke-ShareFinder -Verbose`&#x20;
+  * [PowerHuntShares](https://github.com/NetSPI/PowerHuntShares)
+    * `Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\servers.txt`
+* **File Enumeration**
+  * `Invoke-FileFinder -Verbose`&#x20;
+* **File Server Enumeration**
+  * **Get-NetFileServer**
 * For More -> [Recon](https://powersploit.readthedocs.io/en/latest/Recon/)
