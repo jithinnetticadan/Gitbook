@@ -12,7 +12,8 @@
 
 * Understand Password Policy
   * `crackmapexec smb <dc-ip> --pass-pol`
-  * `nxc smb <dc-ip> --pass-pol`
+  * `nxc smb <dc-ip> --pass-pol`&#x20;
+  * [#enumeration-with-the-activedirectory-module](ad-and-powerview-modules.md#enumeration-with-the-activedirectory-module "mention") & [#enumeration-with-powerview](ad-and-powerview-modules.md#enumeration-with-powerview "mention")
 * [Password Policy Guide](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh994562\(v=ws.11\))
   * `crackmapexec smb <target-ips> -u users.txt -p passwords.txt -d <domain>`  //use --local-auth
   * `nxc smb <target-ips> -u users.txt -p passwords.txt -d <domain>`  //use --local-auth
@@ -87,3 +88,5 @@
 #### [bloodhound.md](bloodhound.md "mention")
 
 #### [ad-and-powerview-modules.md](ad-and-powerview-modules.md "mention")
+
+####
