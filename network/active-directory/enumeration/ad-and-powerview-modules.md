@@ -92,5 +92,35 @@ Download Remote Server Administration Tools (RSAT) for Windows. (Admin Priv)
 * **File Enumeration**
   * `Invoke-FileFinder -Verbose`&#x20;
 * **File Server Enumeration**
-  * **Get-NetFileServer**
+  * `Get-NetFileServer`
 * For More -> [Recon](https://powersploit.readthedocs.io/en/latest/Recon/)
+
+{% columns %}
+{% column %}
+**Enum Type**
+
+**Domain Details**
+{% endcolumn %}
+
+{% column %}
+**AD Module**
+
+{% code lineNumbers="true" %}
+```powershell
+Get-ADDomain
+Get-Domain -Identity <domain-name>
+```
+{% endcode %}
+{% endcolumn %}
+
+{% column %}
+**PowerView**
+
+{% code lineNumbers="true" %}
+```powershell
+Get-Domain
+Get-Domain -Domain <domain-name>
+```
+{% endcode %}
+{% endcolumn %}
+{% endcolumns %}
