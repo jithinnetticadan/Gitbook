@@ -103,67 +103,66 @@ Download Remote Server Administration Tools (RSAT) for Windows. (Admin Priv)
 
 **DomainSID**
 
-
+&#x20;
 
 **DomainPasswordPolicy**
 
-
+&#x20;
 
 **DomainControllers**
 
-
+&#x20;
 
 **UserEnum**
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
-
-
-
-
+&#x20;
 
 **GroupEnum**
 
+&#x20;
 
+&#x20;
 
-
-
-
+&#x20;
 
 **ComputerEnum**
 
+&#x20;&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
-
-
-
-
-**DomainControllerLocalGroup Enum**<sub>(requires admin rights on non-dc)</sub>\
-
+**DomainControllerLocalGroup Enum**<sub>(requires admin rights on non-dc)</sub>
 
 **Non-null SPN Accounts**<sub>(Consider for</sub> [kerberoasting.md](../exploitation/kerberoasting.md "mention")<sub>)</sub>
 
 **ShareEnum**\
 [PowerHuntShares](https://github.com/NetSPI/PowerHuntShares)
 
-
+&#x20;
 
 **FileEnum**
 
+&#x20;
 
-
-
+&#x20;
 
 **FileServerEnum**
 
+&#x20;
 
+&#x20;
 
-
-
-
+&#x20;
 
 
 
@@ -241,87 +240,43 @@ Get-ADComputer -Filter * -Properties DNSHostName | %{Test-Connection -Count 1 -C
 ```
 {% endcode %}
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
+&#x20;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-For More -> [ActiveDirectory-Module](https://learn.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2025-ps)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+&#x20;
 
 For More -> [ActiveDirectory-Module](https://learn.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2025-ps)
 
@@ -404,11 +359,11 @@ Get-NetLocalGroupMember -ComputerName <dc-name> -GroupName Administrators
 ```
 {% endcode %}
 
+&#x20;
 
+&#x20;
 
-
-
-
+&#x20;
 
 {% code lineNumbers="true" %}
 ```
@@ -416,11 +371,11 @@ Get-DomainUser -SPN
 ```
 {% endcode %}
 
+&#x20;
 
+&#x20;
 
-
-
-
+&#x20;
 
 {% code lineNumbers="true" %}
 ```
@@ -435,7 +390,7 @@ Invoke-FileFinder -Verbose
 ```
 {% endcode %}
 
-
+&#x20;
 
 {% code lineNumbers="true" %}
 ```
@@ -443,113 +398,9 @@ Get-NetFileServer
 ```
 {% endcode %}
 
-
+&#x20;
 
 For More -> [Recon](https://powersploit.readthedocs.io/en/latest/Recon/)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
