@@ -1,6 +1,6 @@
 # AD & PowerView Modules
 
-### Enumeration With the ActiveDirectory Module
+### ActiveDirectory Module Setup
 
 {% hint style="info" %}
 Download Remote Server Administration Tools (RSAT) for Windows. (Admin Priv)
@@ -10,484 +10,84 @@ Download Remote Server Administration Tools (RSAT) for Windows. (Admin Priv)
 
 * `Get-Module -ListAvailable ActiveDirectory`&#x20;
 * `Import-Module ActiveDirectory`&#x20;
-* **Domain Details**
-  * `Get-ADDomain`
-  * `Get-Domain -Identity <domain-name>`
-* **Domain SID**
-  * `(Get-ADDomain).DomainSID`
-* **Domain Password Policy**
-  * `(Get-DomainPolicyData).systemaccess`
-  * `(Get-DomainPolicyData -Domain <domain-name>).systemaccess`
-  * `Get-ADDefaultDomainPasswordPolicy`
-* **Domain Controllers**
-  * `Get-ADDomainController`
-  * `Get-ADDomainController -DomainName <domain-name> -Discover`
-* #### User Enumeration
-  * `Get-ADUser -Filter *`&#x20;
-  * `Get-ADUser -Identity <username>`&#x20;
-  * `Get-ADUser -Identity  <username> -Properties *`&#x20;
-  * `Get-ADUser -Filter "Name -like 'admin'"`&#x20;
-  * `Get-ADUser -Identity <name> -Properties *`
-  * `Get-ADUser -Filter 'Description -like "built"' -Properties Description | select name, Description`
-* **Group Enumeration**
-  * `Get-ADGroup -Filter *`
-  * `Get-ADGroup -Filter * | Select Name`
-  * `Get-ADGroup -Filter * -Properties *`&#x20;
-  * `Get-ADGroup -Filter 'Name -like "admin"' | select Name`
-  * `Get-ADGroupMember -Identity "Group Name" -Recursive`
-  * `Get-ADPrincipalGroupMembership -Identity <name>`&#x20;
-* **Computer Enumeration**
-  * `Get-ADComputer -Filter *`
-  * `Get-ADComputer -Filter * | Select Name, OperatingSystem`&#x20;
-  * `Get-ADComputer -Filter * -Properties *`&#x20;
-  * `Get-ADComputer -Filter 'OperatingSystem -like "Server 2022"' -Properties OperatingSystem | select Name,OperatingSystem`&#x20;
-  * `Get-ADComputer -Filter * -Properties DNSHostName | %{Test-Connection -Count 1 -ComputerName $_.DNSHostName}`
-* For More -> [ActiveDirectory-Module](https://learn.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2025-ps)
 
-### Enumeration With PowerView
+### PowerView Setup
 
 * [PowerSploit](https://github.com/PowerShellMafia/PowerSploit)
 * C:\PowerSploit-master\Recon -> PowerView.ps1
 * `Import-Module .\PowerView.ps1`&#x20;
-* **Domain Details**
-  * `Get-Domain`
-  * `Get-Domain -Domain <domain-name>`
-* **Domain SID**
-  * `Get-DomainSID`
-* **Domain Password Policy**
-  * `Get-DomainPolicyData`
-* **Domain Controllers**
-  * `Get-DomainController`
-  * `Get-DomainController -Domain <domain-name>` &#x20;
-* **User Enumeration**
-  * `Get-DomainUser` or `Get-NetUser`
-  * `Get-DomainUser *admin*`
-  * `Get-DomainUser -Identity <name>`
-  * `Get-DomainUser -AdminCount`  &#x20;
-  * `Get-DomainUser -Identity <name> -Properties samaccountname, logonCount`&#x20;
-  * `Get-DomainUser -LDAPFilter "Description=built" | Select name, Description`
-* **Group Enumeration**
-  * `Get-DomainGroup` or `Get-NetGroup`&#x20;
-  * `Get-DomainGroup "*admin*"`&#x20;
-  * `Get-DomainGroup | select Name`
-  * `Get-DomainGroup -Domain <name>`&#x20;
-  * `Get-DomainGroup -UserName "name"`
-  * `Get-DomainGroupMember -Identity "Domain Admins" -Recurse`
-* **Computer Enumeration**
-  * `Get-DomainComputer` or `Get-NetComputer`&#x20;
-  * `Get-DomainComputer | select Name`&#x20;
-  * `Get-DomainComputer -OperatingSystem "`_`Server 2022`_`"`&#x20;
-  * `Get-DomainComputer -Ping`&#x20;
-  * `Get-NetLoggedon -ComputerName <name>` <sub>(requires local admin rights on target)</sub>
-  * `Get-LoggedonLocal -ComputerName <name>` <sub>( requires remote registry service running)</sub>
-  * `Get-LastLoggedOn -ComputerName <name>` <sub>(requires remote registry + local admin)</sub>
-* **Domain Controller Local Group Enumeration** <sub>(requires admin rights on non-dc)</sub>
-  * `Get-NetLocalGroup -ComputerName <dc-name>`
-  * `Get-NetLocalGroupMember -ComputerName <dc-name> -GroupName Administrators`
-* `Get-DomainUser -SPN` lists accounts with non-null SPN. Consider for [kerberoasting.md](../exploitation/kerberoasting.md "mention").
-* **Share Enumeration**
-  * `Invoke-ShareFinder -Verbose`&#x20;
-  * [PowerHuntShares](https://github.com/NetSPI/PowerHuntShares)
-    * `Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\servers.txt`
-* **File Enumeration**
-  * `Invoke-FileFinder -Verbose`&#x20;
-* **File Server Enumeration**
-  * `Get-NetFileServer`
-* For More -> [Recon](https://powersploit.readthedocs.io/en/latest/Recon/)
 
-{% columns fullWidth="false" %}
-{% column width="16.666666666666664%" %}
-**Enum Type**
+### **Domain Enumeration**
 
-**DomainDetails**
-
-**DomainSID**
-
-&#x20;
-
-**DomainPasswordPolicy**
-
-&#x20;
-
-**DomainControllers**
-
-&#x20;
-
-**UserEnum**
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-**GroupEnum**
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-**ComputerEnum**
-
-&#x20;&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-**DomainControllerLocalGroup Enum**<sub>(requires admin rights on non-dc)</sub>
-
-**Non-null SPN Accounts**<sub>(Consider for</sub> [kerberoasting.md](../exploitation/kerberoasting.md "mention")<sub>)</sub>
-
-**ShareEnum**\
-[PowerHuntShares](https://github.com/NetSPI/PowerHuntShares)
-
-&#x20;
-
-**FileEnum**
-
-&#x20;
-
-&#x20;
-
-**FileServerEnum**
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-
-
-
-
-
-
-
-
-
-{% endcolumn %}
-
-{% column width="41.66666666666667%" %}
-**AD Module**
-
-{% code lineNumbers="true" %}
-```
-Get-ADDomain
-Get-Domain -Identity <domain-name>
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-(Get-ADDomain).DomainSID
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-(Get-DomainPolicyData).systemaccess
-(Get-DomainPolicyData -Domain <domain-name>).systemaccess
+<table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>Domain Details</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADDomain
+Get-Domain -Identity &#x3C;domain-name>
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-Domain
+Get-Domain -Domain &#x3C;domain-name>
+</code></pre></td></tr><tr><td><strong>Domain SID</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">(Get-ADDomain).DomainSID
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainSID
+</code></pre></td></tr><tr><td><strong>Domain Password Policy</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">(Get-DomainPolicyData).systemaccess
+(Get-DomainPolicyData -Domain &#x3C;domain-name>).systemaccess
 Get-ADDefaultDomainPasswordPolicy
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-ADDomainController
-Get-ADDomainController -DomainName <domain-name> -Discover
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-ADUser -Filter * 
-Get-ADUser -Identity <username> 
-Get-ADUser -Identity  <username> -Properties * 
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainPolicyData
+</code></pre></td></tr><tr><td><strong>Domain Controllers</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADDomainController
+Get-ADDomainController -DomainName &#x3C;domain-name> -Discover
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainController
+Get-DomainController -Domain &#x3C;domain-name>
+</code></pre></td></tr><tr><td><strong>User Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADUser -Filter * 
+Get-ADUser -Identity &#x3C;username> 
+Get-ADUser -Identity  &#x3C;username> -Properties * 
 Get-ADUser -Filter "Name -like 'admin'" 
-Get-ADUser -Identity <name> -Properties *
+Get-ADUser -Identity &#x3C;name> -Properties *
 Get-ADUser -Filter 'Description -like "built"' -Properties Description | select name, Description
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-ADGroup -Filter *
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser or Get-NetUser
+Get-DomainUser *admin*
+Get-DomainUser -Identity &#x3C;name>
+Get-DomainUser -AdminCount   
+Get-DomainUser -Identity &#x3C;name> -Properties samaccountname, logonCount 
+Get-DomainUser -LDAPFilter "Description=built" | Select name, Description
+</code></pre></td></tr><tr><td><strong>Group Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADGroup -Filter *
 Get-ADGroup -Filter * | Select Name
 Get-ADGroup -Filter * -Properties * 
 Get-ADGroup -Filter 'Name -like "admin"' | select Name
 Get-ADGroupMember -Identity "Group Name" -Recursive
-Get-ADPrincipalGroupMembership -Identity <name>
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-ADComputer -Filter *
+Get-ADPrincipalGroupMembership -Identity &#x3C;name>Get-ADGroup -Filter *
+Get-ADGroup -Filter * | Select Name
+Get-ADGroup -Filter * -Properties * 
+Get-ADGroup -Filter 'Name -like "admin"' | select Name
+Get-ADGroupMember -Identity "Group Name" -Recursive
+Get-ADPrincipalGroupMembership -Identity &#x3C;name>
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGroup or Get-NetGroup 
+Get-DomainGroup "*admin*" 
+Get-DomainGroup | select Name
+Get-DomainGroup -Domain &#x3C;name> 
+Get-DomainGroup -UserName "name"
+Get-DomainGroupMember -Identity "Domain Admins" -Recurse
+</code></pre></td></tr><tr><td><strong>Computer Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADComputer -Filter *
 Get-ADComputer -Filter * | Select Name, OperatingSystem 
 Get-ADComputer -Filter * -Properties * 
 Get-ADComputer -Filter 'OperatingSystem -like "Server 2022"' -Properties OperatingSystem | select Name,OperatingSystem 
 Get-ADComputer -Filter * -Properties DNSHostName | %{Test-Connection -Count 1 -ComputerName $_.DNSHostName}
-
-
-```
-{% endcode %}
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-For More -> [ActiveDirectory-Module](https://learn.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2025-ps)
-
-
-
-
-
-
-{% endcolumn %}
-
-{% column width="41.66666666666666%" %}
-**PowerView**
-
-{% code lineNumbers="true" %}
-```
-Get-Domain
-Get-Domain -Domain <domain-name>
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-DomainSID
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-DomainPolicyData
-
-
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-DomainController
-Get-DomainController -Domain <domain-name>
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-DomainUser or Get-NetUser
-Get-DomainUser *admin*
-Get-DomainUser -Identity <name>
-Get-DomainUser -AdminCount   
-Get-DomainUser -Identity <name> -Properties samaccountname, logonCount 
-Get-DomainUser -LDAPFilter "Description=built" | Select name, Description
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-DomainGroup or Get-NetGroup 
-Get-DomainGroup "*admin*" 
-Get-DomainGroup | select Name
-Get-DomainGroup -Domain <name> 
-Get-DomainGroup -UserName "name"
-Get-DomainGroupMember -Identity "Domain Admins" -Recurse
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-DomainComputer or Get-NetComputer 
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainComputer or Get-NetComputer 
 Get-DomainComputer | select Name 
 Get-DomainComputer -OperatingSystem "Server 2022" 
 Get-DomainComputer -Ping 
-Get-NetLoggedon -ComputerName <name> (requires local admin rights on target)
-Get-LoggedonLocal -ComputerName <name> ( requires remote registry service running)
-Get-LastLoggedOn -ComputerName <name> (requires remote registry + local admin)
-```
-{% endcode %}
-
-{% code lineNumbers="true" %}
-```
-Get-NetLocalGroup -ComputerName <dc-name>
-Get-NetLocalGroupMember -ComputerName <dc-name> -GroupName Administrators
-```
-{% endcode %}
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-{% code lineNumbers="true" %}
-```
-Get-DomainUser -SPN
-```
-{% endcode %}
-
-&#x20;
-
-&#x20;
-
-&#x20;
-
-{% code lineNumbers="true" %}
-```
-Invoke-ShareFinder -Verbose 
+Get-NetLoggedon -ComputerName &#x3C;name> (requires local admin rights on target)
+Get-LoggedonLocal -ComputerName &#x3C;name> ( requires remote registry service running)
+Get-LastLoggedOn -ComputerName &#x3C;name> (requires remote registry + local admin)
+</code></pre></td></tr><tr><td><strong>Domain Controller Local Group Enum</strong> <sub>(requires admin rights on non-dc)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetLocalGroup -ComputerName &#x3C;dc-name>
+Get-NetLocalGroupMember -ComputerName &#x3C;dc-name> -GroupName Administrators
+</code></pre></td></tr><tr><td><strong>Non-null SPN Accounts</strong> <sub>(Consider for</sub> <a data-mention href="../exploitation/kerberoasting.md">kerberoasting.md</a><sub>)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser -SPN
+</code></pre></td></tr><tr><td><strong>Share Enum</strong><br><a href="https://github.com/NetSPI/PowerHuntShares">PowerHuntShares</a></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-ShareFinder -Verbose 
 Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\servers.txt
-```
-{% endcode %}
+</code></pre></td></tr><tr><td><strong>File Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-FileFinder -Verbose
+</code></pre></td></tr><tr><td><strong>File Server Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetFileServer
+</code></pre></td></tr><tr><td></td><td>For More -> <a href="https://learn.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2025-ps">ActiveDirectory-Module</a></td><td>For More -> <a href="https://powersploit.readthedocs.io/en/latest/Recon/">Recon</a></td></tr></tbody></table>
 
-{% code lineNumbers="true" %}
-```
-Invoke-FileFinder -Verbose
-```
-{% endcode %}
 
-&#x20;
 
-{% code lineNumbers="true" %}
-```
-Get-NetFileServer
-```
-{% endcode %}
 
-&#x20;
 
-For More -> [Recon](https://powersploit.readthedocs.io/en/latest/Recon/)
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% endcolumn %}
-{% endcolumns %}
