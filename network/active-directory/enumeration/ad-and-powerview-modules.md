@@ -95,32 +95,548 @@ Download Remote Server Administration Tools (RSAT) for Windows. (Admin Priv)
   * `Get-NetFileServer`
 * For More -> [Recon](https://powersploit.readthedocs.io/en/latest/Recon/)
 
-{% columns %}
-{% column %}
+{% columns fullWidth="false" %}
+{% column width="16.666666666666664%" %}
 **Enum Type**
 
-**Domain Details**
+**DomainDetails**
+
+**DomainSID**
+
+
+
+**DomainPasswordPolicy**
+
+
+
+**DomainControllers**
+
+
+
+**UserEnum**
+
+
+
+
+
+
+
+
+
+**GroupEnum**
+
+
+
+
+
+
+
+**ComputerEnum**
+
+
+
+
+
+
+
+
+
+**DomainControllerLocalGroup Enum**<sub>(requires admin rights on non-dc)</sub>\
+
+
+**Non-null SPN Accounts**<sub>(Consider for</sub> [kerberoasting.md](../exploitation/kerberoasting.md "mention")<sub>)</sub>
+
+**ShareEnum**\
+[PowerHuntShares](https://github.com/NetSPI/PowerHuntShares)
+
+
+
+**FileEnum**
+
+
+
+
+
+**FileServerEnum**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endcolumn %}
 
-{% column %}
+{% column width="41.66666666666667%" %}
 **AD Module**
 
 {% code lineNumbers="true" %}
-```powershell
+```
 Get-ADDomain
 Get-Domain -Identity <domain-name>
 ```
 {% endcode %}
+
+{% code lineNumbers="true" %}
+```
+(Get-ADDomain).DomainSID
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+(Get-DomainPolicyData).systemaccess
+(Get-DomainPolicyData -Domain <domain-name>).systemaccess
+Get-ADDefaultDomainPasswordPolicy
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-ADDomainController
+Get-ADDomainController -DomainName <domain-name> -Discover
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-ADUser -Filter * 
+Get-ADUser -Identity <username> 
+Get-ADUser -Identity  <username> -Properties * 
+Get-ADUser -Filter "Name -like 'admin'" 
+Get-ADUser -Identity <name> -Properties *
+Get-ADUser -Filter 'Description -like "built"' -Properties Description | select name, Description
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-ADGroup -Filter *
+Get-ADGroup -Filter * | Select Name
+Get-ADGroup -Filter * -Properties * 
+Get-ADGroup -Filter 'Name -like "admin"' | select Name
+Get-ADGroupMember -Identity "Group Name" -Recursive
+Get-ADPrincipalGroupMembership -Identity <name>
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-ADComputer -Filter *
+Get-ADComputer -Filter * | Select Name, OperatingSystem 
+Get-ADComputer -Filter * -Properties * 
+Get-ADComputer -Filter 'OperatingSystem -like "Server 2022"' -Properties OperatingSystem | select Name,OperatingSystem 
+Get-ADComputer -Filter * -Properties DNSHostName | %{Test-Connection -Count 1 -ComputerName $_.DNSHostName}
+
+
+```
+{% endcode %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+For More -> [ActiveDirectory-Module](https://learn.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2025-ps)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+For More -> [ActiveDirectory-Module](https://learn.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2025-ps)
+
+
+
+
+
+
 {% endcolumn %}
 
-{% column %}
+{% column width="41.66666666666666%" %}
 **PowerView**
 
 {% code lineNumbers="true" %}
-```powershell
+```
 Get-Domain
 Get-Domain -Domain <domain-name>
 ```
 {% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-DomainSID
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-DomainPolicyData
+
+
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-DomainController
+Get-DomainController -Domain <domain-name>
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-DomainUser or Get-NetUser
+Get-DomainUser *admin*
+Get-DomainUser -Identity <name>
+Get-DomainUser -AdminCount   
+Get-DomainUser -Identity <name> -Properties samaccountname, logonCount 
+Get-DomainUser -LDAPFilter "Description=built" | Select name, Description
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-DomainGroup or Get-NetGroup 
+Get-DomainGroup "*admin*" 
+Get-DomainGroup | select Name
+Get-DomainGroup -Domain <name> 
+Get-DomainGroup -UserName "name"
+Get-DomainGroupMember -Identity "Domain Admins" -Recurse
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-DomainComputer or Get-NetComputer 
+Get-DomainComputer | select Name 
+Get-DomainComputer -OperatingSystem "Server 2022" 
+Get-DomainComputer -Ping 
+Get-NetLoggedon -ComputerName <name> (requires local admin rights on target)
+Get-LoggedonLocal -ComputerName <name> ( requires remote registry service running)
+Get-LastLoggedOn -ComputerName <name> (requires remote registry + local admin)
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Get-NetLocalGroup -ComputerName <dc-name>
+Get-NetLocalGroupMember -ComputerName <dc-name> -GroupName Administrators
+```
+{% endcode %}
+
+
+
+
+
+
+
+{% code lineNumbers="true" %}
+```
+Get-DomainUser -SPN
+```
+{% endcode %}
+
+
+
+
+
+
+
+{% code lineNumbers="true" %}
+```
+Invoke-ShareFinder -Verbose 
+Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\servers.txt
+```
+{% endcode %}
+
+{% code lineNumbers="true" %}
+```
+Invoke-FileFinder -Verbose
+```
+{% endcode %}
+
+
+
+{% code lineNumbers="true" %}
+```
+Get-NetFileServer
+```
+{% endcode %}
+
+
+
+For More -> [Recon](https://powersploit.readthedocs.io/en/latest/Recon/)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endcolumn %}
 {% endcolumns %}
