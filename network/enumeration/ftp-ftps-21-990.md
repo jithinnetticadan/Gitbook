@@ -64,7 +64,7 @@ sudo nmap -sV -p21 --script "ftp-*" -A <ip>
 {% tabs %}
 {% tab title="Metasploit" %}
 {% code lineNumbers="true" fullWidth="false" %}
-```
+```bash
 use auxiliary/scanner/ftp/ftp_login
 set rhosts <ip>
 services -p 21 -R
@@ -76,7 +76,7 @@ set user_file
 
 {% tab title="Hydra" %}
 {% code fullWidth="false" %}
-```
+```bash
 hydra -t 1 -l {Username} -P {Passwordlist} -vV {IP} ftp
 ```
 {% endcode %}
