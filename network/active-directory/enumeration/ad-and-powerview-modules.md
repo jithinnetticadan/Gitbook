@@ -17,7 +17,7 @@ Download Remote Server Administration Tools (RSAT) for Windows. (Admin Priv)
 * C:\PowerSploit-master\Recon -> PowerView.ps1
 * `Import-Module .\PowerView.ps1`&#x20;
 
-### **Domain Enumeration**
+### **Domain Enumeration - Generic**
 
 <table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>Domain Details</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADDomain
 Get-Domain -Identity &#x3C;domain-name>
@@ -83,7 +83,7 @@ Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\servers.txt
 </code></pre></td></tr><tr><td><strong>File Server Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetFileServer
 </code></pre></td></tr><tr><td></td><td>For More -> <a href="https://learn.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2025-ps">ActiveDirectory-Module</a></td><td>For More -> <a href="https://powersploit.readthedocs.io/en/latest/Recon/">Recon</a></td></tr></tbody></table>
 
-
+### **Domain Enumeration - ACL's**
 
 
 
