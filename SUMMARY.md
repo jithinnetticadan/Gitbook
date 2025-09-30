@@ -64,6 +64,7 @@
   * [Cisco Smart - 4786](network/enumeration/cisco-smart-4786.md)
   * [Postgres DB - 5432](network/enumeration/postgres-db-5432.md)
   * [VNC - 5900](network/enumeration/vnc-5900.md)
+  * [ADWS - 9389](network/enumeration/adws-9389.md)
   * [Webmin - 10000](network/enumeration/webmin-10000.md)
 * [Exploitation](network/exploitation/README.md)
   * [iPMI](network/exploitation/ipmi.md)
