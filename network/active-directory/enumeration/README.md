@@ -1,12 +1,12 @@
 # Enumeration
 
-#### Parse SMB Shares [smb-139-445.md](../../enumeration/smb-139-445.md "mention")
+#### Parse SMB Shares [smb-t139-445-u137-138.md](../../enumeration/smb-t139-445-u137-138.md "mention")
 
-#### LDAP Enumeration [ldap-ldaps-389-636.md](../../enumeration/ldap-ldaps-389-636.md "mention")
+#### LDAP Enumeration [ldap-ldaps-t389-636.md](../../enumeration/ldap-ldaps-t389-636.md "mention")
 
-#### RPC Enumeration [rpc-135.md](../../enumeration/rpc-135.md "mention")
+#### RPC Enumeration [rpc-tu111-135.md](../../enumeration/rpc-tu111-135.md "mention")
 
-#### Kerberos Enumeration [kerberos-88.md](../../enumeration/kerberos-88.md "mention")
+#### Kerberos Enumeration [kerberos-u88.md](../../enumeration/kerberos-u88.md "mention")
 
 #### Password Spraying
 

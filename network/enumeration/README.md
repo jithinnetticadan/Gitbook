@@ -1,14 +1,14 @@
 # Enumeration
 
-{% content-ref url="ftp-ftps-21-990.md" %}
-[ftp-ftps-21-990.md](ftp-ftps-21-990.md)
+{% content-ref url="ftp-ftps-t21-990.md" %}
+[ftp-ftps-t21-990.md](ftp-ftps-t21-990.md)
 {% endcontent-ref %}
 
-{% content-ref url="ssh-22.md" %}
-[ssh-22.md](ssh-22.md)
+{% content-ref url="ssh-t22.md" %}
+[ssh-t22.md](ssh-t22.md)
 {% endcontent-ref %}
 
-{% content-ref url="telnet-23.md" %}
-[telnet-23.md](telnet-23.md)
+{% content-ref url="telnet-t23.md" %}
+[telnet-t23.md](telnet-t23.md)
 {% endcontent-ref %}
 
