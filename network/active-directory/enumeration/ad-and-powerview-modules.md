@@ -128,9 +128,44 @@ Get-DomainGPO -ComputerIdentity &#x3C;computer-name>
 
 ### **Domain Enumeration - Trusts**
 
+{% hint style="info" %}
+* Trust is a relationship between two domains or forests which allows users of one domain or forest to access resources in the other domain or forest.
+* Trust can be automatic (parent-child, same forest etc.) or established (forest, external).
+* Trusted Domain Objects (TDOs) represent the trust relationships in a domain.
+{% endhint %}
 
+<table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><p></p><p><strong>Get List of all Domain Trusts</strong></p></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADTrust
+Get-ADTrust -Identity &#x3C;domain>
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainTrust
+Get-DomainTrust -Domain &#x3C;update>
+</code></pre></td></tr><tr><td><strong>Get Details about Forest</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADForest
+Get-ADForest -Identity &#x3C;forest-domain>
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-Forest
+Get-Forest -Forest &#x3C;forest-domain>
+</code></pre></td></tr><tr><td><strong>Get all Domains in Forest</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">(Get-ADForest).Domains
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ForestDomain
+Get-ForestDomain -Forest &#x3C;forest-domain>
+</code></pre></td></tr><tr><td><strong>Get all Global Catalogs for the Forest</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADForest | select -ExpandProperty GlobalCatalogs
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ForestGlobalCatalog
+Get-ForestGlobalCatalog -Forest &#x3C;forest-domain>
+</code></pre></td></tr><tr><td><strong>Map Trusts of a Forest</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADTrust -Filter 'msDS-TrustForestTrustInfo -ne "$null"'
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ForestTrust
+Get-ForestTrust -Forest &#x3C;forest-domain>
+</code></pre></td></tr></tbody></table>
 
+### **Domain Enumeration - User Hunting**
 
-
-
-
+<table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>Find all Machines where user has Local Admin Access</strong><br><sub>(See Find-WMILocalAdminAccess.ps1 &#x26; Find-PSRemotingLocalAdminAccess.ps1)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-LocalAdminAccess -Verbose
+</code></pre></td></tr><tr><td><strong>Find Computers where Domain Admin/specified user/group has Active Sessions</strong><br><sub>(For Server 2019 onwards, require local admin)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-DomainUserLocation -Verbose
+Find-DomainUserLocation -UserGroupIdentity "RDPUsers"
+</code></pre></td></tr><tr><td><p></p><p><strong>Find Computers where Domain Admin Session is available &#x26; Current User has Admin Access</strong></p></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-DomainUserLocation -CheckAccess
+</code></pre></td></tr><tr><td><p></p><p><strong>Find computers (File Servers and Distributed File servers) where Domain Admin Session is available</strong></p></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-DomainUserLocation -Stealth
+</code></pre></td></tr><tr><td><strong>List Sessions on Remote Machines</strong><br><a href="https://github.com/Leo4j/Invoke-SessionHunter">Invoke-SessionHunter</a></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-SessionHunter -FailSafe
+Invoke-SessionHunter -NoPortScan -Targets C:\AD\servers-except-DC.txt
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-SessionHunter -FailSafe
+Invoke-SessionHunter -NoPortScan -Targets C:\AD\servers-except-DC.txt
+</code></pre></td></tr></tbody></table>
