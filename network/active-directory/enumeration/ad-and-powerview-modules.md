@@ -103,7 +103,7 @@ Get-DomainObjectACL -SearchBase 'LDAP://CN=Domain Admins,CN=Users,DC=&#x3C;updat
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-PathAcl -Path "\\hostname\sysvol"
 </code></pre></td></tr></tbody></table>
 
-### **Domain Enumeration - Group Policy Objects (GPO)**
+### **Domain Enumeration - GroupPolicyObjects (GPO)**
 
 {% hint style="info" %}
 * GPO can be linked to domains, sites and organizational units (OUs).GPO is a virtual collection of policy settings, security permissions, and scope of management (SOM) that you can apply to users and computers.
