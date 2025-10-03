@@ -77,6 +77,7 @@
   * [Credentials Harvesting](network/exploitation/credentials-harvesting.md)
   * [Lateral Movement](network/exploitation/lateral-movement-and-pivoting.md)
   * [Pivoting Setup](network/exploitation/pivoting-setup.md)
+  * [Feature Abuse - Jenkins](network/exploitation/feature-abuse-jenkins.md)
   * [AV/EDR Bypass](network/exploitation/av-edr-bypass.md)
   * [Code Obfuscation](network/exploitation/code-obfuscation.md)
 * [References](network/references.md)
