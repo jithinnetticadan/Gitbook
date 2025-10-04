@@ -66,6 +66,7 @@
   * [Cisco Smart - T4786](network/enumeration/cisco-smart-t4786.md)
   * [Postgres DB - T5432](network/enumeration/postgres-db-t5432.md)
   * [VNC - T5900,5901,5902](network/enumeration/vnc-t5900-5901-5902.md)
+  * [WinRM - T5985,5986](network/enumeration/winrm-t5985-5986.md)
   * [ADWS - T9389](network/enumeration/adws-t9389.md)
   * [Webmin - T10000](network/enumeration/webmin-t10000.md)
 * [Exploitation](network/exploitation/README.md)
@@ -75,7 +76,8 @@
   * [Linux PrivEsc](network/exploitation/linux-privesc.md)
   * [Windows PrivEsc](network/exploitation/windows-privesc.md)
   * [Credentials Harvesting](network/exploitation/credentials-harvesting.md)
-  * [Lateral Movement](network/exploitation/lateral-movement-and-pivoting.md)
+  * [Lateral Movement](network/exploitation/lateral-movement/README.md)
+    * [PowerShell Remoting](network/exploitation/lateral-movement/powershell-remoting.md)
   * [Pivoting Setup](network/exploitation/pivoting-setup.md)
   * [Feature Abuse - Jenkins](network/exploitation/feature-abuse-jenkins.md)
   * [AV/EDR Bypass](network/exploitation/av-edr-bypass.md)
@@ -91,6 +93,7 @@
   * [Exploitation](network/active-directory/exploitation/README.md)
     * [Kerberoasting](network/active-directory/exploitation/kerberoasting.md)
     * [PrivEsc - GPO Abuse](network/active-directory/exploitation/privesc-gpo-abuse.md)
+  * [AD Certificate Services](network/active-directory/ad-certificate-services.md)
   * [References](network/active-directory/references.md)
 
 ## ThickClient
