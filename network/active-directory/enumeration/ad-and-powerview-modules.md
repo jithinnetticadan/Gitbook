@@ -122,6 +122,7 @@ Get-DomainGPO -ComputerIdentity &#x3C;computer-name>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGPOUserLocalGroupMapping -Identity &#x3C;username> -Verbose
 </code></pre></td></tr><tr><td><strong>Get OUs</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADOrganizationalUnit -Filter * -Properties *
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainOU
+(Get-DomainOU -Identity &#x3C;OU-name>).gplink 
 </code></pre></td></tr><tr><td><strong>Get GPO applied on an OU.</strong> <sub>(Read GPOname from gplink attribute from <code>Get-NetOU</code>)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGPO -Identity "{gp-link}"
 </code></pre></td></tr></tbody></table>

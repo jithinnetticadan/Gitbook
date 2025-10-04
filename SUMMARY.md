@@ -90,6 +90,7 @@
     * [AD & PowerView Modules](network/active-directory/enumeration/ad-and-powerview-modules.md)
   * [Exploitation](network/active-directory/exploitation/README.md)
     * [Kerberoasting](network/active-directory/exploitation/kerberoasting.md)
+    * [PrivEsc - GPO Abuse](network/active-directory/exploitation/privesc-gpo-abuse.md)
   * [References](network/active-directory/references.md)
 
 ## ThickClient
