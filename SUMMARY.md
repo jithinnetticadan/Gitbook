@@ -40,7 +40,7 @@
 
 * [Recon](network/recon.md)
 * [Enumeration](network/enumeration/README.md)
-  * [FTP/FTPS - T21,990](network/enumeration/ftp-ftps-t21-990.md)
+  * [FTP/FTPS - T21,2121,990](network/enumeration/ftp-ftps-t21-2121-990.md)
   * [SSH - T22](network/enumeration/ssh-t22.md)
   * [Telnet - T23](network/enumeration/telnet-t23.md)
   * [SMTP - T25,465,587,2525](network/enumeration/smtp-t25-465-587-2525.md)
