@@ -2,7 +2,7 @@
 
 <details>
 
-<summary>Quick Fuzzer</summary>
+<summary><strong>Quick Fuzzer</strong></summary>
 
 ```
 //Save as fuzzer.bambda -> Repeater Tab -> Custom-Scripts
