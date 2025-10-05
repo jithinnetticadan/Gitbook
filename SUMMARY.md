@@ -80,6 +80,7 @@
     * [PowerShell Remoting](network/exploitation/lateral-movement/powershell-remoting.md)
   * [Pivoting Setup](network/exploitation/pivoting-setup.md)
   * [Feature Abuse - Jenkins](network/exploitation/feature-abuse-jenkins.md)
+  * [AppLocker Policy - Bypass](network/exploitation/applocker-policy-bypass.md)
   * [AV/EDR Bypass](network/exploitation/av-edr-bypass.md)
   * [Code Obfuscation](network/exploitation/code-obfuscation.md)
 * [References](network/references.md)
