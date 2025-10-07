@@ -94,6 +94,7 @@
   * [Exploitation](network/active-directory/exploitation/README.md)
     * [Kerberoasting](network/active-directory/exploitation/kerberoasting.md)
     * [PrivEsc - GPO Abuse](network/active-directory/exploitation/privesc-gpo-abuse.md)
+    * [Credential Harvesting](network/active-directory/exploitation/credential-harvesting.md)
     * [Lateral Movement](network/active-directory/exploitation/lateral-movement.md)
     * [Persistence](network/active-directory/exploitation/persistence/README.md)
       * [Diamond Ticket](network/active-directory/exploitation/persistence/diamond-ticket.md)
