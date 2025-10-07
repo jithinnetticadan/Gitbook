@@ -94,6 +94,7 @@
   * [Exploitation](network/active-directory/exploitation/README.md)
     * [Kerberoasting](network/active-directory/exploitation/kerberoasting.md)
     * [PrivEsc - GPO Abuse](network/active-directory/exploitation/privesc-gpo-abuse.md)
+    * [Lateral Movement](network/active-directory/exploitation/lateral-movement.md)
   * [AD Certificate Services](network/active-directory/ad-certificate-services.md)
   * [References](network/active-directory/references.md)
 
