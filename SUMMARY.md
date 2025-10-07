@@ -95,6 +95,11 @@
     * [Kerberoasting](network/active-directory/exploitation/kerberoasting.md)
     * [PrivEsc - GPO Abuse](network/active-directory/exploitation/privesc-gpo-abuse.md)
     * [Lateral Movement](network/active-directory/exploitation/lateral-movement.md)
+    * [Persistence](network/active-directory/exploitation/persistence/README.md)
+      * [Diamond Ticket](network/active-directory/exploitation/persistence/diamond-ticket.md)
+      * [Golden Ticket](network/active-directory/exploitation/persistence/golden-ticket.md)
+      * [Silver Ticket](network/active-directory/exploitation/persistence/silver-ticket.md)
+      * [Skeleton Key](network/active-directory/exploitation/persistence/skeleton-key.md)
   * [AD Certificate Services](network/active-directory/ad-certificate-services.md)
   * [References](network/active-directory/references.md)
 
