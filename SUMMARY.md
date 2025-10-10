@@ -101,6 +101,7 @@
       * [Golden Ticket](network/active-directory/exploitation/persistence/golden-ticket.md)
       * [Silver Ticket](network/active-directory/exploitation/persistence/silver-ticket.md)
       * [Skeleton Key](network/active-directory/exploitation/persistence/skeleton-key.md)
+      * [Directory Services Restore Mode (DSRM)](network/active-directory/exploitation/persistence/directory-services-restore-mode-dsrm.md)
   * [AD Certificate Services](network/active-directory/ad-certificate-services.md)
   * [References](network/active-directory/references.md)
 
