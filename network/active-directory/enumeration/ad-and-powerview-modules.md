@@ -78,7 +78,7 @@ Get-LoggedonLocal -ComputerName &#x3C;name> ( requires remote registry service r
 Get-LastLoggedOn -ComputerName &#x3C;name> (requires remote registry + local admin)
 </code></pre></td></tr><tr><td><strong>Domain Controller Local Group Enum</strong> <sub>(requires admin rights on non-dc)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetLocalGroup -ComputerName &#x3C;dc-name>
 Get-NetLocalGroupMember -ComputerName &#x3C;dc-name> -GroupName Administrators
-</code></pre></td></tr><tr><td><strong>Non-null SPN Accounts</strong> <sub>(Consider for</sub> <a data-mention href="../exploitation/kerberoasting.md">kerberoasting.md</a><sub>)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser -SPN
+</code></pre></td></tr><tr><td><strong>Non-null SPN Accounts</strong> <sub>(Consider for</sub> <a data-mention href="../exploitation/privesc/kerberoasting.md">kerberoasting.md</a><sub>)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser -SPN
 </code></pre></td></tr><tr><td><strong>Share Enum</strong><br><a href="https://github.com/NetSPI/PowerHuntShares">PowerHuntShares</a></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-ShareFinder -Verbose 
 Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\domain-computer-enum-servers.txt
 </code></pre></td></tr><tr><td><strong>File Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-FileFinder -Verbose
