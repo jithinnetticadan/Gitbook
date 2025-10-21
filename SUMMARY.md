@@ -96,6 +96,7 @@
       * [GPO Abuse](network/active-directory/exploitation/privesc-gpo-abuse.md)
       * [Kerberoasting](network/active-directory/exploitation/kerberoasting.md)
       * [Kerberos Delegation](network/active-directory/exploitation/privesc/kerberos-delegation.md)
+      * [Enterprise Admins](network/active-directory/exploitation/privesc/enterprise-admins.md)
     * [Credential Harvesting](network/active-directory/exploitation/credential-harvesting.md)
     * [Lateral Movement](network/active-directory/exploitation/lateral-movement.md)
     * [Persistence](network/active-directory/exploitation/persistence/README.md)
