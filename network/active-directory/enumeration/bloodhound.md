@@ -16,8 +16,8 @@ Enumerates key AD elements such as:
 
 * `nxc ldap <dc-ip> -u <username> -p <password> --bloodhound --collection All --dns-server <dc-ip>`
 * [SharpHound](https://github.com/SpecterOps/SharpHound)
-  * `.\SharpHound.exe --CollectionMethods All --Domain tryhackme.loc --ExcludeDCs`  <sub>(domain joined machine)</sub>
-  * `SharpHound.exe --args --collectionmethods Group,GPOLocalGroup,Session,Trusts,ACL,Container,ObjectProps,SPNTargets,CertServices --excludecs` <sub>(less noisy)</sub>
+  * `SharpHound.exe --CollectionMethods All --Domain tryhackme.loc --ExcludeDCs`  <sub>(domain joined machine)</sub>
+  * `SharpHound.exe --args --collectionmethods Group,GPOLocalGroup,Session,Trusts,ACL,Container,ObjectProps,SPNTargets,CertServices --ExcludeDCs` <sub>(less noisy)</sub>
 * [AzureHound](https://github.com/SpecterOps/AzureHound)
 * [BloodHound.py](https://github.com/dirkjanm/BloodHound.py) (Python Collector)
   * `bloodhound-python -u <username> -p <password> -d <domain> -ns <dns-server> -c All --zip`&#x20;
