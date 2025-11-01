@@ -69,11 +69,7 @@ Get-ADGroup -Filter * | Select Name
 Get-ADGroup -Filter * -Properties * 
 Get-ADGroup -Filter 'Name -like "admin"' | select Name
 Get-ADGroupMember -Identity "Group Name" -Recursive
-Get-ADPrincipalGroupMembership -Identity &#x3C;name>
-Get-ADGroup -Filter * | Select Name
-Get-ADGroup -Filter * -Properties * 
-Get-ADGroup -Filter 'Name -like "admin"' | select Name
-Get-ADGroupMember -Identity "Group Name" -Recursive
+Get-ADGroupMember -Identity "Enterprise Admins" -Server &#x3C;parent-domain> -Recursive
 Get-ADPrincipalGroupMembership -Identity &#x3C;name>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGroup or Get-NetGroup 
 Get-DomainGroup "*admin*" 
@@ -81,6 +77,7 @@ Get-DomainGroup | select Name
 Get-DomainGroup -Domain &#x3C;name> 
 Get-DomainGroup -UserName "name"
 Get-DomainGroupMember -Identity "Domain Admins" -Recurse
+Get-DomainGroupMember -Identity "Enterprise Admins" -Domain &#x3C;parent-domain> -Recurse
 </code></pre></td></tr><tr><td><strong>Computer Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADComputer -Filter *
 Get-ADComputer -Filter * | Select Name, OperatingSystem 
 Get-ADComputer -Filter * -Properties * 
