@@ -69,7 +69,7 @@ Get-ADGroup -Filter * | Select Name
 Get-ADGroup -Filter * -Properties * 
 Get-ADGroup -Filter 'Name -like "admin"' | select Name
 Get-ADGroupMember -Identity "Group Name" -Recursive
-Get-ADPrincipalGroupMembership -Identity &#x3C;name>Get-ADGroup -Filter *
+Get-ADPrincipalGroupMembership -Identity &#x3C;name>
 Get-ADGroup -Filter * | Select Name
 Get-ADGroup -Filter * -Properties * 
 Get-ADGroup -Filter 'Name -like "admin"' | select Name
