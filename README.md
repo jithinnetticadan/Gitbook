@@ -5,9 +5,9 @@ layout:
   title:
     visible: true
   description:
-    visible: true
+    visible: false
   tableOfContents:
-    visible: true
+    visible: false
   outline:
     visible: true
   pagination:
