@@ -113,8 +113,10 @@ ACL is a list of Access Control Entries (ACE). Each ACE corresponds to individu
 <table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>ACLs - specific Object/Filter</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">(Get-Acl 'AD:\CN=Administrator,CN=Users,DC=&#x3C;update>,DC=&#x3C;update>,DC=local').Access
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainObjectACL -SamAccountName &#x3C;username> -ResolveGUIDs
 Get-DomainObjectACL -SearchBase 'LDAP://CN=Domain Admins,CN=Users,DC=&#x3C;update>,DC=&#x3C;update>,DC=local' -ResolveGUIDs -Verbose 
+Get-DomainObjectAcl -Identity "Domain Admins" -ResolveGUIDs -Verbose
 </code></pre></td></tr><tr><td><strong>Search Interesting ACEs</strong></td><td><pre data-line-numbers><code>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-InterestingDomainAcl -ResolveGUIDs
+ Find-InterestingDomainAcl -ResolveGUIDs | ?{$_.IdentityReferenceName -match "&#x3C;string>"} 
 </code></pre></td></tr><tr><td><strong>ACLs associated for specified Path</strong></td><td><pre data-line-numbers><code>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-PathAcl -Path "\\hostname\sysvol"
 </code></pre></td></tr></tbody></table>
