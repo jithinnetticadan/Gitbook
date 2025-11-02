@@ -90,6 +90,7 @@ Get-DomainComputer -Ping
 Get-NetLoggedon -ComputerName &#x3C;name> (requires local admin rights on target)
 Get-LoggedonLocal -ComputerName &#x3C;name> ( requires remote registry service running)
 Get-LastLoggedOn -ComputerName &#x3C;name> (requires remote registry + local admin)
+(Get-DomainOU -Identity '&#x3C;OU>').distinguishedname | %{Get-DomainComputer -SearchBase $_} | select name
 </code></pre></td></tr><tr><td><strong>Domain Controller Local Group Enum</strong> <sub>(requires admin rights on non-dc)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetLocalGroup -ComputerName &#x3C;dc-name>
 Get-NetLocalGroupMember -ComputerName &#x3C;dc-name> -GroupName Administrators
 </code></pre></td></tr><tr><td><strong>Non-null SPN Accounts</strong> <sub>(Consider for</sub> <a data-mention href="../exploitation/kerberoasting.md">kerberoasting.md</a><sub>)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser -SPN
@@ -140,9 +141,10 @@ Get-DomainGPO -ComputerIdentity &#x3C;computer-name>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGPOUserLocalGroupMapping -Identity &#x3C;username> -Verbose
 </code></pre></td></tr><tr><td><strong>Get OUs</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADOrganizationalUnit -Filter * -Properties *
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainOU
-(Get-DomainOU -Identity &#x3C;OU-name>).gplink 
+(Get-DomainOU -Identity '&#x3C;OU-name>').gplink 
 </code></pre></td></tr><tr><td><strong>Get GPO applied on an OU.</strong> <sub>(Read GPOname from gplink attribute from <code>Get-NetOU</code>)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGPO -Identity "{gp-link}"
+Get-DomainGPO -Identity (Get-DomainOU -Identity'&#x3C;OU>').gplink.substring(11,(Get-DomainOU -Identity '&#x3C;OU>').gplink.length-72)
 </code></pre></td></tr></tbody></table>
 
 ### **Domain Enumeration - Trusts**
@@ -153,10 +155,19 @@ Get-DomainGPO -ComputerIdentity &#x3C;computer-name>
 * Trusted Domain Objects (TDOs) represent the trust relationships in a domain.
 {% endhint %}
 
-<table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><p></p><p><strong>Get List of all Domain Trusts</strong></p></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADTrust
+<table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><p></p><p><strong>Get List of all Domain Trusts</strong></p></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADTrust -Filter *
 Get-ADTrust -Identity &#x3C;domain>
+Get-ADForest | %{Get-ADTrust -Filter *}
+//list the external trusts
+(Get-ADForest).Domains | %{Get-ADTrust -Filter '(intraForest-ne $True) -and (ForestTransitive -ne $True)' -Server $_}
+Get-ADTrust -Filter '(intraForest -ne $True) -and(ForestTransitive -ne $True)'
+Get-ADTrust -Filter * -Server &#x3C;external-domain>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainTrust
 Get-DomainTrust -Domain &#x3C;update>
+//list the external trusts
+Get-ForestDomain | %{Get-DomainTrust -Domain $_.Name} | ?{$_.TrustAttributes -eq "FILTER_SIDS"}
+Get-DomainTrust | ?{$_.TrustAttributes -eq "FILTER_SIDS"}
+Get-ForestDomain -Forest &#x3C;external-domain> | %{Get-DomainTrust -Domain $_.Name}
 </code></pre></td></tr><tr><td><strong>Get Details about Forest</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADForest
 Get-ADForest -Identity &#x3C;forest-domain>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-Forest
