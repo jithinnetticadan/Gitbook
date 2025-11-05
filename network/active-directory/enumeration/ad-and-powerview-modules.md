@@ -117,7 +117,7 @@ Get-DomainObjectACL -SearchBase 'LDAP://CN=Domain Admins,CN=Users,DC=&#x3C;updat
 Get-DomainObjectAcl -Identity "Domain Admins" -ResolveGUIDs -Verbose
 </code></pre></td></tr><tr><td><strong>Search Interesting ACEs</strong></td><td><pre data-line-numbers><code>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-InterestingDomainAcl -ResolveGUIDs
- Find-InterestingDomainAcl -ResolveGUIDs | ?{$_.IdentityReferenceName -match "&#x3C;string>"} 
+Find-InterestingDomainAcl -ResolveGUIDs | ?{$_.IdentityReferenceName -match "&#x3C;string>"} 
 </code></pre></td></tr><tr><td><strong>ACLs associated for specified Path</strong></td><td><pre data-line-numbers><code>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-PathAcl -Path "\\hostname\sysvol"
 </code></pre></td></tr></tbody></table>
