@@ -36,7 +36,7 @@ Get-SQLInstanceDomain | Get-SQLServerInfo -Verbose
 ```powershell
 Get-SQLServerLink -Instance <server-name> -Verbose
 //Nested Enumeration
-Get-SQLServerLinkCrawl -Instance dcorp-mssql -Verbose
+Get-SQLServerLinkCrawl -Instance <server-name> -Verbose
 ```
 {% endcode %}
 {% endtab %}
