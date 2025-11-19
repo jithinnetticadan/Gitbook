@@ -1,9 +1,9 @@
-# Ldap/Ldaps - 389,636
+# Ldap/Ldaps - T389,636
 
 #### Anonymous Bind
 
 {% code lineNumbers="true" %}
-```
+```shellscript
 ldapsearch -x -H ldap://<ip> -s base
 ldapsearch -x -H ldap://<ip> -b "dc=<update>,dc=<update>" "(objectClass=person)"
 ```
@@ -11,7 +11,7 @@ ldapsearch -x -H ldap://<ip> -b "dc=<update>,dc=<update>" "(objectClass=person)"
 
 #### Automated Enumeration
 
-```
+```shellscript
 enum4linux-ng -A <ip> -oA results.txt
 ```
 

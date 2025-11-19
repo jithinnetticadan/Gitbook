@@ -3,7 +3,7 @@
 #### Dump Hashes
 
 {% code lineNumbers="true" %}
-```
+```shellscript
 use auxiliary/scanner/ipmi/ipmi_dumphashes
 set rhosts <>
 services -p 623 -R

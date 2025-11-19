@@ -1,11 +1,11 @@
-# Telnet - 23
+# Telnet - T23
 
 #### Brute Force
 
 {% tabs %}
 {% tab title="Metasploit" %}
 {% code lineNumbers="true" %}
-```bash
+```shellscript
 use auxiliary/scanner/telnet/telnet_login
 set rhosts <ip>
 services -p 23 -R
@@ -16,7 +16,7 @@ set password <>
 {% endtab %}
 
 {% tab title="Nmap" %}
-```
+```shellscript
 ```
 {% endtab %}
 {% endtabs %}
