@@ -30,10 +30,15 @@
 
 #### Tools
 
-* [PESecurity](https://github.com/NetSPI/PESecurity)\
-  `Set-ExecutionPolicy Bypass -Scope Process`\
-  `Import-Module .\Get-PESecurity.psm1`\
-  `Get-PESecurity -file <path-to-file>`\
-  `Get-PESecurity -directory <path-todirectory> -recursive`
-* [BinScoper](https://www.microsoft.com/en-us/download/details.aspx?id=44995) - `Binscope.exe /verbose /html /logfile outputfilepath.html <exe-file>`
+* [PESecurity](https://github.com/NetSPI/PESecurity)
 
+{% code lineNumbers="true" %}
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process
+Import-Module .\Get-PESecurity.psm1
+Get-PESecurity -file <path-to-file>
+Get-PESecurity -directory <path-todirectory> -recursive
+```
+{% endcode %}
+
+* [BinScoper](https://www.microsoft.com/en-us/download/details.aspx?id=44995) - `Binscope.exe /verbose /html /logfile outputfilepath.html <exe-file>`
