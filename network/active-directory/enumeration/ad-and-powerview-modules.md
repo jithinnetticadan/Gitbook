@@ -120,6 +120,8 @@ Get-DomainObjectAcl -Identity "Domain Admins" -ResolveGUIDs -Verbose
 Find-InterestingDomainAcl -ResolveGUIDs | ?{$_.IdentityReferenceName -match "&#x3C;string>"} 
 </code></pre></td></tr><tr><td><strong>ACLs associated for specified Path</strong></td><td><pre data-line-numbers><code>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-PathAcl -Path "\\hostname\sysvol"
+</code></pre></td></tr><tr><td><strong>Replication or GenericAll Rights</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">(Get-Acl "AD:$((Get-ADDomain).DistinguishedName)").Access | ?{($_.IdentityReference -match "&#x3C;username>") -and ($_.ObjectType -in @("1131f6aa-9c07-11d1-f79f-00c04fc2dcd2","1131f6ab-9c07-11d1-f79f-00c04fc2dcd2","89e95b76-444d-4c62-991a-0facbeda640c") -or $_.ActiveDirectoryRights -match "GenericAll")}
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainObjectAcl -SearchBase "DC=&#x3C;update>,DC=&#x3C;update>,DC=&#x3C;update>" -SearchScope Base -ResolveGUIDs | ?{($_.ObjectAceType -match 'replication-get') -or ($_.ActiveDirectoryRights -match 'GenericAll')} | ForEach-Object {$_ | Add-Member NoteProperty 'IdentityName' $(Convert-SidToName $_.SecurityIdentifier);$_} | ?{$_.IdentityName -match "&#x3C;username>"}
 </code></pre></td></tr></tbody></table>
 
 ### **Domain Enumeration - GroupPolicyObjects (GPO)**
