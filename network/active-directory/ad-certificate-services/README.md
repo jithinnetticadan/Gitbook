@@ -22,12 +22,10 @@
 ### Enumerate
 
 * [Certify](https://github.com/GhostPack/Certify)
-* {% code lineNumbers="true" %}
-  ```batch
-  Certify.exe cas
+* [Certipy](https://github.com/ly4k/Certipy)
+* <pre class="language-batch" data-line-numbers><code class="lang-batch">Certify.exe cas
   //Enumerate the templates
   Certify.exe find
   //Enumerate vulnerable templates
   Certify.exe find /vulnerable
-  ```
-  {% endcode %}
+  </code></pre>

