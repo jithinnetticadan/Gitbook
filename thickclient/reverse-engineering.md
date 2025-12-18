@@ -10,8 +10,7 @@
 * [jd-gui](https://github.com/java-decompiler/jd-gui) - Java decompiler
 * **Immunity Debugger**, [IDA Pro](https://hex-rays.com/ida-pro) - C/C++ decompiler\
 
-* [decompiler-explorer](https://github.com/decompiler-explorer/decompiler-explorer) & [dogbolt.org](https://dogbolt.org/)\
-
+* [decompiler-explorer](https://github.com/decompiler-explorer/decompiler-explorer) & [dogbolt.org](https://dogbolt.org/)<br>
 
 #### References
 
