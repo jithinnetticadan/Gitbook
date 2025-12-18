@@ -62,6 +62,7 @@
   * [IPMI - U623](network/enumeration/ipmi-u623.md)
   * [MSSQL DB - T1433,U1434](network/enumeration/mssql-db-t1433-u1434.md)
   * [Oracle DB - T1521,1526](network/enumeration/oracle-db-t1521-1526.md)
+  * [VOiP - T1720,5060,5061](network/enumeration/voip-t1720-5060-5061.md)
   * [iSCSI - T3260](network/enumeration/iscsi-t3260.md)
   * [MySQL DB - T3306](network/enumeration/mysql-db-t3306.md)
   * [RDP - T3389](network/enumeration/rdp-t3389.md)
