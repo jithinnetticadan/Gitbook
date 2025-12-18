@@ -4,7 +4,7 @@
 
 #### LDAP Enumeration [ldap-ldaps-t389-636.md](../../enumeration/ldap-ldaps-t389-636.md "mention")
 
-#### RPC Enumeration [rpc-tu135-137-138-139.md](../../enumeration/rpc-tu135-137-138-139.md "mention")
+#### RPC Enumeration [rpc-tu111-135.md](../../enumeration/rpc-tu111-135.md "mention")
 
 #### Kerberos Enumeration [kerberos-u88.md](../../enumeration/kerberos-u88.md "mention")
 
