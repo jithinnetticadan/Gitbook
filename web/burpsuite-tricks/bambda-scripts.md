@@ -5,7 +5,7 @@
 <summary><strong>Quick Fuzzer</strong></summary>
 
 ```
-//Save as fuzzer.bambda -> Repeater Tab -> Custom-Action
+// Save as fuzzer.bambda -> Repeater Tab -> Custom-Action
 // This Bambda extracts all parameters and performs comprehensive fuzzing tests
 // You can add/reduce payloads
 // You can add/reduce test cases
