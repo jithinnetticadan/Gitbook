@@ -12,3 +12,5 @@
 8. Reshaper
 9. Pentagrid Scan Controller
 10. AuthMatrix
+11. Extensibility Helper
+
