@@ -7,11 +7,8 @@
 ```
 // Save as fuzzer.bambda -> Repeater Tab -> Custom-Action
 // This Bambda extracts all parameters and performs comprehensive fuzzing tests
-// You can add/reduce payloads
-// You can add/reduce test cases
 // Optionally fuzz cookie parameters
 // All requests are sent directly without creating new tabs, with detailed logging
-// Uncomment and add more payloads as per requirement
 
 // ============================================================
 // LIST OF TESTS PERFORMED (25 Test Categories, 137 Payloads per parameter)
