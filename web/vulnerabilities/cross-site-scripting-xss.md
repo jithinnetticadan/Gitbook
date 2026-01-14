@@ -4,7 +4,6 @@
 
 <summary>Custom Payloads</summary>
 
-* `` 111">><details/open/%253e/ontoggle​=import(` ``
 * [xssnow](https://xssnow.in/)
 
 </details>
