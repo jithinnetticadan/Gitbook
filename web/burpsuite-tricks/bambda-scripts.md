@@ -715,11 +715,11 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
     // -------------------------- Test 8: INPUT LENGTH -------------------- //
     logging().logToOutput("[ === Testing INPUT LENGTH === ] ");
     StringBuilder longCharString = new StringBuilder();
-    for (int i = 0; i < 300; i++) {
+    for (int i = 0; i < 1000; i++) {
         longCharString.append("a");
     }
     StringBuilder longIntString = new StringBuilder();
-    for (int i = 0; i < 300; i++) {
+    for (int i = 0; i < 1000; i++) {
         longIntString.append("1");
     }
 
