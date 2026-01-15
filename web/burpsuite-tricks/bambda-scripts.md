@@ -11,35 +11,38 @@
 // All requests are sent directly without creating new tabs, with detailed logging
 
 // ============================================================
-// LIST OF TESTS PERFORMED (25 Test Categories, 137 Payloads per parameter)
+// LIST OF TESTS PERFORMED (27 Test Categories)
 // ============================================================
-// Test 1:  Special Characters          - 5 payloads
-// Test 2:  XSS                         - 7 payloads
-// Test 3:  SQL Injection               - 7 payloads
-// Test 4:  Empty Values                - 1 payload
-// Test 5:  Invalid Dates               - 5 payloads
-// Test 6:  Invalid Times               - 5 payloads
+// Test 1:  Special Characters          - 10 payloads
+// Test 2:  XSS                         - 20 payloads
+// Test 3:  SQL Injection               - 16 payloads
+// Test 4:  Invalid Dates               - 12 payloads
+// Test 5:  Invalid Times               - 12 payloads
+// Test 6:  Empty Values                - 1 payload
 // Test 7:  Negative Values             - 1 payload
 // Test 8:  Input Length (Long Strings) - 2 payloads
-// Test 9:  SSTI                        - 5 payloads
-// Test 10: NoSQL Injection             - 4 payloads
-// Test 11: Path Traversal              - 8 payloads
-// Test 12: Command Injection           - 10 payloads
-// Test 13: LDAP Injection              - 4 payloads
-// Test 14: JSON Injection              - 4 payloads
-// Test 15: Invalid Emails              - 6 payloads
-// Test 16: Format String               - 5 payloads
-// Test 17: Business Logic              - 4 payloads
-// Test 18: XXE Injection               - 5 payloads
-// Test 19: CRLF Injection              - 6 payloads
-// Test 20: Open Redirect               - 8 payloads
-// Test 21: Unicode/Encoding Bypass     - 6 payloads
-// Test 22: Null Byte Injection         - 6 payloads
-// Test 23: IDOR Patterns               - 9 payloads
-// Test 24: Prototype Pollution         - 5 payloads
-// Test 25: HTTP Parameter Pollution    - 5 payloads
+// Test 9:  SSTI                        - 14 payloads
+// Test 10: NoSQL Injection             - 14 payloads
+// Test 11: Path Traversal              - 15 payloads
+// Test 12: Command Injection           - 19 payloads
+// Test 13: LDAP Injection              - 14 payloads
+// Test 14: JSON Injection              - 9 payloads
+// Test 15: Invalid Emails              - 13 payloads
+// Test 16: Format String               - 12 payloads
+// Test 17: Business Logic              - 13 payloads
+// Test 18: XXE Injection               - 10 payloads
+// Test 19: CRLF Injection              - 12 payloads
+// Test 20: Open Redirect               - 16 payloads
+// Test 21: Unicode/Encoding Bypass     - 12 payloads
+// Test 22: Null Byte Injection         - 13 payloads
+// Test 23: IDOR Patterns               - 18 payloads
+// Test 24: Prototype Pollution         - 10 payloads
+// Test 25: HTTP Parameter Pollution    - 12 payloads
 // ============================================================
-// Total Requests = 137 x Number of Parameters
+// HEADER-BASED TESTS (run once per request, not per parameter)
+// ============================================================
+// Test 26: Host Header Redirect        - 10 payloads (header-based)
+// Test 27: Host Header Injection       - 12 payloads (header-based)
 // ============================================================
 
 // Delay variable, Adjust as per requirement - 1000 = 1 second delay
@@ -425,6 +428,52 @@ String[] HPP_PAYLOADS = {
     "&user=support"
 };
 
+// Host Header Redirect payloads - for testing redirect via Host header manipulation
+String[] HOST_HEADER_REDIRECT_PAYLOADS = {
+    "evil.com",
+    "attacker.com",
+    "//evil.com",
+    "evil.com/redirect",
+    "evil.com%2f%2e%2e",
+    "legitimate.com@evil.com",
+    "legitimate.com:password@evil.com",
+    "evil.com#legitimate.com",
+    "evil.com?legitimate.com",
+    "169.254.169.254"
+};
+
+// Host Header Injection - Tests for cache poisoning, password reset poisoning, SSRF via Host
+String[] HOST_HEADER_INJECTION_PAYLOADS = {
+    "evil.com",
+    "localhost",
+    "127.0.0.1",
+    "evil.com:80",
+    "evil.com:443",
+    "[::1]",
+    "evil.com%00.legitimate.com",
+    "evil.com%20.legitimate.com",
+    "evil.com#.legitimate.com",
+    "evil.com?.legitimate.com",
+    "evil.com/.legitimate.com",
+    "evil.com\\.legitimate.com"
+};
+
+// Custom headers used for Host Header Injection testing
+String[] HOST_HEADER_CUSTOM_HEADERS = {
+    "X-Forwarded-Host",
+    "X-Host",
+    "X-Forwarded-Server",
+    "X-HTTP-Host-Override",
+    "X-Original-URL",
+    "X-Rewrite-URL",
+    "X-Originating-IP",
+    "X-Remote-IP",
+    "X-Remote-Addr",
+    "X-Forwarded-For",
+    "X-Real-IP",
+    "True-Client-IP"
+};
+
 // Get the request
 var originalRequest = requestResponse.request();
 var httpService = requestResponse.httpService();
@@ -590,31 +639,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 4: EMPTY VALUES -------------------- //
-    logging().logToOutput("[ === Testing EMPTY PAYLOADS === ] ");
-    var modifiedRequestEmpty = originalRequest.withParameter(
-        burp.api.montoya.http.message.params.HttpParameter.parameter(
-            paramName, "", param.type())
-    );
-
-    try {
-        var httpRequestResponse = api().http().sendRequest(modifiedRequestEmpty);
-     	int status = httpRequestResponse.response().statusCode();
-    	String result = "EMPTY: " + paramName + " -> Status: " + status;
-
-        // set annotations
-        httpRequestResponse.annotations().setNotes(result);
-        // send to organizer
-        api().organizer().sendToOrganizer(httpRequestResponse);
-        totalRequests++;
-    } catch (Exception e) {
-        logging().logToError("[ ======================================= ]");
-        logging().logToError("[ === QUICK FUZZER BAMBDA CUSTOM ACTION ERROR === ]");
-        logging().logToError("[ ======================================= ]");
-        logging().logToError("Error with EMPTY Payload '" + paramName + "': " + e.getStackTrace());
-    }
-
-    // -------------------------- Test 5: INVALID DATES -------------------- //
+    // -------------------------- Test 4: INVALID DATES -------------------- //
     for (String date: INVALID_DATES) {
         //String newValue = originalValue + date;
         var modifiedRequest = originalRequest.withParameter(
@@ -651,7 +676,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
     }
 
 
-    // -------------------------- Test 6: INVALID TIME -------------------- //
+    // -------------------------- Test 5: INVALID TIME -------------------- //
     for (String time: INVALID_TIMES) {
         //String newValue = originalValue + date;
         var modifiedRequest = originalRequest.withParameter(
@@ -686,6 +711,31 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
             logging().logToError("Error with INVALID TIME '" + time + "': " + e.getStackTrace());
         }
     }
+
+    // -------------------------- Test 6: EMPTY VALUES -------------------- //
+    logging().logToOutput("[ === Testing EMPTY PAYLOADS === ] ");
+    var modifiedRequestEmpty = originalRequest.withParameter(
+        burp.api.montoya.http.message.params.HttpParameter.parameter(
+            paramName, "", param.type())
+    );
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequestEmpty);
+     	int status = httpRequestResponse.response().statusCode();
+    	String result = "EMPTY: " + paramName + " -> Status: " + status;
+
+        // set annotations
+        httpRequestResponse.annotations().setNotes(result);
+        // send to organizer
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("[ ======================================= ]");
+        logging().logToError("[ === QUICK FUZZER BAMBDA CUSTOM ACTION ERROR === ]");
+        logging().logToError("[ ======================================= ]");
+        logging().logToError("Error with EMPTY Payload '" + paramName + "': " + e.getStackTrace());
+    }
+
 
     // -------------------------- Test 7: NEGATIVE VALUES -------------------- //
     logging().logToOutput("[ === Testing NEGATIVE PAYLOADS === ] ");
@@ -1021,7 +1071,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 16: String Format Payloads -------------------- //
+    // -------------------------- Test 16: String Format -------------------- //
     logging().logToOutput("[ === Testing String Format PAYLOADS === ] ");
     for (String stringformatPayload: FORMAT_STRING_PAYLOADS) {
         //String newValue = originalValue + nosqliPayload;
@@ -1096,7 +1146,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 18: XXE PAYLOADS -------------------- //
+    // -------------------------- Test 18: XXE/XML Injection -------------------- //
     logging().logToOutput("[ === Testing XXE PAYLOADS === ] ");
     for (String xxePayload: XXE_PAYLOADS) {
         var modifiedRequest = originalRequest.withParameter(
@@ -1132,7 +1182,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 19: CRLF Injection PAYLOADS -------------------- //
+    // -------------------------- Test 19: CRLF Injection -------------------- //
     logging().logToOutput("[ === Testing CRLF Injection PAYLOADS === ] ");
     for (String crlfPayload: CRLF_PAYLOADS) {
         var modifiedRequest = originalRequest.withParameter(
@@ -1168,7 +1218,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 20: Open Redirect PAYLOADS -------------------- //
+    // -------------------------- Test 20: Open Redirect -------------------- //
     logging().logToOutput("[ === Testing Open Redirect PAYLOADS === ] ");
     for (String redirectPayload: OPEN_REDIRECT_PAYLOADS) {
         var modifiedRequest = originalRequest.withParameter(
@@ -1204,7 +1254,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 21: Unicode Bypass PAYLOADS -------------------- //
+    // -------------------------- Test 21: Unicode Bypass -------------------- //
     logging().logToOutput("[ === Testing Unicode Bypass PAYLOADS === ] ");
     for (String unicodePayload: UNICODE_BYPASS_PAYLOADS) {
         var modifiedRequest = originalRequest.withParameter(
@@ -1240,7 +1290,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 22: Null Byte PAYLOADS -------------------- //
+    // -------------------------- Test 22: Null Byte -------------------- //
     logging().logToOutput("[ === Testing Null Byte PAYLOADS === ] ");
     for (String nullPayload: NULL_BYTE_PAYLOADS) {
         String newValue = originalValue + nullPayload;
@@ -1313,7 +1363,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 24: Prototype Pollution PAYLOADS -------------------- //
+    // -------------------------- Test 24: Prototype Pollution -------------------- //
     logging().logToOutput("[ === Testing Prototype Pollution PAYLOADS === ] ");
     for (String protoPayload: PROTOTYPE_POLLUTION_PAYLOADS) {
         var modifiedRequest = originalRequest.withParameter(
@@ -1349,7 +1399,7 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
-    // -------------------------- Test 25: HTTP Parameter Pollution PAYLOADS -------------------- //
+    // -------------------------- Test 25: HTTP Parameter Pollution -------------------- //
     logging().logToOutput("[ === Testing HTTP Parameter Pollution PAYLOADS === ] ");
     for (String hppPayload: HPP_PAYLOADS) {
         String newValue = originalValue + hppPayload;
@@ -1386,6 +1436,138 @@ for (burp.api.montoya.http.message.params.HttpParameter param: allParams) {
         }
     }
 
+}
+
+// ------------------------------------------------------------ //
+// --------------- HEADER-BASED TESTS ------------------------- //
+// ------------------------------------------------------------ //
+
+// -------------------------- Test 26: Host Header Redirect -------------------- //
+// This test runs once per request (not per parameter) as it modifies headers
+logging().logToOutput("[ === Testing Host Header Redirect PAYLOADS === ] ");
+for (String hostRedirectPayload: HOST_HEADER_REDIRECT_PAYLOADS) {
+    // Test with modified Host header
+    var modifiedRequest = originalRequest.withHeader("Host", hostRedirectPayload);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+
+        // delay between requests
+        Thread.sleep(GLOBAL_DELAY_MS);
+     
+        int status = httpRequestResponse.response().statusCode();
+        int responseLength = httpRequestResponse.response().body().length();
+
+        String result = "Host Header Redirect (Host): '" + hostRedirectPayload + "'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        // set annotations
+        httpRequestResponse.annotations().setNotes(result);
+        // send to organizer
+        api().organizer().sendToOrganizer(httpRequestResponse);
+
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("[ ======================================= ]");
+        logging().logToError("[ === QUICK FUZZER BAMBDA CUSTOM ACTION ERROR === ]");
+        logging().logToError("[ ======================================= ]");
+        logging().logToError("Error with Host Header Redirect (Host) '" + hostRedirectPayload + "': " + e.getStackTrace());
+    }
+
+    // Also test with X-Forwarded-Host header
+    var modifiedRequestXFH = originalRequest.withAddedHeader("X-Forwarded-Host", hostRedirectPayload);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequestXFH);
+
+        // delay between requests
+        Thread.sleep(GLOBAL_DELAY_MS);
+     
+        int status = httpRequestResponse.response().statusCode();
+        int responseLength = httpRequestResponse.response().body().length();
+
+        String result = "Host Header Redirect (X-Forwarded-Host): '" + hostRedirectPayload + "'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        // set annotations
+        httpRequestResponse.annotations().setNotes(result);
+        // send to organizer
+        api().organizer().sendToOrganizer(httpRequestResponse);
+
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("[ ======================================= ]");
+        logging().logToError("[ === QUICK FUZZER BAMBDA CUSTOM ACTION ERROR === ]");
+        logging().logToError("[ ======================================= ]");
+        logging().logToError("Error with Host Header Redirect (X-Forwarded-Host) '" + hostRedirectPayload + "': " + e.getStackTrace());
+    }
+}
+
+// -------------------------- Test 27: Host Header Injection -------------------- //
+// This test runs once per request (not per parameter) as it modifies headers
+logging().logToOutput("[ === Testing Host Header Injection PAYLOADS === ] ");
+for (String hostPayload: HOST_HEADER_INJECTION_PAYLOADS) {
+    // Test each payload with each custom header
+    for (String customHeader: HOST_HEADER_CUSTOM_HEADERS) {
+        var modifiedRequest = originalRequest.withAddedHeader(customHeader, hostPayload);
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+
+            // delay between requests
+            Thread.sleep(GLOBAL_DELAY_MS);
+         
+            int status = httpRequestResponse.response().statusCode();
+            int responseLength = httpRequestResponse.response().body().length();
+    
+            String result = "Host Header Injection [" + customHeader + "]: '" + hostPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            // set annotations
+            httpRequestResponse.annotations().setNotes(result);
+            // send to organizer
+            api().organizer().sendToOrganizer(httpRequestResponse);
+
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("[ ======================================= ]");
+            logging().logToError("[ === QUICK FUZZER BAMBDA CUSTOM ACTION ERROR === ]");
+            logging().logToError("[ ======================================= ]");
+            logging().logToError("Error with Host Header Injection [" + customHeader + "] '" + hostPayload + "': " + e.getStackTrace());
+        }
+    }
+
+    // Also test by modifying the actual Host header
+    var modifiedHostRequest = originalRequest.withHeader("Host", hostPayload);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedHostRequest);
+
+        // delay between requests
+        Thread.sleep(GLOBAL_DELAY_MS);
+     
+        int status = httpRequestResponse.response().statusCode();
+        int responseLength = httpRequestResponse.response().body().length();
+
+        String result = "Host Header Injection [Host]: '" + hostPayload + "'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        // set annotations
+        httpRequestResponse.annotations().setNotes(result);
+        // send to organizer
+        api().organizer().sendToOrganizer(httpRequestResponse);
+
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("[ ======================================= ]");
+        logging().logToError("[ === QUICK FUZZER BAMBDA CUSTOM ACTION ERROR === ]");
+        logging().logToError("[ ======================================= ]");
+        logging().logToError("Error with Host Header Injection [Host] '" + hostPayload + "': " + e.getStackTrace());
+    }
 }
 
 // ------------------------------------------------------------ //
