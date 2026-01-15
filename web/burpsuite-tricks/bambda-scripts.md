@@ -216,7 +216,7 @@ String[] LDAP_INJECTION_PAYLOADS = {
     "*))%00",
     ")(cn=*",
     "*)(uid=*",
-    "admin)(&(password=*))",
+    "admin)(%26(password%3d*))",
     "*()|%26'",
     "*%29%28%7C%28objectClass%3D*",
     "*%28%7C%28objectClass%3D*",
