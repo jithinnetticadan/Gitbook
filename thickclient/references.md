@@ -3,3 +3,4 @@
 * [Arimaqz-Thick Client Domination](https://arimaqz.github.io/posts/thick-client-domination/)
 * [Thick Client Application Penetration Testing: A Complete Phase-Wise Methodology with Tools & Vulnerabilities](https://medium.com/@arunkumarbalivada/thick-client-application-penetration-testing-a-complete-phase-wise-methodology-with-tools-330cfc44cbc8)
 * [thick-client-checklist](https://hetmehta.com/resources/thick-client-checklist)
+* [Practical-guide-for-thick-client-penetration-testing](https://cybersecwriteups.com/practical-guide-for-thick-client-penetration-testing/)
