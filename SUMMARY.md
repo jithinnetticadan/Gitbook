@@ -33,6 +33,7 @@
 * [BurpSuite Tricks](web/burpsuite-tricks/README.md)
   * [Extensions](web/burpsuite-tricks/extensions.md)
   * [Bambda Scripts](web/burpsuite-tricks/bambda-scripts.md)
+  * [References](web/burpsuite-tricks/references.md)
 * [Interview](web/interview.md)
 * [References](web/references.md)
 
@@ -57,7 +58,6 @@
   * [SNMP - U161,162](network/enumeration/snmp-u161-162.md)
   * [Ldap/Ldaps - T389,636](network/enumeration/ldap-ldaps-t389-636.md)
   * [ISAKMP/IKE/IPsec - U500,4500,](network/enumeration/isakmp-ike-ipsec-u500-4500.md)
-  * [Page](network/enumeration/page.md)
   * [RTSP - TU554,8554](network/enumeration/rtsp-tu554-8554.md)
   * [IPMI - U623](network/enumeration/ipmi-u623.md)
   * [MSSQL DB - T1433,U1434](network/enumeration/mssql-db-t1433-u1434.md)
