@@ -38,7 +38,7 @@ arachni - https://github.com/Arachni/arachni
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
-gobuster dir -u "url" -w <wordlist> //"gobuster dir --help"
+gobuster dir -u "url" -w /usr/share/seclists/Discovery/Web-Content/common.txt
 ffuf -w <worslist>:FUZZ -u http://<host>/FUZZ
 dirb <url> <wordlist>
 ```
