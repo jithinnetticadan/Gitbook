@@ -23,6 +23,13 @@
 
 </details>
 
+#### Banner Grabbing
+
+```shellscript
+whatweb <IP>
+whatweb --no-errors <subnet>
+```
+
 #### Automated Scan
 
 {% code lineNumbers="true" fullWidth="false" %}
@@ -48,7 +55,7 @@ dirb <url> <wordlist>
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
-gobuster dns -d <domain.com> -w <wordlist> //gobuster dns --help
+gobuster dns -d <domain.com> -w /usr/share/SecLists/Discovery/DNS/namelist.txt //gobuster dns --help
 https://crt.sh/
 site:*.domain.com -site:www.domain.com
 dnsrecon -t brt -d <domain.com>
@@ -80,3 +87,7 @@ site:target.com filetype:env
 
 <pre class="language-shellscript" data-title="find subs -> find alive hosts -> sort &#x26; add hosts to file (output to terminal) -> fetch paths -> grep patterns" data-full-width="false"><code class="lang-shellscript"><strong>assetfinder --subs-only &#x3C;domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s3-buckets
 </strong></code></pre>
+
+#### Other Steps
+
+* Check the page source to obtain credentials added in comments
