@@ -27,11 +27,20 @@ nmap -sn <cidr-range>
 ```
 {% endcode %}
 
+#### Banner Grabbing
+
+```shellscript
+nmap -sV -p- --script=banner <target>
+nc -nv <IP> <port>
+```
+
 #### LiveHost Scan
 
 {% code fullWidth="false" %}
 ```shellscript
 nmap -p T:22,80-90,8080,445,443,8443,3389 -sV -sS -n -Pn --max-retries 2 --open -iL target.txt --excludefile exclude.txt -oA livehosts
+nmap -sV -sC -p- <IP>
+nmap --script <script-name> -p <port> <IP>
 ```
 {% endcode %}
 
