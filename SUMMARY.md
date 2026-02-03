@@ -39,6 +39,7 @@
 
 ## Network
 
+* [Basic Utilities](network/basic-utilities.md)
 * [Recon](network/recon.md)
 * [Enumeration](network/enumeration/README.md)
   * [FTP/FTPS - T21,2121,990](network/enumeration/ftp-ftps-t21-2121-990.md)
