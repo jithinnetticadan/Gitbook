@@ -91,3 +91,4 @@ site:target.com filetype:env
 #### Other Steps
 
 * Check the page source to obtain credentials added in comments
+* Finding Public Exploits (searchsploit, [Exploit DB](https://www.exploit-db.com/), [Rapid7 DB](https://www.rapid7.com/db/), or [Vulnerability Lab](https://www.vulnerability-lab.com/))
