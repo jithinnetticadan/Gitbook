@@ -88,6 +88,13 @@ nmap -Pn -sV -sU -sC -v -T3 --max-retries 2 --host-timeout 15m --open -p U:53,69
 ```
 {% endcode %}
 
+### Script Scan
+
+```shellscript
+//limit the scan to specific ports that were earlier identified as open
+nmap -sC -p- -oA script_scan -iL hosts.txt
+```
+
 <details>
 
 <summary>Metasploit Setup</summary>
