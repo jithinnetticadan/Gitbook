@@ -22,8 +22,8 @@ layout:
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
 nmap -n -sn -PE -PP -PS22,80,443,445,3389 -PA22,80,443,445  --max-retries 2 --open -iL target.txt --excludefile exclude.txt -oA livehosts
+nmap -sn -oA hostdiscovery <cidr-range> | grep for | cut -d" " -f5
 fping -agq <cidr-range>
-nmap -sn <cidr-range>
 ```
 {% endcode %}
 
