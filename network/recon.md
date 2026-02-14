@@ -1,20 +1,3 @@
----
-layout:
-  width: wide
-  title:
-    visible: true
-  description:
-    visible: false
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: true
-  metadata:
-    visible: true
----
-
 # Recon
 
 #### Host Discovery Scan
@@ -92,6 +75,8 @@ sudo nmap -iL hosts.txt -p- -sV -sU -Pn -n --disable-arp-ping --packet-trace --r
 ```shellscript
 //limit the scan to specific ports that were earlier identified as open
 nmap -sC -p- -oA script_scan -iL hosts.txt
+//Scan Categories - auth, broadcast, brute, default, discovery, dos, exploit, external, fuzzer, intrusive, malware, safe, version, vuln
+nmap -p- -oA script_scan -iL hosts.txt --script auth,broadcast,brute,default,discovery,exploit,fuzzer,intrusive,safe,vuln
 ```
 
 <details>
