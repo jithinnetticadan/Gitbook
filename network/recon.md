@@ -73,6 +73,7 @@ sudo nmap -iL hosts.txt -p- -sV -sU -Pn -n --disable-arp-ping --packet-trace --r
 #### Script Scan
 
 ```shellscript
+grep -ri "<keyword>" /usr/share/nmap/scripts/
 //limit the scan to specific ports that were earlier identified as open
 nmap -sC -p- -oA script_scan -iL hosts.txt
 //Scan Categories - auth, broadcast, brute, default, discovery, dos, exploit, external, fuzzer, intrusive, malware, safe, version, vuln
@@ -99,13 +100,15 @@ nmap -p- -oA script_scan -iL hosts.txt --script auth,broadcast,brute,default,dis
 ```shellscript
 nuclei -l targets.txt -t http/cves/,http/default-logins/,http/exposed-panels/,http/exposures/,http/iot/,http/misconfiguration/,http/takeovers/,http/technologies/,http/vulnerabilities/ -severity critical,high -o nuclei-output.txt -rl 150 -c 50 -ni -stats
 nuclei -l targets.txt -as -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
+sudo nmap -iL host.txt -p- -sV --script vuln 
 ```
 {% endcode %}
 
-#### Automated Exploit Scan
+#### Exploit Checks
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
 searchsploit -p -w -e --nmap nmap.xml -j searchsploit-output.json
+EzploitDB
 ```
 {% endcode %}
