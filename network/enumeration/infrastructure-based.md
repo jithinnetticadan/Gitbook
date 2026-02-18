@@ -22,3 +22,8 @@
 * `dig any <domain>`&#x20;
 
 ## Cloud Resources
+
+* Google Search for AWS - `intext:<domain> inurl:amazonaws.com`
+* Google Search for Azure - `intext:<domain> inurl:blob.core.windows.net`
+* Target Website-Source Code: Third-party providers such as [domain.glass](https://domain.glass/), [GrayHatWarfare](https://buckets.grayhatwarfare.com/) tell us about the company's infrastructure.
+* Private and Public SSH Keys Leaked

@@ -74,14 +74,13 @@ ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
 
 #### Google Dorking
 
-{% code lineNumbers="true" fullWidth="false" %}
-```shellscript
-site:target.com inurl:admin | inurl:.git
+<pre class="language-shellscript" data-line-numbers data-full-width="false"><code class="lang-shellscript">site:target.com inurl:admin | inurl:.git
 site:target.com ext:sql | ext:log
 site:target.com intitle:"index of"
 site:target.com filetype:env
-```
-{% endcode %}
+intext:&#x3C;domain> inurl:amazonaws.com //Search for AWS
+<strong>intext:&#x3C;domain> inurl:blob.core.windows.net //Search for Azure
+</strong></code></pre>
 
 #### S3 Bucket Enum
 
