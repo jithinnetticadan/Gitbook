@@ -214,5 +214,6 @@ Content-Length: 49
 
 </details>
 
+### PDF Injection
 
-
+{% file src="../../.gitbook/assets/xss2pdf.py" %}
