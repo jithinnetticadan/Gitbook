@@ -48,6 +48,7 @@
     * [SSH - T22](network/enumeration/host-based/ssh-t22.md)
     * [Telnet - T23](network/enumeration/host-based/telnet-t23.md)
     * [SMTP - T25,465,587,2525](network/enumeration/host-based/smtp-t25-465-587-2525.md)
+    * [DNS - TU53](network/enumeration/host-based/dns-tu53.md)
     * [TFTP - U69](network/enumeration/host-based/tftp-u69.md)
     * [Kerberos - U88](network/enumeration/host-based/kerberos-u88.md)
     * [POP3 - T110,995](network/enumeration/host-based/pop3-t110-995.md)
