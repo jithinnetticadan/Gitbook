@@ -3,7 +3,11 @@
 ### Default Configuration
 
 * DNS server [Bind9](https://www.isc.org/bind/) is very often used on Linux-based distributions.&#x20;
-* **Local DNS Configuration -** `cat /etc/bind/named.conf.local`
+* **Local DNS Configuration -** `cat /etc/bind/named.conf.local`&#x20;
+
+### Dangerous Settings
+
+* <table data-header-hidden><thead><tr><th width="153">Option</th><th>Description</th></tr></thead><tbody><tr><td><code>allow-query</code></td><td>Defines which hosts are allowed to send requests to the DNS server.</td></tr><tr><td><code>allow-recursion</code></td><td>Defines which hosts are allowed to send recursive requests to the DNS server.</td></tr><tr><td><code>allow-transfer</code></td><td>Defines which hosts are allowed to receive zone transfers from the DNS server.</td></tr><tr><td><code>zone-statistics</code></td><td>Collects statistical data of zones.</td></tr></tbody></table>
 
 ### Footprinting the Service
 

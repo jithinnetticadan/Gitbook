@@ -51,7 +51,7 @@
     * [DNS - TU53](network/enumeration/host-based/dns-tu53.md)
     * [TFTP - U69](network/enumeration/host-based/tftp-u69.md)
     * [Kerberos - U88](network/enumeration/host-based/kerberos-u88.md)
-    * [POP3 - T110,995 & IMAP - T143,993](network/enumeration/host-based/pop3-t110-995-and-imap-t143-993.md)
+    * [POP3 - T110,995 & IMAP - T143,993](network/enumeration/host-based/imap-t143-993.md)
     * [NFS - TU111,2049](network/enumeration/host-based/nfs-tu111-2049.md)
     * [NetBIOS Name - U137](network/enumeration/host-based/netbios-name-u137.md)
     * [RPC - TU135, 137,138,139](network/enumeration/host-based/rpc-tu135-137-138-139.md)
