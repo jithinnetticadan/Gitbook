@@ -10,9 +10,24 @@
 
 ### Footprinting <a href="#footprinting-the-service" id="footprinting-the-service"></a>
 
+{% tabs %}
+{% tab title="Metasploit" %}
+
+{% endtab %}
+
+{% tab title="Nmap" %}
 {% code lineNumbers="true" %}
 ```shellscript
 sudo nmap -sV -sC -p3306 --script mysql* <IP>
+```
+{% endcode %}
+{% endtab %}
+{% endtabs %}
+
+### Enumerate
+
+{% code lineNumbers="true" %}
+```shellscript
 mysql -u <username> -p <password> -h <IP>
 Commands
 show databases;, use <database>;, show tables;, show columns from <table>;, select * from <table>;, select * from <table> where <column> = "<string>";
