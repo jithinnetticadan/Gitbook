@@ -4,6 +4,21 @@
 Oracle Database Attacking Tool ([**odat**](https://github.com/quentinhardy/odat)) is an open-source penetration testing tool written in Python and designed to enumerate and exploit vulnerabilities in Oracle databases. It can be used to identify and exploit various security flaws in Oracle databases, including SQL injection, remote code execution, and privilege escalation.
 {% endhint %}
 
+<details>
+
+<summary><strong>Odat Setup</strong></summary>
+
+{% code lineNumbers="true" %}
+```shellscript
+wget https://github.com/quentinhardy/odat/releases/<filename>
+tar xzf <file>
+cd odat
+chmod +x odat
+```
+{% endcode %}
+
+</details>
+
 ### Default Configuration <a href="#default-configuration" id="default-configuration"></a>
 
 * The configuration files for Oracle TNS are called `tnsnames.ora` and `listener.ora` and are typically located in the `$ORACLE_HOME/network/admin` directory.
