@@ -63,6 +63,7 @@
     * [ISAKMP/IKE/IPsec - U500,4500,](network/enumeration/host-based/isakmp-ike-ipsec-u500-4500.md)
     * [RTSP - TU554,8554](network/enumeration/host-based/rtsp-tu554-8554.md)
     * [IPMI - U623](network/enumeration/host-based/ipmi-u623.md)
+    * [Rsync - T873](network/enumeration/host-based/rsync-t873.md)
     * [MSSQL DB - T1433,U1434](network/enumeration/host-based/mssql-db-t1433-u1434.md)
     * [Oracle DB - T1521,1526](network/enumeration/host-based/oracle-db-t1521-1526.md)
     * [VOiP - T1720,5060,5061](network/enumeration/host-based/voip-t1720-5060-5061.md)
