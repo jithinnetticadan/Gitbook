@@ -61,6 +61,7 @@
     * [SNMP - U161,162](network/enumeration/host-based/snmp-u161-162.md)
     * [Ldap/Ldaps - T389,636](network/enumeration/host-based/ldap-ldaps-t389-636.md)
     * [ISAKMP/IKE/IPsec - U500,4500,](network/enumeration/host-based/isakmp-ike-ipsec-u500-4500.md)
+    * [R-Services - T512,513,514](network/enumeration/host-based/r-services-t512-513-514.md)
     * [RTSP - TU554,8554](network/enumeration/host-based/rtsp-tu554-8554.md)
     * [IPMI - U623](network/enumeration/host-based/ipmi-u623.md)
     * [Rsync - T873](network/enumeration/host-based/rsync-t873.md)
