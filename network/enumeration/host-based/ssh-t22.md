@@ -55,6 +55,16 @@ nmap -p 22 --script "ssh*" <ip>
 {% endtab %}
 {% endtabs %}
 
+### Login using Private Key
+
+{% code lineNumbers="true" %}
+```shellscript
+After obtainiing ssh private key
+chmod 600 id_rsa
+ssh -i id_rsa username@<IP>
+```
+{% endcode %}
+
 ### Tools
 
 * [ssh-audit](https://github.com/jtesta/ssh-audit)
