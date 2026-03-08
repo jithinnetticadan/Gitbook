@@ -109,6 +109,6 @@ sudo nmap -iL host.txt -p- -sV --script vuln
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
 searchsploit -p -w -e --nmap nmap.xml -j searchsploit-output.json
-EzploitDB
+ExploitDB
 ```
 {% endcode %}
