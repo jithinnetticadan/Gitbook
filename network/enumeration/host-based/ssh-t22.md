@@ -57,13 +57,14 @@ nmap -p 22 --script "ssh*" <ip>
 
 ### Login using Private Key
 
-{% code lineNumbers="true" %}
-```shellscript
-After obtainiing ssh private key
-chmod 600 id_rsa
-ssh -i id_rsa username@<IP>
-```
-{% endcode %}
+* Read private ssh keys (only read access)
+* `/home/user/.ssh/id_rsa` or `/root/.ssh/id_rsa`
+* Copy the private key locally and save as id\_rsa.
+* `chmod 600 id_rsa`
+* `ssh user@<ip> -i id_rsa`
+* Write access to a user's `/.ssh/`
+  * Place our public key in the user's ssh directory at `/home/user/.ssh/authorized_keys`
+  * `ssh-keygen -f key` <sub>To generate public & private ssh keys</sub>
 
 ### Tools
 
