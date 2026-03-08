@@ -2,6 +2,10 @@
 
 * [PTGuide](README.md)
 
+## OSINT
+
+* [Passive](osint/passive.md)
+
 ## Web
 
 * [Recon & Enum](web/recon.md)
@@ -194,4 +198,4 @@
 
 ***
 
-* [OSINT](osint.md)
+* [OSINT](osint-1.md)
