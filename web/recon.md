@@ -23,6 +23,14 @@
 
 </details>
 
+#### Passive Recon
+
+{% code lineNumbers="true" %}
+```shellscript
+whois <domain> ## WhoisFreaks website
+```
+{% endcode %}
+
 #### Banner Grabbing
 
 ```shellscript
