@@ -112,3 +112,13 @@ searchsploit -p -w -e --nmap nmap.xml -j searchsploit-output.json
 ExploitDB
 ```
 {% endcode %}
+
+### Tools
+
+* Banner Grabbing - Netcat, curl
+* Port Scanning - Nmap, Masscan, Unicornscan
+* OS Fingerprinting - Nmap, Xprobe2
+* Service Enumeration - Nmap
+* Vulnerability Scanning - Nessus, OpenVAS, Nikto, Nuclei
+* Network Mapping - Traceroute, Nmap
+* Web Spidering - Burp Suite Spider, OWASP ZAP Spider, Scrapy

@@ -91,3 +91,13 @@ intext:&#x3C;domain> inurl:amazonaws.com //Search for AWS
 
 * Check the page source to obtain credentials added in comments
 * Finding Public Exploits (searchsploit, [Exploit DB](https://www.exploit-db.com/), [Rapid7 DB](https://www.rapid7.com/db/), or [Vulnerability Lab](https://www.vulnerability-lab.com/))
+
+### Tools
+
+* Banner Grabbing - Netcat, curl
+* Port Scanning - Nmap, Masscan, Unicornscan
+* OS Fingerprinting - Nmap, Xprobe2
+* Service Enumeration - Nmap
+* Vulnerability Scanning - Nessus, OpenVAS, Nikto, Nuclei
+* Network Mapping - Traceroute, Nmap
+* Web Spidering - Burp Suite Spider, OWASP ZAP Spider, Scrapy
