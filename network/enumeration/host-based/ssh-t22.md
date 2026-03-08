@@ -62,9 +62,6 @@ nmap -p 22 --script "ssh*" <ip>
 * Copy the private key locally and save as id\_rsa.
 * `chmod 600 id_rsa`
 * `ssh user@<ip> -i id_rsa`
-* Write access to a user's `/.ssh/`
-  * Place our public key in the user's ssh directory at `/home/user/.ssh/authorized_keys`
-  * `ssh-keygen -f key` <sub>To generate public & private ssh keys</sub>
 
 ### Tools
 
