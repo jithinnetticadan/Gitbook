@@ -40,7 +40,10 @@ sublist3r.py -d <domain.com>
 * [DNSenum](https://github.com/fwaeytens/dnsenum)
 * nslookup
 * dig
-* fierce
-* dnsrecon
+* [fierce](https://github.com/mschwager/fierce)
+* [dnsrecon](https://github.com/darkoperator/dnsrecon)
 * theHarvester
+* [assetfinder](https://github.com/tomnomnom/assetfinder)
+* [amass](https://github.com/owasp-amass/amass)
+* [puredns](https://github.com/d3mondev/puredns)
 
