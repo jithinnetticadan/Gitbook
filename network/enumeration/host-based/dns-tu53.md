@@ -50,6 +50,8 @@ sublist3r.py -d <domain.com>
 
 ### Virtual Host Fuzzing
 
+* Make sure to update the /etc/hosts file for brute-force
+
 {% code lineNumbers="true" %}
 ```shellscript
 gobuster vhost -u http://<target_IP_address> -w <wordlist_file> --append-domain
