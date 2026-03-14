@@ -96,7 +96,7 @@ robots.txt
 https://example.com/.well-known/ -> security.txt, change-password, openid-configuration, assetlinks.json, mta-sts.txt
 </code></pre>
 
-* Tools -> Scrapy (ReconSpider), Apache Nutch, BurpSuite, OWASPZap
+* Tools -> [reconspider](https://github.com/bhavsec/reconspider) (need `pip install scrapy`), Apache Nutch, BurpSuite, OWASPZap
 
 ### Automated Scan
 
