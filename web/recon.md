@@ -84,7 +84,11 @@ Netcraft
 <pre class="language-shellscript" data-line-numbers data-full-width="false"><code class="lang-shellscript"><strong>gobuster dir -u "url" -w /usr/share/seclists/Discovery/Web-Content/common.txt
 </strong>ffuf -w &#x3C;worslist>:FUZZ -u http://&#x3C;host>/FUZZ
 dirb &#x3C;url> &#x3C;wordlist>
+robots.txt
+https://example.com/.well-known/ -> security.txt, change-password, openid-configuration, assetlinks.json, mta-sts.txt
 </code></pre>
+
+* Tools -> Scrapy, Apache Nutch, BurpSuite, OWASPZap
 
 ### Automated Scan
 
