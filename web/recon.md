@@ -36,9 +36,11 @@ whois <domain> ## WhoisFreaks website
 ```shellscript
 whatweb <IP>
 whatweb --no-errors <subnet>
+curl -I <domain/URL>
+nikto -h <domain/URL> -Tuning b
+wafw00f <domain/URL>
 BuiltWith
 Netcraft
-wafw00f
 ```
 
 #### Automated Scan
