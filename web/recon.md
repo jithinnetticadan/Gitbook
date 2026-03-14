@@ -36,6 +36,9 @@ whois <domain> ## WhoisFreaks website
 ```shellscript
 whatweb <IP>
 whatweb --no-errors <subnet>
+BuiltWith
+Netcraft
+wafw00f
 ```
 
 #### Automated Scan
