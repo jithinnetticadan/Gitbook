@@ -64,3 +64,17 @@ ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
 * [gobuster](https://github.com/OJ/gobuster)
 * [Feroxbuster](https://github.com/epi052/feroxbuster)
 * [ffuf](https://github.com/ffuf/ffuf)
+
+### CT Logs Enumeration <a href="#searching-ct-logs" id="searching-ct-logs"></a>
+
+{% hint style="info" %}
+Certificate Transparency logs are public, append-only ledgers that record the issuance of SSL/TLS certificates. Whenever a Certificate Authority (CA) issues a new certificate, it must submit it to multiple CT logs. Independent organizations maintain these logs and are open for anyone to inspect.
+{% endhint %}
+
+* Tools -> [crt.sh](https://crt.sh/), [Censys](https://search.censys.io/)
+
+{% code lineNumbers="true" %}
+```
+curl -s "https://crt.sh/?q=<domain>&output=json" | jq -r '.[] | select(.name_value | contains("<search_string>")) | .name_value' | sort -u
+```
+{% endcode %}
