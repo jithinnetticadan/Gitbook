@@ -31,6 +31,14 @@ whois <domain> ## WhoisFreaks website
 ```
 {% endcode %}
 
+### Automated Recon
+
+* [FinalRecon](https://github.com/thewhiteh4t/FinalRecon)
+* [Recon-ng](https://github.com/lanmaster53/recon-ng)
+* [theHarvester](https://github.com/laramies/theHarvester)
+* [SpiderFoot](https://github.com/smicallef/spiderfoot)
+* [OSINT Framework](https://osintframework.com/)
+
 ### Subdomain Enumeration
 
 {% code lineNumbers="true" fullWidth="false" %}
@@ -88,7 +96,7 @@ robots.txt
 https://example.com/.well-known/ -> security.txt, change-password, openid-configuration, assetlinks.json, mta-sts.txt
 </code></pre>
 
-* Tools -> Scrapy, Apache Nutch, BurpSuite, OWASPZap
+* Tools -> Scrapy (ReconSpider), Apache Nutch, BurpSuite, OWASPZap
 
 ### Automated Scan
 
