@@ -23,7 +23,7 @@
 
 </details>
 
-#### Passive Recon
+### Passive Recon
 
 {% code lineNumbers="true" %}
 ```shellscript
@@ -31,40 +31,7 @@ whois <domain> ## WhoisFreaks website
 ```
 {% endcode %}
 
-#### Banner Grabbing
-
-```shellscript
-whatweb <IP>
-whatweb --no-errors <subnet>
-curl -I <domain/URL>
-nikto -h <domain/URL> -Tuning b
-wafw00f <domain/URL>
-BuiltWith
-Netcraft
-```
-
-#### Automated Scan
-
-{% code lineNumbers="true" fullWidth="false" %}
-```shellscript
-nikto -h <target> -Tuning x 6 -port 80,443 -nossl/ssl -Cgidirs all -followredirects -Format htm -output nikto-report.html
-nuclei -u <ip> -t http/,ssl/, -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
-nuclei -u <ip> -as -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
-arachni - https://github.com/Arachni/arachni
-```
-{% endcode %}
-
-#### List Directories/Pages
-
-{% code lineNumbers="true" fullWidth="false" %}
-```shellscript
-gobuster dir -u "url" -w /usr/share/seclists/Discovery/Web-Content/common.txt
-ffuf -w <worslist>:FUZZ -u http://<host>/FUZZ
-dirb <url> <wordlist>
-```
-{% endcode %}
-
-#### Subdomain Enumeration
+### Subdomain Enumeration
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
@@ -79,7 +46,7 @@ sublist3r.py -d <domain.com>
 ```
 {% endcode %}
 
-#### vHost Enumeration
+### vHost Enumeration
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
@@ -88,7 +55,7 @@ ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
 ```
 {% endcode %}
 
-#### Google Dorking
+### Google Dorking
 
 <pre class="language-shellscript" data-line-numbers data-full-width="false"><code class="lang-shellscript">site:target.com inurl:admin | inurl:.git
 site:target.com ext:sql | ext:log
@@ -97,6 +64,38 @@ site:target.com filetype:env
 intext:&#x3C;domain> inurl:amazonaws.com //Search for AWS
 <strong>intext:&#x3C;domain> inurl:blob.core.windows.net //Search for Azure
 </strong></code></pre>
+
+### Banner Grabbing
+
+```shellscript
+whatweb <IP>
+whatweb --no-errors <subnet>
+curl -I <domain/URL>
+nikto -h <domain/URL> -Tuning b
+wafw00f <domain/URL>
+BuiltWith
+Netcraft
+```
+
+### Crawling/Spidering
+
+* **List Directories/Pages**
+
+<pre class="language-shellscript" data-line-numbers data-full-width="false"><code class="lang-shellscript"><strong>gobuster dir -u "url" -w /usr/share/seclists/Discovery/Web-Content/common.txt
+</strong>ffuf -w &#x3C;worslist>:FUZZ -u http://&#x3C;host>/FUZZ
+dirb &#x3C;url> &#x3C;wordlist>
+</code></pre>
+
+### Automated Scan
+
+{% code lineNumbers="true" fullWidth="false" %}
+```shellscript
+nikto -h <target> -Tuning x 6 -port 80,443 -nossl/ssl -Cgidirs all -followredirects -Format htm -output nikto-report.html
+nuclei -u <ip> -t http/,ssl/, -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
+nuclei -u <ip> -as -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
+arachni - https://github.com/Arachni/arachni
+```
+{% endcode %}
 
 #### S3 Bucket Enum
 
