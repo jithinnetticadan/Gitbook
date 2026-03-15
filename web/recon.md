@@ -106,6 +106,8 @@ nikto -h <target> -Tuning x 6 -port 80,443 -nossl/ssl -Cgidirs all -followredire
 nuclei -u <ip> -t http/,ssl/, -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
 nuclei -u <ip> -as -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
 arachni - https://github.com/Arachni/arachni
+Nessus
+OpenVAS
 ```
 {% endcode %}
 
