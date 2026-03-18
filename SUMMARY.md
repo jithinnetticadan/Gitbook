@@ -152,7 +152,7 @@
 * [Recon](thickclient/recon.md)
 * [Traffic Analysis](thickclient/traffic-analysis.md)
 * [Reverse Engineering](thickclient/reverse-engineering.md)
-* [Automated Source Code Review](thickclient/automated-source-code-review.md)
+* [Automated Analysis](thickclient/automated-analysis.md)
 * [Memory Analysis](thickclient/memory-analysis.md)
 * [Binary Protection](thickclient/binary-protection.md)
 * [DLL Hijacking](thickclient/dll-hijacking.md)
