@@ -98,6 +98,7 @@
   * [Payload Transfer](network/exploitation/payload-transfer/README.md)
     * [Windows](network/exploitation/payload-transfer/windows.md)
     * [Linux](network/exploitation/payload-transfer/linux.md)
+    * [Use Programming Languages](network/exploitation/payload-transfer/use-programming-languages.md)
   * [Pivoting Setup](network/exploitation/pivoting-setup.md)
   * [Reverse Shells & Listeners](network/exploitation/reverse-shells-and-listeners.md)
   * [Windows PrivEsc](network/exploitation/windows-privesc.md)
