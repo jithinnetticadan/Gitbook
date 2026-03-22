@@ -11,6 +11,7 @@
 * TruffleHog
 * Teeto
 * Cookie-Editor
+* OWASP Penetration Testing Kit
 
 </details>
 
