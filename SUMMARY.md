@@ -101,7 +101,7 @@
     * [Use Programming Languages](network/exploitation/payload-transfer/use-programming-languages.md)
     * [Protected File Transfers](network/exploitation/payload-transfer/protected-file-transfers.md)
   * [Pivoting Setup](network/exploitation/pivoting-setup.md)
-  * [Reverse Shells & Listeners](network/exploitation/reverse-shells-and-listeners.md)
+  * [Shells & Listeners](network/exploitation/shells-and-listeners.md)
   * [Windows PrivEsc](network/exploitation/windows-privesc.md)
 * [References](network/references.md)
 * [Active Directory](network/active-directory.md)
