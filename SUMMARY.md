@@ -59,7 +59,7 @@
     * [NFS - TU111,2049](network/enumeration/host-based/nfs-tu111-2049.md)
     * [NTP - U123](network/enumeration/host-based/ntp-u123.md)
     * [NetBIOS Name - U137](network/enumeration/host-based/netbios-name-u137.md)
-    * [RPC - TU135, 137,138,139](network/enumeration/host-based/rpc-tu135-137-138-139.md)
+    * [RPC - TU135,137,138,139](network/enumeration/host-based/rpc-tu135-137-138-139.md)
     * [WMI - T135](network/enumeration/host-based/wmi-t135.md)
     * [NAS - T137,138,139,445](network/enumeration/host-based/nas-t137-138-139-445.md)
     * [SMB - T139,445,U137,138](network/enumeration/host-based/smb-t139-445-u137-138.md)
