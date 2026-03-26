@@ -65,7 +65,7 @@
     * [SMB - T139,445,U137,138](network/enumeration/host-based/smb-t139-445-u137-138.md)
     * [SNMP - U161,162](network/enumeration/host-based/snmp-u161-162.md)
     * [Ldap/Ldaps - T389,636](network/enumeration/host-based/ldap-ldaps-t389-636.md)
-    * [ISAKMP/IKE/IPsec - U500,4500,](network/enumeration/host-based/isakmp-ike-ipsec-u500-4500.md)
+    * [ISAKMP/IKE/IPsec - U500,4500](network/enumeration/host-based/isakmp-ike-ipsec-u500-4500.md)
     * [R-Services - T512,513,514](network/enumeration/host-based/r-services-t512-513-514.md)
     * [RTSP - TU554,8554](network/enumeration/host-based/rtsp-tu554-8554.md)
     * [IPMI - U623](network/enumeration/host-based/ipmi-u623.md)
