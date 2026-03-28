@@ -14,8 +14,9 @@
 
 ### RCE via Web Shell
 
-* Upload payload file&#x20;
+* Upload payload file
 * No restriction specified in accept-type header - all types (_/_) allowed
+* [#web-shells](../../network/exploitation/shells-and-listeners.md#web-shells "mention")
 
 <details>
 
@@ -217,3 +218,8 @@ Content-Length: 49
 ### PDF Injection
 
 {% file src="../../.gitbook/assets/xss2pdf.py" %}
+
+### Links
+
+* [Web-Shells](https://github.com/jbarcia/Web-Shells)
+
