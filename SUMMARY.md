@@ -95,6 +95,7 @@
     * [PowerShell Remoting](network/exploitation/lateral-movement/powershell-remoting.md)
   * [Linux PrivEsc](network/exploitation/linux-privesc.md)
   * [MSSQL - T1433,U1434](network/exploitation/mssql-t1433-u1434.md)
+  * [Password Cracking](network/exploitation/password-cracking.md)
   * [Payload Transfer](network/exploitation/payload-transfer/README.md)
     * [Windows](network/exploitation/payload-transfer/windows.md)
     * [Linux](network/exploitation/payload-transfer/linux.md)
