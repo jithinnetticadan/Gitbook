@@ -53,6 +53,14 @@ nmap -p 22 --script ssh-brute <ip>
 nmap -p 22 --script "ssh*" <ip>
 ```
 {% endtab %}
+
+{% tab title="Hydra" %}
+{% code lineNumbers="true" %}
+```bash
+hydra -L user.list -P password.list ssh://<ip>
+```
+{% endcode %}
+{% endtab %}
 {% endtabs %}
 
 ### Login using Private Key
