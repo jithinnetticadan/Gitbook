@@ -1,9 +1,9 @@
 # OS Based
 
-{% content-ref url="../exploitation/linux-privesc.md" %}
-[linux-privesc.md](../exploitation/linux-privesc.md)
+{% content-ref url="../exploitation/privilege-escalation/linux.md" %}
+[linux.md](../exploitation/privilege-escalation/linux.md)
 {% endcontent-ref %}
 
-{% content-ref url="../exploitation/windows-privesc.md" %}
-[windows-privesc.md](../exploitation/windows-privesc.md)
+{% content-ref url="../exploitation/privilege-escalation/windows.md" %}
+[windows.md](../exploitation/privilege-escalation/windows.md)
 {% endcontent-ref %}

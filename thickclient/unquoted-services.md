@@ -7,7 +7,7 @@ sc qc <service-name>
 ```
 {% endcode %}
 
-[#unquoted-service-paths](../network/exploitation/windows-privesc.md#unquoted-service-paths "mention")
+[#unquoted-service-paths](../network/exploitation/privilege-escalation/windows.md#unquoted-service-paths "mention")
 
 #### References
 
