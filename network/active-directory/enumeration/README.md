@@ -8,7 +8,7 @@
 
 #### Kerberos Enumeration [kerberos-u88.md](../../enumeration/host-based/kerberos-u88.md "mention")
 
-#### Password Spraying
+#### Password Policy
 
 * Understand Password Policy
   * `crackmapexec smb <dc-ip> --pass-pol`
@@ -17,6 +17,8 @@
 * [Password Policy Guide](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh994562\(v=ws.11\))
   * `crackmapexec smb <target-ips> -u users.txt -p passwords.txt -d <domain>`  //use --local-auth
   * `nxc smb <target-ips> -u users.txt -p passwords.txt -d <domain>`  //use --local-auth
+
+#### [password-attacks](../../exploitation/password-attacks/ "mention")
 
 #### Spawn a Shell using credentials obtained using above or [ways2obtain-initial-credentials.md](ways2obtain-initial-credentials.md "mention")
 
