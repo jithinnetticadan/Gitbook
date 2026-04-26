@@ -91,6 +91,7 @@
   * [Credentials Harvesting](network/exploitation/credentials-harvesting/README.md)
     * [Linux](network/exploitation/credentials-harvesting/linux.md)
     * [Windows](network/exploitation/credentials-harvesting/windows.md)
+    * [Network  Traffic](network/exploitation/credentials-harvesting/network-traffic.md)
   * [Feature Abuse - Jenkins](network/exploitation/feature-abuse-jenkins.md)
   * [iPMI - U623](network/exploitation/ipmi-u623.md)
   * [Lateral Movement](network/exploitation/lateral-movement/README.md)
