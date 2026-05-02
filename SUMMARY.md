@@ -91,7 +91,7 @@
   * [Credentials Harvesting](network/exploitation/credentials-harvesting/README.md)
     * [Linux](network/exploitation/credentials-harvesting/linux.md)
     * [Windows](network/exploitation/credentials-harvesting/windows.md)
-    * [Network  Traffic](network/exploitation/credentials-harvesting/network-traffic.md)
+    * [Network Traffic](network/exploitation/credentials-harvesting/network-traffic.md)
   * [Feature Abuse - Jenkins](network/exploitation/feature-abuse-jenkins.md)
   * [iPMI - U623](network/exploitation/ipmi-u623.md)
   * [Lateral Movement](network/exploitation/lateral-movement/README.md)
@@ -157,6 +157,7 @@
     * [PERSIST1](network/active-directory/ad-certificate-services/persist1.md)
     * [PERSIST2](network/active-directory/ad-certificate-services/persist2.md)
     * [PERSIST3](network/active-directory/ad-certificate-services/persist3.md)
+    * [Shadow Credentials (msDS-KeyCredentialLink)](network/active-directory/ad-certificate-services/shadow-credentials-msds-keycredentiallink.md)
     * [References](network/active-directory/ad-certificate-services/references.md)
   * [References](network/active-directory/references.md)
 

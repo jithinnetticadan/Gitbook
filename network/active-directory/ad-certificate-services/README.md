@@ -29,3 +29,9 @@
   //Enumerate vulnerable templates
   Certify.exe find /vulnerable
   </code></pre>
+
+### No PKINIT? <a href="#no-pkinit" id="no-pkinit"></a>
+
+{% hint style="info" %}
+Attacker may be able to obtain a certificate but be unable to use it for pre-authentication as specific victims (e.g., a domain controller machine account) due to the KDC not supporting the appropriate EKU. The tool [PassTheCert](https://github.com/AlmondOffSec/PassTheCert/) was created for such situations. It can be used to authenticate against LDAPS using a certificate and perform various attacks (e.g., changing passwords or granting DCSync rights). This attack is outside the scope of this module but is worth reading about [here](https://offsec.almond.consulting/authenticating-with-certificates-when-pkinit-is-not-supported.html).
+{% endhint %}

