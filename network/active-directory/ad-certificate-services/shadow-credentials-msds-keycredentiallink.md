@@ -22,7 +22,8 @@
       `[realms]`      \
       `domain = {`      \
       `kdc = <DC-FQDN>`      \
-      `}`
+      `}`&#x20;
+* Update `/etc/hosts` file for DC or other server FQDN resolutions
 * `export KRB5CCNAME=/tmp/<username>.ccache`&#x20;
 * `klist`
 * `evil-winrm -i <DC-FQDN> -r <domain>`
