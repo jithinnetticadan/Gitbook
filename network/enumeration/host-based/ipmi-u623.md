@@ -64,6 +64,7 @@ set SESSION_MAX_ATTEMPTS 10
 ```shellscript
 eg: HP iLO
 hashcat -m 7300 ipmi.txt -a 3 ?1?1?1?1?1?1?1?1 -1 ?d?u
+hashcat -m 7300 -a 0 -O -w 3 --session=ilo --user ipmi_hashes.txt pwds.txt --rules=rules/dive.rule 
 hashcat -m 7300 <hash_file> <wordlist>
 john --fork=8 --incremental:alpha --format=rakp <hash_file>
 ```
