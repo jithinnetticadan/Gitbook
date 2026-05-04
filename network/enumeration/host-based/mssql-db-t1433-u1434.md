@@ -1,14 +1,5 @@
 # MSSQL DB - T1433,U1434
 
-### MSSQL Clients
-
-* [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15) (SSMS)
-* [mssql-cli](https://docs.microsoft.com/en-us/sql/tools/mssql-cli?view=sql-server-ver15)
-* [SQL Server PowerShell](https://docs.microsoft.com/en-us/sql/powershell/sql-server-powershell?view=sql-server-ver15)
-* [HeidiSQL](https://www.heidisql.com/)
-* [SQLPro](https://www.macsqlclient.com/)
-* \* [Impacket's mssqlclient.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/mssqlclient.py)
-
 ### MSSQL Databases
 
 * <table><thead><tr><th width="114.71435546875">Default System Database</th><th>Description</th></tr></thead><tbody><tr><td><code>master</code></td><td>Tracks all system information for an SQL server instance</td></tr><tr><td><code>model</code></td><td>Template database that acts as a structure for every new database created. Any setting changed in the model database will be reflected in any new database created after changes to the model database</td></tr><tr><td><code>msdb</code></td><td>The SQL Server Agent uses this database to schedule jobs &#x26; alerts</td></tr><tr><td><code>tempdb</code></td><td>Stores temporary objects</td></tr><tr><td><code>resource</code></td><td>Read-only database containing system objects included with SQL server</td></tr></tbody></table>
@@ -129,3 +120,6 @@ SELECT * FROM OPENQUERY("<link-server1>",'SELECT * FROM OPENQUERY(''<link-server
 * [dbeaver](https://github.com/dbeaver/dbeaver)
 * [mssql-cli](https://github.com/dbcli/mssql-cli)
 * [mssqlclient.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/mssqlclient.py)
+* [SQL Server PowerShell](https://docs.microsoft.com/en-us/sql/powershell/sql-server-powershell?view=sql-server-ver15)
+* [HeidiSQL](https://www.heidisql.com/)
+* [SQLPro](https://www.macsqlclient.com/)
