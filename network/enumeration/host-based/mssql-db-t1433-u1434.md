@@ -40,7 +40,7 @@ run
 {% tab title="Nmap" %}
 {% code lineNumbers="true" %}
 ```shellscript
-sudo nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 <IP>
+sudo nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=<pass>,mssql.instance-name=MSSQLSERVER -sV -p 1433 <IP>
 ```
 {% endcode %}
 {% endtab %}
@@ -50,9 +50,11 @@ sudo nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-c
 
 ### Enumeration
 
-* [PowerUpSQL](https://github.com/NetSPI/PowerUpSQL)
-
 {% tabs %}
+{% tab title="Manual" %}
+
+{% endtab %}
+
 {% tab title="PowerUpSQL" %}
 {% code lineNumbers="true" %}
 ```powershell
@@ -76,14 +78,24 @@ select name from sys.databases
 {% endcode %}
 {% endtab %}
 
-{% tab title="Manual" %}
+{% tab title="sqsh" %}
+{% code lineNumbers="true" %}
+```shellscript
+sqsh -S <IP> -U user -P pass
+```
+{% endcode %}
+{% endtab %}
 
+{% tab title="sqlcmd" %}
+{% code lineNumbers="true" %}
+```bat
+sqlcmd -S <IP> -U <user> -P <pass>
+```
+{% endcode %}
 {% endtab %}
 {% endtabs %}
 
 ### Linked SQL Servers Enumeration
-
-* [PowerUpSQL](https://github.com/NetSPI/PowerUpSQL)
 
 {% tabs %}
 {% tab title="PowerUpSQL" %}
@@ -107,3 +119,13 @@ SELECT * FROM OPENQUERY("<link-server1>",'SELECT * FROM OPENQUERY(''<link-server
 {% endcode %}
 {% endtab %}
 {% endtabs %}
+
+### Tools
+
+* [PowerUpSQL](https://github.com/NetSPI/PowerUpSQL)
+* &#x20;[sqsh](https://en.wikipedia.org/wiki/Sqsh)
+* [sqlcmd](https://docs.microsoft.com/en-us/sql/tools/sqlcmd-utility)
+* [SQL Server Management Studio or SSMS](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
+* [dbeaver](https://github.com/dbeaver/dbeaver)
+* [mssql-cli](https://github.com/dbcli/mssql-cli)
+* [mssqlclient.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/mssqlclient.py)

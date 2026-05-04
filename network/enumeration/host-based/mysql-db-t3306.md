@@ -26,10 +26,29 @@ sudo nmap -sV -sC -p3306 --script mysql* <IP>
 
 ### Enumerate
 
+{% tabs %}
+{% tab title="mysql" %}
+[guide](https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-installing)
+
 {% code lineNumbers="true" %}
 ```shellscript
+## Linux
 mysql -u <username> -p <password> -h <IP>
+## Windows
+mysql.exe -u <username> -p <password> -h <IP>
 Commands
 show databases;, use <database>;, show tables;, show columns from <table>;, select * from <table>;, select * from <table> where <column> = "<string>";
 ```
 {% endcode %}
+{% endtab %}
+
+{% tab title="Tab" %}
+
+{% endtab %}
+{% endtabs %}
+
+### Tools
+
+* [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
+* [dbeaver](https://github.com/dbeaver/dbeaver)
+* [mycli](https://github.com/dbcli/mycli)
