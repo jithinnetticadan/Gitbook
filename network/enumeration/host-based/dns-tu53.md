@@ -14,7 +14,7 @@
 * **DIG - NS Query -** `dig ns <domain> @<DNS-server-IP>`&#x20;
 * **DIG - Version Query -** `dig CH TXT version.bind <DNS-server-IP>`&#x20;
 * **DIG - ANY Query -** `dig any <domain> @<DNS-server-IP>`&#x20;
-* **DIG - AXFR Zone Transfer -** `dig axfr <domain> @<DNS-server-IP>`&#x20;
+* **DIG - AXFR Zone Transfer -** `dig axfr <domain> @<DNS-server-IP>` or `fierce --domain <example.com>`
 * **DIG - AXFR Zone Transfer - Internal -** `dig axfr internal.<domain> @<DNS-server-IP>` &#x20;
 
 ### Subdomain Brute Forcing
@@ -129,7 +129,6 @@ Certificate Transparency logs are public, append-only ledgers that record the is
 * nslookup
 * dig
 * [fierce](https://github.com/mschwager/fierce)
-  * `fierce --domain <example.com>`
 * [dnsrecon](https://github.com/darkoperator/dnsrecon)
 * theHarvester
 * [assetfinder](https://github.com/tomnomnom/assetfinder)
