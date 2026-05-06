@@ -57,7 +57,7 @@
     * [iSCSI - T3260](network/enumeration/host-based/iscsi-t3260.md)
     * [Kerberos - U88](network/enumeration/host-based/kerberos-u88.md)
     * [Ldap/Ldaps - T389,636](network/enumeration/host-based/ldap-ldaps-t389-636.md)
-    * [MSSQL DB - T1433,U1434](network/enumeration/host-based/mssql-db-t1433-u1434.md)
+    * [MSSQL DB - T1433,2433,U1434](network/enumeration/host-based/mssql-db-t1433-2433-u1434.md)
     * [MySQL DB - T3306](network/enumeration/host-based/mysql-db-t3306.md)
     * [NAS - T137,138,139,445](network/enumeration/host-based/nas-t137-138-139-445.md)
     * [NetBIOS Name - U137](network/enumeration/host-based/netbios-name-u137.md)

