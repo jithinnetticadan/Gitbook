@@ -17,47 +17,78 @@
 * **DIG - AXFR Zone Transfer -** `dig axfr <domain> @<DNS-server-IP>`&#x20;
 * **DIG - AXFR Zone Transfer - Internal -** `dig axfr internal.<domain> @<DNS-server-IP>` &#x20;
 
-### **Subdomain Brute Forcing**
+### Subdomain Brute Forcing
 
+{% tabs %}
+{% tab title="Manual" %}
 {% code lineNumbers="true" %}
 ```shellscript
 for sub in $(cat /opt/useful/seclists/Discovery/DNS/subdomains-top1million-110000.txt);do dig $sub.<domain> @<DNS-server-IP> | grep -v ';|SOA' | sed -r '/^\s*$/d' | grep $sub | tee -a subdomains.txt;done
-dnsenum --dnsserver <DNS-server-IP> --enum -p 0 -s 0 -o subdomains.txt -f /opt/useful/seclists/Discovery/DNS/subdomains-top1million-110000.txt <domain>
-dnsenum --enum <target-domain> -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -r
-gobuster dns -d <domain.com> -w /usr/share/SecLists/Discovery/DNS/namelist.txt //gobuster dns --help
 https://crt.sh/
 site:*.domain.com -site:www.domain.com
-dnsrecon -t brt -d <domain.com>
-sublist3r.py -d <domain.com>
 ```
 {% endcode %}
+{% endtab %}
 
-### Common dig Commands <a href="#common-dig-commands" id="common-dig-commands"></a>
+{% tab title="dnsenum" %}
+{% code lineNumbers="true" %}
+```shellscript
+dnsenum --dnsserver <DNS-server-IP> --enum -p 0 -s 0 -o subdomains.txt -f /opt/useful/seclists/Discovery/DNS/subdomains-top1million-110000.txt <domain>
+dnsenum --enum <target-domain> -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -r
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="gobuster" %}
+{% code lineNumbers="true" %}
+```shellscript
+gobuster dns -d <domain.com> -w /usr/share/SecLists/Discovery/DNS/namelist.txt //gobuster dns --help
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="dnsrecon" %}
+{% code lineNumbers="true" %}
+```shellscript
+dnsrecon -t brt -d <domain.com>
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="sublist3r" %}
+```shellscript
+sublist3r.py -d <domain.com>
+```
+{% endtab %}
+
+{% tab title="subfinder" %}
+{% code lineNumbers="true" %}
+```shellscript
+subfinder -d <domain> -v 
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="Subbrute" %}
+{% code lineNumbers="true" %}
+```shellscript
+## resolvers -> DNS Nme servers
+subbrute.py inlanefreight.com -s ./names.txt -r ./resolvers.txt
+```
+{% endcode %}
+{% endtab %}
+{% endtabs %}
+
+### Common `dig` Commands <a href="#common-dig-commands" id="common-dig-commands"></a>
 
 <table><thead><tr><th width="233.28570556640625">Command</th><th>Description</th></tr></thead><tbody><tr><td><code>dig domain.com</code></td><td>Performs a default A record lookup for the domain.</td></tr><tr><td><code>dig domain.com A</code></td><td>Retrieves the IPv4 address (A record) associated with the domain.</td></tr><tr><td><code>dig domain.com AAAA</code></td><td>Retrieves the IPv6 address (AAAA record) associated with the domain.</td></tr><tr><td><code>dig domain.com MX</code></td><td>Finds the mail servers (MX records) responsible for the domain.</td></tr><tr><td><code>dig domain.com NS</code></td><td>Identifies the authoritative name servers for the domain.</td></tr><tr><td><code>dig domain.com TXT</code></td><td>Retrieves any TXT records associated with the domain.</td></tr><tr><td><code>dig domain.com CNAME</code></td><td>Retrieves the canonical name (CNAME) record for the domain.</td></tr><tr><td><code>dig domain.com SOA</code></td><td>Retrieves the start of authority (SOA) record for the domain.</td></tr><tr><td><code>dig @1.1.1.1 domain.com</code></td><td>Specifies a specific name server to query; in this case 1.1.1.1</td></tr><tr><td><code>dig +trace domain.com</code></td><td>Shows the full path of DNS resolution.</td></tr><tr><td><code>dig -x 192.168.1.1</code></td><td>Performs a reverse lookup on the IP address 192.168.1.1 to find the associated host name. You may need to specify a name server.</td></tr><tr><td><code>dig +short domain.com</code></td><td>Provides a short, concise answer to the query.</td></tr><tr><td><code>dig +noall +answer domain.com</code></td><td>Displays only the answer section of the query output.</td></tr><tr><td><code>dig domain.com ANY</code></td><td>Retrieves all available DNS records for the domain (Note: Many DNS servers ignore <code>ANY</code> queries to reduce load and prevent abuse, as per <a href="https://datatracker.ietf.org/doc/html/rfc8482">RFC 8482</a>).</td></tr></tbody></table>
-
-### DNS Tools
-
-* [DNSenum](https://github.com/fwaeytens/dnsenum)
-* nslookup
-* dig
-* [fierce](https://github.com/mschwager/fierce)
-* [dnsrecon](https://github.com/darkoperator/dnsrecon)
-* theHarvester
-* [assetfinder](https://github.com/tomnomnom/assetfinder)
-* [amass](https://github.com/owasp-amass/amass)
-* [puredns](https://github.com/d3mondev/puredns)
 
 ### Virtual Host Fuzzing
 
 * Make sure to update the /etc/hosts file for brute-force
-
-{% code lineNumbers="true" %}
-```shellscript
-gobuster vhost -u http://<target_IP_address> -w <wordlist_file> --append-domain
-ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
-```
-{% endcode %}
+* <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">gobuster vhost -u http://&#x3C;target_IP_address> -w &#x3C;wordlist_file> --append-domain
+  ffuf -w &#x3C;wordlist> -H "Host: FUZZ.domain.com" -u http://&#x3C;ip>
+  </code></pre>
 
 ### Virtual Hosts Discovery Tools
 
@@ -72,9 +103,35 @@ Certificate Transparency logs are public, append-only ledgers that record the is
 {% endhint %}
 
 * Tools -> [crt.sh](https://crt.sh/), [Censys](https://search.censys.io/)
+* ```shellscript
+  curl -s "https://crt.sh/?q=<domain>&output=json" | jq -r '.[] | select(.name_value | contains("<search_string>")) | .name_value' | sort -u
+  ```
 
-{% code lineNumbers="true" %}
-```
-curl -s "https://crt.sh/?q=<domain>&output=json" | jq -r '.[] | select(.name_value | contains("<search_string>")) | .name_value' | sort -u
-```
-{% endcode %}
+### SubDomain Takeover
+
+* A DNS's canonical name (`CNAME`) record is used to map different domains to a parent domain. Many organizations use third-party services like AWS, GitHub, Akamai, Fastly, and other content delivery networks (CDNs) to host their content.
+* [can-i-take-over-xyz](https://github.com/EdOverflow/can-i-take-over-xyz)
+
+### DNS Spoofing <a href="#dns-spoofing" id="dns-spoofing"></a>
+
+* #### Local DNS Cache Poisoning
+  * [Ettercap](https://www.ettercap-project.org/) or [Bettercap](https://www.bettercap.org/)
+  * `sudo nano /etc/ettercap/etter.dns`&#x20;
+  * Modify the Target Domain with A record pointing to atatcker IP
+
+### Tools
+
+* [DNSenum](https://github.com/fwaeytens/dnsenum)
+* [DNSdumpster](https://dnsdumpster.com/)
+* [Subfinder](https://github.com/projectdiscovery/subfinder)
+* [Sublist3r](https://github.com/aboul3la/Sublist3r)
+* [Subbrute](https://github.com/TheRook/subbrute)
+* nslookup
+* dig
+* [fierce](https://github.com/mschwager/fierce)
+  * `fierce --domain <example.com>`
+* [dnsrecon](https://github.com/darkoperator/dnsrecon)
+* theHarvester
+* [assetfinder](https://github.com/tomnomnom/assetfinder)
+* [amass](https://github.com/owasp-amass/amass)
+* [puredns](https://github.com/d3mondev/puredns)
