@@ -104,7 +104,7 @@
     * [Linux](network/exploitation/payload-transfer/linux.md)
     * [Use Programming Languages](network/exploitation/payload-transfer/use-programming-languages.md)
     * [Protected File Transfers](network/exploitation/payload-transfer/protected-file-transfers.md)
-  * [Pivoting & Tunneling](network/exploitation/pivoting-and-tunneling.md)
+  * [Pivoting, Tunneling & Port Forwarding](network/exploitation/pivoting-tunneling-and-port-forwarding.md)
   * [Privilege Escalation](network/exploitation/privilege-escalation/README.md)
     * [Linux](network/exploitation/privilege-escalation/linux.md)
     * [Windows](network/exploitation/privilege-escalation/windows.md)
