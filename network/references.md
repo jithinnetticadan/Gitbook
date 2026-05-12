@@ -9,3 +9,6 @@
 * [m4lici0u5.com/crto-notes](https://m4lici0u5.com/notes/crto-notes/)
 * [Command-Bulder-Matrix](https://matrix.shieldescape.com/)
 * [Top-1000-TCP-and-UDP-ports](https://nullsec.us/top-1-000-tcp-and-udp-ports-nmap-default/)
+* [0xdf's walkthroughs](https://0xdf.gitlab.io/)
+* [RastaMouse](https://rastamouse.me/)
+* [SpecterOps](https://posts.specterops.io/offensive-security-guide-to-ssh-tunnels-and-proxies-b525cbd4d4c6)
