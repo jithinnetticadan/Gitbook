@@ -122,3 +122,8 @@ ExploitDB
 * Vulnerability Scanning - Nessus, OpenVAS, Nikto, Nuclei
 * Network Mapping - Traceroute, Nmap
 * Web Spidering - Burp Suite Spider, OWASP ZAP Spider, Scrapy
+* [Domaintools](https://www.domaintools.com/)
+* [PTRArchive](http://ptrarchive.com/)
+* [ICANN](https://lookup.icann.org/lookup)
+* [BGP Toolkit](https://bgp.he.net/)
+* [viewdns.info](https://viewdns.info/)

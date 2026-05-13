@@ -131,3 +131,6 @@ OpenVAS
 * Vulnerability Scanning - Nessus, OpenVAS, Nikto, Nuclei
 * Network Mapping - Traceroute, Nmap
 * Web Spidering - Burp Suite Spider, OWASP ZAP Spider, Scrapy
+* &#x20;[Trufflehog](https://github.com/trufflesecurity/truffleHog)
+* [Greyhat Warfare](https://buckets.grayhatwarfare.com/)
+* [linkedin2username](https://github.com/initstring/linkedin2username)
