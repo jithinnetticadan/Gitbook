@@ -46,3 +46,6 @@
 * Rubeus simplifies discovery on Windows; GetNPUsers.py offers manual control
 * Success depends on password strength and proper pre-auth enforcement
 
+### Tools
+
+* [setspn.exe](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/cc731241\(v=ws.11\))

@@ -91,4 +91,9 @@
 
 #### [ad-and-powerview-modules.md](ad-and-powerview-modules.md "mention")
 
-####
+#### Tools
+
+* [ADRecon](https://github.com/adrecon/ADRecon)
+* [Group3r](https://github.com/Group3r/Group3r)
+* [PingCastle](https://www.pingcastle.com/documentation/)
+* [Active Directory Explorer](https://docs.microsoft.com/en-us/sysinternals/downloads/adexplorer)

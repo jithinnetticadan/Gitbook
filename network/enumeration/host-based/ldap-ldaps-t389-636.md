@@ -18,3 +18,5 @@ enum4linux-ng -A <ip> -oA results.txt
 #### Tools
 
 * [LdapAdmin](https://sourceforge.net/projects/ldapadmin/files/)
+* [ldapsearch](https://linux.die.net/man/1/ldapsearch)
+* [windapsearch](https://github.com/ropnop/windapsearch)

@@ -189,3 +189,4 @@ Invoke-SessionHunter -NoPortScan -Targets C:\AD\servers-except-DC.txt
 ### Tools
 
 * [SharpView](https://github.com/dmchell/SharpView)
+* [LAPSToolkit](https://github.com/leoloobeek/LAPSToolkit)

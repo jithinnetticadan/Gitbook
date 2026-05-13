@@ -134,3 +134,4 @@ Certificate Transparency logs are public, append-only ledgers that record the is
 * [assetfinder](https://github.com/tomnomnom/assetfinder)
 * [amass](https://github.com/owasp-amass/amass)
 * [puredns](https://github.com/d3mondev/puredns)
+* [adidnsdump](https://github.com/dirkjanm/adidnsdump)
