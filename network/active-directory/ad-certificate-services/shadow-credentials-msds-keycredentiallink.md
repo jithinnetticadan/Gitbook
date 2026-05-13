@@ -26,4 +26,10 @@
 * Update `/etc/hosts` file for DC or other server FQDN resolutions
 * `export KRB5CCNAME=/tmp/<username>.ccache`&#x20;
 * `klist`
-* `evil-winrm -i <DC-FQDN> -r <domain>`
+* `evil-winrm -i <DC-FQDN> -r <domain>`&#x20;
+
+
+
+### References
+
+* [specterops-shadow credentials abusing key trust account mapping for account takeover](https://specterops.io/blog/2021/06/17/shadow-credentials-abusing-key-trust-account-mapping-for-account-takeover/)

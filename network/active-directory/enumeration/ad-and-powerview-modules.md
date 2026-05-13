@@ -185,3 +185,7 @@ Invoke-SessionHunter -NoPortScan -Targets C:\AD\servers-except-DC.txt
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-SessionHunter -FailSafe
 Invoke-SessionHunter -NoPortScan -Targets C:\AD\servers-except-DC.txt
 </code></pre></td></tr></tbody></table>
+
+### Tools
+
+* [SharpView](https://github.com/dmchell/SharpView)
