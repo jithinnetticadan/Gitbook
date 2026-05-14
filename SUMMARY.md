@@ -95,7 +95,6 @@
   * [Feature Abuse - Jenkins](network/exploitation/feature-abuse-jenkins.md)
   * [Lateral Movement](network/exploitation/lateral-movement/README.md)
     * [PowerShell Remoting](network/exploitation/lateral-movement/powershell-remoting.md)
-  * [MSSQL - T1433,U1434](network/exploitation/mssql-t1433-u1434.md)
   * [Password Attacks](network/exploitation/password-attacks/README.md)
     * [Cracking](network/exploitation/password-attacks/cracking.md)
     * [Spraying, Stuffing, and Defaults](network/exploitation/password-attacks/spraying-stuffing-and-defaults.md)
