@@ -108,7 +108,6 @@
   * [Privilege Escalation](network/exploitation/privilege-escalation/README.md)
     * [Linux](network/exploitation/privilege-escalation/linux.md)
     * [Windows](network/exploitation/privilege-escalation/windows.md)
-  * [RDP - T3389](network/exploitation/rdp-t3389.md)
   * [Shells & Listeners](network/exploitation/shells-and-listeners.md)
 * [References](network/references.md)
 * [Active Directory](network/active-directory.md)
