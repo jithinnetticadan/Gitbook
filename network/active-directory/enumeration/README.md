@@ -20,7 +20,7 @@
 
 #### [password-attacks](../../exploitation/password-attacks/ "mention")
 
-#### Spawn a Shell using credentials obtained using above or [ways2obtain-initial-credentials.md](ways2obtain-initial-credentials.md "mention")
+#### Spawn a Shell using credentials obtained using above or [initial-credential-access-foothold.md](initial-credential-access-foothold.md "mention")
 
 #### Understand the User Compromised
 
