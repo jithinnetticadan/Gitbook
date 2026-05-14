@@ -1,31 +1,43 @@
 # Recon
 
-#### Host Discovery Scan
+### Identifying Hosts
+
+#### **Passive Methods**
+
+* Use wireshark to observe some ARP requests and replies, MDNS, and other basic [layer two](https://www.juniper.net/documentation/us/en/software/junos/multicast-l2/topics/topic-map/layer-2-understanding.html) packets
+* `sudo tcpdump -i <interface>`
+* [tcpdump](https://linux.die.net/man/8/tcpdump), [net-creds](https://github.com/DanMcInerney/net-creds), pktmon.exe, and [NetMiner](https://www.netminer.com/en/product/netminer.php)
+* `sudo responder -I <interface> -A` <sup><sub>(Analyse mode)<sub></sup>
+
+#### **Active Methods**
+
+* #### Host Discovery Scan
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
 nmap -n -sn -PE -PP -PS22,80,443,445,3389 -PA22,80,443,445  --max-retries 2 --open -iL target.txt --excludefile exclude.txt -oA livehosts
 nmap -sn -oA hostdiscovery -iL hosts.txt | grep for | cut -d" " -f5
-fping -agq <cidr-range>
+fping -asgq <cidr-range>
 ## Troubleshoot
 nmap -sn -oA hostdiscovery -iL hosts.txt -PE --packet-trace --reason --disable-arp-ping
 ```
 {% endcode %}
 
-#### Banner Grabbing
+* #### Banner Grabbing
 
 ```shellscript
 nmap -sV -p- --script=banner <target>
 nc -nv <IP> <port>
 ```
 
-#### LiveHost Scan
+* #### LiveHost Scan
 
 {% code fullWidth="false" %}
 ```shellscript
 ## Use sudo for -sS default beahaviour, without sudo defaults to -sT
 nmap -p T:22,80-90,8080,445,443,8443,3389 -sV -sS -n -Pn --max-retries 2 --open -iL target.txt --excludefile exclude.txt -oA livehosts
 nmap -sV -sC -sV -p- <IP>
+sudo nmap -v -A -iL hosts.txt -oA Aggressive_Scan
 ```
 {% endcode %}
 
@@ -51,7 +63,7 @@ done
 
 </details>
 
-#### TCP Port Scan
+* #### TCP Port Scan
 
 ```shellscript
 nmap -sS -p- -sV -T3 -iL hosts.txt -oA full_port_scan
@@ -60,7 +72,7 @@ nmap -v -sS -Pn -sV -sC --max-retries 2 --open -p T:1,7,9,11,13,15,19,21,22,23,2
 sudo nmap -iL hosts.txt -p- --packet-trace --disable-arp-ping -Pn -n --reason
 ```
 
-#### UDP Scan
+* #### UDP Scan
 
 {% code fullWidth="false" %}
 ```shellscript
@@ -70,7 +82,7 @@ sudo nmap -iL hosts.txt -p- -sV -sU -Pn -n --disable-arp-ping --packet-trace --r
 ```
 {% endcode %}
 
-#### Script Scan
+* #### Script Scan
 
 ```shellscript
 grep -ri "<keyword>" /usr/share/nmap/scripts/
@@ -94,7 +106,15 @@ nmap -p- -oA script_scan -iL hosts.txt --script auth,broadcast,brute,default,dis
 
 </details>
 
-#### Automated HTTP/S Scan
+### Identifying Users
+
+* [#usernames-wordlist-generation](exploitation/password-attacks/spraying-stuffing-and-defaults.md#usernames-wordlist-generation "mention")
+* [#username-enumeration](exploitation/password-attacks/spraying-stuffing-and-defaults.md#username-enumeration "mention")
+* `kerbrute userenum -d <domain> --dc <IP> wordlist.txt -o valid_ad_users`
+
+### Identifying Potential Vulnerabilities
+
+* #### Automated HTTP/S Scan
 
 {% code lineNumbers="true" %}
 ```shellscript
@@ -104,7 +124,7 @@ sudo nmap -iL host.txt -p- -sV --script vuln
 ```
 {% endcode %}
 
-#### Exploit Checks
+* #### Exploit Checks
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
@@ -122,8 +142,11 @@ ExploitDB
 * Vulnerability Scanning - Nessus, OpenVAS, Nikto, Nuclei
 * Network Mapping - Traceroute, Nmap
 * Web Spidering - Burp Suite Spider, OWASP ZAP Spider, Scrapy
+* [Fping](https://fping.org/)
 * [Domaintools](https://www.domaintools.com/)
 * [PTRArchive](http://ptrarchive.com/)
 * [ICANN](https://lookup.icann.org/lookup)
 * [BGP Toolkit](https://bgp.he.net/)
 * [viewdns.info](https://viewdns.info/)
+* [Kerbrute](https://github.com/ropnop/kerbrute)
+* Username List -> [Insidetrust](https://github.com/insidetrust/statistically-likely-usernames)
