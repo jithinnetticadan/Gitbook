@@ -152,6 +152,7 @@
     * [ESC13](network/active-directory/ad-certificate-services/esc13.md)
     * [ESC14](network/active-directory/ad-certificate-services/esc14.md)
     * [ESC15](network/active-directory/ad-certificate-services/esc15.md)
+    * [ESC 16](network/active-directory/ad-certificate-services/esc-16.md)
     * [PERSIST1](network/active-directory/ad-certificate-services/persist1.md)
     * [PERSIST2](network/active-directory/ad-certificate-services/persist2.md)
     * [PERSIST3](network/active-directory/ad-certificate-services/persist3.md)

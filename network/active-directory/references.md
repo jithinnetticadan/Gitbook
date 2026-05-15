@@ -5,4 +5,5 @@
 * [InternalAllTheThings](https://swisskyrepo.github.io/InternalAllTheThings/)
 * [exploit-notes](https://exploit-notes.hdks.org/)
 * [Command-Bulder-Matrix](https://matrix.shieldescape.com/)
+* [ired-teamRedTeamNotes](https://www.ired.team/)
 

