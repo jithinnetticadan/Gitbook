@@ -11,12 +11,14 @@
 #### Password Policy
 
 * Understand Password Policy
-  * `crackmapexec smb <dc-ip> --pass-pol`
-  * `nxc smb <dc-ip> --pass-pol`&#x20;
-  * [#domain-enumeration](ad-and-powerview-modules.md#domain-enumeration "mention")
+  * `nxc smb <dc-ip> --pass-pol`  <sup><sub>(if Null session allowed)<sub></sup>
+  * `nxc smb <dc-ip> -u <user> -p <pass> --pass-pol`
+  * `rpcclient -U "" -N <DC-IP>`  -> `getdompwinfo`
+  * `enum4linux -P <DC-IP>`  or `enum4linux-ng -P <DC-IP> -oA file`&#x20;
+  * `ldapsearch -H <DC-IP> -x -b "DC=<value>,DC=<values>" -s sub "*" | grep -m 1 -B 10 pwdHistoryLength`
+  * `net accounts`
+  * [#domain-enumeration-generic](ad-and-powerview-modules.md#domain-enumeration-generic "mention")
 * [Password Policy Guide](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh994562\(v=ws.11\))
-  * `crackmapexec smb <target-ips> -u users.txt -p passwords.txt -d <domain>`  //use --local-auth
-  * `nxc smb <target-ips> -u users.txt -p passwords.txt -d <domain>`  //use --local-auth
 
 #### [password-attacks](../../exploitation/password-attacks/ "mention")
 
@@ -97,3 +99,5 @@
 * [Group3r](https://github.com/Group3r/Group3r)
 * [PingCastle](https://www.pingcastle.com/documentation/)
 * [Active Directory Explorer](https://docs.microsoft.com/en-us/sysinternals/downloads/adexplorer)
+* [rpcclient](https://www.samba.org/samba/docs/current/man-html/rpcclient.1.html)
+* [enum4linux](https://labs.portcullis.co.uk/tools/enum4linux)/[enum4linux-ng](https://github.com/cddmp/enum4linux-ng)
