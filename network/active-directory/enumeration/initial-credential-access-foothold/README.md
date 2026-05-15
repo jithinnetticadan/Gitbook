@@ -1,6 +1,6 @@
 # Initial Credential Access/Foothold
 
-### Network Section - [initial-credential-access-foothold.md](../../enumeration/initial-credential-access-foothold.md "mention")
+### Network Section - [initial-credential-access-foothold.md](../../../enumeration/initial-credential-access-foothold.md "mention")
 
 ### LLMNR/NBT-NS Poisoning
 

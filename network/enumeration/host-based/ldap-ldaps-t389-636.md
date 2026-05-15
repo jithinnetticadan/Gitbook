@@ -5,6 +5,7 @@
 {% code lineNumbers="true" %}
 ```shellscript
 ldapsearch -x -H ldap://<ip> -s base
+./windapsearch.py --dc-ip <IP> -u "" -U
 ldapsearch -x -H ldap://<ip> -b "dc=<update>,dc=<update>" "(objectClass=person)"
 ```
 {% endcode %}

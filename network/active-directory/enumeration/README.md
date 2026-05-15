@@ -22,7 +22,7 @@
 
 #### [password-attacks](../../exploitation/password-attacks/ "mention")
 
-#### Spawn a Shell using credentials obtained using above or [initial-credential-access-foothold.md](initial-credential-access-foothold.md "mention")
+#### Spawn a Shell using credentials obtained using above or [initial-credential-access-foothold](initial-credential-access-foothold/ "mention")
 
 #### Understand the User Compromised
 
@@ -101,3 +101,5 @@
 * [Active Directory Explorer](https://docs.microsoft.com/en-us/sysinternals/downloads/adexplorer)
 * [rpcclient](https://www.samba.org/samba/docs/current/man-html/rpcclient.1.html)
 * [enum4linux](https://labs.portcullis.co.uk/tools/enum4linux)/[enum4linux-ng](https://github.com/cddmp/enum4linux-ng)
+* [windapsearch](https://github.com/ropnop/windapsearch)
+* [ldapsearch](https://linux.die.net/man/1/ldapsearch)

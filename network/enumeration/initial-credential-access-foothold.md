@@ -124,4 +124,4 @@ if __name__ == "__main__":
   * Centrally deployed applications
 * **Automated Scan** - [Seatbelt](https://github.com/GhostPack/Seatbelt)
 
-### AD Section - [initial-credential-access-foothold.md](../active-directory/enumeration/initial-credential-access-foothold.md "mention")
+### AD Section - [initial-credential-access-foothold](../active-directory/enumeration/initial-credential-access-foothold/ "mention")
