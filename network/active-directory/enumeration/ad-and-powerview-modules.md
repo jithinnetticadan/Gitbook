@@ -173,7 +173,7 @@ Get-ForestTrust -Forest &#x3C;forest-domain>
 
 <table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>Find all Machines where user has Local Admin Access</strong><br><sub>(See Find-WMILocalAdminAccess.ps1 &#x26; Find-PSRemotingLocalAdminAccess.ps1)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-LocalAdminAccess -Verbose
-</code></pre></td></tr><tr><td><strong>Find Computers where Domain Admin/specified user/group has Active Sessions</strong><br><sub>(For Server 2019 onwards, require local admin)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
+</code></pre></td></tr><tr><td><strong>Find Computers where Domain Admin/Specified User/Group has Active Sessions</strong><br><sub>(For Server 2019 onwards, require local admin)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-DomainUserLocation -Verbose
 Find-DomainUserLocation -UserGroupIdentity "RDPUsers"
 </code></pre></td></tr><tr><td><p></p><p><strong>Find Computers where Domain Admin Session is available &#x26; Current User has Admin Access</strong></p></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">

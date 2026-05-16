@@ -1,13 +1,5 @@
 # Enumeration
 
-#### Parse SMB Shares [smb-t139-445-u137-138.md](../../enumeration/host-based/smb-t139-445-u137-138.md "mention")
-
-#### LDAP Enumeration [ldap-ldaps-t389-636.md](../../enumeration/host-based/ldap-ldaps-t389-636.md "mention")
-
-#### RPC Enumeration [rpc-tu135-137-138-139.md](../../enumeration/host-based/rpc-tu135-137-138-139.md "mention")
-
-#### Kerberos Enumeration [kerberos-u88.md](../../enumeration/host-based/kerberos-u88.md "mention")
-
 #### Password Policy
 
 * Understand Password Policy
@@ -22,7 +14,7 @@
 
 #### [credential-attacks](../../exploitation/credential-attacks/ "mention")
 
-#### Spawn a Shell using credentials obtained using above or [initial-credential-access-foothold](initial-credential-access-foothold/ "mention")
+#### Spawn a Shell using credentials obtained using above or [initial-access-foothold](initial-access-foothold/ "mention")
 
 #### Understand the User Compromised
 
