@@ -9,14 +9,15 @@ Enumerates key AD elements such as:
 * Privileged relationships (like local administrator rights)
 
 {% hint style="warning" %}
-**Note:** Your BloodHound and SharpHound versions must match for the best results.
+**Note:** Your BloodHound and SharpHound versions must match for the best results. It recommneded to download the collector binary from the same bloodhound instance.
 {% endhint %}
 
 #### **Types of Data Collectors**
 
 * `nxc ldap <dc-ip> -u <username> -p <password> --bloodhound --collection All --dns-server <dc-ip>`
 * [SharpHound](https://github.com/SpecterOps/SharpHound)
-  * `SharpHound.exe --CollectionMethods All --Domain tryhackme.loc --ExcludeDCs`  <sub>(domain joined machine)</sub>
+  * `SharpHound.exe --CollectionMethods All --Domain <value> --ExcludeDCs`  <sub>(domain joined machine)</sub>
+  * `.\SharpHound.exe -c All --zipfilename <file>`  <sub>(domain joined machine)</sub>
   * `SharpHound.exe --args --collectionmethods Group,GPOLocalGroup,Session,Trusts,ACL,Container,ObjectProps,SPNTargets,CertServices --ExcludeDCs` <sub>(less noisy)</sub>
 * [AzureHound](https://github.com/SpecterOps/AzureHound)
 * [BloodHound.py](https://github.com/dirkjanm/BloodHound.py) (Python Collector)

@@ -19,6 +19,11 @@ Download Remote Server Administration Tools (RSAT) for Windows. (Admin Priv)
 * `Import-Module .\PowerView.ps1`&#x20;
 * [PowerView- Recon](https://powersploit.readthedocs.io/en/latest/Recon/)
 
+### SharpView Setup
+
+* All comands similar to PowerView but prefix with `.\SharpView.exe`
+* eg: `.\SharpView.exe Get-DomainUser -Identity <name>`
+
 ### **Domain Enumeration - Generic**
 
 <table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>Domain Details</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADDomain
@@ -41,25 +46,28 @@ Get-ADUser -Identity  &#x3C;username> -Properties *
 Get-ADUser -Filter "Name -like 'admin'" 
 Get-ADUser -Identity &#x3C;name> -Properties *
 Get-ADUser -Filter 'Description -like "built"' -Properties Description | select name, Description
+Get-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName ## Kerberoatable Users
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser or Get-NetUser
 Get-DomainUser *admin*
 Get-DomainUser -Identity &#x3C;name>
 Get-DomainUser -AdminCount   
 Get-DomainUser -Identity &#x3C;name> -Properties samaccountname, logonCount 
 Get-DomainUser -LDAPFilter "Description=built" | Select name, Description
+Get-DomainUser -Identity &#x3C;user> -Domain &#x3C;valus> | Select-Object -Property namesamaccountname,description,memberof,whencreated,pwdlastset,lastlogontimestamp,accountexpires,admincount,userprincipalname,serviceprincipalname,useraccountcontrol
 </code></pre></td></tr><tr><td><strong>Group Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADGroup -Filter *
 Get-ADGroup -Filter * | Select Name
 Get-ADGroup -Filter * -Properties * 
 Get-ADGroup -Filter 'Name -like "admin"' | select Name
-Get-ADGroupMember -Identity "Group Name" -Recursive
-Get-ADGroupMember -Identity "Enterprise Admins" -Server &#x3C;parent-domain> -Recursive
-Get-ADPrincipalGroupMembership -Identity &#x3C;name>
+Get-ADGroup -Identity "Group Name"
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGroup or Get-NetGroup 
 Get-DomainGroup "*admin*" 
 Get-DomainGroup | select Name
 Get-DomainGroup -Domain &#x3C;name> 
 Get-DomainGroup -UserName "name"
-Get-DomainGroupMember -Identity "Domain Admins" -Recurse
+</code></pre></td></tr><tr><td><strong>Group Membership Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADGroupMember -Identity "Group Name" -Recursive
+Get-ADGroupMember -Identity "Enterprise Admins" -Server &#x3C;parent-domain> -Recursive
+Get-ADPrincipalGroupMembership -Identity &#x3C;name>
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGroupMember -Identity "Domain Admins" -Recurse
 Get-DomainGroupMember -Identity "Enterprise Admins" -Domain &#x3C;parent-domain> -Recurse
 </code></pre></td></tr><tr><td><strong>Computer Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADComputer -Filter *
 Get-ADComputer -Filter * | Select Name, OperatingSystem 
@@ -79,10 +87,14 @@ Get-NetLocalGroupMember -ComputerName &#x3C;dc-name> -GroupName Administrators
 </code></pre></td></tr><tr><td><strong>Non-null SPN Accounts</strong> <sub>(Consider for</sub> <a data-mention href="../exploitation/credential-harvesting/kerberoasting.md">kerberoasting.md</a><sub>)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser -SPN
 </code></pre></td></tr><tr><td><strong>Share Enum</strong><br><a href="https://github.com/NetSPI/PowerHuntShares">PowerHuntShares</a></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-ShareFinder -Verbose 
 Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\domain-computer-enum-servers.txt
-</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-ShareFinder -Verbose 
-Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\domain-computer-enum-servers.txt
+</code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-DomainShare ## Finds reachable shares
+<strong>Get-NetShare ## Returns open shares
+</strong>Get-NetShare -ComputerName &#x3C;FQDN>
+Find-InterestingDomainShareFile ## Searches for files matching specific criteria
 </code></pre></td></tr><tr><td><strong>File Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-FileFinder -Verbose
 </code></pre></td></tr><tr><td><strong>File Server Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetFileServer
+Get-DomainFileServer
+</code></pre></td></tr><tr><td><strong>Distributed File Systems</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainDFSShare
 </code></pre></td></tr></tbody></table>
 
 ### **Domain Enumeration - ACL's**
@@ -131,6 +143,7 @@ Get-DomainGPO -ComputerIdentity &#x3C;computer-name>
 </code></pre></td></tr><tr><td><strong>Get GPO applied on an OU.</strong> <sub>(Read GPOname from gplink attribute from <code>Get-NetOU</code>)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGPO -Identity "{gp-link}"
 Get-DomainGPO -Identity (Get-DomainOU -Identity'&#x3C;OU>').gplink.substring(11,(Get-DomainOU -Identity '&#x3C;OU>').gplink.length-72)
+</code></pre></td></tr><tr><td><strong>Domain policy</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainPolicy
 </code></pre></td></tr></tbody></table>
 
 ### **Domain Enumeration - Trusts**
@@ -144,16 +157,18 @@ Get-DomainGPO -Identity (Get-DomainOU -Identity'&#x3C;OU>').gplink.substring(11,
 <table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><p></p><p><strong>Get List of all Domain Trusts</strong></p></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADTrust -Filter *
 Get-ADTrust -Identity &#x3C;domain>
 Get-ADForest | %{Get-ADTrust -Filter *}
-//list the external trusts
+## list the external trusts
 (Get-ADForest).Domains | %{Get-ADTrust -Filter '(intraForest-ne $True) -and (ForestTransitive -ne $True)' -Server $_}
 Get-ADTrust -Filter '(intraForest -ne $True) -and(ForestTransitive -ne $True)'
 Get-ADTrust -Filter * -Server &#x3C;external-domain>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainTrust
 Get-DomainTrust -Domain &#x3C;update>
-//list the external trusts
+## list the external trusts
+Get-ForestTrust
 Get-ForestDomain | %{Get-DomainTrust -Domain $_.Name} | ?{$_.TrustAttributes -eq "FILTER_SIDS"}
 Get-DomainTrust | ?{$_.TrustAttributes -eq "FILTER_SIDS"}
-Get-ForestDomain -Forest &#x3C;external-domain> | %{Get-DomainTrust -Domain $_.Name}
+Get-ForestDomain -Forest &#x3C;external-domain> | %{Get-DomainTrust -Domain $_.Name}
+Get-DomainTrustMapping
 </code></pre></td></tr><tr><td><strong>Get Details about Forest</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADForest
 Get-ADForest -Identity &#x3C;forest-domain>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-Forest
@@ -173,6 +188,7 @@ Get-ForestTrust -Forest &#x3C;forest-domain>
 
 <table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>Find all Machines where user has Local Admin Access</strong><br><sub>(See Find-WMILocalAdminAccess.ps1 &#x26; Find-PSRemotingLocalAdminAccess.ps1)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-LocalAdminAccess -Verbose
+Test-AdminAccess -ComputerName &#x3C;FQDN>
 </code></pre></td></tr><tr><td><strong>Find Computers where Domain Admin/Specified User/Group has Active Sessions</strong><br><sub>(For Server 2019 onwards, require local admin)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-DomainUserLocation -Verbose
 Find-DomainUserLocation -UserGroupIdentity "RDPUsers"
@@ -190,3 +206,4 @@ Invoke-SessionHunter -NoPortScan -Targets C:\AD\servers-except-DC.txt
 
 * [SharpView](https://github.com/dmchell/SharpView)
 * [LAPSToolkit](https://github.com/leoloobeek/LAPSToolkit)
+* BC-SECURITY version of [PowerView](https://github.com/BC-SECURITY/Empire/blob/master/empire/server/data/module_source/situational_awareness/network/powerview.ps1)
