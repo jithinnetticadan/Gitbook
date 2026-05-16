@@ -20,7 +20,7 @@
   * [#domain-enumeration-generic](ad-and-powerview-modules.md#domain-enumeration-generic "mention")
 * [Password Policy Guide](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh994562\(v=ws.11\))
 
-#### [password-attacks](../../exploitation/password-attacks/ "mention")
+#### [credential-attacks](../../exploitation/credential-attacks/ "mention")
 
 #### Spawn a Shell using credentials obtained using above or [initial-credential-access-foothold](initial-credential-access-foothold/ "mention")
 

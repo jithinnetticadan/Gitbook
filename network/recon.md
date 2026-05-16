@@ -108,8 +108,8 @@ nmap -p- -oA script_scan -iL hosts.txt --script auth,broadcast,brute,default,dis
 
 ### Identifying Users
 
-* [#usernames-wordlist-generation](exploitation/password-attacks/spraying-stuffing-and-defaults.md#usernames-wordlist-generation "mention")
-* [#username-enumeration](exploitation/password-attacks/spraying-stuffing-and-defaults.md#username-enumeration "mention")
+* [#usernames-wordlist-generation](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#usernames-wordlist-generation "mention")
+* [#username-enumeration](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#username-enumeration "mention")
 * `kerbrute userenum -d <domain> --dc <IP> wordlist.txt -o valid_ad_users`
 
 ### Identifying Potential Vulnerabilities
