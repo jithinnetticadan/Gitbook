@@ -94,6 +94,7 @@
     * [Windows](network/exploitation/credentials-harvesting/windows.md)
     * [Network Traffic](network/exploitation/credentials-harvesting/network-traffic.md)
   * [Feature Abuse - Jenkins](network/exploitation/feature-abuse-jenkins.md)
+  * [LAPS](network/exploitation/laps.md)
   * [Lateral Movement](network/exploitation/lateral-movement/README.md)
     * [PowerShell Remoting](network/exploitation/lateral-movement/powershell-remoting.md)
   * [Credential Attacks](network/exploitation/credential-attacks/README.md)
