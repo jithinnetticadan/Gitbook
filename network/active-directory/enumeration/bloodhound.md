@@ -20,7 +20,7 @@ Enumerates key AD elements such as:
   * `SharpHound.exe --args --collectionmethods Group,GPOLocalGroup,Session,Trusts,ACL,Container,ObjectProps,SPNTargets,CertServices --ExcludeDCs` <sub>(less noisy)</sub>
 * [AzureHound](https://github.com/SpecterOps/AzureHound)
 * [BloodHound.py](https://github.com/dirkjanm/BloodHound.py) (Python Collector)
-  * `bloodhound-python -u <username> -p <password> -d <domain> -ns <dns-server> -c All --zip`&#x20;
+  * `bloodhound-python -u <username> -p <password> -d <domain> -ns <dns-server/dc-ip> -c All --zip`&#x20;
 * [SOAPHound](https://github.com/FalconForceTeam/SOAPHound) (Stealthier)
   * Talks to Active Driectory Web Services (ADWS - Port 9389) in place of sending    \
     LDAP queries - just like the AD Module.
@@ -50,8 +50,3 @@ Enumerates key AD elements such as:
 2. Set a compromised user as the **Start Node**
 3. Set a target (any Admin Groups Identified earlier) as the **End Node**
 4. Run the search with the desired edge filters
-
-
-
-
-
