@@ -1,5 +1,9 @@
 # Enumeration
 
+### **Basic Commands**
+
+<table data-header-hidden><thead><tr><th width="196.85711669921875">Command</th><th>Result</th></tr></thead><tbody><tr><td><code>hostname</code></td><td>Prints the PC's Name</td></tr><tr><td><code>[System.Environment]::OSVersion.Version</code></td><td>Prints out the OS version and revision level</td></tr><tr><td><code>wmic qfe get Caption,Description,HotFixID,InstalledOn</code></td><td>Prints the patches and hotfixes applied to the host</td></tr><tr><td><code>ipconfig /all</code></td><td>Prints out network adapter state and configurations</td></tr><tr><td><code>set</code></td><td>Displays a list of environment variables for the current session (ran from CMD-prompt)</td></tr><tr><td><code>echo %USERDOMAIN%</code></td><td>Displays the domain name to which the host belongs (ran from CMD-prompt)</td></tr><tr><td><code>echo %logonserver%</code></td><td>Prints out the name of the Domain controller the host checks in with (ran from CMD-prompt)</td></tr><tr><td><code>systeminfo</code></td><td>All above information with single command</td></tr></tbody></table>
+
 #### Password Policy
 
 * Understand Password Policy
@@ -8,7 +12,7 @@
   * `rpcclient -U "" -N <DC-IP>`  -> `getdompwinfo`
   * `enum4linux -P <DC-IP>`  or `enum4linux-ng -P <DC-IP> -oA file`&#x20;
   * `ldapsearch -H <DC-IP> -x -b "DC=<value>,DC=<values>" -s sub "*" | grep -m 1 -B 10 pwdHistoryLength`
-  * `net accounts`
+  * `net accounts /domain`
   * [#domain-enumeration-generic](ad-and-powerview-modules.md#domain-enumeration-generic "mention")
 * [Password Policy Guide](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh994562\(v=ws.11\))
 
