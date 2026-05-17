@@ -3,14 +3,16 @@
 ### Users
 
 * <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">sudo nxc smb &#x3C;DC-IP> -u &#x3C;user> -p &#x3C;pass> --users
-  net user /domain
+  </code></pre>
+* <pre class="language-bat" data-line-numbers><code class="lang-bat">net user /domain
   dsquery user
   </code></pre>
 
 ### Group
 
 * <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">sudo nxc smb &#x3C;DC-IP> -u &#x3C;user> -p &#x3C;pass> --groups
-  net groups /domain
+  </code></pre>
+* <pre class="language-bat" data-line-numbers><code class="lang-bat">net groups /domain
   </code></pre>
 
 ### Logged On Users
@@ -21,7 +23,8 @@
 ### Domain Admins
 
 * <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">python3 windapsearch.py --dc-ip &#x3C;DC-IP> -u &#x3C;user@domain> -p &#x3C;pass> --da
-  net group "Domain Admins" /domain
+  </code></pre>
+* <pre class="language-bat" data-line-numbers><code class="lang-bat">net group "Domain Admins" /domain
   </code></pre>
 
 ### Privileged Users
@@ -31,9 +34,8 @@
 
 ### Computers
 
-* ```shellscript
-  dsquery computer
-  ```
+* <pre class="language-bat" data-line-numbers><code class="lang-bat">dsquery computer
+  </code></pre>
 
 ### Tools
 
