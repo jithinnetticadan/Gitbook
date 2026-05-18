@@ -138,6 +138,7 @@
       * [Enterprise Admins](network/active-directory/exploitation/privesc/enterprise-admins.md)
     * [Credential Harvesting](network/active-directory/exploitation/credential-harvesting/README.md)
       * [ACL's - LAPS](network/active-directory/exploitation/credential-harvesting/acls-laps.md)
+      * [ACL's - DCSync](network/active-directory/exploitation/credential-harvesting/acls-dcsync.md)
       * [Kerberoasting](network/active-directory/exploitation/credential-harvesting/kerberoasting.md)
     * [Lateral Movement](network/active-directory/exploitation/lateral-movement/README.md)
       * [ACL's - ForceResetPassword](network/active-directory/exploitation/lateral-movement/acls-forceresetpassword.md)
