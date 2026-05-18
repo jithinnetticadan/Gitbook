@@ -46,7 +46,10 @@ Get-ADUser -Identity  &#x3C;username> -Properties *
 Get-ADUser -Filter "Name -like 'admin'" 
 Get-ADUser -Identity &#x3C;name> -Properties *
 Get-ADUser -Filter 'Description -like "built"' -Properties Description | select name, Description
-Get-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName ## Kerberoatable Users
+## Kerberoatable Users
+Get-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName
+## Creating List of Domain Users
+Get-ADUser -Filter * | Select-Object -ExpandProperty SamAccountName > ad_users.txt
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser or Get-NetUser
 Get-DomainUser *admin*
 Get-DomainUser -Identity &#x3C;name>
@@ -107,9 +110,17 @@ ACL is a list of Access Control Entries (ACE). Each ACE corresponds to individu
 {% endhint %}
 
 <table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>ACLs - specific Object/Filter</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">(Get-Acl 'AD:\CN=Administrator,CN=Users,DC=&#x3C;update>,DC=&#x3C;update>,DC=local').Access
+## Manual Method to Resolve GUID's
+$guid= "&#x3C;value>"
+Get-ADObject -SearchBase "CN=Extended-Rights,$((Get-ADRootDSE).ConfigurationNamingContext)" -Filter {ObjectClass -like 'ControlAccessRight'} -Properties * |Select Name,DisplayName,DistinguishedName,rightsGuid| ?{$_.rightsGuid -eq $guid} | fl
+## User Target Enum
+foreach($line in [System.IO.File]::ReadLines("C:\ad_users.txt")) {get-acl  "AD:\$(Get-ADUser $line)" | Select-Object Path -ExpandProperty Access | Where-Object {$_.IdentityReference -match '&#x3C;domain>\\&#x3C;username>'}}
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainObjectACL -SamAccountName &#x3C;username> -ResolveGUIDs
 Get-DomainObjectACL -SearchBase 'LDAP://CN=Domain Admins,CN=Users,DC=&#x3C;update>,DC=&#x3C;update>,DC=local' -ResolveGUIDs -Verbose 
 Get-DomainObjectAcl -Identity "Domain Admins" -ResolveGUIDs -Verbose
+<strong>## User Targeted Enum
+</strong>$sid = Convert-NameToSid &#x3C;username>
+Get-DomainObjectACL -ResolveGUIDs -Identity * | ? {$_.SecurityIdentifier -eq $sid} 
 </code></pre></td></tr><tr><td><strong>Search Interesting ACEs</strong></td><td><pre data-line-numbers><code>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-InterestingDomainAcl -ResolveGUIDs
 Find-InterestingDomainAcl -ResolveGUIDs | ?{$_.IdentityReferenceName -match "&#x3C;string>"} 
@@ -182,6 +193,7 @@ Get-ForestGlobalCatalog -Forest &#x3C;forest-domain>
 </code></pre></td></tr><tr><td><strong>Map Trusts of a Forest</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADTrust -Filter 'msDS-TrustForestTrustInfo -ne "$null"'
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ForestTrust
 Get-ForestTrust -Forest &#x3C;forest-domain>
+Get-DomainTrustMapping
 </code></pre></td></tr></tbody></table>
 
 ### **Domain Enumeration - User Hunting**
