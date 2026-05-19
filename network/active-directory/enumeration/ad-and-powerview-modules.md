@@ -85,14 +85,14 @@ Get-NetLoggedon -ComputerName &#x3C;name> (requires local admin rights on target
 Get-LoggedonLocal -ComputerName &#x3C;name> ( requires remote registry service running)
 Get-LastLoggedOn -ComputerName &#x3C;name> (requires remote registry + local admin)
 (Get-DomainOU -Identity '&#x3C;OU>').distinguishedname | %{Get-DomainComputer -SearchBase $_} | select name
-</code></pre></td></tr><tr><td><strong>Domain Controller Local Group Enum</strong> <sub>(requires admin rights on non-dc)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetLocalGroup -ComputerName &#x3C;dc-name>
-Get-NetLocalGroupMember -ComputerName &#x3C;dc-name> -GroupName Administrators
+</code></pre></td></tr><tr><td><strong>Computer Local Group Enum</strong> <sub>(requires admin rights on non-dc)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetLocalGroup -ComputerName &#x3C;DC/Target-FQDN>
+Get-NetLocalGroupMember -ComputerName &#x3C;DC/Target-FQDN> -GroupName Administrators
 </code></pre></td></tr><tr><td><strong>Non-null SPN Accounts</strong> <sub>(Consider for</sub> <a data-mention href="../exploitation/credential-harvesting/kerberoasting.md">kerberoasting.md</a><sub>)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser -SPN
 </code></pre></td></tr><tr><td><strong>Share Enum</strong><br><a href="https://github.com/NetSPI/PowerHuntShares">PowerHuntShares</a></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-ShareFinder -Verbose 
 Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\domain-computer-enum-servers.txt
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-DomainShare ## Finds reachable shares
-<strong>Get-NetShare ## Returns open shares
-</strong>Get-NetShare -ComputerName &#x3C;FQDN>
+Get-NetShare ## Returns open shares
+Get-NetShare -ComputerName &#x3C;FQDN>
 Find-InterestingDomainShareFile ## Searches for files matching specific criteria
 </code></pre></td></tr><tr><td><strong>File Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-FileFinder -Verbose
 </code></pre></td></tr><tr><td><strong>File Server Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetFileServer

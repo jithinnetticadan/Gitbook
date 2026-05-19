@@ -85,7 +85,7 @@
 * `schtasks /create`
 * `schtasks /run <task-name>`&#x20;
 
-#### [bloodhound.md](bloodhound.md "mention")
+#### [bloodhound](bloodhound/ "mention")
 
 #### [ad-and-powerview-modules.md](ad-and-powerview-modules.md "mention")
 

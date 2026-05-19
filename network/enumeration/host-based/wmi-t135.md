@@ -27,6 +27,8 @@ Impacket-wmiexec <user>:"<pass>"@<IP> cmd
 {% endtab %}
 {% endtabs %}
 
+### Lateral Movement [#moving-laterally-using-wmi](../../exploitation/lateral-movement/#moving-laterally-using-wmi "mention")
+
 ### Tools
 
-[wmiexec.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/wmiexec.py)
+* [wmiexec.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/wmiexec.py)
