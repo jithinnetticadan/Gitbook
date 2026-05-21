@@ -118,8 +118,8 @@ foreach($line in [System.IO.File]::ReadLines("C:\ad_users.txt")) {get-acl  "AD:\
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainObjectACL -SamAccountName &#x3C;username> -ResolveGUIDs
 Get-DomainObjectACL -SearchBase 'LDAP://CN=Domain Admins,CN=Users,DC=&#x3C;update>,DC=&#x3C;update>,DC=local' -ResolveGUIDs -Verbose 
 Get-DomainObjectAcl -Identity "Domain Admins" -ResolveGUIDs -Verbose
-<strong>## User Targeted Enum
-</strong>$sid = Convert-NameToSid &#x3C;username>
+## User Targeted Enum
+$sid = Convert-NameToSid &#x3C;username>
 Get-DomainObjectACL -ResolveGUIDs -Identity * | ? {$_.SecurityIdentifier -eq $sid}
 Get-DomainObjectAcl -ResolveGUIDs -Identity "GPO Management" | ? {$_.SecurityIdentifier -eq $sid}
 </code></pre></td></tr><tr><td><strong>Search Interesting ACEs</strong></td><td><pre data-line-numbers><code>
