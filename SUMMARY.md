@@ -128,7 +128,7 @@
       * [Network-Initial Foothold](network/enumeration/initial-access-foothold.md)
       * [AS-REP Roasting](network/active-directory/enumeration/initial-access-foothold/as-rep-roasting.md)
       * [LLMNR/NBT-NS Poisoning](network/active-directory/enumeration/initial-access-foothold/llmnr-nbt-ns-poisoning.md)
-      * [Relay Attacks](network/active-directory/enumeration/initial-access-foothold/relay-attacks.md)
+      * [Coercion/Relay Attacks](network/active-directory/enumeration/initial-access-foothold/coercion-relay-attacks.md)
       * [SCCM (Microsoft Deployment Toolkit)](network/active-directory/enumeration/initial-access-foothold/sccm-microsoft-deployment-toolkit.md)
   * [Exploitation](network/active-directory/exploitation/README.md)
     * [PrivEsc](network/active-directory/exploitation/privesc/README.md)
