@@ -146,6 +146,7 @@
     * [Lateral Movement](network/active-directory/exploitation/lateral-movement/README.md)
       * [ACL's - ForceResetPassword](network/active-directory/exploitation/lateral-movement/acls-forceresetpassword.md)
       * [ACL's - GenericAll,Write](network/active-directory/exploitation/lateral-movement/acls-genericall-write.md)
+      * [Coercion/Relay Attacks](network/active-directory/enumeration/initial-access-foothold/coercion-relay-attacks.md)
       * [Kerberos Double Hop Issue](network/active-directory/exploitation/lateral-movement/kerberos-double-hop-issue.md)
       * [PSRemote/WinRM](network/exploitation/lateral-movement/psremote-winrm.md)
     * [Persistence](network/active-directory/exploitation/persistence/README.md)
