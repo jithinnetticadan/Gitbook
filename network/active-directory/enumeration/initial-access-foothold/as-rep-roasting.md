@@ -30,6 +30,7 @@
 
 ### Force Disable Kerberos Preauth
 
+* If an attacker has `GenericWrite` or `GenericAll` permissions over an account, they can enable this attribute and obtain the AS-REP ticket
 * _**PowerView**_
   * ``Set-DomainObject -Identity <username> -XOR @{useraccountcontrol=4194304} ` -Verbose``
 
