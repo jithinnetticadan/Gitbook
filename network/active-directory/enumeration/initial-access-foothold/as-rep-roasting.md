@@ -12,6 +12,7 @@
 * **Tools**
   * _**PowerView**_
     * `Get-DomainUser -PreauthNotRequired -Verbose`
+    * `Get-DomainUser -UACFilter PASSWD_NOTREQD | Select-Object samaccountname,useraccountcontrol`
   * _**ADModule**_
     * `Get-ADUser -Filter {DoesNotRequirePreAuth -eq $True}  -Properties DoesNotRequirePreAuth`
 
