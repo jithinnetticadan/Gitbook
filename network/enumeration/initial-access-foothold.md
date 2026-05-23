@@ -114,6 +114,7 @@ if __name__ == "__main__":
       * `sudo ldapmodify -Y EXTERNAL -H ldapi:// -f ./olcSaslSecProps.ldif && sudo service slapd restart`&#x20;
       * `ldapsearch -H ldap:// -x -LLL -s base -b "" supportedSASLMechanisms`&#x20;
       * `sudo tcpdump -SX -i <network-iface> tcp port 389`&#x20;
+  * [https://grimhacker.com/2018/03/09/just-a-printer/](https://grimhacker.com/2018/03/09/just-a-printer/)
 
 ### Configuration Files
 

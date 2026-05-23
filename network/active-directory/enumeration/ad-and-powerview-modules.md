@@ -57,6 +57,10 @@ Get-DomainUser -AdminCount
 Get-DomainUser -Identity &#x3C;name> -Properties samaccountname, logonCount 
 Get-DomainUser -LDAPFilter "Description=built" | Select name, Description
 Get-DomainUser -Identity &#x3C;user> -Domain &#x3C;valus> | Select-Object -Property namesamaccountname,description,memberof,whencreated,pwdlastset,lastlogontimestamp,accountexpires,admincount,userprincipalname,serviceprincipalname,useraccountcontrol
+## Find Passwords in Description Field
+Get-DomainUser * | Select-Object samaccountname,description |Where-Object {$_.Description -ne $null}
+## PASSWD_NOTREQD Field
+Get-DomainUser -UACFilter PASSWD_NOTREQD | Select-Object samaccountname,useraccountcontrol
 </code></pre></td></tr><tr><td><strong>Group Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADGroup -Filter *
 Get-ADGroup -Filter * | Select Name
 Get-ADGroup -Filter * -Properties * 

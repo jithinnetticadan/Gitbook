@@ -11,11 +11,14 @@
 
 ### Footprinting the Service
 
-* **DIG - NS Query -** `dig ns <domain> @<DNS-server-IP>`&#x20;
-* **DIG - Version Query -** `dig CH TXT version.bind <DNS-server-IP>`&#x20;
-* **DIG - ANY Query -** `dig any <domain> @<DNS-server-IP>`&#x20;
-* **DIG - AXFR Zone Transfer -** `dig axfr <domain> @<DNS-server-IP>` or `fierce --domain <example.com>`
-* **DIG - AXFR Zone Transfer - Internal -** `dig axfr internal.<domain> @<DNS-server-IP>` &#x20;
+* #### External DNS
+  * **DIG - NS Query -** `dig ns <domain> @<DNS-server-IP>`&#x20;
+  * **DIG - Version Query -** `dig CH TXT version.bind <DNS-server-IP>`&#x20;
+  * **DIG - ANY Query -** `dig any <domain> @<DNS-server-IP>`&#x20;
+  * **DIG - AXFR Zone Transfer -** `dig axfr <domain> @<DNS-server-IP>` or `fierce --domain <example.com>`
+  * **DIG - AXFR Zone Transfer - Internal -** `dig axfr internal.<domain> @<DNS-server-IP>`&#x20;
+* #### AD DNS
+  * `adidnsdump -u <domain>\\<username> ldap://<DC-IP>`  <sup><sub>(run again with the<sub></sup> <sup><sub> </sup><sup><sub>`-r`<sub></sup> <sup><sub> </sup><sup><sub>, attempts to resolve unknown records by performing<sub></sup> <sup><sub> </sup><sup><sub>`A`<sub></sup> <sup><sub> </sup><sup><sub>query)<sub></sup>
 
 ### Subdomain Brute Forcing
 
