@@ -1,2 +1,0 @@
-# ADRecon.ps1
-
