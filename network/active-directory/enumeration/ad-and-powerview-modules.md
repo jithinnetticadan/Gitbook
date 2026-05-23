@@ -144,9 +144,15 @@ Invoke-ACLScanner -ResolveGUIDs
 * OU is the lowest-level AD container to which GPO can be applied.
 {% endhint %}
 
-<table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>GPO List in Current Domain.</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
+<table><thead><tr><th>Enum Type</th><th>AD Module</th><th>PowerView</th></tr></thead><tbody><tr><td><strong>GPO List in Current Domain.</strong><br><a href="https://docs.microsoft.com/en-us/powershell/module/grouppolicy/?view=windowsserver2022-ps">GroupPolicyModule</a></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">## Enumerating GPO Names with GroupPolicyModule
+Get-GPO -All | Select DisplayName
+Get-GPO -Guid &#x3C;ObjectDN-CN-value>
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGPO
+Get-DomainGPO | select displayname
 Get-DomainGPO -ComputerIdentity &#x3C;computer-name>
+## Enumerate DomainUser GPO Rights
+$sid=Convert-NameToSid "Domain Users"
+Get-DomainGPO | Get-ObjectAcl | ?{$_.SecurityIdentifier -eq $sid}
 </code></pre></td></tr><tr><td><strong>GPO(s) which use Restricted Groups or groups.xml</strong> <sub>(add Domain Group as Local Group)</sub></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainGPOLocalGroup
 </code></pre></td></tr><tr><td><strong>Users in a Local Group of a Machine</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">
