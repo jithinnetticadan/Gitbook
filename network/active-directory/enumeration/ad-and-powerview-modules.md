@@ -104,6 +104,8 @@ Find-InterestingDomainShareFile ## Searches for files matching specific criteria
 </code></pre></td></tr><tr><td><strong>File Server Enum</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetFileServer
 Get-DomainFileServer
 </code></pre></td></tr><tr><td><strong>Distributed File Systems</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainDFSShare
+</code></pre></td></tr><tr><td><strong>DomainForeignGroupMember</strong></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainForeignGroupMember -Domain &#x3C;external-forest-domain>
+Convert-SidToName &#x3C;MemberName>
 </code></pre></td></tr></tbody></table>
 
 ### **Domain Enumeration - ACL's**
