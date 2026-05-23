@@ -35,6 +35,17 @@
 ### Computers
 
 * <pre class="language-bat" data-line-numbers><code class="lang-bat">dsquery computer
+  netdom query /domain:&#x3C;value> workstation
+  </code></pre>
+
+### Domain Controllers
+
+* <pre class="language-bat" data-line-numbers><code class="lang-bat">netdom query /domain:&#x3C;value> dc
+  </code></pre>
+
+### Domain Trust
+
+* <pre class="language-bat" data-line-numbers><code class="lang-bat">netdom query /domain:&#x3C;value> trust
   </code></pre>
 
 ### Tools

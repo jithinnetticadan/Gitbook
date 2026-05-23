@@ -61,6 +61,8 @@ Get-DomainUser -Identity &#x3C;user> -Domain &#x3C;valus> | Select-Object -Prope
 Get-DomainUser * | Select-Object samaccountname,description |Where-Object {$_.Description -ne $null}
 ## PASSWD_NOTREQD Field
 Get-DomainUser -UACFilter PASSWD_NOTREQD | Select-Object samaccountname,useraccountcontrol
+## Check Users in Child-Domain
+Get-DomainUser -Domain &#x3C;child.parent.local> | select SamAccountName
 </code></pre></td></tr><tr><td><strong>Group Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADGroup -Filter *
 Get-ADGroup -Filter * | Select Name
 Get-ADGroup -Filter * -Properties * 
