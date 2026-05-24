@@ -4,6 +4,7 @@
 
 * **Linux**
   * `sudo responder -I <interface> -dP` <sup><sub>(-v verbose) (-w for WPAD server)<sub></sup>
+  * `sudo responder -I <interface> -wrfv`
 * **Windows**
   * `Import-Module .\Inveigh.ps1`
   * `(Get-Command Invoke-Inveigh).Parameters`&#x20;
