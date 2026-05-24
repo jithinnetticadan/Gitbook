@@ -3,6 +3,7 @@
 ### Users
 
 * <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">sudo nxc smb &#x3C;DC-IP> -u &#x3C;user> -p &#x3C;pass> --users
+  cat usernames.txt | cut -d'\' -f2 | awk -F " " '{print $1}' | tee cleanusers.txt
   </code></pre>
 * <pre class="language-bat" data-line-numbers><code class="lang-bat">net user /domain
   dsquery user
