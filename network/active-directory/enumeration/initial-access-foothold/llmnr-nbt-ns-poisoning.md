@@ -1,6 +1,12 @@
 # LLMNR/NBT-NS Poisoning
 
-#### Capturing Hashes
+{% hint style="warning" %}
+* When you run a hash‑capture tool from one machine, you get **poisoned broadcast traffic** (LLMNR/NBT‑NS/WPAD).
+* If the machine is **AD‑joined**, you can also capture **direct authentication attempts** made to that specific host (SMB, RDP, mapped drives, scheduled tasks, etc.).
+* Because each machine may receive its own legitimate auth traffic, running from **different AD‑joined machines** can yield **different user hashes** — not only from poisoning, but also from those direct connections.
+{% endhint %}
+
+### Capturing Hashes
 
 * **Linux**
   * `sudo responder -I <interface> -dP` <sup><sub>(-v verbose) (-w for WPAD server)<sub></sup>
