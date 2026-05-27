@@ -66,13 +66,16 @@ ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
 
 ### Google Dorking
 
-<pre class="language-shellscript" data-line-numbers data-full-width="false"><code class="lang-shellscript">site:target.com inurl:admin | inurl:.git
+{% code lineNumbers="true" fullWidth="false" %}
+```shellscript
+site:target.com inurl:admin | inurl:.git
 site:target.com ext:sql | ext:log
 site:target.com intitle:"index of"
 site:target.com filetype:env
-intext:&#x3C;domain> inurl:amazonaws.com //Search for AWS
-<strong>intext:&#x3C;domain> inurl:blob.core.windows.net //Search for Azure
-</strong></code></pre>
+intext:<domain> inurl:amazonaws.com //Search for AWS
+intext:<domain> inurl:blob.core.windows.net //Search for Azure
+```
+{% endcode %}
 
 ### Banner Grabbing
 
@@ -88,16 +91,15 @@ Netcraft
 
 ### Crawling/Spidering
 
-* **List Directories/Pages**
-
-<pre class="language-shellscript" data-line-numbers data-full-width="false"><code class="lang-shellscript"><strong>gobuster dir -u "url" -w /usr/share/seclists/Discovery/Web-Content/common.txt
-</strong>ffuf -w &#x3C;worslist>:FUZZ -u http://&#x3C;host>/FUZZ
-dirb &#x3C;url> &#x3C;wordlist>
-robots.txt
-https://example.com/.well-known/ -> security.txt, change-password, openid-configuration, assetlinks.json, mta-sts.txt
-</code></pre>
-
+* **List Directories**
+* <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">gobuster dir -u "url" -w /usr/share/seclists/Discovery/Web-Content/common.txt
+  ffuf -s -w &#x3C;worslist>:FUZZ -u http://&#x3C;host>/FUZZ
+  dirb &#x3C;url> &#x3C;wordlist>
+  robots.txt
+  https://example.com/.well-known/ -> security.txt, change-password, openid-configuration, assetlinks.json, mta-sts.txt
+  </code></pre>
 * Tools -> [reconspider](https://github.com/bhavsec/reconspider) (need `pip install scrapy`), Apache Nutch, BurpSuite, OWASPZap
+* **List Pages**
 
 ### Automated Scan
 
@@ -114,8 +116,11 @@ OpenVAS
 
 #### S3 Bucket Enum
 
-<pre class="language-shellscript" data-title="find subs -> find alive hosts -> sort &#x26; add hosts to file (output to terminal) -> fetch paths -> grep patterns" data-full-width="false"><code class="lang-shellscript"><strong>assetfinder --subs-only &#x3C;domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s3-buckets
-</strong></code></pre>
+{% code title="find subs -> find alive hosts -> sort & add hosts to file (output to terminal) -> fetch paths -> grep patterns" fullWidth="false" %}
+```shellscript
+assetfinder --subs-only <domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s3-buckets
+```
+{% endcode %}
 
 #### Other Steps
 
