@@ -100,6 +100,8 @@ Netcraft
   </code></pre>
 * Tools -> [reconspider](https://github.com/bhavsec/reconspider) (need `pip install scrapy`), Apache Nutch, BurpSuite, OWASPZap
 * **List Pages**
+* <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">ffuf -w -s &#x3C;worslist>:FUZZ -u http://&#x3C;host>/pageFUZZ
+  </code></pre>
 
 ### Automated Scan
 
