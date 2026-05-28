@@ -97,10 +97,12 @@ Netcraft
   dirb &#x3C;url> &#x3C;wordlist>
   robots.txt
   https://example.com/.well-known/ -> security.txt, change-password, openid-configuration, assetlinks.json, mta-sts.txt
+  ## Recursive Scanning
+  ffuf -s -v -w &#x3C;worslist>:FUZZ -u http://&#x3C;host>/FUZZ -recursion -recursion-depth 1 -e '.php,.html'
   </code></pre>
 * Tools -> [reconspider](https://github.com/bhavsec/reconspider) (need `pip install scrapy`), Apache Nutch, BurpSuite, OWASPZap
 * **List Pages**
-* <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">ffuf -w -s &#x3C;worslist>:FUZZ -u http://&#x3C;host>/pageFUZZ
+* <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">ffuf -s -w &#x3C;worslist>:FUZZ -u http://&#x3C;host>/pageFUZZ
   </code></pre>
 
 ### Automated Scan
