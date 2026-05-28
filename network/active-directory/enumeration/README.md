@@ -99,3 +99,4 @@
 * [enum4linux](https://labs.portcullis.co.uk/tools/enum4linux)/[enum4linux-ng](https://github.com/cddmp/enum4linux-ng)
 * [windapsearch](https://github.com/ropnop/windapsearch)
 * [ldapsearch](https://linux.die.net/man/1/ldapsearch)
+* [AdStrike](https://github.com/capture0x/AdStrike)
