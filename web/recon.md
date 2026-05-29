@@ -106,6 +106,11 @@ Netcraft
 * <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">ffuf -s -w &#x3C;worslist>:FUZZ -u http://&#x3C;host>/pageFUZZ
   </code></pre>
 
+### Parameter Fuzzing
+
+* <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">ffuf -s -w burp-parameter-names.txt:FUZZ -u http://&#x3C;url>:PORT/admin.php?FUZZ=key -fs xxx
+  </code></pre>
+
 ### Automated Scan
 
 {% code lineNumbers="true" fullWidth="false" %}
