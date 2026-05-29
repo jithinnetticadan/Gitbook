@@ -109,6 +109,7 @@ Netcraft
 ### Parameter Fuzzing
 
 * <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">ffuf -s -w burp-parameter-names.txt:FUZZ -u http://&#x3C;url>:PORT/admin.php?FUZZ=key -fs xxx
+  ffuf -s -w burp-parameter-names.txt:FUZZ -u -u http://&#x3C;url>:PORT/admin.php -X POST -d 'FUZZ=key' -H 'Content-Type: application/x-www-form-urlencoded' -fs xxx
   </code></pre>
 
 ### Automated Scan
