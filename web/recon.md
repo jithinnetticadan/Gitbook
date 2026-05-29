@@ -52,7 +52,7 @@ https://crt.sh/
 site:*.domain.com -site:www.domain.com
 dnsrecon -t brt -d <domain.com>
 sublist3r.py -d <domain.com>
-fuf -s -w subdomains-top1million-5000.txt:FUZZ -u https://FUZZ.domain.com/
+ffuf -s -w subdomains-top1million-5000.txt:FUZZ -u https://FUZZ.domain.com/
 ```
 {% endcode %}
 
