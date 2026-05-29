@@ -52,6 +52,7 @@ https://crt.sh/
 site:*.domain.com -site:www.domain.com
 dnsrecon -t brt -d <domain.com>
 sublist3r.py -d <domain.com>
+fuf -s -w subdomains-top1million-5000.txt:FUZZ -u https://FUZZ.domain.com/
 ```
 {% endcode %}
 
@@ -60,7 +61,7 @@ sublist3r.py -d <domain.com>
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
 gobuster vhost -u "url" --domain domain.com -w <wordlist> --append-domain //gobuster vhost --help
-ffuf -w <wordlist> -H "Host: FUZZ.domain.com" -u http://<ip>
+ffuf -s -w subdomains-top1million-5000.txt:FUZZ -H "Host: FUZZ.domain.com" -u http://<ip>
 ```
 {% endcode %}
 
