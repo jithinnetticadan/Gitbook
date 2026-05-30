@@ -102,3 +102,11 @@
 ### Bypass WAF using Hackvertor&#x20;
 
 * Encode -> dec\_entities/hex\_entities
+
+### Mitigation
+
+* Input Sanitization
+* Input Validation
+* Minimum User Privileges
+* Web Application Firewall
+* Parameterized Queries
