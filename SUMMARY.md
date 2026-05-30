@@ -77,6 +77,7 @@
     * [SMTP - T25,465,587,2525](network/enumeration/host-based/smtp-t25-465-587-2525.md)
     * [SNMP - U161,162](network/enumeration/host-based/snmp-u161-162.md)
     * [SSH - T22](network/enumeration/host-based/ssh-t22.md)
+    * [Subversion - T3960](network/enumeration/host-based/subversion-t3960.md)
     * [Telnet - T23](network/enumeration/host-based/telnet-t23.md)
     * [TFTP - U69](network/enumeration/host-based/tftp-u69.md)
     * [VNC - T5900,5901,5902](network/enumeration/host-based/vnc-t5900-5901-5902.md)

