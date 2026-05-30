@@ -10,7 +10,8 @@
 
 * First-order SQL injection arises where the application takes user input from an HTTP request&#x20;
 * Second-order (stored SQLi), takes user input from an HTTP request and stores it for future use.
-* The DB when fetching from stored values might not perform any additional sanitization.&#x20;
+* The DB when fetching from stored values might not perform any additional sanitization and the attacker will be able to see output in another page.
+* Payload injected in a particular HTTP Request, but the effect is not visible in the same response but somewhere else within the application where this query is processed and details are retrieved.&#x20;
 
 ### Retrieving Hidden Data&#x20;
 
