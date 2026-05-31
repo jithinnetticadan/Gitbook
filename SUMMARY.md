@@ -16,6 +16,7 @@
   * [Content-Security-Policy Bypass](web/vulnerabilities/content-security-policy-bypass.md)
   * [Clickjacking](web/vulnerabilities/clickjacking.md)
   * [Directory Traversal](web/vulnerabilities/directory-traversal.md)
+  * [File Inclusion](web/vulnerabilities/file-inclusion.md)
   * [File Upload](web/vulnerabilities/file-upload.md)
   * [GraphQL Injection](web/vulnerabilities/graphql-injection.md)
   * [HTTP Request Smuggling](web/vulnerabilities/http-request-smuggling.md)
