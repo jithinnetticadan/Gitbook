@@ -98,7 +98,7 @@ if(req.query.language) {
 
 </details>
 
-### Basic LFI <a href="#basic-lfi" id="basic-lfi"></a>
+#### Basic LFI <a href="#basic-lfi" id="basic-lfi"></a>
 
 * Able to change the **absolute** file path being pulled to read the content of a different local file.
 * Source Code: `include($_GET['language']);`
@@ -107,7 +107,7 @@ if(req.query.language) {
   * Linux: `/etc/passwd`
   * Windows: `C:\Windows\boot.ini`&#x20;
 
-### Path Traversal <a href="#path-traversal" id="path-traversal"></a>
+#### Path Traversal <a href="#path-traversal" id="path-traversal"></a>
 
 * Bypass restrictions by traversing directories using **relative paths**
 * Source Code: `include("./languages/" . $_GET['language']);`
@@ -115,20 +115,33 @@ if(req.query.language) {
 * Trick would work even if the entire parameter was used in the `include()` function or prefixed with some value.
 * e.g. `../../../../etc/passwd`&#x20;
 
-### Filename Prefix <a href="#filename-prefix" id="filename-prefix"></a>
+#### Filename Prefix <a href="#filename-prefix" id="filename-prefix"></a>
 
 * Some cases wher our input may be appended after a different string
 * Source Code: `include("lang_" . $_GET['language']);`
 * Instead of directly using path traversal, we can prefix a `/` before our payload, and this should consider the prefix as a directory, and then we should bypass the filename and be able to traverse directories
 * eg. `/../../etc/passwd`&#x20;
 
-### Appended Extensions <a href="#appended-extensions" id="appended-extensions"></a>
+#### Appended Extensions <a href="#appended-extensions" id="appended-extensions"></a>
 
 * We would not have to write the extension every time we need to change the language. This may also be safer as it may restrict us to only including PHP files
 * `include($_GET['language'] . ".php");`
 * Append `#` to consider the extension as fragment.
 
-### Second-Order Attacks <a href="#second-order-attacks" id="second-order-attacks"></a>
+#### Second-Order Attacks <a href="#second-order-attacks" id="second-order-attacks"></a>
 
 * Occurs when web application functionalities may be insecurely pulling files from the back-end server based on user-controlled parameters.
 * For example, a web application may allow us to download our avatar through a URL like (`/profile/$username/avatar.png`). If we craft a malicious LFI username (e.g. `../../../etc/passwd`), then it may be possible to change the file being pulled to another local file on the server and grab it instead of our avatar.
+
+### Basic Bypasses <a href="#basic-bypasses" id="basic-bypasses"></a>
+
+* #### Non-Recursive Path Traversal Filters <a href="#non-recursive-path-traversal-filters" id="non-recursive-path-traversal-filters"></a>
+  * Basic filters against LFI is a search and replace filter, where it simply deletes substrings of (../) to avoid path traversals.
+  * `$language = str_replace('../', '', $_GET['language']);`
+  * **Bypasses**: `..././`, `....////`, `....//` , `....\/`&#x20;
+* #### Encoding <a href="#encoding" id="encoding"></a>
+  * Web filters may prevent input filters that include certain LFI-related characters, like a dot `.` or a slash `/` used for path traversals.
+  * Filters may be bypassed by URL encoding our input, such that it would no longer include these bad characters.
+  * Byapss: `%2e%2e%2f`&#x20;
+* #### Approved Paths <a href="#approved-paths" id="approved-paths"></a>
+  * Web applications may also use Regular Expressions to ensure that the file being included is under a specific path.
