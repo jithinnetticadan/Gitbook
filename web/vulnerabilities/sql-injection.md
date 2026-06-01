@@ -110,3 +110,14 @@
 * Minimum User Privileges
 * Web Application Firewall
 * Parameterized Queries
+  * **What it is:** A query with placeholders (`?`, `$1`, `%s`) where values are bound separately.
+  * **How it works:** The application sends the SQL logic and the data as two distinct parts.
+  * **Why it matters:** Prevents SQL injection because user input is treated strictly as data, not executable SQL.
+  * **Performance:** May or may not reuse compiled query plans depending on the driver/database.
+  * **Best use:** Everyday coding for safety and clarity when handling user input.
+* Prepared Statements
+  * **What it is:** A query that the database engine compiles once and stores for reuse.
+  * **How it works:** SQL logic is parsed, validated, and optimized first; parameters are fed in later.
+  * **Why it matters:** Faster for repeated queries since the plan is reused, and also safe against SQL injection.
+  * **Performance:** Always benefits from precompilation when executed multiple times.
+  * **Best use:** High‑performance scenarios where the same query runs many times with different values.
