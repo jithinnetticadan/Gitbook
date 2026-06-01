@@ -145,3 +145,4 @@ if(req.query.language) {
   * Byapss: `%2e%2e%2f`&#x20;
 * #### Approved Paths <a href="#approved-paths" id="approved-paths"></a>
   * Web applications may also use Regular Expressions to ensure that the file being included is under a specific path.
+  * `if(preg_match('/^./languages/.+$/', $_GET['language'])) { include($_GET['language']); } else { echo 'Illegal path specified!'; }`
