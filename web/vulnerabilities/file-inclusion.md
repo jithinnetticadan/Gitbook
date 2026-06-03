@@ -295,7 +295,7 @@ if(req.query.language) {
 * **Render Payload**: `http://<SERVER_IP>:/index.php?language=`**`/var/log/apache2/access.log&cmd=id`**
 * **Note**: If the `ssh` or `ftp` services are exposed to us, and we can read their logs through LFI, then try logging into them and set the username to PHP code, and upon including their logs, the PHP code would execute. The same applies the `mail` services, as we can send an email containing PHP code, and upon its log inclusion, the PHP code would execute. We can generalize this technique to any logs that log a parameter we control and that we can read through the LFI vulnerability.
 
-
+## Automated Scanning <a href="#automated-scanning" id="automated-scanning"></a>
 
 
 
