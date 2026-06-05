@@ -231,7 +231,8 @@ Content-Length: 49
 * Causing a `Denial of Service (DoS)` on the back-end server.
 * Overwriting critical system files and configurations.
 
-### Links
+### Web Shells
 
 * [Web-Shells](https://github.com/jbarcia/Web-Shells)
+* [phpbash](https://github.com/Arrexel/phpbash)
 
