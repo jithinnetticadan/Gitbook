@@ -7,4 +7,5 @@
   * [SemGrep](https://semgrep.dev/docs/)
 * **Binary Analysis**
   * [vulhunt.re](https://vulhunt.re/docs/)
+  * [binary.ninja](https://binary.ninja/)
 
