@@ -8,7 +8,7 @@
 *  [Ilasm.exe (IL Assembler)](https://learn.microsoft.com/en-us/dotnet/framework/tools/ilasm-exe-il-assembler)  &#x20;& [Ildasm.exe (IL Disassembler)](https://learn.microsoft.com/en-us/dotnet/framework/tools/ildasm-exe-il-disassembler)\
   C:\Windows\Microsoft.NET\Framework\\\<version>
 * [jd-gui](https://github.com/java-decompiler/jd-gui) - Java decompiler
-* **Immunity Debugger**, [IDA Pro](https://hex-rays.com/ida-pro) - C/C++ decompiler\
+* **Immunity Debugger**, [IDA Pro](https://hex-rays.com/ida-pro), [binary.ninja](https://binary.ninja/) - C/C++ decompiler\
 
 * [decompiler-explorer](https://github.com/decompiler-explorer/decompiler-explorer) & [dogbolt.org](https://dogbolt.org/)<br>
 
