@@ -173,3 +173,7 @@
 * Some web sites expect to receive requests in this format but will tolerate other content types, including XML
 * Change the content-type header from `URL-encoded` to `text/xml` and provide the parameters in XML format
 * If application accepts the XML format try for XML vulnerability mentioned above
+
+| XQuery Injection | `'` `;` `--` `/* */`                              |
+| ---------------- | ------------------------------------------------- |
+| XPath Injection  | `'` `or` `and` `not` `substring` `concat` `count` |
