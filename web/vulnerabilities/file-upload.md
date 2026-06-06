@@ -59,18 +59,21 @@
 * Upload a .htaccess file
 * `AddType application/x-httpd-php .133t`&#x20;
 * Modify `Content-Type` to text/plain&#x20;
-* Upload a php payload with extension .133t which will be treated as php file.
+* Upload a php payload with extension .133t which will be treated as `php` file.
 
 ### Obfuscated File Extension&#x20;
 
-* Try following patterns&#x20;
-  * filename.php.jpg, filename.jpg.php, filename.php., filename%2Ephp (url encode), filename.pphphp&#x20;
-* Provide multiple extensions&#x20;
-* Add trailing characters (".") - > filename.php.&#x20;
+* Try following patterns by providing multiple extensions&#x20;
+  * `filename.php.jpg`, `filename.jpg.php`, `filename.php.`, `filename%2Ephp` <sup><sub>(url encode)<sub></sup>, `filename.pphphp`
+* In Windows Servers, file names are case insensitive, so we may try uploading a `php` with a mixed-case (e.g. `pHp`), which may bypass the blacklist.
+* Add trailing characters (".") - > `filename.php.`
 * Try using the URL encoding (or double URL encoding) for dots, forward slashes, and backward slashes&#x20;
-* Add semicolons or URL-encoded null byte characters before the file extension.&#x20;
-* Try using multibyte Unicode characters, which may be converted to null bytes and dots after unicode conversion or normalization. (xC0 x2E, xC4 xAE or xC0 xAE translated to x2E if parsed as UTF-8 string)&#x20;
-* Use nested extensions to bypass stripping
+* Add semicolons or URL-encoded null byte characters before the file extension. (`%00`)
+* Try using multibyte Unicode characters, which may be converted to null bytes and dots after unicode conversion or normalization. (`xC0 x2E`, `xC4 xAE` or `xC0 xAE` translated to x2E if parsed as UTF-8 string)&#x20;
+* Use nested extensions to bypass stripping - `pphphp`&#x20;
+* #### Fuzzing Extensions <a href="#fuzzing-extensions" id="fuzzing-extensions"></a>
+  * **Wordlists** -  [PayloadsAllTheThings-ExtensionsPHP](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20PHP/extensions.lst), [PayloadsAllTheThings-ExtensionsASP](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Upload%20Insecure%20Files/Extension%20ASP), [SecLists-web-extensions](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt)
+  * **Note**: Un-tick the `URL Encoding` option to avoid encoding the (`.`) before the file extension if fuzzing using BurpSuite.
 
 ### Flawed Validation of the File's Contents&#x20;
 
