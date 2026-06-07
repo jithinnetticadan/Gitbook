@@ -52,6 +52,7 @@
 ### **Insecure Direct Object References**
 
 * Check for any incremental parameter that can be tampered
+* [insecure-direct-object-references-idor.md](insecure-direct-object-references-idor.md "mention")
 
 ### **Vulnerabilities in Multi-Step Processes**
 
