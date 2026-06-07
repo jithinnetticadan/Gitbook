@@ -15,4 +15,12 @@ An HTTP Verb Tampering attack exploits web servers that accept many HTTP verbs a
 ### Insecure Configurations <a href="#insecure-configurations" id="insecure-configurations"></a>
 
 * A web server's authentication configuration may be limited to specific HTTP methods, which would leave some HTTP methods accessible without authentication.
+* ```xml
+  <Limit GET POST>
+      Require valid-user
+  </Limit>
+  ```
 
+### Insecure Coding <a href="#insecure-coding" id="insecure-coding"></a>
+
+* Occurs when a web developer applies specific filters to mitigate particular vulnerabilities while not covering all HTTP methods with that filter.
