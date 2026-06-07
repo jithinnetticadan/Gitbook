@@ -48,6 +48,7 @@
 * Enables us to read the content of sensitive files, like configuration files that may contain passwords or other sensitive files like an `id_rsa` SSH key of a specific user, which may grant us access to the back-end server.
 * Another benefit of local file disclosure is the ability to obtain the source code of the web application.
 * If a file contains some of XML's special characters (e.g. `<`/`>`/`&`), it would break the external entity reference and not be used for the reference. Furthermore, we cannot read any binary data, as it would also not conform to the XML format.
+* Advanced Exfiltration with CDATA
 
 ## Remote Code Execution
 
