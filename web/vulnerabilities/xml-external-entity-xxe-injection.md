@@ -289,6 +289,18 @@ they stop expansion at one level. -->
 * If application accepts the XML format, try for XML vulnerability mentioned above.
 * If a web app sends requests in a JSON format, we can try changing the `Content-Type` header to `application/xml`, and then convert the JSON data to XML with an [online tool](https://www.convertjson.com/json-to-xml.htm).
 
+## Mitigations
+
+* Avoid Outdated Components
+* Disable referencing custom `Document Type Definitions (DTDs)`
+* Disable referencing `External XML Entities`
+* Disable `Parameter Entity` processing
+* Disable support for `XInclude`
+* Prevent `Entity Reference Loops`&#x20;
+* Proper exception handling in our web applications and `should always disable displaying runtime errors in web servers`.
+* Web Application Firewalls (WAFs) is another layer of protection against XXE exploitation.
+
 | XQuery Injection | `'` `;` `--` `/* */`                              |
 | ---------------- | ------------------------------------------------- |
 | XPath Injection  | `'` `or` `and` `not` `substring` `concat` `count` |
+
