@@ -1,3 +1,24 @@
+---
+layout:
+  width: wide
+  title:
+    visible: true
+  description:
+    visible: false
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: true
+  metadata:
+    visible: true
+  tags:
+    visible: true
+  actions:
+    visible: true
+---
+
 # Recon
 
 ### Identifying Hosts
@@ -92,19 +113,12 @@ nmap -sC -p- -oA script_scan -iL hosts.txt
 nmap -p- -oA script_scan -iL hosts.txt --script auth,broadcast,brute,default,discovery,exploit,fuzzer,intrusive,safe,vuln
 ```
 
-<details>
+### Parse Nmap Results
 
-<summary>Metasploit Setup</summary>
-
-1. workspace -a \<name>
-2. workspace \<name>
-3. db\_import \*.xml
-4. load alias
-5. alias sv services
-
-
-
-</details>
+* [EyeWitness](https://github.com/FortyNorthSecurity/EyeWitness) <sup><sub>(for web app evidence collection)<sub></sup>
+* [Aquatone](https://github.com/michenriksen/aquatone) <sup><sub>(for web app evidence collection)<sub></sup>
+* Metasploit
+  * `workspace -a <name>`  -> `workspace <name>`  -> `db_import *.xml`  -> `load alias`  -> `alias sv services`
 
 ### Identifying Users
 

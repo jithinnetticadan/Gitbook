@@ -115,6 +115,7 @@
     * [Linux](network/exploitation/privilege-escalation/linux.md)
     * [Windows](network/exploitation/privilege-escalation/windows.md)
   * [Shells & Listeners](network/exploitation/shells-and-listeners.md)
+* [Report Guide](network/report-guide.md)
 * [References](network/references.md)
 * [Active Directory](network/active-directory.md)
   * [Recon](network/active-directory/recon.md)
