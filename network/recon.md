@@ -119,7 +119,7 @@ nmap -p- -oA script_scan -iL hosts.txt --script auth,broadcast,brute,default,dis
 * [EyeWitness](https://github.com/FortyNorthSecurity/EyeWitness) <sup><sub>(for web app evidence collection)<sub></sup>
   * `eyewitness --web -x *.xml -d <folder>`
 * [`Aquatone`](https://github.com/michenriksen/aquatone) `or` [`aquatone`](https://github.com/shelld3v/aquatone) <sup><sub>`(for web app evidence collection)`<sub></sup>
-  * `./aquatone -nmap *.xml`
+  * `cat nmap.xml | ./aquatone -nmap`
 * Metasploit
   * `workspace -a <name>`  -> `workspace <name>`  -> `db_import *.xml`  -> `load alias`  -> `alias sv services`
 
