@@ -319,6 +319,8 @@ def handleResponse(req, interesting):
 
 ### PDF Injection
 
+* [malicious-pdf](https://github.com/jonaslejon/malicious-pdf)
+
 {% file src="../../.gitbook/assets/xss2pdf.py" %}
 
 ### Examples of attacks
