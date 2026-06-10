@@ -1,37 +1,55 @@
 ---
 icon: user-hoodie
+layout:
+  width: wide
+  title:
+    visible: true
+  description:
+    visible: false
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+  metadata:
+    visible: true
+  tags:
+    visible: true
+  actions:
+    visible: true
 ---
 
 # PTGuide
 
-{% content-ref url="/broken/pages/Tk7DDOtZAIc9zJKqmugr" %}
-[Broken link](/broken/pages/Tk7DDOtZAIc9zJKqmugr)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/web" %}
+[Web](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/web)
 {% endcontent-ref %}
 
-{% content-ref url="/broken/pages/BtV0NvnjkOw6PtUUWwu3" %}
-[Broken link](/broken/pages/BtV0NvnjkOw6PtUUWwu3)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint" %}
+[OSINT](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint)
 {% endcontent-ref %}
 
-{% content-ref url="/broken/pages/yILgjIsS1qLAQJaNF9Hr" %}
-[Broken link](/broken/pages/yILgjIsS1qLAQJaNF9Hr)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/network" %}
+[Network](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/network)
 {% endcontent-ref %}
 
-{% content-ref url="/broken/pages/fBwhbq71ltoYGw6s4j94" %}
-[Broken link](/broken/pages/fBwhbq71ltoYGw6s4j94)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/thickclient" %}
+[ThickClient](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/thickclient)
 {% endcontent-ref %}
 
-{% content-ref url="/broken/pages/VooLWDwZAcsP6JPnz16v" %}
-[Broken link](/broken/pages/VooLWDwZAcsP6JPnz16v)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/mobile" %}
+[Mobile](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/mobile)
 {% endcontent-ref %}
 
-{% content-ref url="/broken/spaces/EfgK5ExBZtyCRpzOGGxV/pages/JkBdankRBtjVGapp8kBD" %}
-[Broken link](/broken/spaces/EfgK5ExBZtyCRpzOGGxV/pages/JkBdankRBtjVGapp8kBD)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/cloud" %}
+[Cloud](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/cloud)
 {% endcontent-ref %}
 
-{% content-ref url="/broken/spaces/EfgK5ExBZtyCRpzOGGxV/pages/GV4DkASrlSpLGjvaAPgE" %}
-[Broken link](/broken/spaces/EfgK5ExBZtyCRpzOGGxV/pages/GV4DkASrlSpLGjvaAPgE)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/serverless" %}
+[Serverless](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/serverless)
 {% endcontent-ref %}
 
-{% content-ref url="/broken/pages/3KVbeGSTSHj1qxWPXQcs" %}
-[Broken link](/broken/pages/3KVbeGSTSHj1qxWPXQcs)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/tools" %}
+[Tools](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/tools)
 {% endcontent-ref %}

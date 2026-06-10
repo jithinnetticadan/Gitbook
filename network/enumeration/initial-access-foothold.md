@@ -1,6 +1,6 @@
 # Initial Access/Foothold
 
-### [Broken link](/broken/pages/BtV0NvnjkOw6PtUUWwu3 "mention")OSINT
+### [OSINT](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint "mention")OSINT
 
 ### Phishing
 
