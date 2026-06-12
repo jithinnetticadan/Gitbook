@@ -18,9 +18,9 @@ Web-based Git-repository hosting tool that provides wiki capabilities, issue tra
 
 ## Exploitation
 
+### Username Enumeration <a href="#username-enumeration" id="username-enumeration"></a>
 
-
-
+* We can do this manually, of course, but scripts make our work much faster. We can write one ourselves in Bash or Python or use [this one](https://www.exploit-db.com/exploits/49821) to enumerate a list of valid users. The Python3 version of this same tool can be found [here](https://github.com/dpgg101/GitLabUserEnum).&#x20;
 
 
 
