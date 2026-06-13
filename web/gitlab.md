@@ -20,15 +20,10 @@ Web-based Git-repository hosting tool that provides wiki capabilities, issue tra
 
 ### Username Enumeration <a href="#username-enumeration" id="username-enumeration"></a>
 
-* We can do this manually, of course, but scripts make our work much faster. We can write one ourselves in Bash or Python or use [this one](https://www.exploit-db.com/exploits/49821) to enumerate a list of valid users. The Python3 version of this same tool can be found [here](https://github.com/dpgg101/GitLabUserEnum).&#x20;
+* [Bash-Script](https://www.exploit-db.com/exploits/49821) or [GitLabUserEnum](https://github.com/dpgg101/GitLabUserEnum)
+  * `./gitlab_userenum.sh --url http://<URL>:8081/ --userlist users.txt`
 
+### Authenticated Remote Code Execution <a href="#authenticated-remote-code-execution" id="authenticated-remote-code-execution"></a>
 
-
-
-
-
-
-
-
-
-
+* GitLab Community Edition version 13.10.2 and lower suffered from an authenticated remote code execution [vulnerability](https://hackerone.com/reports/1154542) due to an issue with ExifTool handling metadata in uploaded image files.
+* Isue was fixed by GitLab rather quickly, but some companies are still likely using a vulnerable version. We can use this [exploit](https://www.exploit-db.com/exploits/49951) to achieve RCE.
