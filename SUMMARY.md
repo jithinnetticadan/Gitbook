@@ -33,6 +33,7 @@
   * [Server-Side Template Injection (SSTI)](web/vulnerabilities/server-side-template-injection-ssti.md)
   * [Server-Side Request Forgery (SSRF)](web/vulnerabilities/server-side-request-forgery-ssrf.md)
   * [XML External Entity (XXE) Injection](web/vulnerabilities/xml-external-entity-xxe-injection.md)
+* [Common Gateway Interface (CGI) Applications](web/common-gateway-interface-cgi-applications.md)
 * [Drupal](web/drupal.md)
 * [GitLab](web/gitlab.md)
 * [Jenkins](web/jenkins.md)

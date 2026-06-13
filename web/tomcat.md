@@ -34,6 +34,7 @@ An open-source web server that hosts applications written in Java. Tomcat was in
 ## Enumeration <a href="#tomcat-discovery-enumeration" id="tomcat-discovery-enumeration"></a>
 
 * Default Credentials - tomcat/tomcat, admin/admin
+* `nmap -p- -sC -Pn <IP/CIDR> --open`
 * Fuzz the paths or directories
   * `gobuster dir -u http://<URL>:8180/ -w directory-list-2.3-small.txt`&#x20;
 * We can try a password brute force attack against the login page.
@@ -59,3 +60,36 @@ An open-source web server that hosts applications written in Java. Tomcat was in
 ### CVE-2020-1938 : Ghostcat <a href="#cve-2020-1938-ghostcat" id="cve-2020-1938-ghostcat"></a>
 
 * The AJP service is usually running at port 8009 on a Tomcat server.
+
+### Attacking Tomcat CGI
+
+* The CGI Servlet is a vital component of Apache Tomcat that enables web servers to communicate with external applications beyond the Tomcat JVM.
+* These external applications are typically CGI scripts written in languages like Perl, Python, or Bash. The CGI Servlet receives requests from web browsers and forwards them to CGI scripts for processing.
+* CGI Servlet is a program that runs on a web server, such as Apache2, to support the execution of external applications that conform to the CGI specification. It is a middleware between web servers and external information resources like databases.
+* **Find a CGI script**
+  * ffuf -w common.txt -u http://\<IP>:8080/cgi/FUZZ.cmd
+  * ffuf -w common.txt -u http://\<IP>:8080/cgi/FUZZ.bat
+* Leverage known exploits based on version
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
