@@ -26,6 +26,7 @@
   * [Information Disclosure](web/vulnerabilities/information-disclosure.md)
   * [Insecure Direct Object References (IDOR)](web/vulnerabilities/insecure-direct-object-references-idor.md)
   * [JWT Attacks](web/vulnerabilities/jwt-attacks.md)
+  * [LDAP Injection](web/vulnerabilities/ldap-injection.md)
   * [NoSQL Injection](web/vulnerabilities/nosql-injection.md)
   * [OAuth 2.0](web/vulnerabilities/oauth-2.0.md)
   * [OS Injection](web/vulnerabilities/os-injection.md)
