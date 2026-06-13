@@ -22,6 +22,7 @@
   * [Host Header Attacks](web/vulnerabilities/host-header-attacks.md)
   * [HTTP Request Smuggling](web/vulnerabilities/http-request-smuggling.md)
   * [HTTP Verb Tampering](web/vulnerabilities/http-verb-tampering.md)
+  * [IIS Tilde Enumeration](web/vulnerabilities/iis-tilde-enumeration.md)
   * [Information Disclosure](web/vulnerabilities/information-disclosure.md)
   * [Insecure Direct Object References (IDOR)](web/vulnerabilities/insecure-direct-object-references-idor.md)
   * [JWT Attacks](web/vulnerabilities/jwt-attacks.md)
