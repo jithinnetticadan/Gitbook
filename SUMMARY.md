@@ -211,6 +211,7 @@
 
 * [Recon](thickclient/recon.md)
 * [Traffic Analysis](thickclient/traffic-analysis.md)
+* [Hardcoded Credentials](thickclient/hardcoded-credentials.md)
 * [Reverse Engineering](thickclient/reverse-engineering.md)
 * [Automated Analysis](thickclient/automated-analysis.md)
 * [Memory Analysis](thickclient/memory-analysis.md)

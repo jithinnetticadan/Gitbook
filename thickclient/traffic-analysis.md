@@ -18,3 +18,9 @@
   `127.0.0.1 <target-host-url>`
 * `python mitm_relay.py -l 0.0.0.0 -r tcp/udp:LPORT:RHOST:RPORT -p 127.0.0.1:8080`  //LPORT should be same as RPORT
 * [MiTM Relay](https://github.com/jrmdev/mitm_relay)
+
+Tools
+
+* [Wireshark](https://www.wireshark.org/download.html) - Inspect Traffic
+* [TCPView](https://learn.microsoft.com/en-us/sysinternals/downloads/tcpview) - View the ip of remote server ([Sysinternals Suite](https://learn.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite))
+* [tcpdump](https://www.tcpdump.org/)
