@@ -67,29 +67,6 @@ An open-source web server that hosts applications written in Java. Tomcat was in
 * These external applications are typically CGI scripts written in languages like Perl, Python, or Bash. The CGI Servlet receives requests from web browsers and forwards them to CGI scripts for processing.
 * CGI Servlet is a program that runs on a web server, such as Apache2, to support the execution of external applications that conform to the CGI specification. It is a middleware between web servers and external information resources like databases.
 * **Find a CGI script**
-  * ffuf -w common.txt -u http://\<IP>:8080/cgi/FUZZ.cmd
-  * ffuf -w common.txt -u http://\<IP>:8080/cgi/FUZZ.bat
+  * `ffuf -w common.txt:FUZZ -u http://<IP>:8080/cgi/FUZZ.cmd`
+  * `ffuf -w common.txt:FUZZ -u http://<IP>:8080/cgi/FUZZ.bat`
 * Leverage known exploits based on version
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
