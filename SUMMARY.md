@@ -254,7 +254,8 @@
 
 * [Containers](serverless/containers/README.md)
   * [References](serverless/containers/references.md)
-* [Docker](serverless/docker.md)
+* [Docker](serverless/docker/README.md)
+  * [References](serverless/docker/references.md)
 * [Kubernetes](serverless/kubernetes/README.md)
   * [References](serverless/kubernetes/references.md)
 * [References](serverless/references.md)
