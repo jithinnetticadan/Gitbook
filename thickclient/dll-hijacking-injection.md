@@ -35,7 +35,9 @@ int main() {
 
 {% code lineNumbers="true" %}
 ```c
-// use of LoadLibrary for DLL injection,  involves allocating memory within the target process for the DLL path and then initiating a remote thread that begins at LoadLibrary and directs towards the DLL path.
+// Use of LoadLibrary for DLL injection, involves allocating memory within the 
+// target process for the DLL path and then initiating a remote thread that begins
+// at LoadLibrary and directs towards the DLL path.
 #include <windows.h>
 #include <stdio.h>
 
