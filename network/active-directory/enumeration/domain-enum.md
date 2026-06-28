@@ -7,6 +7,7 @@
   </code></pre>
 * <pre class="language-bat" data-line-numbers><code class="lang-bat">net user /domain
   dsquery user
+  whoami /user
   wmic useraccount where name="&#x3C;username>" get sid
   </code></pre>
 

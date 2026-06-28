@@ -220,9 +220,9 @@
 * [Automated Analysis](thickclient/automated-analysis.md)
 * [Memory Analysis](thickclient/memory-analysis.md)
 * [Binary Protection](thickclient/binary-protection.md)
-* [DLL Hijacking](thickclient/dll-hijacking.md)
+* [DLL Hijacking/Injection](thickclient/dll-hijacking-injection.md)
 * [Fuzzing](thickclient/fuzzing.md)
-* [Unquoted Services](thickclient/unquoted-services.md)
+* [Unquoted Service Paths](thickclient/unquoted-service-paths.md)
 * [References](thickclient/references.md)
 
 ## Mobile
