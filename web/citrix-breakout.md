@@ -46,17 +46,9 @@ Basic Methodology for break-out:
 3. Input the command "cmd" into the file
 4. Save the file.
 
+### Bypassing UAC <a href="#bypassing-uac" id="bypassing-uac"></a>
 
-
-
-
-
-
-
-
-
-
-
+* [#uac-bypass](../network/exploitation/privilege-escalation/windows.md#uac-bypass "mention")
 
 ## Resources
 
