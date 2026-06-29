@@ -13,3 +13,5 @@ Identify the application architecture, the programming languages and frameworks 
 * **Procmon** - Dependency files accessed by app
 * [Detect It Easy](https://github.com/horsicq/Detect-It-Easy)
 
+[Simpleregedit](https://sourceforge.net/projects/simpregedit/), [Uberregedit](https://sourceforge.net/projects/uberregedit/) and [SmallRegistryEditor](https://sourceforge.net/projects/sre/) laternate regedit tool to be place in current path later
+
