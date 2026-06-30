@@ -85,4 +85,5 @@ medusa -M ssh -H targets.txt -u root -P passwords.txt
 ### Tools
 
 * [ssh-audit](https://github.com/jtesta/ssh-audit)
+* &#x20;[mRemoteNG](https://mremoteng.org/)
 
