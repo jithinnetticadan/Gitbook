@@ -36,6 +36,7 @@ Basic Methodology for break-out:
   3. Within the `Target` field, modify the path to the intended folder for access.
   4. Execute the Shortcut and cmd will be spawned.
 * In cases where an existing shortcut file is unavailable, transfer an existing shortcut file using an SMB server or we can create a new shortcut file using PowerShell Malicious .lnk File
+* \#
 
 ### Script Execution <a href="#script-execution" id="script-execution"></a>
 
