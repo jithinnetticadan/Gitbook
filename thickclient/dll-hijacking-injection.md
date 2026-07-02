@@ -254,6 +254,13 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 ## Execute DLL's
 
 * A binary such as [rundll32.exe](https://lolbas-project.github.io/lolbas/Binaries/Rundll32/) can be used to execute a DLL file. We could use this to obtain a reverse shell by executing a .DLL file that we either download onto the remote host or host ourselves on an SMB share.
+* **Find Exported functions**
+  * `dumpbin /exports test.dll` <sup><sub>(VS Studio Tool)<sub></sup>
+  * `link /dump /exports test.dll`
+  * `$obj = [System.Reflection.Assembly]::LoadFile((Resolve-Path ".\test.dll"))`
+  * `sigcheck -e test.dll`
+  * Use PE-bear (GUI) -> Open the DLL and select Exports.
+* `rundll32.exe test.dll,ExportedFunction`
 
 {% file src="../.gitbook/assets/DLL Files.zip" %}
 
