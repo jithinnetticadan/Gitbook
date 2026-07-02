@@ -251,6 +251,10 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
 </details>
 
+## Execute DLL's
+
+* A binary such as [rundll32.exe](https://lolbas-project.github.io/lolbas/Binaries/Rundll32/) can be used to execute a DLL file. We could use this to obtain a reverse shell by executing a .DLL file that we either download onto the remote host or host ourselves on an SMB share.
+
 {% file src="../.gitbook/assets/DLL Files.zip" %}
 
 #### Tools
