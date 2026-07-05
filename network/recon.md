@@ -66,7 +66,10 @@ sudo nmap -v -A -iL hosts.txt -oA Aggressive_Scan
 
 <summary>Segregate IP's based on services</summary>
 
-```
+* [awesome-nmap-grep](https://github.com/leonjza/awesome-nmap-grep)
+
+{% code lineNumbers="true" %}
+```bash
 #save as ips.sh
 grep <port> */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > service_ips.txt
 grep "port-no/open/protocol" */*.gnmap *.gnmap | cut -d ' ' -f2 |sort|uniq | grep -v "Nmap\|Ports" > service_ips.txt
@@ -81,6 +84,7 @@ for i in *.gnmap; do
     wc -l $i.ip
 done
 ```
+{% endcode %}
 
 </details>
 
@@ -92,6 +96,8 @@ nmap -v -sS -Pn -sV -sC --max-retries 2 --open -p T:1,7,9,11,13,15,19,21,22,23,2
 ## Troubleshoot
 sudo nmap -iL hosts.txt -p- --packet-trace --disable-arp-ping -Pn -n --reason
 ## Common ports -p 80,443,8000,8080,8180,8888,10000
+## Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
+https://github.com/leonjza/awesome-nmap-grep
 ```
 
 * #### UDP Scan
@@ -101,6 +107,8 @@ sudo nmap -iL hosts.txt -p- --packet-trace --disable-arp-ping -Pn -n --reason
 nmap -Pn -sV -sU -sC -v -T3 --max-retries 2 --host-timeout 15m --open -p U:53,69,88,111,123,137,161,427,500,623,942,1434,1900,2228,3702,5060,5351,5353,5632,10001,11211,30718,41794,65535,65535 --script "banner,ipmi-version,tftp-enum,upnp-info,snmp-brute,snmp-hh3c-logins,snmp-info,snmp-interfaces,snmp-ios-config,snmp-netstat,snmp-processes,snmp-sysdescr,snmp-win32-services,snmp-win32-shares,snmp-win32-software,snmp-win32-users" --script-timeout 60s --min-hostgroup 128 --version-intensity 0 -iL target(from-hostdoscovery).txt --excludefile exclude.txt -oA udp_liveonly
 ## Troubleshoot
 sudo nmap -iL hosts.txt -p- -sV -sU -Pn -n --disable-arp-ping --packet-trace --reason 
+## Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
+https://github.com/leonjza/awesome-nmap-grep
 ```
 {% endcode %}
 
@@ -112,16 +120,19 @@ grep -ri "<keyword>" /usr/share/nmap/scripts/
 nmap -sC -p- -oA script_scan -iL hosts.txt
 ## Scan Categories - auth, broadcast, brute, default, discovery, dos, exploit, external, fuzzer, intrusive, malware, safe, version, vuln
 nmap -p- -oA script_scan -iL hosts.txt --script auth,broadcast,brute,default,discovery,exploit,fuzzer,intrusive,safe,vuln
+## Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
+https://github.com/leonjza/awesome-nmap-grep
 ```
 
 ### Parse Nmap Results
 
-* [EyeWitness](https://github.com/FortyNorthSecurity/EyeWitness) <sup><sub>(for web app evidence collection)<sub></sup>
+* [**EyeWitness**](https://github.com/FortyNorthSecurity/EyeWitness) <sup><sub>(for web app evidence collection)<sub></sup>
   * `eyewitness --web -x *.xml -d <folder>`
-* [`Aquatone`](https://github.com/michenriksen/aquatone) `or` [`aquatone`](https://github.com/shelld3v/aquatone) <sup><sub>`(for web app evidence collection)`<sub></sup>
+* [**`Aquatone`**](https://github.com/michenriksen/aquatone) `or` [`aquatone`](https://github.com/shelld3v/aquatone) <sup><sub>`(for web app evidence collection)`<sub></sup>
   * `cat nmap.xml | ./aquatone -nmap`
-* Metasploit
+* **Metasploit**
   * `workspace -a <name>`  -> `workspace <name>`  -> `db_import *.xml`  -> `load alias`  -> `alias sv services`
+* [awesome-nmap-grep](https://github.com/leonjza/awesome-nmap-grep) - Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
 
 ### Identifying Users
 
