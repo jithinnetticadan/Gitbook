@@ -94,6 +94,7 @@ Netcraft
 
 * **List Directories**
 * <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">gobuster dir -u "url" -w /usr/share/seclists/Discovery/Web-Content/common.txt
+  gobuster dir -u http://url -w /usr/share/wordlists/dirb/common.txt -x .php -t 300
   ffuf -s -w &#x3C;worslist>:FUZZ -u http://&#x3C;host>/FUZZ
   dirb &#x3C;url> &#x3C;wordlist>
   robots.txt
