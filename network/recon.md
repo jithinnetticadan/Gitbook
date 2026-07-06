@@ -128,6 +128,7 @@ https://github.com/leonjza/awesome-nmap-grep
 
 * [**EyeWitness**](https://github.com/FortyNorthSecurity/EyeWitness) <sup><sub>(for web app evidence collection)<sub></sup>
   * `eyewitness --web -x *.xml -d <folder>`
+  * `eyewitness -f scope.txt -d eyewitness-results`
 * [**`Aquatone`**](https://github.com/michenriksen/aquatone) `or` [`aquatone`](https://github.com/shelld3v/aquatone) <sup><sub>`(for web app evidence collection)`<sub></sup>
   * `cat nmap.xml | ./aquatone -nmap`
 * **Metasploit**
