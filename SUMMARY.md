@@ -31,6 +31,7 @@
   * [NoSQL Injection](web/vulnerabilities/nosql-injection.md)
   * [OAuth 2.0](web/vulnerabilities/oauth-2.0.md)
   * [OS Injection](web/vulnerabilities/os-injection.md)
+  * [PDF Injection](web/vulnerabilities/pdf-injection.md)
   * [Race Conditions](web/vulnerabilities/race-conditions.md)
   * [SQL Injection](web/vulnerabilities/sql-injection.md)
   * [Server-Side Template Injection (SSTI)](web/vulnerabilities/server-side-template-injection-ssti.md)
