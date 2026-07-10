@@ -49,6 +49,7 @@
 * [Splunk](web/splunk.md)
 * [Tomcat](web/tomcat.md)
 * [WordPress](web/wordpress.md)
+* [WebSocket](web/websocket.md)
 * [BurpSuite Tricks](web/burpsuite-tricks/README.md)
   * [Extensions](web/burpsuite-tricks/extensions.md)
   * [Bambda Scripts](web/burpsuite-tricks/bambda-scripts.md)
