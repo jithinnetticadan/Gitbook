@@ -105,6 +105,7 @@
     * [Webmin - T10000](network/enumeration/host-based/webmin-t10000.md)
     * [WinRM - T5985,5986](network/enumeration/host-based/winrm-t5985-5986.md)
     * [WMI - T135](network/enumeration/host-based/wmi-t135.md)
+  * [Local Accounts/Groups](network/enumeration/local-accounts-groups.md)
   * [OS Based](network/enumeration/os-based/README.md)
     * [Mount VHDX/VMDK](network/enumeration/os-based/mount-vhdx-vmdk.md)
 * [Exploitation](network/exploitation/README.md)
