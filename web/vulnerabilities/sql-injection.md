@@ -203,6 +203,10 @@
 
 * `sqlmap -r req.txt --second-req profile.req --batch`
 
+### Web-Socket Injection
+
+* `sqlmap -u "ws://test.com:<port>/" --data '<body>'`
+
 ### Tamper Scripts <a href="#tamper-scripts" id="tamper-scripts"></a>
 
 <details>
