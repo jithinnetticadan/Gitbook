@@ -11,3 +11,7 @@
 * [exploit-notes](https://exploit-notes.hdks.org/)
 * [Command-Bulder-Matrix](https://matrix.shieldescape.com/)
 * [https://pentestbook.six2dez.com/](https://pentestbook.six2dez.com/)
+
+{% file src="../.gitbook/assets/API_Pentest_Master_Checklist.xlsx" %}
+
+{% file src="../.gitbook/assets/Web_Pentest_Master_Checklist.xlsx" %}
