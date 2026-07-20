@@ -38,6 +38,7 @@
 * [WPScan](https://github.com/wpscanteam/wpscan) is an automated WordPress scanner and enumeration tool. It determines if the various themes and plugins used by a blog are outdated or vulnerable.
 * WPScan is also able to pull in vulnerability information from external sources. We can obtain an API token from [WPVulnDB](https://wpvulndb.com/), which is used by WPScan to scan for PoC and reports. Token can then be supplied to wpscan using the `--api-token parameter`&#x20;
 * `sudo wpscan --url http://<URL> --enumerate -t 5 --api-token <value>`  <sup><sub>(enumerates vulnerable plugins, themes, users, media, and backups)<sub></sup>
+* `sudo wpscan --url http://<URL> --detection-mode aggressive --plugins-detection agressive`
 
 ## Exploitation
 
