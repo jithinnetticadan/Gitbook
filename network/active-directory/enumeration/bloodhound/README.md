@@ -51,3 +51,7 @@ Enumerates key AD elements such as:
 2. Set a compromised user as the **Start Node**
 3. Set a target (any Admin Groups Identified earlier) as the **End Node**
 4. Run the search with the desired edge filters
+
+### Tools
+
+* [SharpCollection](https://github.com/Flangvik/SharpCollection)
