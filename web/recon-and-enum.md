@@ -24,7 +24,7 @@
 
 </details>
 
-### Passive Recon
+## Passive Recon
 
 {% code lineNumbers="true" %}
 ```shellscript
@@ -32,7 +32,11 @@ whois <domain> ## WhoisFreaks website
 ```
 {% endcode %}
 
-### Automated Recon
+{% hint style="info" %}
+Fuller OSINT technique table (DNS history, web archive, social media, code repos): [Passive](../osint/passive.md "mention")
+{% endhint %}
+
+### Automated OSINT Tools
 
 * [FinalRecon](https://github.com/thewhiteh4t/FinalRecon)
 * [Recon-ng](https://github.com/lanmaster53/recon-ng)
@@ -40,7 +44,31 @@ whois <domain> ## WhoisFreaks website
 * [SpiderFoot](https://github.com/smicallef/spiderfoot)
 * [OSINT Framework](https://osintframework.com/)
 
+### Google Dorking
+
+{% code lineNumbers="true" fullWidth="false" %}
+```shellscript
+site:target.com inurl:admin | inurl:.git
+site:target.com ext:sql | ext:log
+site:target.com intitle:"index of"
+site:target.com filetype:env
+intext:<domain> inurl:amazonaws.com //Search for AWS
+intext:<domain> inurl:blob.core.windows.net //Search for Azure
+```
+{% endcode %}
+
+### Passive Fingerprinting
+
+* BuiltWith
+* Netcraft
+
+## Active Recon - Unauthenticated
+
 ### Subdomain Enumeration
+
+{% hint style="info" %}
+Certificate Transparency log searches, subdomain takeover checks, and DNS spoofing are covered in [DNS - TU53](../network/enumeration/host-based/dns-tu53.md "mention").
+{% endhint %}
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
@@ -65,19 +93,6 @@ ffuf -s -w subdomains-top1million-5000.txt:FUZZ -H "Host: FUZZ.domain.com" -u ht
 ```
 {% endcode %}
 
-### Google Dorking
-
-{% code lineNumbers="true" fullWidth="false" %}
-```shellscript
-site:target.com inurl:admin | inurl:.git
-site:target.com ext:sql | ext:log
-site:target.com intitle:"index of"
-site:target.com filetype:env
-intext:<domain> inurl:amazonaws.com //Search for AWS
-intext:<domain> inurl:blob.core.windows.net //Search for Azure
-```
-{% endcode %}
-
 ### Banner Grabbing
 
 ```shellscript
@@ -86,8 +101,6 @@ whatweb --no-errors <subnet>
 curl -I <domain/URL>
 nikto -h <domain/URL> -Tuning b
 wafw00f <domain/URL>
-BuiltWith
-Netcraft
 ```
 
 ### Crawling/Spidering
@@ -139,15 +152,30 @@ assetfinder --subs-only <domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s
 * Check the page source to obtain credentials added in comments
 * Finding Public Exploits (searchsploit, [Exploit DB](https://www.exploit-db.com/), [Rapid7 DB](https://www.rapid7.com/db/), or [Vulnerability Lab](https://www.vulnerability-lab.com/))
 
+{% hint style="info" %}
+Full searchsploit command + JSON output flag: [Recon](../network/recon.md "mention") (Identifying Potential Vulnerabilities → Exploit Checks)
+{% endhint %}
+
+## Active Recon - Authenticated
+
+{% hint style="info" %}
+Once you have a low-privilege session (registered user, default creds, etc.), re-run discovery **with** the session cookie/token to surface endpoints hidden from anonymous users.
+{% endhint %}
+
+* Repeat directory/parameter fuzzing with an authenticated session:
+  * `gobuster dir -u <url> -w <wordlist> -H "Cookie: session=<value>"`
+  * `ffuf -s -w <wordlist>:FUZZ -u <url>/FUZZ -H "Authorization: Bearer <token>"`
+* Diff the authenticated vs. unauthenticated site map to find admin-only routes, hidden features, and staff panels.
+* Enumerate per-role differences (admin vs. standard user vs. guest) — feeds directly into [Access Control](vulnerabilities/access-control.md "mention") and [Insecure Direct Object References (IDOR)](vulnerabilities/insecure-direct-object-references-idor.md "mention") testing.
+* Look for API/schema disclosure only reachable when logged in: `/swagger.json`, `/openapi.json`, `/graphql` introspection — see [API Testing](vulnerabilities/api-testing.md "mention").
+* Inspect session artifacts issued after login (JWTs, cookies) — see [JWT Attacks](vulnerabilities/jwt-attacks.md "mention").
+
 ### Tools
 
-* Banner Grabbing - Netcat, curl
-* Port Scanning - Nmap, Masscan, Unicornscan
-* OS Fingerprinting - Nmap, Xprobe2
-* Service Enumeration - Nmap
-* Vulnerability Scanning - Nessus, OpenVAS, Nikto, Nuclei
-* Network Mapping - Traceroute, Nmap
-* Web Spidering - Burp Suite Spider, OWASP ZAP Spider, Scrapy
-* &#x20;[Trufflehog](https://github.com/trufflesecurity/truffleHog)
-* [Greyhat Warfare](https://buckets.grayhatwarfare.com/)
+{% hint style="info" %}
+Generic scanning tool categories (port scanning, OS fingerprinting, vulnerability scanning): [Recon](../network/recon.md "mention")
+{% endhint %}
+
+* [Trufflehog](https://github.com/trufflesecurity/truffleHog) <sup><sub>(secrets in JS bundles/repos)<sub></sup>
+* [Greyhat Warfare](https://buckets.grayhatwarfare.com/) <sup><sub>(public S3 bucket search engine)<sub></sup>
 * [linkedin2username](https://github.com/initstring/linkedin2username)

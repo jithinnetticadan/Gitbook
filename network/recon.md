@@ -146,13 +146,25 @@ https://github.com/leonjza/awesome-nmap-grep
   * `workspace -a <name>`  -> `workspace <name>`  -> `db_import *.xml`  -> `load alias`  -> `alias sv services`
 * [awesome-nmap-grep](https://github.com/leonjza/awesome-nmap-grep) - Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
 
+{% hint style="info" %}
+Full Metasploit workflow (modules, sessions, meterpreter, msfvenom): [Metasploit Framework](exploitation/metasploit-framework.md "mention")
+{% endhint %}
+
 ### Identifying Users
 
+#### Passive
+
 * [#usernames-wordlist-generation](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#usernames-wordlist-generation "mention")
+* Username List -> [Insidetrust](https://github.com/insidetrust/statistically-likely-usernames)
+
+#### Active
+
 * [#username-enumeration](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#username-enumeration "mention")
-* `kerbrute userenum -d <domain> --dc <IP> wordlist.txt -o valid_ad_users`
+* `kerbrute userenum -d <domain> --dc <IP> wordlist.txt -o valid_ad_users` <sup><sub>([Kerbrute](https://github.com/ropnop/kerbrute))<sub></sup>
 
 ### Identifying Potential Vulnerabilities
+
+#### Active
 
 * #### Automated HTTP/S Scan
 
@@ -164,7 +176,13 @@ sudo nmap -iL host.txt -p- -sV --script vuln
 ```
 {% endcode %}
 
+#### Passive
+
 * #### Exploit Checks
+
+{% hint style="info" %}
+`searchsploit` queries a local exploit-db mirror, so this step sends no traffic to the target.
+{% endhint %}
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
@@ -174,6 +192,10 @@ ExploitDB
 {% endcode %}
 
 ### Tools
+
+{% hint style="info" %}
+Fuller OSINT lookup technique table (WHOIS, DNS, web archive, social media, code repos): [Passive](../osint/passive.md "mention")
+{% endhint %}
 
 * Banner Grabbing - Netcat, curl
 * Port Scanning - Nmap, Masscan, Unicornscan
@@ -188,5 +210,3 @@ ExploitDB
 * [ICANN](https://lookup.icann.org/lookup)
 * [BGP Toolkit](https://bgp.he.net/)
 * [viewdns.info](https://viewdns.info/)
-* [Kerbrute](https://github.com/ropnop/kerbrute)
-* Username List -> [Insidetrust](https://github.com/insidetrust/statistically-likely-usernames)
