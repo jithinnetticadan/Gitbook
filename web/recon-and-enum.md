@@ -26,15 +26,15 @@
 
 ## Passive Recon
 
+{% hint style="info" %}
+Fuller OSINT technique table (DNS history, web archive, social media, code repos): [passive.md](../osint/passive.md "mention")
+{% endhint %}
+
 {% code lineNumbers="true" %}
 ```shellscript
 whois <domain> ## WhoisFreaks website
 ```
 {% endcode %}
-
-{% hint style="info" %}
-Fuller OSINT technique table (DNS history, web archive, social media, code repos): [Passive](../osint/passive.md "mention")
-{% endhint %}
 
 ### Automated OSINT Tools
 
@@ -67,7 +67,7 @@ intext:<domain> inurl:blob.core.windows.net //Search for Azure
 ### Subdomain Enumeration
 
 {% hint style="info" %}
-Certificate Transparency log searches, subdomain takeover checks, and DNS spoofing are covered in [DNS - TU53](../network/enumeration/host-based/dns-tu53.md "mention").
+Certificate Transparency log searches, subdomain takeover checks, and DNS spoofing are covered in [dns-tu53.md](../network/enumeration/host-based/dns-tu53.md "mention").
 {% endhint %}
 
 {% code lineNumbers="true" fullWidth="false" %}
@@ -149,12 +149,12 @@ assetfinder --subs-only <domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s
 
 #### Other Steps
 
+{% hint style="info" %}
+Full searchsploit command + JSON output flag: [#identifying-potential-vulnerabilities](../network/recon.md#identifying-potential-vulnerabilities "mention") ->  Exploit Checks
+{% endhint %}
+
 * Check the page source to obtain credentials added in comments
 * Finding Public Exploits (searchsploit, [Exploit DB](https://www.exploit-db.com/), [Rapid7 DB](https://www.rapid7.com/db/), or [Vulnerability Lab](https://www.vulnerability-lab.com/))
-
-{% hint style="info" %}
-Full searchsploit command + JSON output flag: [Recon](../network/recon.md "mention") (Identifying Potential Vulnerabilities → Exploit Checks)
-{% endhint %}
 
 ## Active Recon - Authenticated
 
@@ -166,14 +166,14 @@ Once you have a low-privilege session (registered user, default creds, etc.), re
   * `gobuster dir -u <url> -w <wordlist> -H "Cookie: session=<value>"`
   * `ffuf -s -w <wordlist>:FUZZ -u <url>/FUZZ -H "Authorization: Bearer <token>"`
 * Diff the authenticated vs. unauthenticated site map to find admin-only routes, hidden features, and staff panels.
-* Enumerate per-role differences (admin vs. standard user vs. guest) — feeds directly into [Access Control](vulnerabilities/access-control.md "mention") and [Insecure Direct Object References (IDOR)](vulnerabilities/insecure-direct-object-references-idor.md "mention") testing.
-* Look for API/schema disclosure only reachable when logged in: `/swagger.json`, `/openapi.json`, `/graphql` introspection — see [API Testing](vulnerabilities/api-testing.md "mention").
-* Inspect session artifacts issued after login (JWTs, cookies) — see [JWT Attacks](vulnerabilities/jwt-attacks.md "mention").
+* Enumerate per-role differences (admin vs. standard user vs. guest) — feeds directly into [access-control.md](vulnerabilities/access-control.md "mention") and [insecure-direct-object-references-idor.md](vulnerabilities/insecure-direct-object-references-idor.md "mention") testing.
+* Look for API/schema disclosure only reachable when logged in: `/swagger.json`, `/openapi.json`, `/graphql` introspection — see [api-testing.md](vulnerabilities/api-testing.md "mention").
+* Inspect session artifacts issued after login (JWTs, cookies) — see [jwt-attacks.md](vulnerabilities/jwt-attacks.md "mention").
 
-### Tools
+## Tools
 
 {% hint style="info" %}
-Generic scanning tool categories (port scanning, OS fingerprinting, vulnerability scanning): [Recon](../network/recon.md "mention")
+Generic scanning tool categories (port scanning, OS fingerprinting, vulnerability scanning): [recon.md](../network/recon.md "mention")
 {% endhint %}
 
 * [Trufflehog](https://github.com/trufflesecurity/truffleHog) <sup><sub>(secrets in JS bundles/repos)<sub></sup>

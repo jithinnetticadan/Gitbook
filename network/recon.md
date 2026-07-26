@@ -28,7 +28,7 @@ layout:
 2. **Port Scanning** – full TCP + UDP sweeps to find every open port ([#tcp-port-scan](recon.md#tcp-port-scan "mention"), [#udp-scan](recon.md#udp-scan "mention"))
 3. **Service/Version Detection & NSE Scripts** – `-sV`/`-sC` and category-based script scans ([#script-scan](recon.md#script-scan "mention"))
 4. **Result Parsing & Evidence Collection** – EyeWitness/Aquatone screenshots, import into Metasploit DB ([#parse-nmap-results](recon.md#parse-nmap-results "mention"))
-5. **Manual Service Enumeration** – deep-dive every open port using the matching [Host Based](enumeration/host-based/README.md "mention") page
+5. **Manual Service Enumeration** – deep-dive every open port using the matching [host-based](enumeration/host-based/ "mention") page
 6. **Vulnerability Identification** – Nuclei/searchsploit against the versions found ([#identifying-potential-vulnerabilities](recon.md#identifying-potential-vulnerabilities "mention"))
 {% endhint %}
 
@@ -143,12 +143,9 @@ https://github.com/leonjza/awesome-nmap-grep
 * [**`Aquatone`**](https://github.com/michenriksen/aquatone) `or` [`aquatone`](https://github.com/shelld3v/aquatone) <sup><sub>`(for web app evidence collection)`<sub></sup>
   * `cat nmap.xml | ./aquatone -nmap`
 * **Metasploit**
-  * `workspace -a <name>`  -> `workspace <name>`  -> `db_import *.xml`  -> `load alias`  -> `alias sv services`
+  * `workspace -a <name>` -> `workspace <name>` -> `db_import *.xml` -> `load alias` -> `alias sv services`&#x20;
+  * Full Metasploit workflow (modules, sessions, meterpreter, msfvenom): [metasploit-framework.md](exploitation/metasploit-framework.md "mention")
 * [awesome-nmap-grep](https://github.com/leonjza/awesome-nmap-grep) - Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
-
-{% hint style="info" %}
-Full Metasploit workflow (modules, sessions, meterpreter, msfvenom): [Metasploit Framework](exploitation/metasploit-framework.md "mention")
-{% endhint %}
 
 ### Identifying Users
 
@@ -160,7 +157,7 @@ Full Metasploit workflow (modules, sessions, meterpreter, msfvenom): [Metasploit
 #### Active
 
 * [#username-enumeration](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#username-enumeration "mention")
-* `kerbrute userenum -d <domain> --dc <IP> wordlist.txt -o valid_ad_users` <sup><sub>([Kerbrute](https://github.com/ropnop/kerbrute))<sub></sup>
+* `kerbrute userenum -d <domain> --dc <IP> wordlist.txt -o valid_ad_users` <sup><sub>(<sub></sup>[<sup><sub>Kerbrute<sub></sup>](https://github.com/ropnop/kerbrute)<sup><sub>)<sub></sup>
 
 ### Identifying Potential Vulnerabilities
 
@@ -194,7 +191,7 @@ ExploitDB
 ### Tools
 
 {% hint style="info" %}
-Fuller OSINT lookup technique table (WHOIS, DNS, web archive, social media, code repos): [Passive](../osint/passive.md "mention")
+Fuller OSINT lookup technique table (WHOIS, DNS, web archive, social media, code repos): [passive.md](../osint/passive.md "mention")
 {% endhint %}
 
 * Banner Grabbing - Netcat, curl
