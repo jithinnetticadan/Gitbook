@@ -32,16 +32,16 @@ layout:
 6. **Vulnerability Identification** – Nuclei/searchsploit against the versions found ([#identifying-potential-vulnerabilities](recon.md#identifying-potential-vulnerabilities "mention"))
 {% endhint %}
 
-### Identifying Hosts
+## Identifying Hosts
 
-#### **Passive Methods**
+### Passive Methods
 
 * Use wireshark to observe some ARP requests and replies, MDNS, and other basic [layer two](https://www.juniper.net/documentation/us/en/software/junos/multicast-l2/topics/topic-map/layer-2-understanding.html) packets
 * `sudo tcpdump -i <interface>`
 * [tcpdump](https://linux.die.net/man/8/tcpdump), [net-creds](https://github.com/DanMcInerney/net-creds), pktmon.exe, and [NetMiner](https://www.netminer.com/en/product/netminer.php)
 * `sudo responder -I <interface> -A` <sup><sub>(Analyse mode)<sub></sup>
 
-#### **Active Methods**
+### Active Methods
 
 * #### Host Discovery Scan
 
@@ -147,21 +147,21 @@ https://github.com/leonjza/awesome-nmap-grep
   * Full Metasploit workflow (modules, sessions, meterpreter, msfvenom): [metasploit-framework.md](exploitation/metasploit-framework.md "mention")
 * [awesome-nmap-grep](https://github.com/leonjza/awesome-nmap-grep) - Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
 
-### Identifying Users
+## Identifying Users
 
-#### Passive
+### Passive
 
 * [#usernames-wordlist-generation](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#usernames-wordlist-generation "mention")
 * Username List -> [Insidetrust](https://github.com/insidetrust/statistically-likely-usernames)
 
-#### Active
+### Active
 
 * [#username-enumeration](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#username-enumeration "mention")
 * `kerbrute userenum -d <domain> --dc <IP> wordlist.txt -o valid_ad_users` <sup><sub>(<sub></sup>[<sup><sub>Kerbrute<sub></sup>](https://github.com/ropnop/kerbrute)<sup><sub>)<sub></sup>
 
-### Identifying Potential Vulnerabilities
+## Identifying Potential Vulnerabilities
 
-#### Active
+### Active
 
 * #### Automated HTTP/S Scan
 
@@ -173,13 +173,9 @@ sudo nmap -iL host.txt -p- -sV --script vuln
 ```
 {% endcode %}
 
-#### Passive
+### Passive
 
 * #### Exploit Checks
-
-{% hint style="info" %}
-`searchsploit` queries a local exploit-db mirror, so this step sends no traffic to the target.
-{% endhint %}
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
@@ -188,12 +184,9 @@ ExploitDB
 ```
 {% endcode %}
 
-### Tools
+## Tools
 
-{% hint style="info" %}
-Fuller OSINT lookup technique table (WHOIS, DNS, web archive, social media, code repos): [passive.md](../osint/passive.md "mention")
-{% endhint %}
-
+* Fuller OSINT lookup technique table (WHOIS, DNS, web archive, social media, code repos): [passive.md](../osint/passive.md "mention")
 * Banner Grabbing - Netcat, curl
 * Port Scanning - Nmap, Masscan, Unicornscan
 * OS Fingerprinting - Nmap, Xprobe2
