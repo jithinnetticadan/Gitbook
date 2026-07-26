@@ -137,7 +137,8 @@ When setting a cookie with `SameSite=None`, the website must also include the `S
 * If the app validates that the `Referer` contains its own domain name, the attacker can place the required value elsewhere in the URL.
 * In an attempt to reduce the risk of sensitive data being leaked, many browsers now strip the query string from the `Referer` header by default.
 * This can be overridden by making sure the response containing the exploit has the `Referrer-Policy: unsafe-url` header set.
-* **Lab** - Include the above header in the response, as well as append the original domain as a query by including it in `history.pushState(",",'/?orginal-url')`.
+* **Payload :** `<meta name="referrer" content="unsafe-url">`
+* **Lab** - Include the above header in the response, as well as append the original domain as a query by including it in `<script>history.pushState("", "", "/?vulnerable-website.com");</script>`
 
 ## References
 
