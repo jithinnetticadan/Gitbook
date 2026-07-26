@@ -40,15 +40,13 @@ Used to identify which back-end component the client wants to communicate with, 
 
 * Inject duplicate `Host` headers.
 * Supply an absolute URL, e.g.:
-
-  ```http
-  GET https://vulnerable-website.com/ HTTP/1.1
-  Host: attacker.com
-  ```
-
-  (try using both HTTP and HTTPS)
+  * ```http
+    GET https://vulnerable-website.com/ HTTP/1.1
+    Host: attacker.com
+    ## try using both HTTP and HTTPS
+    ```
 * Add line wrapping - uncover quirky behavior by indenting HTTP headers with a space character or tab.
-* Other techniques - refer to [Request Smuggling](http-request-smuggling.md "mention").
+* Other techniques - refer to [http-request-smuggling.md](http-request-smuggling.md "mention").
 
 ### Inject Host Override Headers
 

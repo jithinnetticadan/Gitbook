@@ -14,28 +14,14 @@ Attacker is able to use native template syntax to inject a malicious payload int
 
 * Attacks can occur when user input is concatenated directly into a template, rather than passed in as data.
 * Static templates that simply provide placeholders into which dynamic content is rendered are generally not vulnerable.
-* **Not Vulnerable:**
+* **Not Vulnerable:** `$output = $twig->render("Dear {first_name},", array("first_name" => $user.first_name));`
+* **Vulnerable:** `$output = $twig->render("Dear " . $_GET['name'])`;
 
-```php
-$output = $twig->render("Dear {first_name},", array("first_name" => $user.first_name));
-```
-
-* **Vulnerable:**
-
-```php
-$output = $twig->render("Dear " . $_GET['name']);
-```
-
-## Constructing a Server-Side Template Injection Attack
+## Construct a Server-Side Template Injection Attack
 
 ### Detect
 
-* Try fuzzing the template by injecting:
-
-```
-${{<%[%'"}}%\
-```
-
+* Try fuzzing the template by injecting: `${{<%[%'"}}%\`
 * Use an in-built wordlist.
 * SSTI occurs in two distinct contexts:
   * **Plaintext context** - templates allow you to freely input content either using HTML tags or native syntax. Try `${7*7}` instead of checking for XSS payloads.
@@ -46,9 +32,7 @@ ${{<%[%'"}}%\
 * Error messages from fuzzing the input parameters will reveal the engine.
 * Otherwise, manually try engine-specific payloads available online.
 
-### Exploit
-
-## Exploiting SSTI Vulnerabilities
+## Exploit SSTI Vulnerabilities
 
 ### Read
 
@@ -77,13 +61,13 @@ ${{<%[%'"}}%\
 * Template engines execute templates inside a sandbox, which can make exploitation difficult, or even impossible.
 * Proceed with traditional auditing techniques by reviewing each function for exploitable behavior.
 
-### Constructing a Custom Exploit Using an Object Chain
+### Construct a Custom Exploit Using an Object Chain
 
 * First step is to identify the objects and methods to which you have access.
 * Refer to the documentation to understand which objects to target.
 * **Lab** - Fuzz the parameter. Refer to the documentation to bypass the sandboxed environment and construct a payload to read a file.
 
-### Constructing a Custom Exploit Using Developer-Supplied Objects
+### Construct a Custom Exploit Using Developer-Supplied Objects
 
 * Template engines run in a secure, locked-down environment by default.
 * Developer-created objects that are exposed to the template can offer a further, less battle-hardened attack surface.

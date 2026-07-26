@@ -15,7 +15,6 @@ JWTs are most commonly used in authentication, session management, and access co
 
 * JSON Web Signature (JWS) (default) and JSON Web Encryption (JWE).
 * JWE encrypts the contents.
-
 * JWT attacks are used to impersonate another user, or escalate privileges of a user who has already been authenticated.
 
 ### How Do Vulnerabilities to JWT Attacks Arise?
@@ -26,33 +25,28 @@ JWTs are most commonly used in authentication, session management, and access co
 
 * Use the JWT Editor extension, available in the BApp Store.
 
-## Accepting Arbitrary Signatures
+## Accept Arbitrary Signatures
 
 * The Node.js library `jsonwebtoken` has `verify()` and `decode()` methods.
 * Developers confuse these two methods and only pass incoming tokens to the `decode()` method.
 
-## Accepting Tokens with No Signature
+## Accept Tokens with No Signature
 
 * The `alg` parameter mentions the algorithm that was used to sign the token.
 * If we change it to any other algorithm and sign it, the server may consider it legitimate and it can successfully be bypassed.
 * We can also set the value for the `alg` parameter as `none`, `None`, `nOne`, `noNe`, etc.
 * Make sure that when `alg` is set to `none` or a similar string, remove the 3rd part (i.e. the signature) from the JWT and end with a "dot" (`.`).
 
-## Brute-Forcing Secret Keys
+## Brute-Force Secret Keys
 
 * Signing algorithms such as HS256 (HMAC + SHA-256) use an arbitrary, standalone string as the secret key.
 * Developers sometimes make mistakes like forgetting to change default or placeholder secrets.
 * Wordlist: [jwt.secrets.list](https://github.com/wallarm/jwt-secrets/blob/master/jwt.secrets.list)
 
-### Brute-Forcing Secret Keys Using Hashcat
+### Brute-Force Secret Keys Using Hashcat
 
 * You just need a valid, signed JWT from the target server and a wordlist of well-known secrets.
-* **Command:**
-
-```
-hashcat -a 0 -m 16500 <jwt> <wordlist>
-```
-
+* **Command:** `hashcat -a 0 -m 16500 <jwt> <wordlist>`
 * Hashcat signs the header and payload from the JWT using each secret in the wordlist, then compares the resulting signature with the original one from the server.
 * Alternate tool - `jwt_tool`.
 * Once the secret is obtained: go to JWT Editor Keys -> select the key to generate -> no need to mention the key size (auto-adjusted) -> Generate -> modify the `k` value with the Base64-encoded secret obtained using Hashcat -> Apply.
@@ -67,7 +61,7 @@ hashcat -a 0 -m 16500 <jwt> <wordlist>
   * `kid` (Key ID) - Provides an ID that servers can use to identify the correct key in cases where there are multiple keys to choose from. Depending on the format of the key, this may have a matching `kid` parameter.
 * These user-controllable parameters each tell the recipient server which key to use when verifying the signature.
 
-### Injecting Self-Signed JWTs via the `jwk` Parameter
+### Inject Self-Signed JWTs via the `jwk` Parameter
 
 * The JWS specification describes an optional `jwk` header parameter, which servers can use to embed their public key directly within the token itself in JWK format.
 * **Example:**
@@ -90,7 +84,7 @@ hashcat -a 0 -m 16500 <jwt> <wordlist>
 * Exploit this behavior by signing a modified JWT using your own RSA private key, then embedding the matching public key in the `jwk` header.
 * Click **Attack**, then select **Embedded JWK**. When prompted, select your newly generated RSA key.
 
-### Injecting Self-Signed JWTs via the `jku` Parameter
+### Inject Self-Signed JWTs via the `jku` Parameter
 
 * Servers let you use the `jku` (JWK Set URL) header parameter to reference a JWK Set containing the key. When verifying the signature, the server fetches the relevant key from this URL.
 * **Example:**
@@ -117,7 +111,7 @@ hashcat -a 0 -m 16500 <jwt> <wordlist>
 * JWK Sets like this are sometimes exposed publicly via a standard endpoint, such as `/.well-known/jwks.json`.
 * Generate a new key -> copy the public key as JWK and serve it remotely by hosting a server -> in the JWT, modify the `kid` parameter to match the newly generated key and inject the `jku` parameter to fetch the remotely stored public key using the URL.
 
-### Injecting Self-Signed JWTs via the `kid` Parameter
+### Inject Self-Signed JWTs via the `kid` Parameter
 
 * Might use the `kid` parameter to point to a particular entry in a database, or even the name of a file.
 * If this parameter is also vulnerable to directory traversal, an attacker could potentially force the server to use an arbitrary file from its filesystem as the verification key.
@@ -152,7 +146,7 @@ hashcat -a 0 -m 16500 <jwt> <wordlist>
 * Can also try the vice-versa option.
 * The public key you use to sign the token must be identical to the public key stored on the server. This includes using the same format (such as X.509 PEM) and preserving any non-printing characters like newlines.
 
-### Performing an Algorithm Confusion Attack
+### Perform an Algorithm Confusion Attack
 
 **Step 1 - Obtain the server's public key**
 
@@ -180,18 +174,12 @@ hashcat -a 0 -m 16500 <jwt> <wordlist>
 **Step 4 - Sign the JWT using the public key**
 
 * Sign the token using the HS256 algorithm with the RSA public key as the secret.
-
 * **Lab** - Follow the above steps to perform algorithm confusion attacks.
 
-## Deriving Public Keys from Existing Tokens
+## Derive Public Keys from Existing Tokens
 
-* Tools such as `jwt_forgery.py` or [rsa_sign2n](https://github.com/silentsignal/rsa_sign2n).
-* **Simplified version:**
-
-```
-docker run --rm -it portswigger/sig2n <token1> <token2>
-```
-
+* Tools such as `jwt_forgery.py` or [rsa\_sign2n](https://github.com/silentsignal/rsa_sign2n).
+* **Simplified version:** `docker run --rm -it portswigger/sig2n <token1> <token2>`
 * Uses the JWTs that you provide to calculate one or more potential values of `n`.
 * For each potential value, the script outputs:
   * A Base64-encoded PEM key in both X.509 and PKCS1 format.

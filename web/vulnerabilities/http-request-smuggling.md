@@ -45,7 +45,7 @@ Need to provide `G` then `POST / HTTP/1.1` -> `Content-Type` -> `Content-Length`
 * Include the appropriate chunk size (hex value) by highlighting the content and viewing the Burp Inspector.
 * **Lab** - Include CL & TE following the above rules.
 
-## TE.TE Behavior: Obfuscating the TE Header
+## TE.TE Behavior: Obfuscate the TE Header
 
 * Front-end & back-end servers both support the `Transfer-Encoding` header, but one of the servers can be induced not to process it by obfuscating the header.
 * Example obfuscations:
@@ -65,9 +65,9 @@ Transfer-Encoding
 * Depending on whether the front-end or back-end server can be induced not to process the obfuscated `Transfer-Encoding` header, the remainder of the attack will take the same form as the CL.TE or TE.CL vulnerabilities.
 * **Lab** - Include both `Content-Length` & `Transfer-Encoding` where one is obfuscated. Also, uncheck "Update Content-Length" & include the trailing sequence `\r\n\r\n`.
 
-## Finding HTTP Request Smuggling Vulnerabilities
+## Find HTTP Request Smuggling Vulnerabilities
 
-### Finding CL.TE Vulnerabilities Using Timing Techniques
+### Find CL.TE Vulnerabilities Using Timing Techniques
 
 ```http
 POST / HTTP/1.1
@@ -82,7 +82,7 @@ X
 
 * Front-end uses the CL header and will forward part of the request, omitting `X`. Back-end uses the TE header, processes the first chunk, & waits for the next chunk.
 
-### Finding TE.CL Vulnerabilities Using Timing Techniques
+### Find TE.CL Vulnerabilities Using Timing Techniques
 
 ```http
 POST / HTTP/1.1
@@ -97,16 +97,16 @@ X
 
 * Front-end uses the TE header and will forward part of this request, omitting `X`. Back-end uses the CL header, expects more content in the body, and waits for the remaining content.
 
-### Confirming CL.TE Vulnerabilities Using Differential Responses
+### Confirm CL.TE Vulnerabilities Using Differential Responses
 
 * If the attack is successful, the last two lines of the request are treated by the back-end as belonging to the next request that is received. This causes the subsequent "normal" request to contain the last 2 lines considered by the back-end, which will eventually throw an error message.
 * **Lab** - Combine the above labs and smuggle a request that calls for an invalid resource.
 
-### Confirming TE.CL Vulnerabilities Using Differential Responses
+### Confirm TE.CL Vulnerabilities Using Differential Responses
 
 * **Lab** - Perform similar steps as above; smuggle a request that calls an invalid resource from the server.
 
-## Exploiting HTTP Request Smuggling Vulnerabilities
+## Exploit HTTP Request Smuggling Vulnerabilities
 
 ### Bypass Front-End Security Controls
 
@@ -148,14 +148,14 @@ search=test
   4. The value in the `Content-Length` header of the smuggled request determines how long the back-end server believes the request is.
 * **Lab** - The Comment request reflects the comment. Smuggle this request where the 'comment' parameter is placed at the end so that the normal request is included in the comments section. Obtain the headers required and smuggle a request that would give sensitive info or a session token.
 
-### Bypassing Client Authentication
+### Bypass Client Authentication
 
 * Some apps request a client certificate for authentication that is used by the back-end as part of the access control mechanism.
 * The component that authenticates the client passes relevant details from the certificate to the app/back-end via non-standard HTTP headers (e.g. `X-SSL-CLIENT-CN: carlos`).
 * Assuming you're able to send the right combination of headers and values, this may enable you to bypass access controls.
 * Isn't usually exploitable, as the front-end tends to overwrite these headers. However, smuggled requests are hidden from the front-end, so any headers they contain will be sent to the back-end unchanged.
 
-### Capturing Other Users' Requests
+### Capture Other Users' Requests
 
 * If the app contains any functionality that allows you to store and later retrieve textual data, you can use this to capture the contents of other users' requests.
 * Suitable functions to use as the vehicle for this attack: comments, emails, profile descriptions, screen names, etc.
@@ -224,7 +224,7 @@ x=1
 
 #### Hidden HTTP/2 Support
 
-* Enable the "Allow HTTP/2 ALPN override" option.
+* Enable the `Allow HTTP/2 ALPN override` option.
 
 ### Response Queue Poisoning
 
@@ -296,7 +296,7 @@ Host: vulnerable-website.com
 
 #### Web Cache Poisoning via HTTP/2 Request Tunnelling
 
-* *(Future reference - to be documented.)*
+* _(Future reference - to be documented.)_
 
 ## Browser-Powered Request Smuggling
 
