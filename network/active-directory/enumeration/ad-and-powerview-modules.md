@@ -114,7 +114,7 @@ Get-LastLoggedOn -ComputerName &#x3C;name> (requires remote registry + local adm
 (Get-DomainOU -Identity '&#x3C;OU>').distinguishedname | %{Get-DomainComputer -SearchBase $_} | select name
 </code></pre></td></tr><tr><td><strong>Computer Local Group Enum</strong> <sub>(requires admin rights on non-dc)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-NetLocalGroup -ComputerName &#x3C;DC/Target-FQDN>
 Get-NetLocalGroupMember -ComputerName &#x3C;DC/Target-FQDN> -GroupName Administrators
-</code></pre></td></tr><tr><td><strong>Non-null SPN Accounts</strong> <sub>(Consider for</sub> <a data-mention href="../exploitation/credential-harvesting/kerberoasting.md">kerberoasting.md</a><sub>)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser -SPN
+</code></pre></td></tr><tr><td><strong>Non-null SPN Accounts</strong> <sub>(Consider for</sub> <a data-mention href="../exploitation/privesc/kerberoasting.md">kerberoasting.md</a><sub>)</sub></td><td></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser -SPN
 </code></pre></td></tr><tr><td><strong>Share Enum</strong><br><a href="https://github.com/NetSPI/PowerHuntShares">PowerHuntShares</a></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Invoke-ShareFinder -Verbose 
 Invoke-HuntSMBShares -NoPing -OutputDirectory C:\AD\ -HostList C:\domain-computer-enum-servers.txt
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Find-DomainShare ## Finds reachable shares
