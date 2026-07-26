@@ -21,6 +21,17 @@ layout:
 
 # Recon
 
+{% hint style="info" %}
+**Footprinting Methodology** — work through these phases in order for every target/engagement:
+
+1. **Host Discovery** – identify which hosts in scope are alive ([#identifying-hosts](recon.md#identifying-hosts "mention"))
+2. **Port Scanning** – full TCP + UDP sweeps to find every open port ([#tcp-port-scan](recon.md#tcp-port-scan "mention"), [#udp-scan](recon.md#udp-scan "mention"))
+3. **Service/Version Detection & NSE Scripts** – `-sV`/`-sC` and category-based script scans ([#script-scan](recon.md#script-scan "mention"))
+4. **Result Parsing & Evidence Collection** – EyeWitness/Aquatone screenshots, import into Metasploit DB ([#parse-nmap-results](recon.md#parse-nmap-results "mention"))
+5. **Manual Service Enumeration** – deep-dive every open port using the matching [Host Based](enumeration/host-based/README.md "mention") page
+6. **Vulnerability Identification** – Nuclei/searchsploit against the versions found ([#identifying-potential-vulnerabilities](recon.md#identifying-potential-vulnerabilities "mention"))
+{% endhint %}
+
 ### Identifying Hosts
 
 #### **Passive Methods**
