@@ -18,6 +18,22 @@ Allows an attacker to induce users to perform actions that they do not intend to
 * **Construct a CSRF attack** - use a CSRF PoC generator.
 * **Lab** - Store a CSRF PoC on a website and force the victim to access the page.
 
+## Testing Checklist
+
+* [ ] Remove the CSRF token entirely - does the request still succeed?
+* [ ] Change the request method (POST → GET) - is the token still validated?
+* [ ] Reuse a token/cookie pair from a different session - is it accepted?
+* [ ] If the token is duplicated in a cookie, tamper with just the body/param value - does it still match?
+* [ ] Does the app validate `Origin` or `Referer` at all? If so, is `null` accepted, or can the domain check be satisfied via subdomain/query-string tricks?
+* [ ] Check the `SameSite` attribute on the session cookie - missing or `None` is worth testing further.
+* [ ] For JSON APIs - does changing `Content-Type` to `text/plain` still get parsed/accepted?
+
+## Login CSRF
+
+* A distinct impact category - instead of hijacking an authenticated action, the attacker forces the victim to unknowingly log into the **attacker's** account.
+* Victim then unknowingly saves/submits sensitive data (search history, payment details, uploaded files) into the attacker-controlled account, which the attacker retrieves later.
+* Same bypass techniques below apply (token validation, SameSite, Referer/Origin) - just target the login form instead of a state-changing action.
+
 ## Bypassing CSRF Token Validation
 
 ### Validation Depends on Request Method
@@ -139,6 +155,36 @@ When setting a cookie with `SameSite=None`, the website must also include the `S
 * This can be overridden by making sure the response containing the exploit has the `Referrer-Policy: unsafe-url` header set.
 * **Payload :** `<meta name="referrer" content="unsafe-url">`
 * **Lab** - Include the above header in the response, as well as append the original domain as a query by including it in `<script>history.pushState("", "", "/?vulnerable-website.com");</script>`
+
+## Bypass Origin Header Validation
+
+* Some apps validate the `Origin` header instead of `Referer` - more reliable since it can't be stripped/downgraded by `Referrer-Policy`, but still bypassable.
+* Browsers send `Origin: null` for requests originating from a sandboxed iframe (without `allow-same-origin`), a `data:` URI, or certain redirect chains - if the server whitelists `null` as an accepted value, this can be abused.
+* **Payload:**
+  ```html
+  <iframe sandbox="allow-forms allow-scripts" srcdoc='
+    <form action="https://vulnerable-website.com/my-account/change-email" method="POST">
+      <input type="hidden" name="email" value="attacker@evil-user.net">
+    </form>
+    <script>document.forms[0].submit()</script>
+  '></iframe>
+  ```
+* **Lab** - Confirm the app accepts `Origin: null` (e.g. try sending it in Burp Repeater), then deliver the above sandboxed iframe PoC to the victim.
+
+## CSRF via JSON Endpoints (Content-Type Bypass)
+
+* JSON APIs (`Content-Type: application/json`) are normally protected from HTML-form CSRF, since browsers treat this as a non-simple request and issue a CORS preflight (`OPTIONS`) first - if the server doesn't explicitly allow the cross-site origin, the browser blocks the actual request.
+* If the server parses the request body leniently regardless of `Content-Type` (i.e. it still `JSON.parse()`s the body even when sent as `text/plain`), a plain `<form>` submission can bypass the preflight entirely, since `text/plain` is a CORS-safelisted content type and triggers no preflight.
+* **Payload:**
+  ```html
+  <form action="https://vulnerable-website.com/api/change-email" method="POST" enctype="text/plain">
+    <input name='{"email":"attacker@evil-user.net", "ignore_me":"' value='"}'>
+  </form>
+  <script>document.forms[0].submit()</script>
+  ```
+* The `text/plain` encoding renders the body as `{"email":"attacker@evil-user.net", "ignore_me":"="}` - most lenient JSON parsers only read the keys they expect and ignore the trailing junk.
+* **Lab** - Confirm the JSON endpoint doesn't validate `Content-Type` strictly, then craft the form with the malformed-JSON technique above.
+
 
 ## References
 
