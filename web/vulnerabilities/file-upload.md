@@ -7,6 +7,7 @@
 {% code lineNumbers="true" %}
 ```php
 <?php echo file_get_contents('/path/to/target/file'); ?>
+<?php phpinfo(); ?> ## used to identify if any of the functions are disabled
 ```
 {% endcode %}
 
@@ -17,7 +18,7 @@
 * We may directly upload our web shell or reverse shell script to the web application, and then by just visiting the uploaded script, we can interact with our web shell or send the reverse shell.
 * No restriction specified in accept-type header - all types (_/_) allowed
 * Identifying Web Framework and choose the appropriate command or web shell.
-  * &#x20;To determine what language runs the web application is to visit the `/index.ext`  and FUZZ the extension using various [SecLists-web-extensions](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt)
+  * To determine what language runs the web application is to visit the `/index.ext` and FUZZ the extension using various [SecLists-web-extensions](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt)
   * [Wappalyzer](https://www.wappalyzer.com/) extension
 * [#web-shells](../../network/exploitation/shells-and-listeners.md#web-shells "mention")
 
@@ -38,20 +39,20 @@
 
 </details>
 
-### Obfuscate Blacklisted/Whitelisted Extension&#x20;
+### Obfuscate Blacklisted/Whitelisted Extension
 
-* Try following patterns by providing multiple extensions&#x20;
+* Try following patterns by providing multiple extensions
   * `filename.php.jpg`, `filename.jpg.php`, `filename.php.`, `filename%2Ephp` <sup><sub>(url encode)<sub></sup>, `filename.pphphp`
-  * `filename.php.jpg`  - This works under certain conditions when the server is misconfigured. Logic would be such that code validates whether the extension is allowed type (ie `.jpg`)   but if the server config files are misconfigured the PHP code will be executed.
+  * `filename.php.jpg` - This works under certain conditions when the server is misconfigured. Logic would be such that code validates whether the extension is allowed type (ie `.jpg`) but if the server config files are misconfigured the PHP code will be executed.
 * In Windows Servers, file names are case insensitive, so we may try uploading a `php` with a mixed-case (e.g. `pHp`), which may bypass the blacklist.
 * Add trailing characters (".") - > `filename.php.`
 * Try using the URL encoding (or double URL encoding) for dots, forward slashes, and backward slashes.
 * Add semicolons <sup><sub>(windows server)<sub></sup> or URL-encoded null byte characters before the file extension. (`%00`)
   * eg: `shell.aspx:.jpg` , `shell.php%00.jpg`
-* Try using multibyte Unicode characters, which may be converted to null bytes and dots after unicode conversion or normalization. (`xC0 x2E`, `xC4 xAE` or `xC0 xAE` translated to x2E if parsed as UTF-8 string)&#x20;
-* Use nested extensions to bypass stripping - `pphphp`&#x20;
+* Try using multibyte Unicode characters, which may be converted to null bytes and dots after unicode conversion or normalization. (`xC0 x2E`, `xC4 xAE` or `xC0 xAE` translated to x2E if parsed as UTF-8 string)
+* Use nested extensions to bypass stripping - `pphphp`
 * Characters to use before or after final extension.
-  * `%20` , `%0a` , `%00` , `%0d0a` , `/` , `.\` , `.` , `…` , `:`&#x20;
+  * `%20` , `%0a` , `%00` , `%0d0a` , `/` , `.\` , `.` , `…` , `:`
 * ```bash
   for char in '%20' '%0a' '%00' '%0d0a' '/' '.\\' '.' '…' ':'; do
       for ext in '.php' '.phps'; do
@@ -63,7 +64,7 @@
   done
   ```
 * #### Fuzzing Extensions <a href="#fuzzing-extensions" id="fuzzing-extensions"></a>
-  * **Wordlists** -  [PayloadsAllTheThings-ExtensionsPHP](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20PHP/extensions.lst), [PayloadsAllTheThings-ExtensionsASP](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20ASP/extensions.lst), [SecLists-web-extensions](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt)
+  * **Wordlists** - [PayloadsAllTheThings-ExtensionsPHP](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20PHP/extensions.lst), [PayloadsAllTheThings-ExtensionsASP](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20ASP/extensions.lst), [SecLists-web-extensions](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt)
   * **Note**: Un-tick the `URL Encoding` option to avoid encoding the (`.`) before the file extension if fuzzing using BurpSuite.
 
 ### Content-Type Restriction Bypass
@@ -83,17 +84,17 @@
 
 ### Path Traversal Bypass
 
-* Restrictions on user-directory for permitted file types&#x20;
+* Restrictions on user-directory for permitted file types
 * Change the directory where files are uploaded
 * Filename contains -> `../../exploit.php` (try encoding for ../../)
 
 ### Injections in File Name <a href="#injections-in-file-name" id="injections-in-file-name"></a>
 
 * Use a malicious string for the uploaded file name, which may get executed or processed if the uploaded file name is displayed (i.e., reflected) on the page.
-* **Payloads**: &#x20;
-  * OS command in the file name `file$(whoami).jpg` ,  ``file`whoami`.jpg`` , `file.jpg||whoami`
+* **Payloads**:
+  * OS command in the file name `file$(whoami).jpg` , ``file`whoami`.jpg`` , `file.jpg||whoami`
   * XSS payload in the file name `<script>alert(window.origin);</script>`
-  * SQL query in the file name `file';select+sleep(5);--.jpg`&#x20;
+  * SQL query in the file name `file';select+sleep(5);--.jpg`
 
 ### Upload Directory Disclosure <a href="#upload-directory-disclosure" id="upload-directory-disclosure"></a>
 
@@ -109,15 +110,15 @@
 * Older versions of Windows were limited to a short length for file names, so they used a Tilde character (`~`) to complete the file name. To refer to a file called (`hackthebox.txt`) we can use (`HAC~1.TXT`) or (`HAC~2.TXT`), where the digit represents the order of the matching files that start with (`HAC`)
 * Windows still supports this convention, we can write a file called (e.g. `WEB~1.CON`) to overwrite the `web.conf` file.
 
-### Override Blacklist Extension&#x20;
+### Override Blacklist Extension
 
 * 1\. Overriding server configuration `/etc/apache2/apache2.conf`
 * `LoadModule php_module /usr/lib/apache2/modules/libphp.so`\
-  `AddType application/x-httpd-php .php`&#x20;
+  `AddType application/x-httpd-php .php`
 * Create special configuration file within individual directories
 * Upload a .htaccess file
-* `AddType application/x-httpd-php .133t`&#x20;
-* Modify `Content-Type` to text/plain&#x20;
+* `AddType application/x-httpd-php .133t`
+* Modify `Content-Type` to text/plain
 * Upload a php payload with extension .133t which will be treated as `php` file.
 * Other server configuration locations
   * `/etc/apache2/mods-enabled/php7.4.conf`
@@ -125,11 +126,11 @@
 ### Malicious Client-Side Scripts
 
 * Upload HTML files or SVG images or XML
-* Use tags to create stored XSS payloads&#x20;
+* Use tags to create stored XSS payloads
 * [ExifTool](https://exiftool.org/)
   * Create a polyglot JPEG file containing malicious code within its metadata \*
-  * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>`  <sup><sub>(Output between START and END strings)<sub></sup>
-  * `exiftool -Comment='"><img src=1 onerror=alert(window.origin)>' xss.jpg`  <sup><sub>(When the image's metadata is displayed, the XSS payload will be triggered or change the image's MIME-Type to<sub></sup> <sup><sub> </sup><sup><sub>`text/html`<sub></sup>  <sup><sub>  </sup><sup><sub>to render it as a HTML document)<sub></sup>
+  * `exiftool -Comment="<?php echo 'START ' . file_get_contents('<path>') . ' END'; ?>"-i <input-image> -o <output-image>` <sup><sub>(Output between START and END strings)<sub></sup>
+  * `exiftool -Comment='"><img src=1 onerror=alert(window.origin)>' xss.jpg` <sup><sub>(When the image's metadata is displayed, the XSS payload will be triggered or change the image's MIME-Type to<sub></sup> <sup><sub>`text/html`<sub></sup> <sup><sub>to render it as a HTML document)<sub></sup>
 * #### DoS Attacks <a href="#dos" id="dos"></a>
   * **Decompression Bomb** - If a web application automatically unzips a ZIP archive, it is possible to upload a malicious archive containing nested ZIP archives within it, which can eventually lead to many Petabytes of data, resulting in a crash on the back-end server.
   * **Pixel Flood** - We can create any `JPG` image file with any image size (e.g. `500x500`), and then manually modify its compression data to say it has a size of (`0xffff x 0xffff`), which results in an image with a perceived size of 4 Gigapixels. When the web application attempts to display the image, it will attempt to allocate all of its memory to this image, resulting in a crash on the back-end server.
@@ -255,7 +256,7 @@ End Sub
 
 </details>
 
-### Exploiting Vulnerabilities in the Parsing of Uploaded Files&#x20;
+### Exploiting Vulnerabilities in the Parsing of Uploaded Files
 
 * Server parses XML-based files, a potential vector for XXE injection attacks.
 * XML data is not unique to SVG images, as it is also utilized by many types of documents, like `PDF`, `Word Documents`, `PowerPoint Documents`, among many others.
@@ -279,12 +280,12 @@ Content-Length: 49
 
 </details>
 
-### Exploiting File Upload Race Conditions&#x20;
+### Exploiting File Upload Race Conditions
 
 * [race-conditions.md](race-conditions.md "mention")
-* Uploads the file to a temp directory and perform validation - virus checks etc&#x20;
-* Uploaded file is moved to an accessible folder, where checked for viruses.&#x20;
-* Malicious files are removed once the virus check completes&#x20;
+* Uploads the file to a temp directory and perform validation - virus checks etc
+* Uploaded file is moved to an accessible folder, where checked for viruses.
+* Malicious files are removed once the virus check completes
 * Turbo Intruder extender required
 
 <details>
