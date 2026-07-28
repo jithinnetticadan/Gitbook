@@ -2,6 +2,10 @@
 
 * [PTGuide](README.md)
 
+## OSINT
+
+* [Passive](osint/passive.md)
+
 ## Web
 
 * [Recon & Enum](web/recon-and-enum.md)
@@ -56,10 +60,6 @@
   * [References](web/burpsuite-tricks/references.md)
 * [Interview](web/interview.md)
 * [References](web/references.md)
-
-## OSINT
-
-* [Passive](osint/passive.md)
 
 ## Network
 
