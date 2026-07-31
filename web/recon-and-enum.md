@@ -150,7 +150,7 @@ assetfinder --subs-only <domain> | httprobe | anew hosts; meg -d 1000 -v /; gf s
 #### Other Steps
 
 {% hint style="info" %}
-Full searchsploit command + JSON output flag: [#identifying-potential-vulnerabilities](../network/recon.md#identifying-potential-vulnerabilities "mention") ->  Exploit Checks
+Full searchsploit command + JSON output flag: [#identifying-potential-vulnerabilities](../network/recon.md#identifying-potential-vulnerabilities "mention") -> Exploit Checks
 {% endhint %}
 
 * Check the page source to obtain credentials added in comments
@@ -179,3 +179,4 @@ Generic scanning tool categories (port scanning, OS fingerprinting, vulnerabilit
 * [Trufflehog](https://github.com/trufflesecurity/truffleHog) <sup><sub>(secrets in JS bundles/repos)<sub></sup>
 * [Greyhat Warfare](https://buckets.grayhatwarfare.com/) <sup><sub>(public S3 bucket search engine)<sub></sup>
 * [linkedin2username](https://github.com/initstring/linkedin2username)
+* [FinalRecon](https://github.com/thewhiteh4t/FinalRecon)
