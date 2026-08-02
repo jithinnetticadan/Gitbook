@@ -3,6 +3,7 @@
 ### Static Analysis Tool
 
 * [adbauditor](https://adbauditor.com/)
+* [apkstudio](https://github.com/vaibhavpandeyvpz/apkstudio)
 
 ### Lab Setup
 
