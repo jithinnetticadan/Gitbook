@@ -7,3 +7,4 @@
 * [AndroHunter](https://github.com/ynsmroztas/AndroHunter)
 * [nileshkale12/MobiSuite-Mobile](https://github.com/nileshkale12/MobiSuite-Mobile)
 * [PhonePe/thorfinn](https://github.com/PhonePe/thorfinn)
+* [abhiappmobiledeveloper/android-xposed-framework](https://abhiappmobiledeveloper.medium.com/android-xposed-framework-ee763e5dda8e)
