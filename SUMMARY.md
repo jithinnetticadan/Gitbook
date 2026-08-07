@@ -271,8 +271,11 @@
 
 ***
 
+* [IOT & Hardware](iot-and-hardware/README.md)
+  * [References](iot-and-hardware/references.md)
 * [AI-Sec](ai-sec/README.md)
-  * [Offensive AI](ai-sec/offensive-ai.md)
+  * [Offensive AI](ai-sec/offensive-ai/README.md)
+    * [References](ai-sec/offensive-ai/references.md)
   * [AI Augmented Pentest](ai-sec/ai-augmented-pentest/README.md)
     * [References](ai-sec/ai-augmented-pentest/references.md)
 

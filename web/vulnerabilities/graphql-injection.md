@@ -7,6 +7,8 @@
 * [graphql-armor](https://github.com/Escape-Technologies/graphql-armor)
 * [graphman](https://github.com/Escape-Technologies/graphman)
 * [graphinder](https://github.com/Escape-Technologies/graphinder)
+* [graphql-cop](https://github.com/dolevf/graphql-cop)
+* [GraphQL Network Inspector](https://chromewebstore.google.com/detail/graphql-network-inspector/ndlbedplllcgconngcnfmkadhokfaaln)
 
 ### Reference
 
