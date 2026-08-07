@@ -5,6 +5,10 @@
 * [adbauditor](https://adbauditor.com/)
 * [apkstudio](https://github.com/vaibhavpandeyvpz/apkstudio)
 
+### SSLPinning Bypass
+
+* [FlutterTap](https://github.com/script-or-script/FlutterTap)
+
 ### Lab Setup
 
 * [Frida-Launcher](https://github.com/thecybersandeep/Frida-Launcher)
