@@ -269,6 +269,13 @@
   * [References](serverless/kubernetes/references.md)
 * [References](serverless/references.md)
 
+***
+
+* [AI-Sec](ai-sec/README.md)
+  * [Offensive AI](ai-sec/offensive-ai.md)
+  * [AI Augmented Pentest](ai-sec/ai-augmented-pentest/README.md)
+    * [References](ai-sec/ai-augmented-pentest/references.md)
+
 ## Tools
 
 * [Tool Links](tools/tool-links.md)
