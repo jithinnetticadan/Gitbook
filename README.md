@@ -26,10 +26,6 @@ layout:
 [Web](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/web)
 {% endcontent-ref %}
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint" %}
-[OSINT](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint)
-{% endcontent-ref %}
-
 {% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/network" %}
 [Network](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/network)
 {% endcontent-ref %}
@@ -48,6 +44,10 @@ layout:
 
 {% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/serverless" %}
 [Serverless](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/serverless)
+{% endcontent-ref %}
+
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint" %}
+[OSINT](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint)
 {% endcontent-ref %}
 
 {% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/tools" %}
