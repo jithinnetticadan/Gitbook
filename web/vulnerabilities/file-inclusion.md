@@ -142,7 +142,7 @@ if(req.query.language) {
 * #### Encoding <a href="#encoding" id="encoding"></a>
   * Web filters may prevent input filters that include certain LFI-related characters, like a dot `.` or a slash `/` used for path traversals.
   * Filters may be bypassed by URL encoding our input, such that it would no longer include these bad characters.
-  * Byapss: `%2e%2e%2f`
+  * **Bypass**: `%2e%2e%2f`
 * #### Approved Paths <a href="#approved-paths" id="approved-paths"></a>
   * Web applications may also use Regular Expressions to ensure that the file being included is under a specific path.
   * `if(preg_match('/^./languages/.+$/', $_GET['language'])) { include($_GET['language']); } else { echo 'Illegal path specified!'; }` <sup><sub>(source-code)<sub></sup>
@@ -190,7 +190,7 @@ if(req.query.language) {
   * The `input` wrapper also depends on the `allow_url_include` .
   * PHP configuration file found at (`/etc/php/X.Y/apache2/php.ini`) for Apache or at (`/etc/php/X.Y/fpm/php.ini`) for Nginx, where `X.Y` is your install PHP version.
   * **Payload**: `curl -s -X POST --data '<?php system($_GET["cmd"]); ?>' "http://<SERVER_IP>:/index.php?language=php://input&cmd=id" | grep uid`
-  * To pass our command as a GET request, we need the vulnerable function to also accept GET request (i.e. use `$_REQUEST`). If it only accepts POST requests, then we can put our command directly in our PHP code, instead of a dynamic web shell (e.g. `<\?php system('id')?>`)
+  * To pass our command as a GET request, we need the vulnerable function to also accept GET request (i.e. use `$_REQUEST`). If it only accepts POST requests, then we can put our command directly in our PHP code, instead of a dynamic web shell (e.g. `<?php system('id')?>`)
   * #### Expect Wrapper <a href="#expect" id="expect"></a>
     * The [expect](https://www.php.net/manual/en/wrappers.expect.php) wrapper allows us to directly run commands through URL streams.
     * Expect works very similarly to the web shells we've used earlier, but don't need to provide a web shell, as it is designed to execute commands.
