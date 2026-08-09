@@ -9,7 +9,7 @@ Enumerates key AD elements such as:
 * Privileged relationships (like local administrator rights)
 
 {% hint style="warning" %}
-**Note:** Your BloodHound and SharpHound versions must match for the best results. It recommneded to download the collector binary from the same bloodhound instance.
+**Note:** Your BloodHound and Data Collector versions must match for the best results. It recommended to download the collector binary from the same bloodhound instance.
 {% endhint %}
 
 #### **Types of Data Collectors**
