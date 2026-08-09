@@ -5,6 +5,10 @@
 * [adbauditor](https://adbauditor.com/)
 * [apkstudio](https://github.com/vaibhavpandeyvpz/apkstudio)
 
+### Dynamic Analysis Tool
+
+* [thorfinn](https://github.com/PhonePe/thorfinn)
+
 ### SSLPinning Bypass
 
 * [FlutterTap](https://github.com/script-or-script/FlutterTap)
