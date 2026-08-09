@@ -37,7 +37,7 @@ Repeat this loop at **every** stage of the engagement - external and internal, f
 
 1. **Enumerate** the current target/foothold thoroughly, from scratch - web app, open ports, running services. See [Recon](recon.md "mention") for external footprinting and [Enumeration](enumeration/README.md "mention") for host/service-based enumeration.
 2. **Exploit** a vulnerability/misconfiguration to gain access, or authenticate with credentials already found.
-3. **Enumerate as the new user, starting from zero** - don't just check the one thing you expect; go through the full checklist again as if this were a brand-new machine. What does this user have access to? Any credentials lying around (files, history, configs, saved sessions)? See [Credentials Harvesting](exploitation/credentials-harvesting/ "mention").
+3. **Enumerate as the new user, starting from zero** - don't just check the one thing you expect; go through the full checklist again as if this were a brand-new machine. Always list files including hidden ones (`ls -la` / `dir /a`) as a default habit right after every login/shell. What does this user have access to? Any credentials lying around (files, history, configs, saved sessions)? See [Credentials Harvesting](exploitation/credentials-harvesting/ "mention").
 4. **Privilege escalate** on the current machine - [Linux](exploitation/privilege-escalation/linux.md "mention") / [Windows](exploitation/privilege-escalation/windows.md "mention").
 5. **Re-enumerate from zero again, even after reaching root/admin.** Don't assume the trail ends here - new files, credential stores, and network interfaces are often only visible or decryptable at the highest privilege level on the box.
 6. **Check for pivot opportunities** - network interfaces, routing tables, ARP cache, and any other subnets reachable from this host. See [Pivoting, Tunneling & Port Forwarding](exploitation/pivoting-tunneling-and-port-forwarding.md "mention") (ligolo-ng, chisel, sshuttle, proxychains).
@@ -50,12 +50,12 @@ Run through this list at every single pass of the loop above - these are the thi
 {% endhint %}
 
 * [ ] **Flag hunt** - after *this* privilege gain, check for `local.txt`/`proof.txt`/flag files in home directories, Desktop, and the current user's profile. Don't wait until "the end."
-* [ ] **Credential/hash reuse** - spray any credential or hash found against *every* known user and host so far, not just where it was found.
+* [ ] **Credential/hash reuse - broader than you think** - spray any credential or hash found against *every* known user and host so far, not just where it was found. Also try it against **other usernames**, not just the one it was cracked for - e.g. a cracked `sa` (MSSQL) password may also work for `Administrator`, since admins frequently reuse passwords across accounts.
 * [ ] **Local vs. domain account** - confirm whether a found credential is a local account (scoped to one box) or a domain account (works everywhere) before assuming it unlocks other machines.
 * [ ] **Background enumeration** - is Responder/`ntlmrelayx` (or equivalent) still passively listening? Start it as soon as you're internal and leave it running while you manually enumerate elsewhere.
 * [ ] **Other paths logged?** - note every potential entry point you've spotted so far, even ones you're not pursuing right now - don't tunnel-vision on the first lead.
 * [ ] **Evidence captured** - command + output + timestamp screenshotted/logged for this step, not deferred to "write up later."
-* [ ] **Time check** - stuck on this step for 45-60+ minutes with no progress? Step back, re-enumerate, or switch targets instead of sinking more time in.
+* [ ] **Time check** - stuck on this step for 45-60+ minutes with no progress? Don't repeat the same failed attempt - deliberately switch approach/tool/wordlist, step back and re-enumerate, or switch targets instead of sinking more time in.
 * [ ] **Payload actually blocked, or vuln not real?** - if an exploit/payload failed, rule out AV/EDR/firewall interference with an alternate payload before writing off the technique entirely.
 
 ## Phase 1 - External Network
@@ -96,9 +96,11 @@ For every open port, work through the matching page under [Enumeration](enumerat
 ### 1.3 Web Application Testing Checklist
 
 * [ ] Passive + active recon: [Recon & Enum](../web/recon-and-enum.md "mention") (subdomains, vhosts, dorking, crawling, authenticated crawl once you have any creds).
+* [ ] **Virtual hosts** - if the app behaves differently (or not at all) by IP, add the hostname to `/etc/hosts` and browse by the **exact URL/hostname**, not the raw IP.
 * [ ] Authentication testing - brute force/defaults, [Authentication](../web/vulnerabilities/authentication/README.md "mention").
 * [ ] Injection - [SQL Injection](../web/vulnerabilities/sql-injection.md "mention"), [OS Injection](../web/vulnerabilities/os-injection.md "mention"), [XXE](../web/vulnerabilities/xml-external-entity-xxe-injection.md "mention"), [SSTI](../web/vulnerabilities/server-side-template-injection-ssti.md "mention").
-* [ ] File-based - [File Upload](../web/vulnerabilities/file-upload.md "mention"), [File Inclusion](../web/vulnerabilities/file-inclusion.md "mention").
+* [ ] File-based - [File Upload](../web/vulnerabilities/file-upload.md "mention") (on Windows/IIS, if a straightforward upload is blocked, try a backslash-prefixed path like `\\file\shell.aspx` - the server may auto-correct/normalize it in a way that slips past extension/path validation), [File Inclusion](../web/vulnerabilities/file-inclusion.md "mention").
+* [ ] **File disclosure/LFI found?** - look up the target software's **default config file paths and filenames** online rather than guessing blindly; the exact path is almost always documented. If nginx is present, also check `cat /etc/nginx/sites-enabled/default` for vhost/config info once you have file read access.
 * [ ] Access control / logic flaws - [Access Control](../web/vulnerabilities/access-control.md "mention"), [IDOR](../web/vulnerabilities/insecure-direct-object-references-idor.md "mention").
 * [ ] Client-side - [XSS](../web/vulnerabilities/cross-site-scripting-xss.md "mention"), [CSRF](../web/vulnerabilities/cross-site-request-forgery-csrf.md "mention"), [CORS](../web/vulnerabilities/cross-origin-resource-sharing-cors.md "mention").
 * [ ] Known CMS/app-specific checks if fingerprinted - WordPress/Jenkins/GitLab/Tomcat/etc pages under `web/`.
@@ -122,6 +124,7 @@ Full command reference: [Privilege Escalation - Linux](exploitation/privilege-es
 * [ ] Docker/LXD group membership (container escape to root).
 * [ ] NFS exports with `no_root_squash`.
 * [ ] Credentials in config files, env vars, history, `/var/www`, `/opt`.
+* [ ] Check if `/etc/passwd` is writable by mistake - if so, you can remove the password field for `root` entirely (or add a new UID 0 entry) to gain root without needing a password at all.
 * [ ] Run linPEAS/les.sh even if you think you already found the path - confirm nothing else was missed.
 
 ### 1.6 Windows Privilege Escalation Checklist
@@ -133,7 +136,12 @@ Full command reference: [Privilege Escalation - Windows](exploitation/privilege-
 * [ ] Service misconfigurations - unquoted service paths, weak service/binary permissions, `AlwaysInstallElevated`.
 * [ ] Scheduled tasks running as SYSTEM/admin with a writable target.
 * [ ] Stored credentials - Credential Manager, PuTTY/WinSCP sessions, unattend.xml, registry autologon, IIS web.config.
-* [ ] Token impersonation opportunities (Potato-family exploits) if SeImpersonate/SeAssignPrimaryToken is present.
+* [ ] Token impersonation opportunities (Potato-family exploits) if SeImpersonate/SeAssignPrimaryToken is present - or, via an existing Meterpreter session, list and steal a privileged process token directly:
+  ```
+  meterpreter > ps
+  meterpreter > steal_token <PID>
+  ```
+* [ ] Always test known **high-impact Windows RCEs** (EternalBlue/MS17-010, PrintNightmare, SMBGhost, etc.) against SMB/RPC services - even if the port isn't directly reachable, port-forward to it first (e.g. a service only bound internally/to localhost) and test from there.
 * [ ] Run winPEAS even if you think you already found the path - confirm nothing else was missed.
 
 ### 1.7 Post-Root Re-Enumeration (External Box)
@@ -203,6 +211,7 @@ Full command reference: [Privilege Escalation - Windows](exploitation/privilege-
 
 * [ ] DCSync once DA-equivalent rights are held.
 * [ ] Golden/Silver/Diamond ticket if persistence/further movement is needed - [Golden Ticket](active-directory/exploitation/privesc/golden-ticket.md "mention"), [Silver Ticket](active-directory/exploitation/privesc/silver-ticket.md "mention"), [Diamond Ticket](active-directory/exploitation/privesc/diamond-ticket.md "mention").
+* [ ] **Password audit with** [**DPAT**](https://github.com/clr2of8/DPAT) - once you've DCSync'd/dumped NTDS and cracked as many hashes as possible, run DPAT against the NTDS dump + cracked passwords list. This generates the password-reuse/weak-password statistics (top 10 passwords, % cracked, DA/EA passwords cracked, etc.) needed for the report appendix - don't leave this until after the exam, capture it now while the data is fresh.
 * [ ] Confirm every required flag across every compromised machine has actually been captured and recorded - not just DA.
 
 ### 3.7 Post-Compromise Re-Enumeration
@@ -218,7 +227,7 @@ Full command reference: [Privilege Escalation - Windows](exploitation/privilege-
 * Configuration files (web app configs, `.env`, CI/CD pipeline definitions)
 * Command history (`.bash_history`, PowerShell `ConsoleHost_history.txt`)
 * Memory (LSASS/Mimikatz, `/proc`/mimipenguin)
-* Backup files, scheduled tasks, cron jobs
+* Backup files, scheduled tasks, cron jobs - found a `.vhd`/`.vhdx`/`.vmdk`? Mount it, see [Mount VHDX/VMDK](enumeration/os-based/mount-vhdx-vmdk.md "mention") - backups are a common place to find credentials or a full copy of `ntds.dit`/SAM.
 * Environment variables, clipboard, Windows Sticky Notes
 * Hardcoded credentials in scripts/binaries
 * Shares (SMB/NFS) - Snaffler, PowerHuntShares, or manual browsing
