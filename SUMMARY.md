@@ -181,6 +181,7 @@
       * [Group Policy Preferences (GPP)](network/active-directory/exploitation/credential-harvesting/group-policy-preferences-gpp.md)
       * [Kerberoasting](network/active-directory/exploitation/privesc/kerberoasting.md)
     * [Lateral Movement](network/active-directory/exploitation/lateral-movement/README.md)
+      * [ACL's - GMSA Password](network/active-directory/exploitation/lateral-movement/acls-gmsa-password.md)
       * [ACL's - ForceResetPassword](network/active-directory/exploitation/lateral-movement/acls-forceresetpassword.md)
       * [ACL's - GenericAll,Write](network/active-directory/exploitation/lateral-movement/acls-genericall-write.md)
       * [Coercion/Relay Attacks](network/active-directory/enumeration/initial-access-foothold/coercion-relay-attacks.md)
