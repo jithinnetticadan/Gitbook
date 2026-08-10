@@ -8,3 +8,4 @@
 * [nileshkale12/MobiSuite-Mobile](https://github.com/nileshkale12/MobiSuite-Mobile)
 * [PhonePe/thorfinn](https://github.com/PhonePe/thorfinn)
 * [abhiappmobiledeveloper/android-xposed-framework](https://abhiappmobiledeveloper.medium.com/android-xposed-framework-ee763e5dda8e)
+* [mfumis/bypassing-ssl-pinning-on-play-store-avds-without-frida](https://www.mfumis.com/posts/bypassing-ssl-pinning-on-play-store-avds-without-frida)
