@@ -143,7 +143,7 @@ https://github.com/leonjza/awesome-nmap-grep
 * [**`Aquatone`**](https://github.com/michenriksen/aquatone) `or` [`aquatone`](https://github.com/shelld3v/aquatone) <sup><sub>`(for web app evidence collection)`<sub></sup>
   * `cat nmap.xml | ./aquatone -nmap`
 * **Metasploit**
-  * `workspace -a <name>` -> `workspace <name>` -> `db_import *.xml` -> `load alias` -> `alias sv services`&#x20;
+  * `workspace -a <name>` -> `workspace <name>` -> `db_import *.xml` -> `load alias` -> `alias sv services`
   * Full Metasploit workflow (modules, sessions, meterpreter, msfvenom): [metasploit-framework.md](exploitation/metasploit-framework.md "mention")
 * [awesome-nmap-grep](https://github.com/leonjza/awesome-nmap-grep) - Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
 
@@ -167,8 +167,9 @@ https://github.com/leonjza/awesome-nmap-grep
 
 {% code lineNumbers="true" %}
 ```shellscript
-nuclei -l targets.txt -t http/cves/,http/default-logins/,http/exposed-panels/,http/exposures/,http/iot/,http/misconfiguration/,http/takeovers/,http/technologies/,http/vulnerabilities/ -severity critical,high -o nuclei-output.txt -rl 150 -c 50 -ni -stats
-nuclei -l targets.txt -as -s critical,high,medium,low -o nuclei-output.txt -rl 150 -c 50 -ni -stats
+autorecon -t targets.txt -o autorecon-results
+nmapAutomator.sh <IP> All
+nmapAutomator.sh <IP> Vulns
 sudo nmap -iL host.txt -p- -sV --script vuln 
 ```
 {% endcode %}
@@ -200,3 +201,5 @@ ExploitDB
 * [ICANN](https://lookup.icann.org/lookup)
 * [BGP Toolkit](https://bgp.he.net/)
 * [viewdns.info](https://viewdns.info/)
+* [AutoRecon](https://github.com/AutoRecon/AutoRecon)
+* [nmapAutomator](https://github.com/21y4d/nmapAutomator)
