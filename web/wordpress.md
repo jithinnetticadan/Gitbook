@@ -26,7 +26,7 @@
 * Browsing the site and perusing the page source will give us hints to the theme in use, plugins installed, and even usernames if author names are published with posts.
 * Navigate through the page source for each page, grepping for the `wp-content` directory, `themes` and `plugin` .
   * `curl -s http://<URL/path> | grep themes` , `curl -s http://<URL/path> | grep plugin`
-* Browse through the plugins, themes to obtain the version numbers and look for any known CVE's.
+* Browse through the plugins & themes to obtain the version numbers and look for any known CVE's.
 * Readme.txt file available under `wp-content/plugins/<plugins>/readme.txt` & `wp-content/themes/<theme>/Readme.txt`
 
 ### Users <a href="#enumerating-users" id="enumerating-users"></a>
