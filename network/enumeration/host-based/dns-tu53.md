@@ -92,7 +92,7 @@ subbrute.py inlanefreight.com -s ./names.txt -r ./resolvers.txt
 {% tab title="dnsrecon" %}
 {% code lineNumbers="true" %}
 ```bash
-dnsrecon -r 192.168.1.0-192.168.1.255 -n <DNS-Server-IP>
+dnsrecon -r 192.168.1.0-192.168.1.255 -n <DNS-Server-IP> -d <domain>
 ```
 {% endcode %}
 {% endtab %}
