@@ -105,7 +105,7 @@ dnsrecon -r 192.168.1.0-192.168.1.255 -n <DNS-Server-IP> -d <domain>
 ### Virtual Host Fuzzing
 
 * Make sure to update the /etc/hosts file for brute-force
-* <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">gobuster vhost -u http://&#x3C;target_IP_address> -w &#x3C;wordlist_file> --append-domain
+* <pre class="language-shellscript" data-line-numbers><code class="lang-shellscript">gobuster vhost -u http://&#x3C;target_IP_address> -w &#x3C;wordlist_file> --domain &#x3C;value>
   ffuf -w &#x3C;wordlist> -H "Host: FUZZ.domain.com" -u http://&#x3C;ip>
   </code></pre>
 
