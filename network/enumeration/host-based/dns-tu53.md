@@ -2,8 +2,8 @@
 
 ### Default Configuration
 
-* DNS server [Bind9](https://www.isc.org/bind/) is very often used on Linux-based distributions.&#x20;
-* **Local DNS Configuration -** `cat /etc/bind/named.conf.local`&#x20;
+* DNS server [Bind9](https://www.isc.org/bind/) is very often used on Linux-based distributions.
+* **Local DNS Configuration -** `cat /etc/bind/named.conf.local`
 
 ### Dangerous Settings
 
@@ -12,13 +12,13 @@
 ### Footprinting the Service
 
 * #### External DNS
-  * **DIG - NS Query -** `dig ns <domain> @<DNS-server-IP>`&#x20;
-  * **DIG - Version Query -** `dig CH TXT version.bind <DNS-server-IP>`&#x20;
-  * **DIG - ANY Query -** `dig any <domain> @<DNS-server-IP>`&#x20;
+  * **DIG - NS Query -** `dig ns <domain> @<DNS-server-IP>`
+  * **DIG - Version Query -** `dig CH TXT version.bind <DNS-server-IP>`
+  * **DIG - ANY Query -** `dig any <domain> @<DNS-server-IP>`
   * **DIG - AXFR Zone Transfer -** `dig axfr <domain> @<DNS-server-IP>` or `fierce --domain <example.com>`
-  * **DIG - AXFR Zone Transfer - Internal -** `dig axfr internal.<domain> @<DNS-server-IP>`&#x20;
+  * **DIG - AXFR Zone Transfer - Internal -** `dig axfr internal.<domain> @<DNS-server-IP>`
 * #### AD DNS
-  * `adidnsdump -u <domain>\\<username> ldap://<DC-IP>`  <sup><sub>(run again with the<sub></sup> <sup><sub> </sup><sup><sub>`-r`<sub></sup> <sup><sub> </sup><sup><sub>, attempts to resolve unknown records by performing<sub></sup> <sup><sub> </sup><sup><sub>`A`<sub></sup> <sup><sub> </sup><sup><sub>query)<sub></sup>
+  * `adidnsdump -u <domain>\\<username> ldap://<DC-IP>` <sup><sub>(run again with the<sub></sup> <sup><sub>`-r`<sub></sup> <sup><sub>, attempts to resolve unknown records by performing<sub></sup> <sup><sub>`A`<sub></sup> <sup><sub>query)<sub></sup>
 
 ### Subdomain Brute Forcing
 
@@ -86,6 +86,22 @@ subbrute.py inlanefreight.com -s ./names.txt -r ./resolvers.txt
 
 <table><thead><tr><th width="233.28570556640625">Command</th><th>Description</th></tr></thead><tbody><tr><td><code>dig domain.com</code></td><td>Performs a default A record lookup for the domain.</td></tr><tr><td><code>dig domain.com A</code></td><td>Retrieves the IPv4 address (A record) associated with the domain.</td></tr><tr><td><code>dig domain.com AAAA</code></td><td>Retrieves the IPv6 address (AAAA record) associated with the domain.</td></tr><tr><td><code>dig domain.com MX</code></td><td>Finds the mail servers (MX records) responsible for the domain.</td></tr><tr><td><code>dig domain.com NS</code></td><td>Identifies the authoritative name servers for the domain.</td></tr><tr><td><code>dig domain.com TXT</code></td><td>Retrieves any TXT records associated with the domain.</td></tr><tr><td><code>dig domain.com CNAME</code></td><td>Retrieves the canonical name (CNAME) record for the domain.</td></tr><tr><td><code>dig domain.com SOA</code></td><td>Retrieves the start of authority (SOA) record for the domain.</td></tr><tr><td><code>dig @1.1.1.1 domain.com</code></td><td>Specifies a specific name server to query; in this case 1.1.1.1</td></tr><tr><td><code>dig +trace domain.com</code></td><td>Shows the full path of DNS resolution.</td></tr><tr><td><code>dig -x 192.168.1.1</code></td><td>Performs a reverse lookup on the IP address 192.168.1.1 to find the associated host name. You may need to specify a name server.</td></tr><tr><td><code>dig +short domain.com</code></td><td>Provides a short, concise answer to the query.</td></tr><tr><td><code>dig +noall +answer domain.com</code></td><td>Displays only the answer section of the query output.</td></tr><tr><td><code>dig domain.com ANY</code></td><td>Retrieves all available DNS records for the domain (Note: Many DNS servers ignore <code>ANY</code> queries to reduce load and prevent abuse, as per <a href="https://datatracker.ietf.org/doc/html/rfc8482">RFC 8482</a>).</td></tr></tbody></table>
 
+### Reverse Lookup
+
+{% tabs %}
+{% tab title="dnsrecon" %}
+{% code lineNumbers="true" %}
+```bash
+dnsrecon -r 192.168.1.0-192.168.1.255 -n <DNS-Server-IP>
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="Second Tab" %}
+
+{% endtab %}
+{% endtabs %}
+
 ### Virtual Host Fuzzing
 
 * Make sure to update the /etc/hosts file for brute-force
@@ -119,7 +135,7 @@ Certificate Transparency logs are public, append-only ledgers that record the is
 
 * #### Local DNS Cache Poisoning
   * [Ettercap](https://www.ettercap-project.org/) or [Bettercap](https://www.bettercap.org/)
-  * `sudo nano /etc/ettercap/etter.dns`&#x20;
+  * `sudo nano /etc/ettercap/etter.dns`
   * Modify the Target Domain with A record pointing to atatcker IP
 
 ### Tools
