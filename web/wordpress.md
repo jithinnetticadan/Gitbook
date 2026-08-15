@@ -37,7 +37,7 @@
 
 * [WPScan](https://github.com/wpscanteam/wpscan) is an automated WordPress scanner and enumeration tool. It determines if the various themes and plugins used by a blog are outdated or vulnerable.
 * WPScan is also able to pull in vulnerability information from external sources. We can obtain an API token from [WPVulnDB](https://wpvulndb.com/), which is used by WPScan to scan for PoC and reports. Token can then be supplied to wpscan using the `--api-token parameter`
-* `sudo wpscan --url http://<URL> --enumerate -t 5 --api-token <value>` <sup><sub>(enumerates vulnerable plugins, themes, users, media, and backups)<sub></sup>
+* `sudo wpscan --url http://<URL> -e ap,at,tt,cb,dbe,u,m -t 5 --api-token <value>` <sup><sub>(enumerates vulnerable plugins, themes, users, media, and backups)<sub></sup>
 * `sudo wpscan --url http://<URL> --detection-mode aggressive --plugins-detection aggressive`
 
 ## Exploitation
@@ -46,7 +46,8 @@
 
 * WPScan uses two kinds of login brute force attacks, [xmlrpc](https://kinsta.com/blog/xmlrpc-php/) and wp-login.
 * The `wp-login` method will attempt to brute force the standard WordPress login page, while the `xmlrpc` method uses WordPress API to make login attempts through `/xmlrpc.php`.
-* `sudo wpscan --password-attack xmlrpc -t 20 -U <username> -P rockyou.txt --url http://<URL>`
+* `sudo wpscan --url http://<URL> -P passwords.txt -U users.txt`
+* `sudo wpscan --url http://<URL> --password-attack xmlrpc -t 20 -U <username> -P rockyou.txt`&#x20;
 
 ### Code Execution <a href="#code-execution" id="code-execution"></a>
 
