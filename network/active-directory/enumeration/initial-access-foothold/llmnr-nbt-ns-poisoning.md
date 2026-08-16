@@ -11,10 +11,11 @@
 * **Linux**
   * `sudo responder -I <interface> -dP` <sup><sub>(-v verbose) (-w for WPAD server)<sub></sup>
   * `sudo responder -I <interface> -wrfv`
+  * `tcpdump -i <interface> -s 65535 -w <pcap_file>`
 * **Windows**
   * `Import-Module .\Inveigh.ps1`
-  * `(Get-Command Invoke-Inveigh).Parameters`&#x20;
-  * `Invoke-Inveigh -NBNS Y -ConsoleOutput Y -FileOutput Y`&#x20;
+  * `(Get-Command Invoke-Inveigh).Parameters`
+  * `Invoke-Inveigh -NBNS Y -ConsoleOutput Y -FileOutput Y`
   * Use the compiled C# version for the latest fetures. (`.\Inveigh.exe`)
     * `ESC -> HELP`
 
