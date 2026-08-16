@@ -17,4 +17,8 @@
 
 * [Frida-Launcher](https://github.com/thecybersandeep/Frida-Launcher)
 
+{% file src="../../.gitbook/assets/Android Static Analysis.pdf" %}
+
+{% file src="../../.gitbook/assets/Android Dynamic Analysis.pdf" %}
+
 {% file src="../../.gitbook/assets/Android_Pentest_Master_Checklist.xlsx" %}
