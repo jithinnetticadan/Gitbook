@@ -192,4 +192,3 @@ Generic scanning tool categories (port scanning, OS fingerprinting, vulnerabilit
 * [Trufflehog](https://github.com/trufflesecurity/truffleHog) <sup><sub>(secrets in JS bundles/repos)<sub></sup>
 * [Greyhat Warfare](https://buckets.grayhatwarfare.com/) <sup><sub>(public S3 bucket search engine)<sub></sup>
 * [linkedin2username](https://github.com/initstring/linkedin2username)
-* [FinalRecon](https://github.com/thewhiteh4t/FinalRecon)
