@@ -101,8 +101,8 @@ ffuf -s -w subdomains-top1million-5000.txt:FUZZ -u https://FUZZ.domain.com/
 
 {% code lineNumbers="true" fullWidth="false" %}
 ```shellscript
-gobuster vhost -u "url" --domain <value> -w <wordlist> --append-domain # gobuster vhost --help
-ffuf -s -w subdomains-top1million-5000.txt:FUZZ -H "Host: FUZZ.domain.com" -u http://<ip>
+gobuster vhost -u "http://<IP>" --domain <value> -w <wordlist> --append-domain # gobuster vhost --help
+ffuf -s -w subdomains-top1million-5000.txt:FUZZ -H "Host: FUZZ.domain.com" -u http://<IP>
 ```
 {% endcode %}
 
