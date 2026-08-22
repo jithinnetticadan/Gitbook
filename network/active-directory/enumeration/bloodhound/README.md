@@ -15,7 +15,7 @@ Enumerates key AD elements such as:
 ## **Types of Data Collectors**
 
 * [RustHound-CE](https://github.com/g0h4n/RustHound-CE) <sup><sub>(efficient as it collects more details like certificate  templates etc compared to netexec and python ingestors)<sub></sup>
-  * `rusthound-ce.exe -u <username> -p <password> -d <domain> -c all -z`  <sup><sub>(linux/windows)<sub></sup>
+  * `rusthound-ce.exe -u <username> -p <password> -d <domain> -c All -z`   <sup><sub>(linux/windows)<sub></sup>
 * **NetExec**
   * `nxc ldap <dc-ip> -u <username> -p <password> --bloodhound --collection All --dns-server <dc-ip>`
 * [SharpHound](https://github.com/SpecterOps/SharpHound)
