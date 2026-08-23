@@ -99,7 +99,7 @@ Get-ADGroup -Identity "Group Name"
 Get-DomainGroup "*admin*" 
 Get-DomainGroup | select Name
 Get-DomainGroup -Domain &#x3C;name> 
-Get-DomainGroup -UserName "name"
+Get-DomainGroup -Name "name"
 </code></pre></td></tr><tr><td><strong>Group Membership Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADGroupMember -Identity "Group Name" -Recursive
 Get-ADGroupMember -Identity "Enterprise Admins" -Server &#x3C;parent-domain> -Recursive
 Get-ADPrincipalGroupMembership -Identity &#x3C;name>

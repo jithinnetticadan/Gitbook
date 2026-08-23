@@ -51,6 +51,11 @@
 * <pre class="language-bat" data-line-numbers><code class="lang-bat">netdom query /domain:&#x3C;value> trust
   </code></pre>
 
+### Deleted Objects
+
+* ```
+  ```
+
 ### Tools
 
 * [Dsquery](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/cc732952\(v=ws.11\))
