@@ -53,8 +53,14 @@
 
 ### Deleted Objects <sup><sub>(hidden in BloodHound)<sub></sup>
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">bloodyad -u &#x3C;user> -p &#x3C;pass> -d &#x3C;domain> -i &#x3C;DC-IP> get children --target 'CN=Deleted Objects,DC=corp,DC=local'
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">bloodyad -u &#x3C;user> -p &#x3C;pass> -d &#x3C;domain> -i &#x3C;DC-IP> get writable --right WRITE
+  bloodyad -u &#x3C;user> -p &#x3C;pass> -d &#x3C;domain> -i &#x3C;DC-IP> get children --target 'CN=Deleted Objects,DC=corp,DC=local'
+  # use --filter "(objectClass=user)" to get only the user details
+  bloodyad -u &#x3C;user> -p &#x3C;pass> -d &#x3C;domain> -i &#x3C;DC-IP> get search -c 1.2.840.113556.1.4.2064 --resolve-sd --base 'CN=Deleted Objects,DC=ad,DC=trilocor,DC=local'
   ldapsearch -x -H ldap://&#x3C;DC-IP> -D "&#x3C;user>@&#x3C;domain>" -w &#x3C;pass> -b "CN=Deleted Objects,DC=corp,DC=local" -E "1.2.840.113556.1.4.417"
+
+  # To restore the user
+  bloodyad -u &#x3C;user> -p &#x3C;pass> -d &#x3C;domain> -i &#x3C;DC-IP> set restore &#x3C;SID>
   </code></pre>
 
 ### Tools
