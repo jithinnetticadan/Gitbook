@@ -89,6 +89,7 @@ Get-DomainUser -UACFilter PASSWD_NOTREQD | Select-Object samaccountname,useracco
 ## Check Users in Child-Domain
 Get-DomainUser -Domain &#x3C;child.parent.local> | select SamAccountName
 # Find Deleted User Details
+#(may not work, use ADModule)
 Get-DomainObject -LDAPFilter '(&#x26;(isDeleted=TRUE)(!(name=Deleted Objects)))' -Properties objectSid,lastKnownParent
 </code></pre></td></tr><tr><td><strong>Group Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADGroup -Filter *
 Get-ADGroup -Filter * | Select Name

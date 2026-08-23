@@ -51,10 +51,11 @@
 * <pre class="language-bat" data-line-numbers><code class="lang-bat">netdom query /domain:&#x3C;value> trust
   </code></pre>
 
-### Deleted Objects
+### Deleted Objects <sup><sub>(hidden in BloodHound)<sub></sup>
 
-* ```
-  ```
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">bloodyad -u &#x3C;user> -p &#x3C;pass> -d &#x3C;domain> -i &#x3C;DC-IP> get children --target 'CN=Deleted Objects,DC=corp,DC=local'
+  ldapsearch -x -H ldap://&#x3C;DC-IP> -D "&#x3C;user>@&#x3C;domain>" -w &#x3C;pass> -b "CN=Deleted Objects,DC=corp,DC=local" -E "1.2.840.113556.1.4.417"
+  </code></pre>
 
 ### Tools
 
