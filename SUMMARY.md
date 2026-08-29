@@ -112,7 +112,7 @@
     * [Mount VHDX/VMDK](network/enumeration/os-based/mount-vhdx-vmdk.md)
 * [Exploitation](network/exploitation/README.md)
   * [AppLocker Policy - Bypass](network/exploitation/applocker-policy-bypass.md)
-  * [AV/EDR Bypass](network/exploitation/av-edr-bypass.md)
+  * [AV/EDR/Firewall Bypass](network/exploitation/av-edr-bypass.md)
   * [Code Obfuscation](network/exploitation/code-obfuscation.md)
   * [Credentials Harvesting](network/exploitation/credentials-harvesting/README.md)
     * [Linux](network/exploitation/credentials-harvesting/linux.md)
