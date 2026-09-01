@@ -71,10 +71,9 @@ Get-ADUser -Filter 'Description -like "built"' -Properties Description | select 
 Get-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName
 ## Creating List of Domain Users
 Get-ADUser -Filter * | Select-Object -ExpandProperty SamAccountName > ad_users.txt
-# Find Deleted User Details, use bloodyAD for betst results
+# Find Deleted User Details, use bloodyAD for best results
 Get-ADObject -IncludeDeletedObjects -LDAPFilter "(isDeleted=TRUE)" -Properties *
 Get-ADObject -IncludeDeletedObjects -LDAPFilter "(&#x26;(isDeleted=TRUE)(isRecycled=TRUE))" -Properties *
-Get-ADObject -filter 'isDeleted -eq $true -and name -ne "Deleted Objects"' -includeDeletedObjects -property objectSid,lastKnownParent
 Get-ADObject -Filter 'isDeleted -eq $true -and objectClass -eq "user"' -IncludeDeletedObjects
 Get-ADObject -ldapFilter:"(msDS-LastKnownRDN=*)" –IncludeDeletedObjects
 </code></pre></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-DomainUser or Get-NetUser
@@ -90,10 +89,8 @@ Get-DomainUser * | Select-Object samaccountname,description |Where-Object {$_.De
 Get-DomainUser -UACFilter PASSWD_NOTREQD | Select-Object samaccountname,useraccountcontrol
 ## Check Users in Child-Domain
 Get-DomainUser -Domain &#x3C;child.parent.local> | select SamAccountName
-# Find Deleted User Details, use bloodyAD for betst results
-# (may not work, use ADModule)
+# Find Deleted User Details, use bloodyAD for best results
 Get-DomainObject -LDAPFilter '(isDeleted=TRUE)' -Properties *
-Get-DomainObject -LDAPFilter '(&#x26;(isDeleted=TRUE)(!(name=Deleted Objects)))' -Properties objectSid,lastKnownParent
 </code></pre></td></tr><tr><td><strong>Group Enum</strong></td><td><pre class="language-powershell" data-line-numbers><code class="lang-powershell">Get-ADGroup -Filter *
 Get-ADGroup -Filter * | Select Name
 Get-ADGroup -Filter * -Properties * 
