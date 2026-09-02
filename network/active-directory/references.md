@@ -6,4 +6,4 @@
 * [exploit-notes](https://exploit-notes.hdks.org/)
 * [Command-Bulder-Matrix](https://matrix.shieldescape.com/)
 * [ired-teamRedTeamNotes](https://www.ired.team/)
-
+* [zer1t0.gitlab.io/attacking\_ad](https://zer1t0.gitlab.io/posts/attacking_ad/)
