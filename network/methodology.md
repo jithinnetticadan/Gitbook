@@ -24,7 +24,7 @@ Every phase below runs on the same underlying engine: **the Core Loop.**
 * [ ] Confirm scope - in-scope IPs/ranges/URLs, any fragile/do-not-scan hosts, testing window.
 * [ ] Confirm VPN/lab connectivity and DNS resolution for target domain(s).
 * [ ] Set up note-taking (CherryTree/Obsidian/Joplin) and a screenshot/logging tool (`script -a`, Snipping Tool, or terminal logging) before touching anything.
-* [ ] Create the host tracker (see [Track As You Go](#track-as-you-go "mention") below) before you start - not after the first box.
+* [ ] Create the host tracker (see [#track-as-you-go](methodology.md#track-as-you-go "mention") below) before you start - not after the first box.
 * [ ] Re-read the objective/flags required so you know what "done" looks like.
 
 ## The Core Loop
@@ -35,12 +35,12 @@ Every phase below runs on the same underlying engine: **the Core Loop.**
 
 Repeat this loop at **every** stage of the engagement - external and internal, for every new user and every new machine:
 
-1. **Enumerate** the current target/foothold thoroughly, from scratch - web app, open ports, running services. See [Recon](recon.md "mention") for external footprinting and [Enumeration](enumeration/README.md "mention") for host/service-based enumeration.
+1. **Enumerate** the current target/foothold thoroughly, from scratch - web app, open ports, running services. See [recon.md](recon.md "mention") for external footprinting and [enumeration](enumeration/ "mention") for host/service-based enumeration.
 2. **Exploit** a vulnerability/misconfiguration to gain access, or authenticate with credentials already found.
-3. **Enumerate as the new user, starting from zero** - don't just check the one thing you expect; go through the full checklist again as if this were a brand-new machine. Always list files including hidden ones (`ls -la` / `dir /a`) as a default habit right after every login/shell. What does this user have access to? Any credentials lying around (files, history, configs, saved sessions)? See [Credentials Harvesting](exploitation/credentials-harvesting/ "mention").
-4. **Privilege escalate** on the current machine - [Linux](exploitation/privilege-escalation/linux.md "mention") / [Windows](exploitation/privilege-escalation/windows.md "mention").
+3. **Enumerate as the new user, starting from zero** - don't just check the one thing you expect; go through the full checklist again as if this were a brand-new machine. Always list files including hidden ones (`ls -la` / `dir /a`) as a default habit right after every login/shell. What does this user have access to? Any credentials lying around (files, history, configs, saved sessions)? See [credentials-harvesting](exploitation/credentials-harvesting/ "mention").
+4. **Privilege escalate** on the current machine - [linux.md](exploitation/privilege-escalation/linux.md "mention") / [windows.md](exploitation/privilege-escalation/windows.md "mention").
 5. **Re-enumerate from zero again, even after reaching root/admin.** Don't assume the trail ends here - new files, credential stores, and network interfaces are often only visible or decryptable at the highest privilege level on the box.
-6. **Check for pivot opportunities** - network interfaces, routing tables, ARP cache, and any other subnets reachable from this host. See [Pivoting, Tunneling & Port Forwarding](exploitation/pivoting-tunneling-and-port-forwarding.md "mention") (ligolo-ng, chisel, sshuttle, proxychains).
+6. **Check for pivot opportunities** - network interfaces, routing tables, ARP cache, and any other subnets reachable from this host. See [pivoting-tunneling-and-port-forwarding.md](exploitation/pivoting-tunneling-and-port-forwarding.md "mention") (ligolo-ng, chisel, sshuttle, proxychains).
 7. **Move to the next machine/network and restart the entire loop from step 1 - from zero.** Never carry forward an assumption that this new machine is similar to the last one.
 
 ## Checklist for Every Loop Iteration
@@ -49,8 +49,8 @@ Repeat this loop at **every** stage of the engagement - external and internal, f
 Run through this list at every single pass of the loop above - these are the things that are easiest to forget while heads-down chasing the next box.
 {% endhint %}
 
-* [ ] **Flag hunt** - after *this* privilege gain, check for `local.txt`/`proof.txt`/flag files in home directories, Desktop, and the current user's profile. Don't wait until "the end."
-* [ ] **Credential/hash reuse - broader than you think** - spray any credential or hash found against *every* known user and host so far, not just where it was found. Also try it against **other usernames**, not just the one it was cracked for - e.g. a cracked `sa` (MSSQL) password may also work for `Administrator`, since admins frequently reuse passwords across accounts.
+* [ ] **Flag hunt** - after _this_ privilege gain, check for `local.txt`/`proof.txt`/flag files in home directories, Desktop, and the current user's profile. Don't wait until "the end."
+* [ ] **Credential/hash reuse - broader than you think** - spray any credential or hash found against _every_ known user and host so far, not just where it was found. Also try it against **other usernames**, not just the one it was cracked for - e.g. a cracked `sa` (MSSQL) password may also work for `Administrator`, since admins frequently reuse passwords across accounts.
 * [ ] **Local vs. domain account** - confirm whether a found credential is a local account (scoped to one box) or a domain account (works everywhere) before assuming it unlocks other machines.
 * [ ] **Background enumeration** - is Responder/`ntlmrelayx` (or equivalent) still passively listening? Start it as soon as you're internal and leave it running while you manually enumerate elsewhere.
 * [ ] **Other paths logged?** - note every potential entry point you've spotted so far, even ones you're not pursuing right now - don't tunnel-vision on the first lead.
@@ -63,46 +63,46 @@ Run through this list at every single pass of the loop above - these are the thi
 ### 1.1 Footprinting & Port Scanning
 
 * [ ] Host discovery sweep across the full external scope.
-* [ ] Full TCP **and** UDP port scan (not just top-1000) - see [Recon](recon.md "mention").
+* [ ] Full TCP **and** UDP port scan (not just top-1000) - see [recon.md](recon.md "mention").
 * [ ] Service/version detection (`-sV`) + NSE default/vuln scripts on every open port.
 * [ ] Screenshot every web service found (EyeWitness/Aquatone) so nothing gets skipped visually.
 * [ ] Re-run scans if a host was unreachable/timed out the first time - don't assume "no response" = "no service."
 
 ### 1.2 Service-by-Service Enumeration
 
-For every open port, work through the matching page under [Enumeration](enumeration/host-based/README.md "mention") - don't skip a service just because it looks minor (SNMP, FTP, and SMTP are common easy wins):
+For every open port, work through the matching page under [host-based](enumeration/host-based/ "mention") - don't skip a service just because it looks minor (SNMP, FTP, and SMTP are common easy wins):
 
-| Port(s) | Service | Reference |
-| --- | --- | --- |
-| 21/2121/990 | FTP/FTPS | [FTP/FTPS](enumeration/host-based/ftp-ftps-t21-2121-990.md "mention") |
-| 22 | SSH | [SSH](enumeration/host-based/ssh-t22.md "mention") |
-| 25/465/587 | SMTP | [SMTP](enumeration/host-based/smtp-t25-465-587-2525.md "mention") |
-| 53 | DNS | [DNS](enumeration/host-based/dns-tu53.md "mention") |
-| 80/443 | HTTP/S | [Recon & Enum](../web/recon-and-enum.md "mention") + [Vulnerabilities](../web/vulnerabilities/README.md "mention") |
-| 88 | Kerberos | [Kerberos](enumeration/host-based/kerberos-u88.md "mention") |
-| 111/2049 | NFS | [NFS](enumeration/host-based/nfs-tu111-2049.md "mention") |
-| 135/49152-65535 | RPC | [RPC](enumeration/host-based/rpc-tu135-137-138-139.md "mention") |
-| 139/445 | SMB | [SMB](enumeration/host-based/smb-t139-445-u137-138.md "mention") |
-| 161/162 | SNMP | [SNMP](enumeration/host-based/snmp-u161-162.md "mention") |
-| 389/636 | LDAP/S | [LDAP/LDAPS](enumeration/host-based/ldap-ldaps-t389-636.md "mention") |
-| 1433 | MSSQL | [MSSQL DB](enumeration/host-based/mssql-db-t1433-2433-u1434.md "mention") |
-| 1521 | Oracle DB | [Oracle DB](enumeration/host-based/oracle-db-t1521-1526.md "mention") |
-| 3306 | MySQL | [MySQL DB](enumeration/host-based/mysql-db-t3306.md "mention") |
-| 3389 | RDP | [RDP](enumeration/host-based/rdp-t3389.md "mention") |
-| 5432 | PostgreSQL | [Postgres DB](enumeration/host-based/postgres-db-t5432.md "mention") |
-| 5985/5986 | WinRM | [WinRM](enumeration/host-based/winrm-t5985-5986.md "mention") |
-| 8080/10000 | Webmin/alt-HTTP | [Webmin](enumeration/host-based/webmin-t10000.md "mention") |
+| Port(s)         | Service         | Reference                                                                                                      |
+| --------------- | --------------- | -------------------------------------------------------------------------------------------------------------- |
+| 21/2121/990     | FTP/FTPS        | [ftp-ftps-t21-2121-990.md](enumeration/host-based/ftp-ftps-t21-2121-990.md "mention")                          |
+| 22              | SSH             | [ssh-t22.md](enumeration/host-based/ssh-t22.md "mention")                                                      |
+| 25/465/587      | SMTP            | [smtp-t25-465-587-2525.md](enumeration/host-based/smtp-t25-465-587-2525.md "mention")                          |
+| 53              | DNS             | [dns-tu53.md](enumeration/host-based/dns-tu53.md "mention")                                                    |
+| 80/443          | HTTP/S          | [recon-and-enum.md](../web/recon-and-enum.md "mention") + [vulnerabilities](../web/vulnerabilities/ "mention") |
+| 88              | Kerberos        | [kerberos-u88.md](enumeration/host-based/kerberos-u88.md "mention")                                            |
+| 111/2049        | NFS             | [nfs-tu111-2049.md](enumeration/host-based/nfs-tu111-2049.md "mention")                                        |
+| 135/49152-65535 | RPC             | [rpc-tu135-137-138-139.md](enumeration/host-based/rpc-tu135-137-138-139.md "mention")                          |
+| 139/445         | SMB             | [smb-t139-445-u137-138.md](enumeration/host-based/smb-t139-445-u137-138.md "mention")                          |
+| 161/162         | SNMP            | [snmp-u161-162.md](enumeration/host-based/snmp-u161-162.md "mention")                                          |
+| 389/636         | LDAP/S          | [ldap-ldaps-t389-636.md](enumeration/host-based/ldap-ldaps-t389-636.md "mention")                              |
+| 1433            | MSSQL           | [mssql-db-t1433-2433-u1434.md](enumeration/host-based/mssql-db-t1433-2433-u1434.md "mention")                  |
+| 1521            | Oracle DB       | [oracle-db-t1521-1526.md](enumeration/host-based/oracle-db-t1521-1526.md "mention")                            |
+| 3306            | MySQL           | [mysql-db-t3306.md](enumeration/host-based/mysql-db-t3306.md "mention")                                        |
+| 3389            | RDP             | [rdp-t3389.md](enumeration/host-based/rdp-t3389.md "mention")                                                  |
+| 5432            | PostgreSQL      | [postgres-db-t5432.md](enumeration/host-based/postgres-db-t5432.md "mention")                                  |
+| 5985/5986       | WinRM           | [winrm-t5985-5986.md](enumeration/host-based/winrm-t5985-5986.md "mention")                                    |
+| 8080/10000      | Webmin/alt-HTTP | [webmin-t10000.md](enumeration/host-based/webmin-t10000.md "mention")                                          |
 
 ### 1.3 Web Application Testing Checklist
 
-* [ ] Passive + active recon: [Recon & Enum](../web/recon-and-enum.md "mention") (subdomains, vhosts, dorking, crawling, authenticated crawl once you have any creds).
+* [ ] Passive + active recon: [recon-and-enum.md](../web/recon-and-enum.md "mention") (subdomains, vhosts, dorking, crawling, authenticated crawl once you have any creds).
 * [ ] **Virtual hosts** - if the app behaves differently (or not at all) by IP, add the hostname to `/etc/hosts` and browse by the **exact URL/hostname**, not the raw IP.
-* [ ] Authentication testing - brute force/defaults, [Authentication](../web/vulnerabilities/authentication/README.md "mention").
-* [ ] Injection - [SQL Injection](../web/vulnerabilities/sql-injection.md "mention"), [OS Injection](../web/vulnerabilities/os-injection.md "mention"), [XXE](../web/vulnerabilities/xml-external-entity-xxe-injection.md "mention"), [SSTI](../web/vulnerabilities/server-side-template-injection-ssti.md "mention").
-* [ ] File-based - [File Upload](../web/vulnerabilities/file-upload.md "mention") (on Windows/IIS, if a straightforward upload is blocked, try a backslash-prefixed path like `\\file\shell.aspx` - the server may auto-correct/normalize it in a way that slips past extension/path validation), [File Inclusion](../web/vulnerabilities/file-inclusion.md "mention").
+* [ ] Authentication testing - brute force/defaults, [authentication](../web/vulnerabilities/authentication/ "mention").
+* [ ] Injection - [sql-injection.md](../web/vulnerabilities/sql-injection.md "mention"), [os-injection.md](../web/vulnerabilities/os-injection.md "mention"), [xml-external-entity-xxe-injection.md](../web/vulnerabilities/xml-external-entity-xxe-injection.md "mention"), [server-side-template-injection-ssti.md](../web/vulnerabilities/server-side-template-injection-ssti.md "mention").
+* [ ] File-based - [file-upload.md](../web/vulnerabilities/file-upload.md "mention") (on Windows/IIS, if a straightforward upload is blocked, try a backslash-prefixed path like `\\file\shell.aspx` - the server may auto-correct/normalize it in a way that slips past extension/path validation), [file-inclusion.md](../web/vulnerabilities/file-inclusion.md "mention").
 * [ ] **File disclosure/LFI found?** - look up the target software's **default config file paths and filenames** online rather than guessing blindly; the exact path is almost always documented. If nginx is present, also check `cat /etc/nginx/sites-enabled/default` for vhost/config info once you have file read access.
-* [ ] Access control / logic flaws - [Access Control](../web/vulnerabilities/access-control.md "mention"), [IDOR](../web/vulnerabilities/insecure-direct-object-references-idor.md "mention").
-* [ ] Client-side - [XSS](../web/vulnerabilities/cross-site-scripting-xss.md "mention"), [CSRF](../web/vulnerabilities/cross-site-request-forgery-csrf.md "mention"), [CORS](../web/vulnerabilities/cross-origin-resource-sharing-cors.md "mention").
+* [ ] Access control / logic flaws - [access-control.md](../web/vulnerabilities/access-control.md "mention"), [insecure-direct-object-references-idor.md](../web/vulnerabilities/insecure-direct-object-references-idor.md "mention").
+* [ ] Client-side - [cross-site-scripting-xss.md](../web/vulnerabilities/cross-site-scripting-xss.md "mention"), [cross-site-request-forgery-csrf.md](../web/vulnerabilities/cross-site-request-forgery-csrf.md "mention"), [cross-origin-resource-sharing-cors.md](../web/vulnerabilities/cross-origin-resource-sharing-cors.md "mention").
 * [ ] Known CMS/app-specific checks if fingerprinted - WordPress/Jenkins/GitLab/Tomcat/etc pages under `web/`.
 * [ ] Check for a matching CVE/public exploit once the exact software + version is confirmed (searchsploit/ExploitDB).
 
@@ -113,7 +113,7 @@ For every open port, work through the matching page under [Enumeration](enumerat
 
 ### 1.5 Linux Privilege Escalation Checklist
 
-Full command reference: [Privilege Escalation - Linux](exploitation/privilege-escalation/linux.md "mention"). Quick-fire checklist so nothing gets skipped:
+Full command reference: [linux.md](exploitation/privilege-escalation/linux.md "mention"). Quick-fire checklist so nothing gets skipped:
 
 * [ ] Kernel/OS version -> known kernel exploit?
 * [ ] `sudo -l` - what can this user run as root?
@@ -129,18 +129,19 @@ Full command reference: [Privilege Escalation - Linux](exploitation/privilege-es
 
 ### 1.6 Windows Privilege Escalation Checklist
 
-Full command reference: [Privilege Escalation - Windows](exploitation/privilege-escalation/windows.md "mention"). Quick-fire checklist:
+Full command reference: [windows.md](exploitation/privilege-escalation/windows.md "mention"). Quick-fire checklist:
 
 * [ ] `systeminfo` / patch level -> known local privesc exploit (PrintNightmare, etc.)?
 * [ ] `whoami /priv` and `whoami /groups` - dangerous privileges (SeImpersonate, SeBackup, SeDebug, etc.)?
 * [ ] Service misconfigurations - unquoted service paths, weak service/binary permissions, `AlwaysInstallElevated`.
 * [ ] Scheduled tasks running as SYSTEM/admin with a writable target.
 * [ ] Stored credentials - Credential Manager, PuTTY/WinSCP sessions, unattend.xml, registry autologon, IIS web.config.
-* [ ] Token impersonation opportunities (Potato-family exploits) if SeImpersonate/SeAssignPrimaryToken is present - or, via an existing Meterpreter session, list and steal a privileged process token directly:
-  ```
-  meterpreter > ps
-  meterpreter > steal_token <PID>
-  ```
+*   [ ] Token impersonation opportunities (Potato-family exploits) if SeImpersonate/SeAssignPrimaryToken is present - or, via an existing Meterpreter session, list and steal a privileged process token directly:
+
+    ```
+    meterpreter > ps
+    meterpreter > steal_token <PID>
+    ```
 * [ ] Always test known **high-impact Windows RCEs** (EternalBlue/MS17-010, PrintNightmare, SMBGhost, etc.) against SMB/RPC services - even if the port isn't directly reachable, port-forward to it first (e.g. a service only bound internally/to localhost) and test from there.
 * [ ] Run winPEAS even if you think you already found the path - confirm nothing else was missed.
 
@@ -161,7 +162,7 @@ Full command reference: [Privilege Escalation - Windows](exploitation/privilege-
 ### 2.2 Establish the Tunnel
 
 * [ ] Pick a tool based on what's available: ligolo-ng (agent-based, cleanest for full subnet routing), chisel (simple reverse SOCKS/port-forward), sshuttle (if SSH access), or manual SSH `-D`/`-L`/`-R` + proxychains.
-* [ ] See [Pivoting, Tunneling & Port Forwarding](exploitation/pivoting-tunneling-and-port-forwarding.md "mention") for exact commands.
+* [ ] See [pivoting-tunneling-and-port-forwarding.md](exploitation/pivoting-tunneling-and-port-forwarding.md "mention") for exact commands.
 
 ### 2.3 Validate the Pivot
 
@@ -179,38 +180,38 @@ Full command reference: [Privilege Escalation - Windows](exploitation/privilege-
 
 ### 3.2 Initial AD Enumeration - With Any Credentials
 
-* [ ] Full BloodHound collection (SharpHound/bloodhound-python) as soon as *any* domain credential (even a low-priv one) is available - see [BloodHound](active-directory/enumeration/bloodhound/README.md "mention").
-* [ ] Domain/forest trusts, GPOs, OU structure - [AD & PowerView Modules](active-directory/enumeration/ad-and-powerview-modules.md "mention"), [Domain Enum](active-directory/enumeration/domain-enum.md "mention").
+* [ ] Full BloodHound collection (SharpHound/bloodhound-python) as soon as _any_ domain credential (even a low-priv one) is available - see [bloodhound](active-directory/enumeration/bloodhound/ "mention").
+* [ ] Domain/forest trusts, GPOs, OU structure - [ad-and-powerview-modules.md](active-directory/enumeration/ad-and-powerview-modules.md "mention"), [domain-enum.md](active-directory/enumeration/domain-enum.md "mention").
 * [ ] Share enumeration across the domain (Snaffler/PowerHuntShares/manual) - SYSVOL, NETLOGON, and any custom shares.
 * [ ] `nxc`/BloodHound password/description-field/GPP sweep for quick wins.
 
 ### 3.3 Credential Access Techniques
 
-* [ ] Kerberoasting - [Kerberoasting](active-directory/exploitation/credential-harvesting/kerberoasting.md "mention").
-* [ ] AS-REP Roasting - [AS-REP Roasting](active-directory/enumeration/initial-access-foothold/as-rep-roasting.md "mention").
-* [ ] LLMNR/NBT-NS poisoning with Responder - [LLMNR/NBT-NS Poisoning](active-directory/enumeration/initial-access-foothold/llmnr-nbt-ns-poisoning.md "mention") (should already be running passively per the checklist above).
-* [ ] Coercion + relay attacks (PetitPotam/PrinterBug/DFSCoerce) - [Coercion/Relay Attacks](active-directory/enumeration/initial-access-foothold/coercion-relay-attacks.md "mention").
-* [ ] GPP/cpassword in SYSVOL - [Group Policy Preferences (GPP)](active-directory/exploitation/credential-harvesting/group-policy-preferences-gpp.md "mention").
-* [ ] DCSync, if rights already allow it - [ACL's - DCSync](active-directory/exploitation/credential-harvesting/acls-dcsync.md "mention").
+* [ ] Kerberoasting - [kerberoasting.md](../../network/active-directory/exploitation/credential-harvesting/kerberoasting.md "mention").
+* [ ] AS-REP Roasting - [as-rep-roasting.md](active-directory/enumeration/initial-access-foothold/as-rep-roasting.md "mention").
+* [ ] LLMNR/NBT-NS poisoning with Responder - [llmnr-nbt-ns-poisoning.md](active-directory/enumeration/initial-access-foothold/llmnr-nbt-ns-poisoning.md "mention") (should already be running passively per the checklist above).
+* [ ] Coercion + relay attacks (PetitPotam/PrinterBug/DFSCoerce) - [coercion-relay-attacks.md](active-directory/enumeration/initial-access-foothold/coercion-relay-attacks.md "mention").
+* [ ] GPP/cpassword in SYSVOL - [group-policy-preferences-gpp.md](active-directory/exploitation/credential-harvesting/group-policy-preferences-gpp.md "mention").
+* [ ] DCSync, if rights already allow it - [acls-dcsync.md](active-directory/exploitation/credential-harvesting/acls-dcsync.md "mention").
 
 ### 3.4 Privilege Escalation Paths (AD)
 
-* [ ] ACL abuse discovered via BloodHound (GenericAll/GenericWrite/WriteDacl/ForceChangePassword/AddMember, etc.) - [Lateral Movement (ACLs)](active-directory/exploitation/lateral-movement/README.md "mention").
-* [ ] Kerberos delegation abuse (unconstrained/constrained/RBCD) - [Kerberos Delegation](active-directory/exploitation/privesc/kerberos-delegation.md "mention").
-* [ ] AD CS - run `certipy find -vulnerable` on every engagement, even if AD CS wasn't mentioned as in-scope - [AD Certificate Services](active-directory/ad-certificate-services/README.md "mention") (ESC1-16 + chaining).
-* [ ] Crack any Kerberoast/AS-REP hashes obtained, then loop back to [Checklist for Every Loop Iteration](#checklist-for-every-loop-iteration "mention") (credential reuse).
+* [ ] ACL abuse discovered via BloodHound (GenericAll/GenericWrite/WriteDacl/ForceChangePassword/AddMember, etc.) - [lateral-movement](active-directory/exploitation/lateral-movement/ "mention").
+* [ ] Kerberos delegation abuse (unconstrained/constrained/RBCD) - [kerberos-delegation.md](active-directory/exploitation/privesc/kerberos-delegation.md "mention").
+* [ ] AD CS - run `certipy find -vulnerable` on every engagement, even if AD CS wasn't mentioned as in-scope - [ad-certificate-services](active-directory/ad-certificate-services/ "mention") (ESC1-16 + chaining).
+* [ ] Crack any Kerberoast/AS-REP hashes obtained, then loop back to [#checklist-for-every-loop-iteration](methodology.md#checklist-for-every-loop-iteration "mention") (credential reuse).
 
 ### 3.5 Lateral Movement
 
 * [ ] Pass-the-hash / overpass-the-hash with any NTLM hash obtained.
-* [ ] PsExec/WinRM/WMI/scheduled-task remote execution - [Lateral Movement](exploitation/lateral-movement/README.md "mention").
-* [ ] Watch for the Kerberos "double hop" issue when chaining through a WinRM session - [Kerberos Double Hop Issue](active-directory/exploitation/lateral-movement/kerberos-double-hop-issue.md "mention").
+* [ ] PsExec/WinRM/WMI/scheduled-task remote execution - [lateral-movement](exploitation/lateral-movement/ "mention").
+* [ ] Watch for the Kerberos "double hop" issue when chaining through a WinRM session - [kerberos-double-hop-issue.md](active-directory/exploitation/lateral-movement/kerberos-double-hop-issue.md "mention").
 * [ ] Re-run 3.1-3.4 from the newly compromised machine's vantage point - it may see hosts/shares the previous box couldn't.
 
 ### 3.6 Domain Dominance / Final Objective
 
 * [ ] DCSync once DA-equivalent rights are held.
-* [ ] Golden/Silver/Diamond ticket if persistence/further movement is needed - [Golden Ticket](active-directory/exploitation/privesc/golden-ticket.md "mention"), [Silver Ticket](active-directory/exploitation/privesc/silver-ticket.md "mention"), [Diamond Ticket](active-directory/exploitation/privesc/diamond-ticket.md "mention").
+* [ ] Golden/Silver/Diamond ticket if persistence/further movement is needed - [golden-ticket.md](active-directory/exploitation/privesc/golden-ticket.md "mention"), [silver-ticket.md](active-directory/exploitation/privesc/silver-ticket.md "mention"), [diamond-ticket.md](active-directory/exploitation/privesc/diamond-ticket.md "mention").
 * [ ] **Password audit with** [**DPAT**](https://github.com/clr2of8/DPAT) - once you've DCSync'd/dumped NTDS and cracked as many hashes as possible, run DPAT against the NTDS dump + cracked passwords list. This generates the password-reuse/weak-password statistics (top 10 passwords, % cracked, DA/EA passwords cracked, etc.) needed for the report appendix - don't leave this until after the exam, capture it now while the data is fresh.
 * [ ] Confirm every required flag across every compromised machine has actually been captured and recorded - not just DA.
 
@@ -227,7 +228,7 @@ Full command reference: [Privilege Escalation - Windows](exploitation/privilege-
 * Configuration files (web app configs, `.env`, CI/CD pipeline definitions)
 * Command history (`.bash_history`, PowerShell `ConsoleHost_history.txt`)
 * Memory (LSASS/Mimikatz, `/proc`/mimipenguin)
-* Backup files, scheduled tasks, cron jobs - found a `.vhd`/`.vhdx`/`.vmdk`? Mount it, see [Mount VHDX/VMDK](enumeration/os-based/mount-vhdx-vmdk.md "mention") - backups are a common place to find credentials or a full copy of `ntds.dit`/SAM.
+* Backup files, scheduled tasks, cron jobs - found a `.vhd`/`.vhdx`/`.vmdk`? Mount it, see [mount-vhdx-vmdk.md](enumeration/os-based/mount-vhdx-vmdk.md "mention") - backups are a common place to find credentials or a full copy of `ntds.dit`/SAM.
 * Environment variables, clipboard, Windows Sticky Notes
 * Hardcoded credentials in scripts/binaries
 * Shares (SMB/NFS) - Snaffler, PowerHuntShares, or manual browsing
@@ -242,8 +243,8 @@ When any of these turn up a hit, go re-run step 3 of the Core Loop with the new 
 Keep a running tracker for every host you touch - it's easy to forget a lead once you're 3 machines further into the engagement.
 
 | Host/IP | Access Level | Creds/Hashes Found | Notes / Next Steps |
-| ------- | ------------- | ------------------- | ------------------- |
-|         |               |                     |                     |
+| ------- | ------------ | ------------------ | ------------------ |
+|         |              |                    |                    |
 
 Update it the moment you gain a new user, crack a hash, or find a new credential - not at the end of the day.
 
