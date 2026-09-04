@@ -8,4 +8,4 @@ site:
       path: ptguide
       default: true
       content:
-        directory: ./ptguide
+        directory: ./
