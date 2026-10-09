@@ -1,6 +1,6 @@
 # Android
 
-Android testing follows reconnaissance, static analysis, dynamic analysis, and reporting. Test only applications and environments you are authorized to assess. Native screens are not automatically vulnerable to web XSS; consider WebViews and server-side effects of mobile requests where applicable.
+Workflow: reconnaissance > static testing > dynamic testing > report. Use authorized apps/devices only.
 
 ## Testing Categories
 
@@ -8,9 +8,15 @@ Android testing follows reconnaissance, static analysis, dynamic analysis, and r
 * [Dynamic Testing](dynamic-testing.md)
 * [References](references.md)
 
-Android applications commonly run on Android Runtime (ART); older versions used Dalvik. Apps normally have separate Linux UIDs and sandboxed data. Cross-app access can occur through exposed activities, services, broadcast receivers, or content providers. Root access changes what a tester can inspect; it does not replace validation of the app's access controls.
+**Before runtime testing:** complete the [Mandatory Preflight](dynamic-testing.md#mandatory-preflight), including exact Frida client/server/Gadget version matching.
 
-Common paths include `/data/app/<package>` for installed artifacts, `/data/data/<package>` for private app data, and `/sdcard/Android/data/<package>` for app-specific external storage. Exact paths and access vary by Android version and device.
+## Quick Context
+
+* ART (older Android: Dalvik); OS sandbox and separate app UIDs.
+* Cross-app checks: activities, services, receivers, providers.
+* Root aids inspection; it does not prove an app access-control flaw.
+* Paths: `/data/app/<package>`, `/data/data/<package>`, `/sdcard/Android/data/<package>`; layout/access vary.
+* XSS applies to web content/WebViews, not ordinary native screens. Also assess server-side request effects.
 
 ### Static Analysis Tool
 

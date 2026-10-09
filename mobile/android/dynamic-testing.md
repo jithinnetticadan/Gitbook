@@ -1,12 +1,26 @@
 # Android Dynamic Testing
 
 {% hint style="info" %}
-Use a dedicated, authorized emulator or test device and test accounts. Runtime instrumentation, traffic interception, and app modification can change device state; preserve the original artifact and restore the lab after testing.
+Use an authorized test device and test accounts. Preserve originals; protect dumps and restore the lab afterward. Replace command placeholders before use.
 {% endhint %}
+
+## Mandatory Preflight
+
+{% hint style="warning" %}
+Use the **same exact Frida version** for the host `frida` library, device `frida-server`, and any injected Frida Gadget. `frida-tools` and Objection have separate version numbers; do not match the server to those numbers. Recheck after package upgrades.
+{% endhint %}
+
+* [ ] `adb devices -l` shows the intended device as authorized, not `offline`/`unauthorized`.
+* [ ] Server build matches the device ABI; Gadget matches the target app's ABI, including 32-bit apps on 64-bit devices.
+* [ ] Choose one runtime path: root-accessible, running Frida server **or** a patched app that loads Gadget.
+* [ ] Check exact versions before attaching; `frida-ps -Uai` confirms the server/Gadget connection.
+* [ ] Patching: include required APK splits/libraries, align, sign, verify, and install the test build successfully.
+* [ ] Traffic testing: device can reach the proxy, app accepts the CA, and pinning is checked separately.
 
 ## Device and Frida Setup
 
-Android Studio provides emulators; rooted images can simplify runtime and filesystem testing. Root and Play Store availability depend on the specific image and OS release. Verify the selected image rather than assuming an API level or Play Store status guarantees root.
+* Use a compatible Android Studio emulator or test device.
+* Verify root availability; API level/Play Store status alone is insufficient.
 
 Identify architecture when selecting Frida server:
 
@@ -16,9 +30,9 @@ adb shell cat /proc/version
 adb shell cat /proc/cpuinfo
 ```
 
-Use the ABI list to select an application-compatible Frida build. Kernel information alone may not identify the app's userspace ABI.
+Select Frida by app-compatible ABI; kernel information alone is insufficient.
 
-Install Frida tools and Objection on the analysis host. Frida server must match the device architecture and Frida client version. On a rooted lab image:
+Install client tools in an isolated environment:
 
 ```sh
 pip3 install frida-tools
@@ -29,7 +43,14 @@ objection --help
 objection start --help
 ```
 
-Use an isolated environment or the tool's recommended installer. Installing `frida-tools` first follows the notes; Objection also installs Frida dependencies. Record versions and check compatibility. All Objection shell examples use `objection [OPTIONS] COMMAND [ARGS]...` from the supplied current help: `--name` selects the target and `start` opens a session. See [Objection's CLI source](https://github.com/sensepost/objection/blob/master/objection/console/cli.py) for subcommand options not shown by top-level help.
+* Match the host `frida` library and device server **exactly**; record version and ABI.
+* Objection installs Frida dependencies and can change the installed version; recheck after installation/upgrades.
+* Current CLI: `objection [OPTIONS] COMMAND [ARGS]...`; `--name` selects, `start` opens a session.
+* Subcommand options: check installed help and [CLI source](https://github.com/sensepost/objection/blob/master/objection/console/cli.py).
+
+### Start Frida Server
+
+Root-capable ADB image (`adb root` is not supported on ordinary production builds):
 
 ```sh
 adb root
@@ -38,13 +59,28 @@ adb shell "chmod 755 /data/local/tmp/frida-server"
 adb shell "/data/local/tmp/frida-server &"
 ```
 
-If `adb root` is unavailable, use the authorized root mechanism for that lab:
+Alternative: authorized `su` access:
 
 ```sh
 adb push frida-server /data/local/tmp/frida-server
 adb shell "su -c 'chmod 755 /data/local/tmp/frida-server'"
 adb shell "su -c '/data/local/tmp/frida-server &'"
 ```
+
+### Verify Client and Server Versions
+
+Run after transferring and making the server executable:
+
+```sh
+adb devices -l
+frida --version
+pip3 show frida frida-tools objection
+adb shell /data/local/tmp/frida-server --version
+```
+
+* `frida --version` and `frida-server --version` must match exactly.
+* Use the same host environment for Frida and Objection.
+* If mismatched: replace/pin the client or server, restart the server, then retry `frida-ps -Uai`.
 
 List installed apps and attach:
 
@@ -56,21 +92,26 @@ objection --name <process-name> start
 
 ## Runtime Component Testing
 
-Test exported activities, services, receivers, and providers for unintended access, missing authorization, unsafe input handling, and data exposure. `exported=true` means potential cross-app reachability, not a finding by itself.
+* Check exported activities, services, receivers, and providers.
+* Test authorization, input handling, and data exposure. `exported=true` alone is not a finding.
 
 ```sh
 adb shell am start -n <package-name>/<fully-qualified-activity-name>
 adb shell am start -a android.intent.action.VIEW -d "<scheme>://<host>/<path>?<parameter>=<test-value>" <package-name>
 ```
 
-With Drozer, install its agent in the lab and forward its port:
+### Drozer Setup
+
+Install the agent and forward its port:
 
 ```sh
 adb forward tcp:31415 tcp:31415
 drozer console connect
 ```
 
-Run commands inside the Drozer console:
+Run the following commands **inside Drozer**. Check module help; availability varies by release.
+
+### Packages and Activities
 
 ```text
 run app.package.attacksurface <package-name>
@@ -80,6 +121,11 @@ run app.activity.info -a <package-name>
 run app.activity.start --component <package-name> <activity-name>
 run app.activity.start --component <package-name> <activity-name> --data-uri <authorized-test-uri>
 run app.activity.start --action android.intent.action.VIEW --data-uri <authorized-test-uri>
+```
+
+### Content Providers
+
+```text
 run app.provider.info -a <package-name>
 run app.provider.finduri <package-name>
 run scanner.provider.finduris -a <package-name>
@@ -91,19 +137,27 @@ run app.provider.update <content-uri> --selection "<column>=?" --selection-args 
 run app.provider.delete <content-uri> --selection "<column>=?" --selection-args <test-value>
 run scanner.provider.injection -a <package-name>
 run scanner.provider.sqltables -a <package-name>
+```
+
+### Services and Broadcasts
+
+```text
 run app.service.info -a <package-name>
 run app.service.send <package-name> <service-name> --msg 2354 9234 1 --extra string <parameter> <test-value> --bundle-as-obj
 run app.broadcast.info -a <package-name>
 run app.broadcast.send --action <intent-name> --extra string <parameter> <test-value>
 ```
 
-Use non-destructive test data. Provider insert/update/delete operations mutate app data and must not be run against production records. Confirm authorization is enforced by the app and server, not assumed from a previous screen or intent filter.
-
-[Drozer](https://github.com/WithSecureLabs/drozer) is an interactive Android assessment framework with enumeration and testing modules, not simply an automatic scanner. `app.package.debuggable` lists debuggable packages. Use module help for supported arguments. Some source-note modules, including `app.provider.columns` and `app.provider.read`, may be extension- or release-specific; do not assume they exist in a default installation. To insert two test fields or send multiple broadcast extras, repeat `--string` or `--extra` with distinct column/parameter names.
+* [Drozer](https://github.com/WithSecureLabs/drozer): interactive assessment, not just an automatic scanner.
+* `app.package.debuggable` lists debuggable packages.
+* `app.provider.columns` / `app.provider.read`: source-era examples; may require specific releases/extensions.
+* Repeat `--string` / `--extra` for additional fields/parameters.
+* Insert/update/delete mutate data: use disposable test records only.
+* Verify app **and server** authorization; intent filters/prior screens are not access controls.
 
 ## Runtime Instrumentation
 
-Objection provides Frida-based inspection and runtime actions:
+### Objection Session
 
 ```sh
 objection --name <process-name> start
@@ -116,11 +170,17 @@ objection --name <process-name> run 'android root disable'
 objection --name <process-name> run 'android sslpinning disable'
 ```
 
-Attach with the running process name or explicitly spawn with the package identifier when supported by the lab. With Frida Gadget, select the name exposed by the Gadget setup. Global options (`--name`, `--serial`, `--spawn`, `--no-pause`) belong before `start` or `run`. Session options (`--startup-command`, `--startup-script`) belong after `start`; verify them with `objection start --help`. Use long option names to avoid confusing global `-s` (spawn) with a subcommand's short options. `--no-pause` requests immediate resume; omit it when early instrumentation requires a paused spawn.
+| Option/Mode | Use |
+| --- | --- |
+| `--name` | Attach by process name; spawn by package ID. Gadget may expose a different name. |
+| Global options | `--name`, `--serial`, `--spawn`, `--no-pause` go **before** `start`/`run`. |
+| Startup options | `--startup-command`, `--startup-script` go **after** `start`; check `objection start --help`. |
+| `--no-pause` | Immediate resume; omit when early hooks need a paused spawn. |
+| `run` | One-shot execution; do not assume hooks persist after exit. Use `start` for monitoring. |
 
-`run` executes one Objection command without opening the interactive session. Do not assume that hooks installed by a one-shot command remain active after the process exits; use `start` for ongoing monitoring and bypass testing. Top-level help does not list interactive command syntax. Run the following commands inside the Objection prompt, not directly in the host shell, and consult in-session help for their availability and arguments.
+Use long flags: global `-s` means spawn. Commands below run **inside Objection**; use in-session help for release-specific syntax.
 
-Examples inside Objection:
+### Classes and Activities
 
 ```text
 env
@@ -128,6 +188,11 @@ android hooking list
 android hooking search classes <keyword>
 android hooking watch class <class-name> --dump-args --dump-backtrace --dump-return
 android intent launch_activity <activity-name>
+```
+
+### Clipboard, Screenshots, Memory, and SQLite
+
+```text
 android clipboard monitor
 android ui FLAG_SECURE false
 memory dump all <output-file>.dmp
@@ -139,27 +204,33 @@ android heap options
 sqlite connect <database-file>
 ```
 
-Use `help android heap` and current tool documentation for version-specific commands. Test whether sensitive screens prevent unintended screenshots/recording with `FLAG_SECURE`. Memory dumps may contain secrets; protect and securely remove them. [Fridump](https://github.com/rootbsd/fridump) is another memory-dumping option.
-
-`android heap options` and `android hooking list` are retained from the source as historical command notes; verify their availability in installed help. `android ui FLAG_SECURE false` deliberately alters app behavior: distinguish the unmodified app's protections from instrumented behavior. `memory write` changes live process data and may crash the test app.
-
-Frida scripts from [Frida CodeShare](https://codeshare.frida.re/) or local scripts can be used after review. Objection includes commands such as `android root disable`; behavior depends on app and tool version. For Flutter, [reFlutter](https://github.com/ptswarm/reFlutter) may assist with instrumentation and traffic analysis. Runtime Mobile Security (RMS) supports class/method inspection, argument and return monitoring, component testing, API monitoring, and script execution. MobSF also supports dynamic analysis when its environment is configured using current documentation.
+* `android heap options` / `android hooking list`: historical examples; confirm in-session help (`help android heap`).
+* `FLAG_SECURE false` changes app behavior; assess original screenshot protections separately.
+* `memory write` changes live data and may crash the app.
+* Protect/delete memory dumps. Alternative: [Fridump](https://github.com/rootbsd/fridump).
+* Review [CodeShare](https://codeshare.frida.re/) scripts before use; bypass success depends on app/version.
+* Flutter: [reFlutter](https://github.com/ptswarm/reFlutter) for compatible instrumentation/traffic workflows.
+* RMS: classes, arguments/returns, components, API monitoring, scripts.
+* MobSF: configure a compatible dynamic-analysis environment first.
 
 ## App Patching and Repackaging
 
-For an authorized test build, Objection can patch an APK to include Frida Gadget:
+### Automated Patching
 
 ```sh
 objection patchapk --help
-objection patchapk --source <app.apk>
+objection patchapk --source <app.apk> --gadget-version <frida-version>
 ```
 
-`patchapk` remains a current top-level command; its source/architecture options are specific to that subcommand and are not shown by `objection --help`. For Objection's APK signing workflow, inspect `objection signapk --help`; `signapk` zipaligns and signs with Objection's key, whereas the manual workflow below uses your own test keystore.
+* Replace `<frida-version>` with the host `frida --version` output; verify `--gadget-version` in the installed patcher's help.
+* Source/architecture flags belong to `patchapk`; check its help.
+* `objection signapk --help`: alignment/signing with Objection's key.
+* Manual workflow below uses your own test keystore.
 
-Manual workflow when automated patching is unsuitable:
+### Manual Patching
 
 1. Decode the APK, omitting resource decoding if appropriate: `apktool d -r <app.apk> -o <decoded-directory>`.
-2. Download the Frida Gadget library matching the target ABI from [Frida releases](https://github.com/frida/frida), decompress the `.xz` artifact, and place it in the corresponding `lib/<abi>` directory as `libfrida-gadget.so`. `System.loadLibrary("frida-gadget")` resolves that filename; `frida-gadget.so` alone is incorrect for this load call.
+2. Download [Frida Gadget](https://github.com/frida/frida) matching the host's **exact Frida version** and the app ABI; decompress `.xz` and place `libfrida-gadget.so` in `lib/<abi>`.
 3. Add the load call to an appropriate initialization path. Example SMALI:
 
    ```smali
@@ -177,15 +248,22 @@ Manual workflow when automated patching is unsuitable:
    apksigner verify <aligned-test.apk>
    ```
 
-Use current Android SDK signing documentation; legacy `jarsigner` workflows may not be suitable for modern APKs. Re-signing can prevent updates or conflict with the original app. Keep the original unchanged.
+* `System.loadLibrary("frida-gadget")` requires **`libfrida-gadget.so`**, not `frida-gadget.so`.
+* Execute in the target process: suitable Application initialization or MainActivity/OnboardingActivity constructor.
+* Check free registers and `.locals`/`.registers` before using `v0`.
+* Gadget configuration/default wait behavior can pause startup.
+* Without `-o`, Apktool usually writes under `dist`.
+* Align before `apksigner`; legacy SHA1withRSA/SHA1 `jarsigner` is not the modern default.
+* Re-signing may block updates/conflict with the original; preserve the original APK.
 
-The load call must execute in the target process; an Application initializer or an appropriate activity constructor such as the source's MainActivity/OnboardingActivity is a possible location. Ensure a usable register and correct `.locals`/`.registers` declaration rather than blindly inserting `v0`. Gadget configuration and its default wait behavior affect startup. Without `-o`, Apktool normally places its rebuilt APK under the decoded directory's `dist` folder. The source's SHA1withRSA/SHA1 `jarsigner` recipe is legacy and should not be used as the modern signing default. See [Frida Gadget](https://frida.re/docs/gadget/), [apksigner](https://developer.android.com/tools/apksigner), and the source's [non-root Android walkthrough](https://koz.io/using-frida-on-android-without-root/).
+References: [Gadget](https://frida.re/docs/gadget/), [apksigner](https://developer.android.com/tools/apksigner), [non-root walkthrough](https://koz.io/using-frida-on-android-without-root/).
 
 ## Local Data, Logs, and Privacy Controls
 
-Inspect shared preferences, databases, internal/external storage, caches, and backups using Android Studio Device File Explorer or Objection where access permits. Use Objection's SQLite commands or [DB Browser for SQLite](https://sqlitebrowser.org/) for database review.
+* Inspect preferences, SQLite, internal/external files, caches, and backups.
+* Use Android Studio Device File Explorer or Objection `env` for accessible paths.
+* Inspect test copies with [DB Browser for SQLite](https://sqlitebrowser.org/) or the CLI:
 
-For a local test copy, inspect tables with the SQLite command-line client:
 
 ```sh
 sqlite3 <database-copy.db>
@@ -196,22 +274,21 @@ sqlite3 <database-copy.db>
 SELECT * FROM <test_table> LIMIT 10;
 ```
 
-Replace placeholders before use; `.tables` is a SQLite CLI meta-command, not SQL. Check app-specific directories with Objection `env`; additional cache/library paths vary by app. Use an approved test keyboard or test clipboard observer when assessing third-party input/clipboard exposure, and consider Android-version restrictions.
+`.tables` is a SQLite CLI command, not SQL. Use approved test keyboards/clipboard observers; OS restrictions apply.
 
 Check:
 
-* Sensitive values in logs. Clear and filter logs carefully; Windows users can use `findstr` instead of `grep`.
-* Clipboard exposure (`android clipboard monitor`), keyboard/input behavior, app-switcher screenshots, and use of `FLAG_SECURE`.
-* Backup exposure. Historical `adb backup` is deprecated or unavailable on current Android; choose a workflow supported by the OS under test.
-* Client-side authorization and mutable business state; confirm server-side enforcement.
-* SQL injection in runtime queries using attacker-controlled input, with non-destructive test records.
-* Biometric and other local-authentication flows. Check whether success/failure callbacks and exception handling can be manipulated, and whether sensitive server actions are independently authorized. The notes include [Android Keystore Audit examples](https://github.com/FSecureLABS/android-keystore-audit/tree/master/frida-scripts); review scripts and use them only against an authorized test build.
+* [ ] Sensitive logs, clipboard (`android clipboard monitor`), keyboard data, screenshots/`FLAG_SECURE`.
+* [ ] Backup exposure using an OS-supported workflow.
+* [ ] Local role/state tampering; verify server authorization.
+* [ ] SQL injection using non-destructive test records.
+* [ ] Biometrics: success/failure callbacks and exception handling; verify key/server protections independently.
 
-The two specific source examples are [fingerprint callback bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass.js) and [exception-handling bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass-via-exception-handling.js). Authentication UI bypass does not automatically bypass hardware-backed key access or server authorization.
+Biometric scripts: [Keystore Audit](https://github.com/FSecureLABS/android-keystore-audit/tree/master/frida-scripts), [callback bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass.js), [exception bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass-via-exception-handling.js). UI bypass does not prove hardware-key/server bypass.
 
-On a legacy lab device that still supports it, the corrected historical backup syntax is `adb backup -apk -nosystem <package-name>` (not one quoted argument). Do not assume that current Android permits this or that it extracts all app data.
+Legacy backup: `adb backup -apk -nosystem <package-name>`. Deprecated/unavailable on current Android; may not extract all data.
 
-For log review, Android Studio Logcat is an alternative to ADB. Clear old output and filter for app-specific values or process IDs:
+### Logs and Screenshots
 
 ```sh
 adb logcat -c
@@ -220,19 +297,23 @@ adb shell pidof <package-name>
 adb logcat --pid=<pid-from-previous-command>
 ```
 
-The source's `ps | awk | grep` recipe is brittle because process-list fields vary and it can match unrelated lines. PID filtering is preferable where supported; record a new PID after restarting the app.
-
-On Windows, use `findstr` or Android Studio's Logcat filters. Treat logs as sensitive evidence. App-generated screenshots may be stored in system-managed locations such as `/data/system_ce/<user-id>/`; exact paths vary by Android version and device access.
+* Refresh PID after app restart; avoid brittle `ps | awk | grep` filters.
+* Windows: use `findstr` or Android Studio Logcat. Protect log evidence.
+* Screenshot artifacts: system-managed paths such as `/data/system_ce/<user-id>/`; locations/access vary.
 
 ## Network Traffic and TLS
 
-Configure an authorized Burp Suite listener bound to the right interface, set the emulator/device proxy, and install the CA using the current [Android Burp configuration guide](https://portswigger.net/support/configuring-an-android-device-to-work-with-burp). Certificate trust differs by Android version and app network-security configuration. Proxyman is an alternative on macOS. Inspect API authentication, authorization, sensitive data, and server-side behavior.
+1. Bind Burp to the lab interface; firewall any "All interfaces" listener.
+2. Set the device proxy and install the CA: [Android Burp guide](https://portswigger.net/support/configuring-an-android-device-to-work-with-burp).
+3. Use DER where required; `.cer` renaming does not change encoding/trust. User-CA acceptance depends on OS/app policy.
+4. Test API authentication, authorization, sensitive data, and server-side behavior.
+5. If pinning blocks testing, use `android sslpinning disable`, reviewed Frida scripts, or a patched test build.
 
-Export the Burp CA in DER format for the Android certificate-install workflow where required. The notes rename it to `.cer`; the extension does not change the encoding or make the app trust user CAs. Bind the listener to the lab interface; if using the notes' "All interfaces" option, restrict access with the host firewall. A trusted CA addresses trust-chain validation, whereas pinning may still reject the connection. [Proxyman](https://proxyman.io/) is another option; platform support depends on the product/version. The notes also mention HTTP Canary, including for Flutter traffic; compatibility and TLS interception are not guaranteed.
-
-For in-scope TLS testing, Objection includes `android sslpinning disable`; Frida scripts and patched builds are alternatives. Pinning bypass is a testing technique, not a remediation. See [MobSF Dynamic Analyzer documentation](https://mobsf.github.io/docs/#/dynamic_analyzer) and [Frida Android documentation](https://frida.re/docs/android/).
-
-Other tools in the notes include [CuckooDroid](https://github.com/idanr1986/cuckoo-droid) for sandbox analysis, [BlueStacks](https://www.bluestacks.com/) (root behavior varies by product/version), [Runtime Mobile Security](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), and [Ghost Framework](https://github.com/EntySec/Ghost). Verify maintenance and use only within an authorized lab.
+* Trusted CA and pinning are separate checks; bypass is a test technique, not remediation.
+* Android 7+ apps targeting API 24+ do not trust user-installed CAs by default. Use an authorized test trust configuration/device setup; installing the CA alone may not allow interception.
+* Alternatives: [Proxyman](https://proxyman.io/), HTTP Canary (including Flutter attempts); verify platform/TLS compatibility.
+* Setup: [MobSF Dynamic Analyzer](https://mobsf.github.io/docs/#/dynamic_analyzer), [Frida Android](https://frida.re/docs/android/).
+* Optional/legacy: [CuckooDroid](https://github.com/idanr1986/cuckoo-droid) sandboxing, [BlueStacks](https://www.bluestacks.com/) emulator, [RMS](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), [Ghost](https://github.com/EntySec/Ghost). Verify maintenance/root behavior.
 
 ## Further Reading
 

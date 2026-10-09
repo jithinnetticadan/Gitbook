@@ -1,47 +1,57 @@
 # iOS Static Testing
 
 {% hint style="info" %}
-Analyze only application artifacts in scope. Record the app version, acquisition method, executable architecture, and hashes of the original archive and extracted app. App Store binaries may be FairPlay-encrypted; use only a legitimately obtained, authorized analysis copy.
+Record version, source, architecture, and original/extracted artifact hashes. Use authorized copies only; App Store binaries may be FairPlay-encrypted. Replace command placeholders before use.
 {% endhint %}
+
+## Mandatory Preflight
+
+* [ ] Preserve/hash the original IPA; identify the executable through `Info.plist`.
+* [ ] Verify binary architecture/platform and encryption state before disassembly or class extraction.
+* [ ] Use a suitable authorized unencrypted copy when encryption blocks analysis; extracting ZIP contents does not decrypt code.
+* [ ] Run `otool`/Apple tooling on a compatible macOS host, or use a suitable Mach-O parser.
+* [ ] Before patching/signing or runtime checks, follow [Dynamic Testing prerequisites](dynamic-testing.md#mandatory-preflight).
 
 ## Lab Tools
 
 * [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) - automated static analysis.
 * `otool` and [MachOView](https://sourceforge.net/projects/machoview/) - inspect Mach-O headers, load commands, and symbols.
-* [class-dump](http://stevenygard.com/projects/class-dump/) - extract Objective-C interface information where supported. The source also names the legacy `class-dump-z` variant; verify compatibility rather than assuming interchangeability.
+* [class-dump](http://stevenygard.com/projects/class-dump/) - Objective-C interfaces. Legacy `class-dump-z` is not automatically interchangeable.
 * [Hopper](https://www.hopperapp.com/), [Ghidra](https://ghidra-sre.org/), and [IDA Free](https://hex-rays.com/ida-free/) - disassembly and reverse engineering.
 * Flawfinder and Clang Static Analyzer can assist with authorized source code.
-* [iRET](https://github.com/S3Jensen/iRET), [LIEF](https://lief-project.github.io/), and Apple's `pagestuff` are additional binary-analysis options; check current platform support and provenance. The source also links a [historical Veracode iRET archive](https://www.veracode.com/sites/default/files/Resources/Tools/iRETTool.zip); do not assume different distributions are identical or maintained.
-* [AnyTrans](https://www.imobie.com/anytrans/download.htm) or iMazing can assist with authorized device/app artifact management; availability and acquisition restrictions vary.
+* [iRET](https://github.com/S3Jensen/iRET), [LIEF](https://lief-project.github.io/), `pagestuff` - additional binary tools; verify support.
+* [Historical Veracode iRET](https://www.veracode.com/sites/default/files/Resources/Tools/iRETTool.zip) - distributions may differ or be unmaintained.
+* [AnyTrans](https://www.imobie.com/anytrans/download.htm), iMazing - authorized artifact management; acquisition restrictions apply.
 
-Xcode and macOS are used for Apple development and signing workflows. Follow current vendor installation and licensing instructions.
+Use macOS/Xcode for Apple signing/development. Follow current installation/license requirements.
 
 ## Obtain and Extract an IPA
 
-An `.ipa` is a ZIP-format archive. Preserve the original and extract a working copy:
+Preserve the IPA; extract a working copy (ZIP format):
 
 ```sh
 unzip <app.ipa> -d <extracted-directory>
 ```
 
-Common contents include:
+| Location | Inspect |
+| --- | --- |
+| `Payload/<Application>.app/` | Executable, resources, property lists. |
+| `Payload/<Application>.app/Info.plist` | Bundle ID, executable name, URL types, permission descriptions. |
+| `iTunesMetadata.plist` | Distribution metadata, if present. |
+| Profile/signature files | Signing and provisioning metadata, if included. |
 
-* `Payload/<Application>.app/` - application bundle, executable, resources, and property lists.
-* `iTunesMetadata.plist` - distribution metadata when present.
-* `Payload/<Application>.app/Info.plist` - bundle identifier, executable name, URL types, permission descriptions, and other metadata.
-* Provisioning and signature metadata where included.
-
-Confirm the actual archive paths. MobSF can automate parts of the static review.
+Confirm actual paths; use MobSF for initial triage. Renaming IPA to ZIP does not decrypt the executable.
 
 ## App and Binary Review
 
-Identify the executable from `Info.plist`, then inspect it and linked frameworks. Objective-C and Swift have different runtime metadata and decompilation characteristics. In source projects, `.h` files declare interfaces and `.m` files commonly contain Objective-C implementation. Missing class-dump output does not prove functionality is absent.
-
-At a high level, iOS combines hardware/firmware and software layers, with user data separated from operating-system data. Use this boundary when evaluating app container access and data protection; a jailbroken test device changes the inspection capabilities available to the tester.
+* Find the executable via `Info.plist`; inspect linked frameworks.
+* Objective-C/Swift metadata differ; missing class-dump output does not prove absent functionality.
+* Source: `.h` declarations; `.m` Objective-C implementations.
+* Layers: hardware/firmware and software; user data is separate from OS data. Jailbreak changes inspection capabilities.
 
 ### Binary Protections
 
-These checks are indicators, not standalone proof of security:
+Run on macOS; interpret indicators in context:
 
 ```sh
 otool -hv <app-binary> | grep PIE
@@ -51,18 +61,19 @@ otool -arch all -Vl <app-binary> | grep -A5 LC_ENCRYPT
 otool -l <app-binary> | grep -A4 LC_ENCRYPTION_INFO
 ```
 
-* **PIE:** Position-independent executables support address randomization.
-* **Stack canaries:** Look for symbols such as `stack_chk_guard` and `stack_chk_fail` where applicable.
-* **ARC:** `_objc_release` may appear in binaries using Objective-C ARC; presence alone does not establish memory safety.
-* **Encryption:** Review encryption load commands and `cryptid` in context. App Store encryption state may differ from a legitimately decrypted test copy.
+| Check | Indicator | Limitation |
+| --- | --- | --- |
+| PIE | Supports address randomization. | Not proof of overall binary security. |
+| Canaries | `stack_chk_guard`, `stack_chk_fail`. | Checks some stack corruption at return; not all code. |
+| ARC | `_objc_release`. | Reference-lifetime management, not complete memory safety. |
+| Encryption | `cryptid=1` encrypted; `0` unencrypted. | Development/decrypted copies need not be App Store-encrypted. |
 
-Stack canaries check for certain stack corruption at function return; their presence does not prove all code is protected. ARC manages Objective-C reference lifetimes, not all memory-safety problems. `cryptid=1` ordinarily indicates encryption and `cryptid=0` an unencrypted image; a development or decrypted test binary need not have App Store encryption. Missing symbols can also result from optimization or language/runtime differences.
-
-`otool` is available on macOS; on Windows use a macOS analysis host or an appropriate Mach-O parser.
+* Missing symbols may reflect optimization or language/runtime differences.
+* Windows: use a macOS host or suitable Mach-O parser.
 
 ### Sensitive and Risky API Indicators
 
-Use `otool` on macOS to search linked symbols. Inspect call sites and data flow before drawing conclusions:
+Search symbols, then inspect call sites/data flow:
 
 ```sh
 otool -Iv <app-binary> | grep -w '_CC_MD5'
@@ -74,9 +85,10 @@ otool -Iv <app-binary> | grep -w '_malloc'
 otool -Iv <app-binary> | grep -E '_(gets|memcpy|strncpy|strlen|vsnprintf|sscanf|strtok|alloca|sprintf|printf|vsprintf)'
 ```
 
-For source or extracted text on Linux/macOS, recursively search for these symbols, e.g. `grep -R -E '_CC_MD5|_CC_SHA1|_rand|_malloc' <analysis-directory>`. Weak hashes, predictable randomness, or unsafe memory functions need contextual review and may be false positives when unused or only system-linked.
-
-`malloc`, `memcpy`, `strlen`, and `printf` are not inherently vulnerabilities. Check bounds, attacker-controlled sizes/format strings, allocation failure handling, and actual cryptographic use. MobSF's API findings should be triaged the same way. For Mach-O binaries, inspect symbols or extract strings rather than relying on recursive text grep to parse binary code.
+* Source/text search: `grep -R -E '_CC_MD5|_CC_SHA1|_rand|_malloc' <analysis-directory>`.
+* Review hash purpose and security-sensitive randomness; unused/system-linked matches may be false positives.
+* `malloc`/`memcpy`/`strlen`/`printf` are not inherently vulnerabilities. Check bounds, sizes, format strings, and allocation failures.
+* Validate MobSF API findings. Parse Mach-O symbols/strings; text grep does not analyze binary code.
 
 Disassemble with:
 
@@ -86,7 +98,10 @@ otool -tV <app-binary>
 
 ## URL Handling and Inter-App Requests
 
-Review custom URL schemes, universal links, and app-to-app URL requests. Trace validation of the source, scheme, host, path, parameters, and authorization before an action. Inspect implementations corresponding to:
+* [ ] Validate caller, scheme, host, path, parameters, and authorization.
+* [ ] Review custom schemes, universal links, and inter-app requests.
+
+Inspect handlers:
 
 * `application:didFinishLaunchingWithOptions:` and `application:willFinishLaunchingWithOptions:`.
 * `application:openURL:options:` and scene-based URL handling.
@@ -100,15 +115,18 @@ grep -R -n 'mt-encrypted-file://' <Application.app>
 rabin2 -zzq <app-binary> | grep -i openurl
 ```
 
-Test whether untrusted apps/links can trigger sensitive actions or disclose data. Check deprecated APIs against current [Apple UIKit documentation](https://developer.apple.com/documentation/uikit).
-
-Review `sourceApplication` in URL options where relevant, but do not treat caller identity alone as authorization. Check whether user confirmation is appropriate for the operation. `mt-encrypted-file://` is a source-specific search example, not a universal iOS scheme. Renaming an IPA to ZIP is optional because it is already a ZIP archive; it does not decrypt its executable.
+* Test untrusted callers for sensitive actions/data disclosure; require user confirmation where appropriate.
+* `sourceApplication` identifies a caller, not authorization by itself.
+* `mt-encrypted-file://` is app-specific, not universal.
+* Check deprecated APIs: [UIKit documentation](https://developer.apple.com/documentation/uikit).
 
 ## Configuration and Sensitive Data
 
-Inspect `Info.plist`, entitlements, URL schemes, embedded configuration, JSON/resources, and strings for endpoints, test settings, credentials, tokens, keys, and sensitive data. Validate findings and trace value use; a public app identifier is not automatically a secret.
-
-Review property lists, `NSUserDefaults`, SQLite, Core Data, Keychain, logs, caches, and backups for likely sensitive-data paths. Confirm actual runtime behavior during dynamic testing.
+* [ ] Search `Info.plist`, entitlements, URL schemes, JSON/resources, and strings.
+* [ ] Find endpoints, test settings, credentials, tokens, keys, and sensitive data.
+* [ ] Trace value use/impact; public identifiers are not automatically secrets.
+* [ ] Review plist/`NSUserDefaults`, SQLite/Core Data, Keychain, logs, caches, and backups.
+* [ ] Confirm storage behavior during [dynamic testing](dynamic-testing.md).
 
 ## Further Reading
 
