@@ -246,6 +246,17 @@
   * [Dynamic Testing](mobile/ios/dynamic-testing.md)
   * [References](mobile/ios/references.md)
 
+## IOT & Hardware
+
+* [References](iot-and-hardware/references.md)
+
+## AI-Sec
+
+* [Offensive AI](ai-sec/offensive-ai/README.md)
+  * [References](ai-sec/offensive-ai/references.md)
+* [AI Augmented Pentest](ai-sec/ai-augmented-pentest/README.md)
+  * [References](ai-sec/ai-augmented-pentest/references.md)
+
 ## Cloud
 
 * [AWS](cloud/aws/README.md)
@@ -273,16 +284,6 @@
 * [Kubernetes](serverless/kubernetes/README.md)
   * [References](serverless/kubernetes/references.md)
 * [References](serverless/references.md)
-
-***
-
-* [IOT & Hardware](iot-and-hardware/README.md)
-  * [References](iot-and-hardware/references.md)
-* [AI-Sec](ai-sec/README.md)
-  * [Offensive AI](ai-sec/offensive-ai/README.md)
-    * [References](ai-sec/offensive-ai/references.md)
-  * [AI Augmented Pentest](ai-sec/ai-augmented-pentest/README.md)
-    * [References](ai-sec/ai-augmented-pentest/references.md)
 
 ## Tools
 
