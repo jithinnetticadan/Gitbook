@@ -1,0 +1,260 @@
+References
+https://book.hacktricks.xyz/mobile-pentesting/android-app-pentesting
+https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05b-basic-security_testing
+
+************************************************************************************************************************
+adb shell
+pm list packages | grep appname (copy package name)
+pm path <packagename> -> (copy path)
+adb pull <path> <filename.apk>
+data/local/tmp - writable directory (push frida server)
+	$ adb root # might be required
+	$ adb push frida-server /data/local/tmp/
+	$ adb shell "chmod 755 /data/local/tmp/frida-server"
+	$ adb shell "/data/local/tmp/frida-server &"
+	OR
+	adb shell "su -c chmod 755 /data/local/tmp/frida-server"
+	adb shell "su -c /data/local/tmp/frida-server &"
+frida-ps -Uai - list package names
+frida -U -n "package-name" - hook into app using frida
+objection --gadget <package-name> explore
+
+***************************************************************************************Setup**************************************************************************************
+******Windows*******
+JADX-GUI Tool
+- Install Java - java.com (default parameters)
+- Get the latest release for windows exe format JADX - (https://github.com/skylot/jadx)
+- Install ADB - used to get a shell on our emulator
+	google -> android tools -> sdk platform tools link ->download sdk for preferred OS -> extract and paste it in C:/Windows folder and update env variables (Possible to download directly from android studio
+- Install APKtool -> search apktool -> (https://ibotpeaches.github.io/Apktool/) -> Read the install documentation for preferred OS
+- Install Android Studio -> default params
+- Install MobSF -> clone git repo -> run requirements.txt -> ./setup.bat -> ./run.bat
+
+*****Kali Linux***
+- Install PimpMyKali - installs the below tools all in one-go ->(https://github.com/Dewalt-arch/pimpmykali)
+- Install ADB -> sudo apt-get install adb
+- Install APKTool -> sudo apt-get install apktool -> same as windows -> read install documentation
+- Install JADX-Gui -> sudo apt-get install default-jdk (java --version) -> sudo apt-get install jadx (cmd - jadx-gui)
+- Install Android studio
+- Install MobSF -> clone git repo -> run requirements.txt -> ./setup.sh ->./run.sh
+
+*********Mac*********
+- Install Brew - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+- Install JADX-Gui -> brew install jadx -> (cmd -> jadx-gui)
+- Install apktool -> brew install apktool -> (cmd -> apktool)
+- Install Android studio
+- Install adb, fastboot and other stuff - brew install android-platform-tools
+- Install MobSF -> clone git repo -> run requirements.txt -> ./setup.sh -> ./run.sh
+
+**Note - Make use of emulator that does not have play store symbol and less google API level since the above cannot be rooted.***
+
+
+**************************************************************Testing********************************************************
+
+Identify the CPU Architecture
+	adb shell -> cat /proc/version
+	adb shell -> cat /proc/cpuinfo
+
+Application Files in Device
+	File paths
+		/data/app/com.example.app - generic app data
+		/data/data/com.example.app - runtime storage data
+		/mnt/sdcard/Android/data/com.example.app - externally stored location for runtime
+	other file paths (cache, library etc) can be found via objection tool (command "env")
+
+Reverse Engineer APK file (DEX bytecode -> SMALi -> Java)
+	apktool d <apk-file>
+	d2j-dex2jar.sh <apk> -> open in JD-GUI tool
+	use jadx-gui that automates the entire process.
+	MobSF tool displays the smali and java code.
+	
+	Patch apk (https://koz.io/using-frida-on-android-without-root/)
+		Manual Process
+		apktool d -r <apkfile>
+		Inject Frida gadget in lib folder
+		download frida gadget - https://github.com/frida/frida
+		wget <github link based on emulator cpu architecture> -> unzip the file
+		rename file to frida-gadget.so (rename according to the pattern other files are present in lib folder)
+		Add reference to frida-gadget to SMALI code inside method public constructor
+		Activity (usually MainActivity.smali, or OnboardingActivity.smali) 
+		Code = const-string v0, "frida-gadget" invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+		apktool b <target.apk> -o <output_file.apk> (patched apk would be dist folder)
+		keytool -genkey -v -keystore <custom.keystore> -alias <mykeyaliasname> -keyalg RSA -keysize 2048 -validity 10000
+		jarsigner -sigalg SHA1withRSA -digestalg SHA1 -keystore <custom.keystore> -storepass <password> <repackaged.apk> <mykeyaliasname>
+		jarsigner -verify repackaged.apk
+		zipalign 4 <repackaged.apk> <repackaged-final.apk>
+		
+		Automated Process
+		objection patchapk -s <apk-file>
+	APKLeaks to obtain sensitive data (apkleaks -f <apk-file>)
+
+Insecure Configuration
+	Check the Certificate used for Signing - If 'debug' report
+	Common app strings to search (api, id, password, username, .com etc, aws, gcp, azure, http, https, secret, key etc)
+	Manifest.xml
+		android:allowBackup="false"
+		debuggable="false"
+		Identify dangerous permissions
+		android:networkSecurityConfig="@xml/network_security_config"
+			<domain-config cleartextTrafficPermitted="false">
+	Signature Vulnerabilities (eg: Janus)
+		v1, v2 or v3 scheme
+	Resources/res/values/strings.xml
+		Sensitive Hardcoded strings
+	Broken TLS & Cryptography
+		Search for ciphers/protocols in application code
+		SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+		Verify Algorithms
+		grep -r 'SecretKeySpec" (cmd to see use of deprecated algorithms)
+		Check for availability of java.util.Random class as it is vulnerable to collision attacks (recommended to use secure random classes instead of java.util.Random)
+
+Insecure Data Storage Vulnerabilities
+	Navigate through all application files using android studio device file explorer
+		Shared Preferences
+		SQLite Databases - sqlite <db-file> -> .tables -> select * from <table-name>;
+		Internal Storage
+		External Storage
+	
+Client Side Vulnerabilities
+	Try bypassing authorization methods by modifying application logic
+		application might save the session token, username, token etc in device storage-> modify the files and replace the existing file
+	Exploit Auth vulnerabilities
+		Biometric bypass - use frida scripts (https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass.js)
+		Fingerprint bypass using exception handling -https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass-via-exception-handling.js
+	Exploit "exported=true" components
+		Activities
+		Services
+		Content providers
+		Broadcast Receivers
+		adb shell am start -n com.example.demo/com.example.test.MainActivity
+	Exploiting Schemes / Deep links
+		adb shell am start -a android.intent.action.VIEW -d "scheme://hostname/path?param=value" [your.package.name]
+	Sensitive information in logs
+		log can be viewed in android studio logcat
+		adb logcat -c - clears previous logs
+		adb logcat | grep 'value'
+		adb logcat | grep "$(adb shell ps <package-name> | awk '{print $2}')"
+		use Android Studio in-built feature
+	Enumerate firebase DB using firebase_enum similar to cloud_enum (url can be found in Manifest.xml)
+		URL -> firebase.io.com/.json (sample)
+	Client Side Vulnerabilities such as SQL injection
+		Injection on SQL queries that fetch details from the device storage db files
+	Sensitive data in Clipboard
+		use objection (android clipboard monitor)
+		RMS tool has feature to test clipboard
+		else use third party apps
+	Third party Keyboard apps supported
+		install custom apps and verify
+	Sensitive Data in Backup
+		adb backup "-apk -nosystem <package-name>"
+	Sensitive Information in Auto-Generated Screenshots
+		/data/system_ce/<USER_ID>/<IMAGE_FOLDER_NAME> 
+
+Sensitive Details in Memory
+	Launch Objection
+	memory dump all (objection command)
+	memory list modules
+	memory list exports <name>
+	memory search 4141 –string
+	memory write <address> <string> --string
+	fridump tool
+
+Android Heap
+	Launch Objection
+	android heap options (use help android heap to know more)
+
+Import Frida scripts obtained from Frida Codeshare
+	objection -g <package-name> explore --strtup-script <jsfile>
+
+Android Hooking Classes and Methods
+	Launch Objection
+	android hooking list
+	android hooking search classes <keyword>
+	android hooking watch class <class-name> --dump-args --dump-backtrace --dump-return
+
+FLAG_SECURE Bypass
+	Launch Objection
+	android ui FLAG_SECURE false
+
+Launching Activity
+	Launch Objection
+	android intent launch_activity <activity-name>
+
+
+Traffic Analysis
+	Install burp certificate in emulator or android device (network -> preferences -> install certificate)
+	export the CA certificate from Burp Suite in DER format (and rename extension to CER)
+	Set the proxy address to intercept "All Interfaces"
+	configure proxy settings in device or emulator
+	https://portswigger.net/support/configuring-an-android-device-to-work-with-burp
+	Perform all kinds of testing similar to web services/API calls
+	Try HTTP Canary application  (works on flutter)
+
+Bypass SSLPinning & Root Detection
+	https://www.varutra.com/android-pentesting-using-frida/
+	objection -g <package-name> explore -> android sslpinning disable
+	objection -g <package-name> explore -> android root disable
+	use frida scripts & for flutter apps (reflutter tool)
+
+AWS Storage Buckets
+	* make use of jadx-gui tool to go through every files to find anything related
+	* search for cloud_enum tool and read the manual
+	* install awscli (sudo apt-get awscli) to trigger aws commands
+	* aws configure --profile  <appname>
+	* https://aws.amazon.com/cli/ (documentation)
+
+Dynamic Analysis
+	https://frida.re/docs/android/  (setup frida server in android device)
+	MobSF - use genymotion or Android emulator
+	RMS - plugged-in android device with frida server running
+		enumerate classes, methods arguments passed, return values etc
+		exploit exported activities, services, receivers and Content providers
+		obtain strings
+		launch frida scripts
+		use api monitors
+
+Drozer Testing commands
+	adb forward tcp:31415 tcp:31415
+	drozer console connect (agent to be installed on mobile)
+	run app.package.attacksurface <package-name>
+	run app.package.debuggable
+	run app.package.manifest <package-name>
+	run app.activity.info -a <package-name>
+	run app.activity.start --component <package-name> <activity-name>
+	run app.activity.start --component <package-name> <activity-name> --data-uri <URL/deep link scheme/anything relevant>
+	run app.activity.start --action android.intent.action.VIEW --data-uri <URL/deep link scheme/anything relevant>
+	run app.provider.info -a <package-name>
+	run app.provider.finduri <package-name> (scans and finds all the “queriable” content providers)
+	run scanner.provider.finduris -a <package-name> (filters out the URIs that can be queried or not)
+	run app.provider.columns content://
+	run app.provider.read content://
+	run app.provider.query content://
+	run app.provider.insert content:// --string <col1> <value> --string <col2> <value> (insert content to DB)
+	run app.provider.update content:// --selection "<col1>=?" --selection-args <actual-value> --string <col2> <modified-value> (update DB content)
+	run app.provider.delete content:// --selection "<col1>=?" --selection-args <actual-value> (delete contents from DB)
+	run scanner.provider.injection -a <package-name> (detect injectable content providers of application)
+	run scanner.provider.sqltables -a <package-name> (view all SQL tables in the database) (explore hackingarticles for exploit)
+	run app.service.info -a <package-name>
+	run app.service.send <package-name> <service-name> --msg 2354 9234 1 --extra string <param-name> <value> --bundle-as-obj
+	run app.broadcast.info -a <package-name>
+	run app.broadcast.send --action <intent-name> --extra string <intent-param> <"value"> --extra string <intent-param> <"value">
+
+
+
+
+
+	
+
+***************************************************************************************Tools**********************************************************************************
+
+Apktool - https://ibotpeaches.github.io/Apktool/
+Android Studio
+frida - https://frida.re/docs/installation/
+objection - https://github.com/sensepost/objection
+Runtime Mobile Security (RMS) - https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security
+MobSF - https://mobsf.github.io/docs/#/
+JD-GUI - https://github.com/java-decompiler/jd-gui
+dex2jar - https://github.com/pxb1988/dex2jar
+jadx/jadx-gui - https://github.com/skylot/jadx
+apkleaks -https://github.com/dwisiswant0/apkleaks
+	

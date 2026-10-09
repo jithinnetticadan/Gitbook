@@ -238,8 +238,12 @@
 ## Mobile
 
 * [Android](mobile/android/README.md)
+  * [Static Testing](mobile/android/static-testing.md)
+  * [Dynamic Testing](mobile/android/dynamic-testing.md)
   * [References](mobile/android/references.md)
 * [iOS](mobile/ios/README.md)
+  * [Static Testing](mobile/ios/static-testing.md)
+  * [Dynamic Testing](mobile/ios/dynamic-testing.md)
   * [References](mobile/ios/references.md)
 
 ## Cloud
