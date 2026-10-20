@@ -31,3 +31,5 @@ Workflow: reconnaissance > static testing > dynamic testing > report. Use author
 
 * [Frida-Launcher](https://github.com/thecybersandeep/Frida-Launcher)
 * [lautarovculic/ioscpy](https://github.com/lautarovculic/ioscpy)
+
+{% file src="../../.gitbook/assets/Palera1n.pdf" %}
