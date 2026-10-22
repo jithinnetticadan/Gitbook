@@ -4,11 +4,11 @@ Workflow: reconnaissance > static testing > dynamic testing > report. Use author
 
 ## Testing Categories
 
-* [Static Testing](static-testing.md)
-* [Dynamic Testing](dynamic-testing.md)
+* [Static Testing](static-testing/README.md)
+* [Dynamic Testing](dynamic-testing/README.md)
 * [References](references.md)
 
-**Before runtime testing:** complete the [Mandatory Preflight](dynamic-testing.md#mandatory-preflight), including exact Frida client/server/Gadget version matching.
+**Before runtime testing:** complete the [Mandatory Preflight](dynamic-testing/preflight-and-lab-setup.md#mandatory-preflight), including exact Frida client/server/Gadget version matching.
 
 ## Quick Context
 
