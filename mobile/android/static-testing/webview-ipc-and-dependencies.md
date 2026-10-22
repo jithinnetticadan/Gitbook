@@ -24,18 +24,18 @@ grep -rn 'loadUrl(\|loadData(\|evaluateJavascript(' <decompiled-directory>
 
 #### WebView Boundaries Beyond JavaScript Enablement
 
-| Lead | Static Review / Runtime Check | Qualification |
-| --- | --- | --- |
-| `evaluateJavascript`, `loadUrl("javascript:...")`, `onPageFinished` | Trace interpolation of untrusted values into executable script; use harmless markers | Loading an attacker URL and injecting script into a trusted origin are different impacts. |
-| `shouldOverrideUrlLoading` | Validate parsed scheme, host, port, path, redirects, and external-intent handling | String prefix/substring allowlists can accept unintended hosts; test actual parser behavior. |
-| Mixed content / file access | `setMixedContentMode`, file/content URL settings, local-to-remote access | Confirm an attacker-controlled resource is loaded and can reach sensitive data; settings alone are not a completed exploit. |
-| `shouldInterceptRequest` / `WebResourceResponse` | Resource selection, URL normalization, MIME/encoding, cache keys, synthetic response origin | Test crafted in-scope URLs and offline/restart behavior; prove persistent poisoning or unintended resource disclosure. |
-| Geolocation / media permission callbacks | Origin, requested resource, Android permission, user consent | A blanket grant is a lead; distinguish WebView-origin consent from OS-level permission. |
-| File chooser / capture | Returned content URI, grants, MIME, source app, destination origin | Use a companion provider and harmless file to test upload disclosure; filesystem reach alone is not proof of cross-origin theft. |
-| Cookies / web storage | Domain/path, Secure/HttpOnly/SameSite, logout, account isolation, separate data directories | Cookies can be shared within the app's WebView profile, not globally across unrelated apps. JavaScript cannot read HttpOnly cookies merely because a bridge exists. |
-| Bridge reflection / third-party script | Allowed native methods/arguments and code running in frames/page origin | A third-party script included by a page often runs with that page's privileges; an iframe has a different origin. Evaluate the actual bridge API and frame access. |
-| Remote debugging | Actual enabled setting, release behavior, authorized ADB/transport access | Being on the same Wi-Fi alone does not normally grant Chrome inspection access. |
-| Legacy bridge exposure | Device WebView/provider version, Android/target SDK, annotated/exposed methods | Historic pre-API-17 reflection attacks require the affected configuration; do not generalize them to modern annotated bridges. |
+| Lead                                                                | Static Review / Runtime Check                                                               | Qualification                                                                                                                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `evaluateJavascript`, `loadUrl("javascript:...")`, `onPageFinished` | Trace interpolation of untrusted values into executable script; use harmless markers        | Loading an attacker URL and injecting script into a trusted origin are different impacts.                                                                           |
+| `shouldOverrideUrlLoading`                                          | Validate parsed scheme, host, port, path, redirects, and external-intent handling           | String prefix/substring allowlists can accept unintended hosts; test actual parser behavior.                                                                        |
+| Mixed content / file access                                         | `setMixedContentMode`, file/content URL settings, local-to-remote access                    | Confirm an attacker-controlled resource is loaded and can reach sensitive data; settings alone are not a completed exploit.                                         |
+| `shouldInterceptRequest` / `WebResourceResponse`                    | Resource selection, URL normalization, MIME/encoding, cache keys, synthetic response origin | Test crafted in-scope URLs and offline/restart behavior; prove persistent poisoning or unintended resource disclosure.                                              |
+| Geolocation / media permission callbacks                            | Origin, requested resource, Android permission, user consent                                | A blanket grant is a lead; distinguish WebView-origin consent from OS-level permission.                                                                             |
+| File chooser / capture                                              | Returned content URI, grants, MIME, source app, destination origin                          | Use a companion provider and harmless file to test upload disclosure; filesystem reach alone is not proof of cross-origin theft.                                    |
+| Cookies / web storage                                               | Domain/path, Secure/HttpOnly/SameSite, logout, account isolation, separate data directories | Cookies can be shared within the app's WebView profile, not globally across unrelated apps. JavaScript cannot read HttpOnly cookies merely because a bridge exists. |
+| Bridge reflection / third-party script                              | Allowed native methods/arguments and code running in frames/page origin                     | A third-party script included by a page often runs with that page's privileges; an iframe has a different origin. Evaluate the actual bridge API and frame access.  |
+| Remote debugging                                                    | Actual enabled setting, release behavior, authorized ADB/transport access                   | Being on the same Wi-Fi alone does not normally grant Chrome inspection access.                                                                                     |
+| Legacy bridge exposure                                              | Device WebView/provider version, Android/target SDK, annotated/exposed methods              | Historic pre-API-17 reflection attacks require the affected configuration; do not generalize them to modern annotated bridges.                                      |
 
 Use the [WebView runtime workflow](../dynamic-testing/component-testing.md#webview-runtime-checks) to establish attacker reachability; DevTools-injected JavaScript alone is not that evidence.
 
@@ -101,7 +101,3 @@ grep -n 'android:exported="true"' "$MANIFEST"
 grep -rn 'addJavascriptInterface\|onReceivedSslError\|checkServerTrusted' "$SRC"
 grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' "$SRC"
 ```
-
-Continue with [Android Dynamic Testing](../dynamic-testing/README.md) to confirm reachable issues.
-
-**Previous:** [Local Data and Client Logic](local-data-and-client-logic.md) | **Next:** [Android Dynamic Testing](../dynamic-testing/README.md)

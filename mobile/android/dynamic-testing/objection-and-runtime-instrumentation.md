@@ -23,19 +23,19 @@ objection --name <process-name> run 'android root disable'
 objection --name <process-name> run 'android sslpinning disable'
 ```
 
-| Option/Mode | Use |
-| --- | --- |
-| `--name` | Attach by process name; spawn by package ID. Gadget may expose a different name. |
-| Global options | `--name`, `--serial`, `--spawn`, `--no-pause` go **before** `start`/`run`. |
+| Option/Mode     | Use                                                                                           |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| `--name`        | Attach by process name; spawn by package ID. Gadget may expose a different name.              |
+| Global options  | `--name`, `--serial`, `--spawn`, `--no-pause` go **before** `start`/`run`.                    |
 | Startup options | `--startup-command`, `--startup-script` go **after** `start`; check `objection start --help`. |
-| `--no-pause` | Immediate resume; omit when early hooks need a paused spawn. |
-| `run` | One-shot execution; do not assume hooks persist after exit. Use `start` for monitoring. |
+| `--no-pause`    | Immediate resume; omit when early hooks need a paused spawn.                                  |
+| `run`           | One-shot execution; do not assume hooks persist after exit. Use `start` for monitoring.       |
 
 Use long flags: global `-s` means spawn. Commands below run **inside Objection**; use in-session help for release-specific syntax.
 
 ### Classes and Activities
 
-```text
+```
 env
 android hooking list
 android hooking search classes <keyword>
@@ -45,7 +45,7 @@ android intent launch_activity <activity-name>
 
 ### Clipboard, Screenshots, Memory, and SQLite
 
-```text
+```
 android clipboard monitor
 android ui FLAG_SECURE false
 memory dump all <output-file>.dmp
@@ -67,5 +67,3 @@ sqlite connect <database-file>
 * MobSF: configure a compatible dynamic-analysis environment first.
 
 For observational scripts, overload/classloader diagnosis, and JNI/native hooks, continue with [Java and Native Instrumentation](java-and-native-instrumentation.md). Identify the actual check before running root/pinning commands; a hook message alone is not a verified result.
-
-**Previous:** [Advanced IPC and Content Providers](advanced-ipc-and-providers.md) | **Next:** [Java and Native Instrumentation](java-and-native-instrumentation.md)

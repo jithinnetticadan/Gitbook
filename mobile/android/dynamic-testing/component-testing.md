@@ -32,12 +32,12 @@ adb shell content query --uri <content-uri> --projection <known-column> --where 
 
 `startservice` does not exercise a bound-service Binder protocol; background-service restrictions may also block it. Use a small authorized companion app for binding/caller-UID tests. A provider query needs its actual URI, projection, and selection; avoid bulk retrieval or destructive writes.
 
-| Boundary | Check | Required Evidence |
-| --- | --- | --- |
-| Reachability | Export state, OS restrictions, receiver registration, URI grants | The specified caller can reach the component. |
-| Permission | Manifest/runtime permission, signature permission, sender restrictions | A caller without the intended permission can still perform the relevant operation. |
-| Authentication | Logged out, expired, or unauthenticated state | Protected local data/action is available without required authentication. |
-| Authorization | Different owned account/role/object | An authenticated but unauthorized caller crosses a specific access boundary. |
+| Boundary       | Check                                                                  | Required Evidence                                                                  |
+| -------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Reachability   | Export state, OS restrictions, receiver registration, URI grants       | The specified caller can reach the component.                                      |
+| Permission     | Manifest/runtime permission, signature permission, sender restrictions | A caller without the intended permission can still perform the relevant operation. |
+| Authentication | Logged out, expired, or unauthenticated state                          | Protected local data/action is available without required authentication.          |
+| Authorization  | Different owned account/role/object                                    | An authenticated but unauthorized caller crosses a specific access boundary.       |
 
 ADB normally acts as the **shell UID**, with permissions an ordinary app may not have. Root is a different capability again. Validate ordinary-app claims with a separately installed, minimally privileged companion app, and record its permissions, signing identity, and URI grants. Drozer results also reflect its agent's permissions. An activity opening without sensitive data/action is not by itself an authentication bypass. Implicit broadcasts are not universally readable: permissions, package targeting, receiver flags, and OS behavior matter.
 
@@ -86,7 +86,7 @@ Run the following commands **inside Drozer**. Check module help; availability va
 
 ### Packages and Activities
 
-```text
+```
 run app.package.attacksurface <package-name>
 run app.package.debuggable
 run app.package.manifest <package-name>
@@ -98,7 +98,7 @@ run app.activity.start --action android.intent.action.VIEW --data-uri <authorize
 
 ### Content Providers
 
-```text
+```
 run app.provider.info -a <package-name>
 run app.provider.finduri <package-name>
 run scanner.provider.finduris -a <package-name>
@@ -114,7 +114,7 @@ run scanner.provider.sqltables -a <package-name>
 
 ### Services and Broadcasts
 
-```text
+```
 run app.service.info -a <package-name>
 run app.service.send <package-name> <service-name> --msg 2354 9234 1 --extra string <parameter> <test-value> --bundle-as-obj
 run app.broadcast.info -a <package-name>
@@ -128,5 +128,3 @@ run app.broadcast.send --action <intent-name> --extra string <parameter> <test-v
 * Insert/update/delete mutate data: use disposable test records only.
 * Verify local authorization and, for claimed API impact, server authorization; intent filters/prior screens are not access controls.
 * Stop the agent server and remove the test forward with `adb forward --remove tcp:31415` when finished.
-
-**Previous:** [Preflight and Frida Setup](preflight-and-frida-setup.md) | **Next:** [Advanced IPC and Content Providers](advanced-ipc-and-providers.md)

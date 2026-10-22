@@ -34,5 +34,3 @@ objection patchipa --source <app.ipa> --codesign-signature <signing-identity> --
 * `--codesign-signature` (`-c`), `--provision-file` (`-P`): check help and [CLI source](https://github.com/sensepost/objection/blob/master/objection/console/cli.py).
 * `security find-identity` lists identities; it does not create profiles or determine expiry.
 * Follow current signing requirements; preserve originals and do not redistribute modified apps.
-
-**Previous:** [Preflight and Lab Setup](preflight-and-lab-setup.md) | **Next:** [Traffic Analysis and TLS](traffic-analysis-and-tls.md)

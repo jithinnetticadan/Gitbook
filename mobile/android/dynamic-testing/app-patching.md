@@ -26,22 +26,21 @@ objection patchapk --source <app.apk> --gadget-version <frida-version>
 
 1. Decode the APK, omitting resource decoding if appropriate: `apktool d -r <app.apk> -o <decoded-directory>`.
 2. Download [Frida Gadget](https://github.com/frida/frida) matching the host's **exact Frida version** and the app ABI; decompress `.xz` and place `libfrida-gadget.so` in `lib/<abi>`.
-3. Add the load call to an appropriate initialization path. Example SMALI:
+3.  Add the load call to an appropriate initialization path. Example SMALI:
 
-   ```smali
-   const-string v0, "frida-gadget"
-   invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
-   ```
+    ```smali
+    const-string v0, "frida-gadget"
+    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+    ```
+4.  Rebuild, sign, and align the disposable test artifact:
 
-4. Rebuild, sign, and align the disposable test artifact:
-
-   ```sh
-   apktool b <decoded-directory> -o <unsigned-test.apk>
-   keytool -genkey -v -keystore <test.keystore> -alias <test-alias> -keyalg RSA -keysize 2048 -validity 10000
-   zipalign -p 4 <unsigned-test.apk> <aligned-test.apk>
-   apksigner sign --ks <test.keystore> --ks-key-alias <test-alias> <aligned-test.apk>
-   apksigner verify <aligned-test.apk>
-   ```
+    ```sh
+    apktool b <decoded-directory> -o <unsigned-test.apk>
+    keytool -genkey -v -keystore <test.keystore> -alias <test-alias> -keyalg RSA -keysize 2048 -validity 10000
+    zipalign -p 4 <unsigned-test.apk> <aligned-test.apk>
+    apksigner sign --ks <test.keystore> --ks-key-alias <test-alias> <aligned-test.apk>
+    apksigner verify <aligned-test.apk>
+    ```
 
 * `System.loadLibrary("frida-gadget")` requires **`libfrida-gadget.so`**, not `frida-gadget.so`.
 * Execute in the target process: suitable Application initialization or MainActivity/OnboardingActivity constructor.
@@ -52,5 +51,3 @@ objection patchapk --source <app.apk> --gadget-version <frida-version>
 * An unrelated signing key normally prevents installing over the original, even with `adb install -r`. Preserve original APKs/splits and test data; use a disposable install. See [integrity validation](runtime-defenses-and-integrity.md#repackaging-and-signature-checks) for rebuilt controls and attestation caveats.
 
 References: [Gadget](https://frida.re/docs/gadget/), [apksigner](https://developer.android.com/tools/apksigner), [non-root walkthrough](https://koz.io/using-frida-on-android-without-root/).
-
-**Previous:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | **Next:** [Runtime Defenses and Integrity](runtime-defenses-and-integrity.md)

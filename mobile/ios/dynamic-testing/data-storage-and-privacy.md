@@ -14,13 +14,13 @@ Complete the [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-prefligh
 * Typical path: `/var/mobile/Containers/Data/Application/<UUID>`; layout/access vary.
 * Retrieve authorized files through SSH/SFTP or [Cyberduck](https://cyberduck.io/).
 
-| Storage/Surface | Check |
-| --- | --- |
-| Plist / `NSUserDefaults` | Credentials, tokens, personal data, local roles. Plists can be XML/binary; defaults is an API. |
-| SQLite / Core Data | Sensitive records, permissions, query inputs. Core Data is a framework, not synonymous with SQLite. |
-| Keychain | Accessibility, access groups, authentication controls; separate from ordinary container files. |
-| Cookies/credentials/cache/logs | Sensitive values and retention. |
-| Pasteboard/memory/snapshots/keyboard | Exposure outside the intended interaction. |
+| Storage/Surface                      | Check                                                                                               |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| Plist / `NSUserDefaults`             | Credentials, tokens, personal data, local roles. Plists can be XML/binary; defaults is an API.      |
+| SQLite / Core Data                   | Sensitive records, permissions, query inputs. Core Data is a framework, not synonymous with SQLite. |
+| Keychain                             | Accessibility, access groups, authentication controls; separate from ordinary container files.      |
+| Cookies/credentials/cache/logs       | Sensitive values and retention.                                                                     |
+| Pasteboard/memory/snapshots/keyboard | Exposure outside the intended interaction.                                                          |
 
 ### File and Database Inspection
 
@@ -30,7 +30,7 @@ file <path-to-file>
 sqlite3 <database-file>
 ```
 
-```text
+```
 env
 file cat <path-to-file>
 file download <path-to-file>
@@ -60,5 +60,3 @@ ios pasteboard monitor
 * Verify provenance, maintenance, and jailbreak/iOS compatibility.
 
 For Objection session syntax, see [Runtime Instrumentation](runtime-instrumentation.md).
-
-**Previous:** [Runtime Instrumentation](runtime-instrumentation.md) | **Next:** [URL Schemes, Web Views, and Client Behavior](client-side-testing.md)

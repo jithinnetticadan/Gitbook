@@ -15,8 +15,5 @@ Complete the [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-prefligh
 * [ ] Business logic: alter test-only local state/replay requests; verify server authorization.
 * [ ] Logs: Xcode Devices and Simulators or approved console.
 * [ ] Pasteboard/keyboard: use non-sensitive test data.
-
-* 3uTools: optional third-party inspection; consider privacy/provenance, not a replacement for Xcode.
-* [MobSF](https://mobsf.github.io/docs/#/): dynamic iOS support depends on release/device setup.
-
-**Previous:** [Data Storage and Privacy](data-storage-and-privacy.md) | **Next:** [Decryption and Class Information](decryption-and-class-information.md)
+* [ ] 3uTools: optional third-party inspection; consider privacy/provenance, not a replacement for Xcode.
+* [ ] [MobSF](https://mobsf.github.io/docs/#/): dynamic iOS support depends on release/device setup.

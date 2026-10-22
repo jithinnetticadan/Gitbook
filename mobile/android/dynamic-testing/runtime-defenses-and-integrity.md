@@ -8,14 +8,14 @@ Assess only an authorized lab copy. Record the [baseline](methodology-and-baseli
 
 Compare the same operation on the original environment, with an instrumentation connection but no hooks, and with one observational hook. Record when the warning/exit occurs and collect relevant logs before assuming anti-Frida behavior.
 
-| Signal Family | Likely Observation Points | Interpretation |
-| --- | --- | --- |
-| Root | `File.exists`, package queries, `Runtime.exec` / `ProcessBuilder`, properties, native `access` / `stat` / `open` | Observe the exact path/package/command and caller. A `su` filename is only one possible check. |
-| Emulator | `Build.MODEL`, `FINGERPRINT`, `HARDWARE`, sensors, telephony, filesystem, native system queries | Confirm the actual decision; a missing IMEI may reflect permissions or a Wi-Fi-only device. |
-| Debugger | `Debug.isDebuggerConnected`, `TracerPid`, JDWP/native tracing checks | Check timing and platform restrictions; an ordinary crash is not proof of debugger detection. |
-| Instrumentation | Process/thread names, open ports, loaded libraries, `/proc/self/maps`, memory strings | Renaming one file changes only one indicator; Gadget is not inherently undetectable. |
-| Anti-hooking / RASP | Function prologues, executable-memory checksums, call-stack/timing checks, native watchdogs | Broad hooks can trigger checks or break normal operation; identify the responsible path first. |
-| Integrity / attestation | Local signing digest, APK/code checks, Play Integrity requests and backend verdict handling | Distinguish local decisions from a backend-enforced trust boundary. |
+| Signal Family           | Likely Observation Points                                                                                        | Interpretation                                                                                 |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Root                    | `File.exists`, package queries, `Runtime.exec` / `ProcessBuilder`, properties, native `access` / `stat` / `open` | Observe the exact path/package/command and caller. A `su` filename is only one possible check. |
+| Emulator                | `Build.MODEL`, `FINGERPRINT`, `HARDWARE`, sensors, telephony, filesystem, native system queries                  | Confirm the actual decision; a missing IMEI may reflect permissions or a Wi-Fi-only device.    |
+| Debugger                | `Debug.isDebuggerConnected`, `TracerPid`, JDWP/native tracing checks                                             | Check timing and platform restrictions; an ordinary crash is not proof of debugger detection.  |
+| Instrumentation         | Process/thread names, open ports, loaded libraries, `/proc/self/maps`, memory strings                            | Renaming one file changes only one indicator; Gadget is not inherently undetectable.           |
+| Anti-hooking / RASP     | Function prologues, executable-memory checksums, call-stack/timing checks, native watchdogs                      | Broad hooks can trigger checks or break normal operation; identify the responsible path first. |
+| Integrity / attestation | Local signing digest, APK/code checks, Play Integrity requests and backend verdict handling                      | Distinguish local decisions from a backend-enforced trust boundary.                            |
 
 ## Observe a Root-Check Input
 
@@ -90,5 +90,3 @@ Commercial RASP may require specialist analysis. Report the environment, attempt
 References: [Android app signing](https://developer.android.com/studio/publish/app-signing), [Play Integrity](https://developer.android.com/google/play/integrity/overview), [Frida troubleshooting](https://frida.re/docs/troubleshooting/).
 
 **Related:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | [Network Traffic and TLS](network-traffic-and-tls.md)
-
-**Previous:** [App Patching and Repackaging](app-patching.md) | **Next:** [Local Data, Logs, and Privacy](local-data-logs-and-privacy.md)

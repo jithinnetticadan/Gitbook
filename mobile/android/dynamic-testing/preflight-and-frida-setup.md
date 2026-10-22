@@ -89,5 +89,3 @@ frida-ps -Uai
 frida -U -n <process-name>
 objection --name <process-name> start
 ```
-
-**Previous:** [Methodology and Baseline](methodology-and-baseline.md) | **Next:** [Component Testing](component-testing.md)

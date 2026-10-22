@@ -106,14 +106,12 @@ References: [Frida JavaScript API](https://frida.re/docs/javascript-api/), [Frid
 
 Inspect the exact libraries and ABI used at runtime, not merely one extracted `.so`. Use `readelf -h -l -d -Ws`, Ghidra/radare2, and the relevant NDK tooling; apply hardening scanners only when they support Android ELF conventions.
 
-| Lead | Inspect / Test | Interpretation |
-| --- | --- | --- |
-| ELF hardening | Executable stack/segments, relocation protections, stack guards, compiler defenses | Interpret PIE/shared-object and symbol evidence correctly. Missing hardening raises exploitability concerns but is not proof of a memory-corruption bug. |
-| Unsafe C/C++ operations | Copies, length arithmetic, formatting strings, allocation/free lifetime | Trace externally controlled buffers/lengths to the actual native function. Imports alone are insufficient. |
-| JNI boundary | Byte-array lengths, string encoding, object/reference lifetime, exceptions, thread attachment | Match the real signature and marshaling path; JNI names may be dynamically registered. |
-| Library search/loading | `dlopen`, `System.load`, extracted/downloaded libraries, writable directories | Prove control of the loaded path or contents; verify authenticity and rollback checks. |
-| Native secrets / debug material | Symbols, embedded keys, debug paths, logs, signing routines | Debug symbols aid analysis but are not automatically a disclosure finding; establish exposed information or authority. |
+| Lead                            | Inspect / Test                                                                                | Interpretation                                                                                                                                           |
+| ------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ELF hardening                   | Executable stack/segments, relocation protections, stack guards, compiler defenses            | Interpret PIE/shared-object and symbol evidence correctly. Missing hardening raises exploitability concerns but is not proof of a memory-corruption bug. |
+| Unsafe C/C++ operations         | Copies, length arithmetic, formatting strings, allocation/free lifetime                       | Trace externally controlled buffers/lengths to the actual native function. Imports alone are insufficient.                                               |
+| JNI boundary                    | Byte-array lengths, string encoding, object/reference lifetime, exceptions, thread attachment | Match the real signature and marshaling path; JNI names may be dynamically registered.                                                                   |
+| Library search/loading          | `dlopen`, `System.load`, extracted/downloaded libraries, writable directories                 | Prove control of the loaded path or contents; verify authenticity and rollback checks.                                                                   |
+| Native secrets / debug material | Symbols, embedded keys, debug paths, logs, signing routines                                   | Debug symbols aid analysis but are not automatically a disclosure finding; establish exposed information or authority.                                   |
 
 For authorized fuzzing, isolate a parser/JNI entry point with a reproducible harness, small seed corpus, time/memory limits, and disposable data. Prefer existing engines such as libFuzzer with a compatible NDK/sanitizer build when source is available. Preserve crashing input, build/ABI, sanitizer/tombstone details, and a minimized reproducer; distinguish harness mistakes, ordinary parse rejection, local denial of service, and exploitable corruption. Do not fuzz production devices/services or claim remote code execution from a crash alone.
-
-**Previous:** [Objection and Runtime Instrumentation](objection-and-runtime-instrumentation.md) | **Next:** [App Patching and Repackaging](app-patching.md)

@@ -1,13 +1,5 @@
 # iOS
 
-Workflow: reconnaissance > static testing > dynamic testing > report. Use authorized apps/devices only.
-
-## Testing Categories
-
-* [Static Testing](static-testing/README.md)
-* [Dynamic Testing](dynamic-testing/README.md)
-* [References](references.md)
-
 **Before runtime testing:** complete the [Mandatory Preflight](dynamic-testing/preflight-and-lab-setup.md#mandatory-preflight), including exact Frida client/server/Gadget version matching.
 
 ## Quick Context

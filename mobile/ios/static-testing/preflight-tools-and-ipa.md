@@ -33,13 +33,11 @@ Preserve the IPA; extract a working copy (ZIP format):
 unzip <app.ipa> -d <extracted-directory>
 ```
 
-| Location | Inspect |
-| --- | --- |
-| `Payload/<Application>.app/` | Executable, resources, property lists. |
+| Location                               | Inspect                                                         |
+| -------------------------------------- | --------------------------------------------------------------- |
+| `Payload/<Application>.app/`           | Executable, resources, property lists.                          |
 | `Payload/<Application>.app/Info.plist` | Bundle ID, executable name, URL types, permission descriptions. |
-| `iTunesMetadata.plist` | Distribution metadata, if present. |
-| Profile/signature files | Signing and provisioning metadata, if included. |
+| `iTunesMetadata.plist`                 | Distribution metadata, if present.                              |
+| Profile/signature files                | Signing and provisioning metadata, if included.                 |
 
 Confirm actual paths; use MobSF for initial triage. Renaming IPA to ZIP does not decrypt the executable.
-
-**Next:** [Binary Analysis](binary-analysis.md)

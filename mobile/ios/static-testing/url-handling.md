@@ -29,5 +29,3 @@ rabin2 -zzq <app-binary> | grep -i openurl
 * Check deprecated APIs: [UIKit documentation](https://developer.apple.com/documentation/uikit).
 
 Test these handlers at runtime: [URL Schemes, Web Views, and Client Behavior](../dynamic-testing/client-side-testing.md).
-
-**Previous:** [Binary Analysis](binary-analysis.md) | **Next:** [Configuration and Sensitive Data](configuration-and-sensitive-data.md)

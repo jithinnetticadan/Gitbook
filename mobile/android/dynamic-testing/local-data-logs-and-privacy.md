@@ -14,7 +14,6 @@ Complete the [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-prefli
 * Use Android Studio Device File Explorer or Objection `env` for accessible paths.
 * Inspect test copies with [DB Browser for SQLite](https://sqlitebrowser.org/) or the CLI:
 
-
 ```sh
 sqlite3 <database-copy.db>
 ```
@@ -57,14 +56,14 @@ Save relevant baseline logs **before** `adb logcat -c`; clearing them destroys e
 
 Use distinguishable synthetic test records. Track each token/identifier from creation through network, memory, storage, logs, backup, clipboard, notifications, keyboard, and screen surfaces.
 
-| Transition | Inspect | Confirm |
-| --- | --- | --- |
-| Before / after login | Preferences, databases, files, caches, WebView cookies | Which values appear, who can read them, and what they authorize. |
-| Background / resume | Recent-task snapshot, notifications, clipboard, background sync | Sensitive data is not exposed outside the intended session/display context. |
-| Process restart / reboot | Persisted files, device-/credential-protected storage | What survives, when it becomes available, and whether access requires device/app authentication. |
-| Logout / token expiry | Files, cookies, memory references, queued jobs | Local cleanup and server revocation are separate; test retained credentials according to [session policy](authentication-and-cryptography.md#authentication-and-session-matrix). |
-| Account A to B | Cache keys, database rows, cookies, pending work | B cannot access A's data or inherit A's session. |
-| Backup / restore | Included paths, restored secrets/state, key availability | Restored data does not unexpectedly restore authorization or expose another user's data. |
+| Transition               | Inspect                                                         | Confirm                                                                                                                                                                          |
+| ------------------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Before / after login     | Preferences, databases, files, caches, WebView cookies          | Which values appear, who can read them, and what they authorize.                                                                                                                 |
+| Background / resume      | Recent-task snapshot, notifications, clipboard, background sync | Sensitive data is not exposed outside the intended session/display context.                                                                                                      |
+| Process restart / reboot | Persisted files, device-/credential-protected storage           | What survives, when it becomes available, and whether access requires device/app authentication.                                                                                 |
+| Logout / token expiry    | Files, cookies, memory references, queued jobs                  | Local cleanup and server revocation are separate; test retained credentials according to [session policy](authentication-and-cryptography.md#authentication-and-session-matrix). |
+| Account A to B           | Cache keys, database rows, cookies, pending work                | B cannot access A's data or inherit A's session.                                                                                                                                 |
+| Backup / restore         | Included paths, restored secrets/state, key availability        | Restored data does not unexpectedly restore authorization or expose another user's data.                                                                                         |
 
 Record the access capability needed: ordinary app, authorized ADB, debuggable `run-as`, root, physical access, or an approved backup account. Root-readable plaintext is not automatically cross-app exposure. App-level plaintext can coexist with Android file-based encryption; evaluate device state, sandbox access, and additional app protection separately. Memory remnants require a realistic access/lifetime analysis, not merely a string match.
 
@@ -101,17 +100,15 @@ Protect and remove the test image afterward. A black image alone is inconclusive
 
 `allowBackup` and backup-rule files identify candidates, not guaranteed extraction. Record Android/target SDK/OEM, configured transport, account access, device unlock/consent, and the actual mechanism:
 
-| Mechanism | Validation |
-| --- | --- |
-| Auto Backup / cloud | Inspect applicable `fullBackupContent` or `dataExtractionRules`, inclusion/exclusion rules, transport/encryption, and a supported test backup/restore. |
-| Device-to-device transfer | Test separately from cloud backup; supported rules and OEM behavior can differ. |
-| Legacy ADB backup | Check `adb help`, OS support, app eligibility, user confirmation, and whether actual data was captured. An empty/header-only archive is not successful extraction. |
-| App export / custom backup | Test export access, format/encryption, secrets included, import validation, and account binding. |
+| Mechanism                  | Validation                                                                                                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Auto Backup / cloud        | Inspect applicable `fullBackupContent` or `dataExtractionRules`, inclusion/exclusion rules, transport/encryption, and a supported test backup/restore.             |
+| Device-to-device transfer  | Test separately from cloud backup; supported rules and OEM behavior can differ.                                                                                    |
+| Legacy ADB backup          | Check `adb help`, OS support, app eligibility, user confirmation, and whether actual data was captured. An empty/header-only archive is not successful extraction. |
+| App export / custom backup | Test export access, format/encryption, secrets included, import validation, and account binding.                                                                   |
 
 Use the earlier legacy command only where supported. An existing compatible `.ab` archive can be inspected with [Android Backup Extractor](https://github.com/nelenkov/android-backup-extractor), which requires Java and the legitimate password for an encrypted archive; do not assume it decrypts without one.
 
 Inventory a known synthetic marker in the backup, restore only to a disposable authorized environment, then verify its presence, authentication requirements, and any credential usability. Account for non-exportable Keystore keys that may not survive transfer; copying ciphertext alone does not establish readable disclosure. A root filesystem copy is not evidence that the platform backup mechanism includes those files. Record read/restore results and clean up test copies. Reference: [Android backup behavior and rules](https://developer.android.com/identity/data/autobackup).
 
 For permission revocation, SMS/autofill, notifications, MediaProjection, special-access services, and cross-profile behavior, continue with [Platform and Version-Specific Tests](platform-and-version-specific-tests.md).
-
-**Previous:** [Runtime Defenses and Integrity](runtime-defenses-and-integrity.md) | **Next:** [Platform and Version-Specific Tests](platform-and-version-specific-tests.md)

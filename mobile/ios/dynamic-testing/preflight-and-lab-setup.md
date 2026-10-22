@@ -25,7 +25,7 @@ Use the **same exact Frida version** for the host `frida` library, device `frida
 4. Verify the profile's App ID, entitlements, allowed devices, and expiry match the target.
 
 * Free accounts support limited sideloading; notes cite seven-day profiles. Check current Apple limits.
-* Intel Simulator: commonly x86_64; Apple Silicon Simulator: ARM64. Simulator/device ARM64 binaries still target different platforms.
+* Intel Simulator: commonly x86\_64; Apple Silicon Simulator: ARM64. Simulator/device ARM64 binaries still target different platforms.
 * Validate hardware-sensitive findings on a physical device. Your own development builds need not be jailbroken for debugging.
 * Profile filename: `embedded.mobileprovision`, not `embedded.mobileprovisioning`. An arbitrary app's profile may not fit.
 
@@ -61,5 +61,3 @@ frida-ps -Uai
 * If `frida-server` is not in the device's `PATH`, use its installed package path; rootless/rootful locations vary.
 * Confirm the server service is running. After replacing it, restart via the package's supported service workflow.
 * Objection installation/upgrades can change Frida dependencies; recheck before testing.
-
-**Next:** [Signing and App Patching](signing-and-app-patching.md)

@@ -35,19 +35,19 @@ objection --name <app-process-name> start --startup-script <script.js>
 objection --name <app-process-name> run 'ios info binary'
 ```
 
-| Option/Mode | Use |
-| --- | --- |
-| Global flags | `--name`, `--serial`, `--local`, `--spawn`, `--no-pause` go **before** `start`/`run`. |
-| Startup flags | Go **after** `start`; verify `objection start --help`. |
-| `--local` | iOS Simulator, not a physical device; compatible instrumentation required. |
-| `--no-pause` | Immediate resume; omit for early hooks needing a paused spawn. |
-| `run` | One-shot; do not assume hooks survive exit. Use `start` for monitoring. |
+| Option/Mode   | Use                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------- |
+| Global flags  | `--name`, `--serial`, `--local`, `--spawn`, `--no-pause` go **before** `start`/`run`. |
+| Startup flags | Go **after** `start`; verify `objection start --help`.                                |
+| `--local`     | iOS Simulator, not a physical device; compatible instrumentation required.            |
+| `--no-pause`  | Immediate resume; omit for early hooks needing a paused spawn.                        |
+| `run`         | One-shot; do not assume hooks survive exit. Use `start` for monitoring.               |
 
 Use long flags: global `-s` means spawn. Interactive commands below run **inside Objection**, not the host shell.
 
 ### Classes, Hooks, and Local Checks
 
-```text
+```
 env
 ios hooking list classes
 ios hooking list class_methods
@@ -59,7 +59,7 @@ ios jailbreak disable
 
 ### Storage, Privacy, and Memory
 
-```text
+```
 ios pasteboard monitor
 ios nsuserdefaults get
 ios nsurlcredentialstorage dump
@@ -89,7 +89,7 @@ Check `--startup-command`/`--startup-script` in `objection start --help` and the
 
 Requires radare2 and a compatible r2frida plugin installed in the host environment; installing radare2 alone does not provide the plugin. Follow the plugin's current installation and command syntax.
 
-```text
+```
 r2 frida://spawn//usb//<bundle-id>
 :i?
 :ic~<class-or-string>
@@ -97,5 +97,3 @@ r2 frida://spawn//usb//<bundle-id>
 ```
 
 Verify plugin syntax; addresses apply to the active process. Inspect dumps with `strings <dump-file>`; protect/delete them afterward.
-
-**Previous:** [Traffic Analysis and TLS](traffic-analysis-and-tls.md) | **Next:** [Data Storage and Privacy](data-storage-and-privacy.md)

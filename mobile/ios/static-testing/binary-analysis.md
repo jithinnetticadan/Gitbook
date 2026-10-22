@@ -27,11 +27,11 @@ otool -arch all -Vl <app-binary> | grep -A5 LC_ENCRYPT
 otool -l <app-binary> | grep -A4 LC_ENCRYPTION_INFO
 ```
 
-| Check | Indicator | Limitation |
-| --- | --- | --- |
-| PIE | Supports address randomization. | Not proof of overall binary security. |
-| Canaries | `stack_chk_guard`, `stack_chk_fail`. | Checks some stack corruption at return; not all code. |
-| ARC | `_objc_release`. | Reference-lifetime management, not complete memory safety. |
+| Check      | Indicator                               | Limitation                                                    |
+| ---------- | --------------------------------------- | ------------------------------------------------------------- |
+| PIE        | Supports address randomization.         | Not proof of overall binary security.                         |
+| Canaries   | `stack_chk_guard`, `stack_chk_fail`.    | Checks some stack corruption at return; not all code.         |
+| ARC        | `_objc_release`.                        | Reference-lifetime management, not complete memory safety.    |
 | Encryption | `cryptid=1` encrypted; `0` unencrypted. | Development/decrypted copies need not be App Store-encrypted. |
 
 * Missing symbols may reflect optimization or language/runtime differences.
@@ -63,5 +63,3 @@ otool -tV <app-binary>
 ```
 
 For class metadata, see [Decryption and Class Information](../dynamic-testing/decryption-and-class-information.md).
-
-**Previous:** [Preflight, Tools, and IPA](preflight-tools-and-ipa.md) | **Next:** [URL Handling](url-handling.md)

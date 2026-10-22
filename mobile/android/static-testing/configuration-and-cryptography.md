@@ -52,17 +52,15 @@ grep -rniE 'cleartextTrafficPermitted|<pin-set' <decoded-directory>/res/xml/
 
 ## Key Derivation and Cryptographic Semantics
 
-| Candidate | Trace / Validate | Avoid This Shortcut |
-| --- | --- | --- |
-| PBKDF2 / password-derived key | PRF, work factor, random per-record salt, password entropy, key length, and attacker offline access | Use current algorithm-specific guidance and device performance budgets; one fixed iteration threshold is not valid for every KDF. |
-| Static salt | Whether passwords can share precomputation or produce equal derived values | Salt reuse weakens isolation but does not eliminate all KDF work. |
-| CBC IV / GCM or CTR nonce | IV unpredictability where required; nonce uniqueness under the same key | Repeated values under different keys are not the same as same-key nonce reuse. |
-| Device-identifier key derivation | IMEI, Android ID, MAC, timestamps, embedded material | Identifiers are not secret entropy; trace the complete derivation rather than assuming a secure KDF fixes a predictable input. |
-| CBC/CTR without authentication | Authenticating wrapper/protocol, attacker ciphertext control, error differences | Lack of a nearby HMAC call alone does not establish a padding oracle; prove integrity failure or an observable oracle. |
-| Hashes and signatures | Security purpose, collision resistance versus password guessing, MAC/signature construction | MD5/SHA-1 collision weaknesses do not imply a practical preimage attack in every use. Fast hashes are unsuitable for password storage even when collision-resistant. |
-| Custom crypto / provider selection | Algorithm construction, JCA provider/version, explicit parameters, known advisories | Provider names and XOR loops alone do not prove a break; separate encoding, checksums, obfuscation, and real cryptography. |
-| Keystore / StrongBox | Key purposes, exportability, authentication policy, verified security level | Missing StrongBox is not automatically a finding; evaluate the required protection and device support. |
+| Candidate                          | Trace / Validate                                                                                    | Avoid This Shortcut                                                                                                                                                  |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PBKDF2 / password-derived key      | PRF, work factor, random per-record salt, password entropy, key length, and attacker offline access | Use current algorithm-specific guidance and device performance budgets; one fixed iteration threshold is not valid for every KDF.                                    |
+| Static salt                        | Whether passwords can share precomputation or produce equal derived values                          | Salt reuse weakens isolation but does not eliminate all KDF work.                                                                                                    |
+| CBC IV / GCM or CTR nonce          | IV unpredictability where required; nonce uniqueness under the same key                             | Repeated values under different keys are not the same as same-key nonce reuse.                                                                                       |
+| Device-identifier key derivation   | IMEI, Android ID, MAC, timestamps, embedded material                                                | Identifiers are not secret entropy; trace the complete derivation rather than assuming a secure KDF fixes a predictable input.                                       |
+| CBC/CTR without authentication     | Authenticating wrapper/protocol, attacker ciphertext control, error differences                     | Lack of a nearby HMAC call alone does not establish a padding oracle; prove integrity failure or an observable oracle.                                               |
+| Hashes and signatures              | Security purpose, collision resistance versus password guessing, MAC/signature construction         | MD5/SHA-1 collision weaknesses do not imply a practical preimage attack in every use. Fast hashes are unsuitable for password storage even when collision-resistant. |
+| Custom crypto / provider selection | Algorithm construction, JCA provider/version, explicit parameters, known advisories                 | Provider names and XOR loops alone do not prove a break; separate encoding, checksums, obfuscation, and real cryptography.                                           |
+| Keystore / StrongBox               | Key purposes, exportability, authentication policy, verified security level                         | Missing StrongBox is not automatically a finding; evaluate the required protection and device support.                                                               |
 
 Continue with [runtime cryptographic data-flow testing](../dynamic-testing/authentication-and-cryptography.md#trace-cryptographic-data-flow). Reference: [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
-
-**Previous:** [Secrets and Cloud](secrets-and-cloud.md) | **Next:** [Local Data and Client Logic](local-data-and-client-logic.md)

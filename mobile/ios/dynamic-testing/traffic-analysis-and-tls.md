@@ -31,5 +31,3 @@ Confirm a test HTTPS request reaches Burp before investigating pinning. CA profi
 Bypass is a test technique, not a vulnerability by itself. Report actual validation behavior/impact.
 
 For Objection session syntax and startup hooks, see [Runtime Instrumentation](runtime-instrumentation.md).
-
-**Previous:** [Signing and App Patching](signing-and-app-patching.md) | **Next:** [Runtime Instrumentation](runtime-instrumentation.md)

@@ -262,7 +262,6 @@
     * [Authentication, Authorization, and Cryptography](mobile/android/dynamic-testing/authentication-and-cryptography.md)
     * [Business Logic and Backend Trust](mobile/android/dynamic-testing/business-logic-and-backend.md)
     * [Validation, Reporting, and Troubleshooting](mobile/android/dynamic-testing/validation-and-troubleshooting.md)
-  * [Checklist Coverage](mobile/android/checklist-coverage.md)
   * [References](mobile/android/references.md)
 * [iOS](mobile/ios/README.md)
   * [Static Testing](mobile/ios/static-testing/README.md)

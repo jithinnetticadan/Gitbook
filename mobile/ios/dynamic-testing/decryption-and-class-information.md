@@ -22,5 +22,3 @@ class-dump <app-binary>
 Alternatives: Objection class/method listing; Hopper, Ghidra, or IDA Free for binary analysis.
 
 Binary checks that depend on encryption state: [Binary Analysis](../static-testing/binary-analysis.md).
-
-**Previous:** [URL Schemes, Web Views, and Client Behavior](client-side-testing.md)
