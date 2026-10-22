@@ -1,11 +1,13 @@
 # Traffic Analysis and TLS
 
 {% hint style="info" %}
-Use authorized devices/builds and test accounts. Isolate the lab, protect evidence, and restore it afterward. Replace command placeholders before use.
+* Use authorized devices/builds and test accounts; replace command placeholders before use.
+* Isolate the lab, protect evidence, and restore it afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Before testing, confirm the Mac proxy is reachable, the CA profile is installed, and full certificate trust is enabled. Check pinning separately.
+* **Prerequisites:** reachable Mac proxy, installed CA profile, and enabled full certificate trust.
+* Check pinning separately from CA trust.
 {% endhint %}
 
 ## Traffic Analysis and TLS
@@ -17,9 +19,10 @@ Before testing, confirm the Mac proxy is reachable, the CA profile is installed,
 5. Test API authentication, authorization, inputs, sensitive data, and server behavior.
 6. Remove the CA after testing; renaming its file does not change encoding/trust.
 
-Confirm a test HTTPS request reaches Burp before investigating pinning. CA profile installation and enabling full trust are separate steps; an app may still reject the proxy certificate.
+* Confirm a test HTTPS request reaches Burp before investigating pinning.
+* CA profile installation and enabling full trust are separate steps; apps may still reject the proxy certificate.
 
-[Mobile Assistant guide](https://portswigger.net/burp/documentation/desktop/tools/mobile-assistant/installing): verify the historical package-source example `http://<mac-ip>:8080` before use.
+* Follow the [Mobile Assistant guide](https://portswigger.net/burp/documentation/desktop/tools/mobile-assistant/installing); verify the historical `http://<mac-ip>:8080` package-source example before use.
 
 ### Pinning Tests
 
@@ -28,6 +31,5 @@ Confirm a test HTTPS request reaches Burp before investigating pinning. CA profi
 * Burp Mobile Assistant and app-specific instrumentation.
 * AppSync alters code-signing behavior; it does **not** replace CA trust configuration.
 
-Bypass is a test technique, not a vulnerability by itself. Report actual validation behavior/impact.
-
-For Objection session syntax and startup hooks, see [Runtime Instrumentation](runtime-instrumentation.md).
+* Bypass is a test technique, not itself a vulnerability; report actual validation behavior and impact.
+* For Objection session syntax and startup hooks, see [Runtime Instrumentation](runtime-instrumentation.md).

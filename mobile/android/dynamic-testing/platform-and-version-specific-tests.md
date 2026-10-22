@@ -1,7 +1,10 @@
 # Platform and Version-Specific Tests
 
 {% hint style="warning" %}
-Separate application defects from device/OS vulnerabilities and explicitly granted capabilities. Use approved companion tools and disposable lab devices. Kernel/GPU exploits, pairing attacks, device-owner changes, wipe operations, and hardware testing require separate explicit scope; they are not routine app-test prerequisites.
+* Separate app defects from device/OS vulnerabilities and explicitly granted capabilities.
+* **Prerequisites:** approved companion tools and disposable lab devices.
+* **Separate explicit scope required:** kernel/GPU exploits, pairing attacks, device-owner changes, wipe operations, and hardware testing.
+* These activities are not routine app-test prerequisites.
 {% endhint %}
 
 ## Record Applicability First
@@ -13,7 +16,9 @@ adb shell getprop ro.build.version.security_patch
 adb shell getprop ro.build.fingerprint
 ```
 
-Also record OEM/model, relevant GPU/driver, WebView/browser version, bootloader/root state, app target SDK, user/profile, and granted special access. Check the vendor's shipped fix/backport and current advisory; Android version or a spoofed property alone is insufficient evidence. Establish whether the entry applies before running a proof of concept.
+* Record OEM/model, GPU/driver, WebView/browser version, bootloader/root state, target SDK, user/profile, and special-access grants.
+* Check the current advisory and vendor-shipped fix/backport; Android version or a spoofed property alone is insufficient evidence.
+* Establish applicability before running a proof of concept.
 
 ## Permissions and User-Granted Capabilities
 
@@ -36,11 +41,13 @@ Also record OEM/model, relevant GPU/driver, WebView/browser version, bootloader/
 | NFC                        | Send a controlled tag/URI to the app's declared dispatch path                                                            | Trace proximity-triggered data into links/intents and validate destination/input handling.                                                         |
 | Wireless debugging         | Review pairing/authentication, trusted hosts, exposure, and cleanup on the lab device                                    | Knowing a port is not authentication. Distinguish modern paired TLS debugging from legacy exposed ADB; do not brute-force pairing codes.           |
 
-Restore grants, test providers, pairing records, profile policies, and capture/routing changes afterward. For biometric assurance and passkeys, use [authentication and cryptography](authentication-and-cryptography.md); lack of attestation or `BIOMETRIC_STRONG` needs a concrete policy/threat-model assessment.
+* Restore grants, test providers, pairing records, profile policies, and capture/routing changes afterward.
+* Use [authentication and cryptography](authentication-and-cryptography.md) for biometrics/passkeys.
+* Assess missing attestation or `BIOMETRIC_STRONG` against the actual policy and threat model.
 
 ## Research and Legacy Vulnerability Triage
 
-These entries preserve useful research leads without treating each workbook label as a confirmed finding.
+* Treat these entries as research leads, not confirmed findings based on workbook labels.
 
 | Research / Identifier                                                                             | Applicability and Evidence                                                                                                                                                                                                                                                                                                                                               |
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -54,4 +61,6 @@ These entries preserve useful research leads without treating each workbook labe
 | Dirty Stream                                                                                      | An app-level untrusted file-provider metadata pattern; use [Advanced IPC and Content Providers](advanced-ipc-and-providers.md#dirty-stream-untrusted-provider-metadata), not an OS `run-as` recipe.                                                                                                                                                                      |
 | SafetyNet Attestation                                                                             | Google [fully shut it down in January 2025](https://developer.android.com/privacy-and-security/safetynet/deprecation-timeline). Assess migration and failure handling; do not describe it as a currently functional fallback.                                                                                                                                            |
 
-For each research lead record: applicable / not applicable / unknown, primary advisory, checked date, exact prerequisites, observed evidence, fix status, and ownership (app, OS, browser, hardware, or backend). Do not copy generic severity labels, success rates, or research timings into a finding without validating the assessed environment.
+* Record applicability as applicable / not applicable / unknown, with primary advisory and checked date.
+* Record exact prerequisites, observed evidence, fix status, and owner: app, OS, browser, hardware, or backend.
+* Validate the assessed environment before using generic severity labels, success rates, or research timings in a finding.

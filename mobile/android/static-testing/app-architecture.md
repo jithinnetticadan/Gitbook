@@ -1,7 +1,8 @@
 # App Architecture
 
 {% hint style="info" %}
-Test only in-scope apps. Record package, version, source, device/API level, and original APK hash. Replace command placeholders before use.
+* Test only in-scope apps; replace command placeholders before use.
+* Record package, version, source, device/API level, and original APK hash.
 {% endhint %}
 
 ## Android App Architecture
@@ -17,7 +18,7 @@ Test only in-scope apps. Record package, version, source, device/API level, and 
 | Root             | Does not automatically bypass SELinux or encryption.                                                                                  |
 | Signing          | Required for installation; protects integrity/signer identity, not against decompilation.                                             |
 
-Layers: Linux kernel > hardware abstraction > native/ART libraries > Java API framework > system/apps.
+* Layers: Linux kernel > hardware abstraction > native/ART libraries > Java API framework > system/apps.
 
 | Path                             | Purpose                     |
 | -------------------------------- | --------------------------- |
@@ -25,4 +26,4 @@ Layers: Linux kernel > hardware abstraction > native/ART libraries > Java API fr
 | `/data/data/<package>`           | Private app data.           |
 | `/sdcard/Android/data/<package>` | App-specific external data. |
 
-Paths/access vary by Android version and device.
+* Paths and access vary by Android version and device.

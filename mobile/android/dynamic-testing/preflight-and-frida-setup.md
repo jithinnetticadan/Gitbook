@@ -1,13 +1,16 @@
 # Preflight and Frida Setup
 
 {% hint style="info" %}
-Use an authorized test device and test accounts. Preserve originals; protect dumps and restore the lab afterward. Replace command placeholders before use.
+* Use an authorized test device and test accounts; replace command placeholders before use.
+* Preserve originals, protect dumps, and restore the lab afterward.
 {% endhint %}
 
 ## Mandatory Preflight
 
 {% hint style="warning" %}
-Use the **same exact Frida version** for the host `frida` library, device `frida-server`, and any injected Frida Gadget. `frida-tools` and Objection have separate version numbers; do not match the server to those numbers. Recheck after package upgrades.
+* **Version dependency:** host `frida`, device `frida-server`, and injected Gadget must use the **same exact Frida version**.
+* `frida-tools` and Objection have independent version numbers; do not use them to select the server version.
+* Recheck version compatibility after package upgrades.
 {% endhint %}
 
 * [ ] `adb devices -l` shows the intended device as authorized, not `offline`/`unauthorized`.
@@ -22,7 +25,7 @@ Use the **same exact Frida version** for the host `frida` library, device `frida
 * Use a compatible Android Studio emulator or test device.
 * Verify root availability; API level/Play Store status alone is insufficient.
 
-Identify architecture when selecting Frida server:
+* Identify the device architecture before selecting Frida server:
 
 ```sh
 adb shell getprop ro.product.cpu.abilist
@@ -30,9 +33,9 @@ adb shell cat /proc/version
 adb shell cat /proc/cpuinfo
 ```
 
-Select Frida by app-compatible ABI; kernel information alone is insufficient.
+* Select Frida by app-compatible ABI; kernel information alone is insufficient.
 
-Install client tools in an isolated environment:
+* Install client tools in an isolated environment:
 
 ```sh
 pip3 install frida-tools
@@ -50,7 +53,7 @@ objection start --help
 
 ### Start Frida Server
 
-Root-capable ADB image (`adb root` is not supported on ordinary production builds):
+* **Prerequisite:** root-capable ADB image; ordinary production builds do not support `adb root`.
 
 ```sh
 adb root
@@ -59,7 +62,7 @@ adb shell "chmod 755 /data/local/tmp/frida-server"
 adb shell "/data/local/tmp/frida-server &"
 ```
 
-Alternative: authorized `su` access:
+* **Alternative prerequisite:** authorized `su` access.
 
 ```sh
 adb push frida-server /data/local/tmp/frida-server
@@ -69,7 +72,7 @@ adb shell "su -c '/data/local/tmp/frida-server &'"
 
 ### Verify Client and Server Versions
 
-Run after transferring and making the server executable:
+* **Prerequisites:** transfer the server and grant executable permission before running these checks.
 
 ```sh
 adb devices -l
@@ -82,7 +85,7 @@ adb shell /data/local/tmp/frida-server --version
 * Use the same host environment for Frida and Objection.
 * If mismatched: replace/pin the client or server, restart the server, then retry `frida-ps -Uai`.
 
-List installed apps and attach:
+* List installed apps and attach:
 
 ```sh
 frida-ps -Uai

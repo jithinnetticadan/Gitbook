@@ -1,12 +1,13 @@
 # Manifest and Components
 
 {% hint style="info" %}
-Test only in-scope apps. Record package, version, source, device/API level, and original APK hash. Replace command placeholders before use.
+* Test only in-scope apps; replace command placeholders before use.
+* Record package, version, source, device/API level, and original APK hash.
 {% endhint %}
 
 ## Manifest and Component Review
 
-Inspect `AndroidManifest.xml` in JADX and Apktool:
+* Inspect `AndroidManifest.xml` in JADX and Apktool:
 
 * `minSdkVersion`, target SDK, permissions, application settings, activities, services, receivers, and providers.
 * `android:exported`, component permissions, intent filters, deep links, and sensitive-action authorization. Intent filters are **not authentication**.
@@ -14,9 +15,9 @@ Inspect `AndroidManifest.xml` in JADX and Apktool:
 * Content provider authorities, exported status, path permissions, and query/update behavior.
 * Dangerous permissions and whether each is necessary for app functionality.
 
-References: [Android manifest introduction](https://developer.android.com/guide/topics/manifest/manifest-intro), [Android permissions](https://developer.android.com/reference/android/Manifest.permission), and [Android security overview](https://source.android.com/docs/security/overview/app-security).
+* References: [Android manifest introduction](https://developer.android.com/guide/topics/manifest/manifest-intro), [Android permissions](https://developer.android.com/reference/android/Manifest.permission), and [Android security overview](https://source.android.com/docs/security/overview/app-security).
 
-Example settings:
+* Example settings:
 
 ```xml
 <!-- AndroidManifest.xml: example application attributes -->
@@ -35,11 +36,12 @@ Example settings:
 </network-security-config>
 ```
 
-Snippets are illustrative, not complete manifests. Also inspect backup/data-extraction rules and OS behavior.
+* Snippets are illustrative, not complete manifests.
+* Also inspect backup/data-extraction rules and OS behavior.
 
 ### Exported Components, Backup, and Debug Triage
 
-Check the manifest of the **release APK**, not a debug build or source tree:
+* **Required artifact:** manifest from the **release APK**, not a debug build or source tree.
 
 ```sh
 grep -n 'android:exported="true"' <decoded-directory>/AndroidManifest.xml
@@ -52,11 +54,12 @@ grep -nE 'android:(allowBackup|dataExtractionRules|fullBackupContent|debuggable|
 * `adb backup` data extraction is restricted for apps targeting API 31+ unless debuggable; confirm behavior on the test device.
 * `android:debuggable="true"` in a release build allows JDWP attach. On a non-rooted device, `adb shell run-as <package-name> id` succeeding also indicates a debuggable app.
 
-Exploit exported components at runtime: [Component Testing](../dynamic-testing/component-testing.md).
+* Validate exported components at runtime: [Component Testing](../dynamic-testing/component-testing.md).
 
 ## Permissions, Tasks, and Special Access
 
-Compare the merged release manifest with actual code use and runtime grants. A declaration is an attack-surface lead, not proof of unauthorized access.
+* Compare the merged release manifest with code use and runtime grants.
+* Treat declarations as attack-surface leads, not proof of unauthorized access.
 
 | Surface                                  | Review                                                                            | Validate                                                                                                                                                                       |
 | ---------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -72,4 +75,5 @@ Compare the merged release manifest with actual code use and runtime grants. A d
 | Shared UID / legacy platform choices     | `sharedUserId`, low target SDK, obsolete permissions                              | Record signing/install/OS constraints and migration needs; do not assume ordinary apps can join another UID.                                                                   |
 | Native loading / storage                 | `extractNativeLibs`, `directBootAware`, device-protected storage                  | Trace extraction/load paths and data available before user unlock. These flags are not vulnerabilities by themselves.                                                          |
 
-Check `targetSdkVersion` separately from `minSdkVersion`: target level can preserve compatibility behavior, while minimum level defines supported installation versions. A high target does not prove the app implements every security control.
+* `targetSdkVersion`: affects compatibility behavior; a high target does not prove every security control is implemented.
+* `minSdkVersion`: defines supported installation versions; assess it separately from the target SDK.

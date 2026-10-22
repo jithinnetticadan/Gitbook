@@ -1,7 +1,8 @@
 # Configuration and Cryptography
 
 {% hint style="info" %}
-Test only in-scope apps. Record package, version, source, device/API level, and original APK hash. Replace command placeholders before use.
+* Test only in-scope apps; replace command placeholders before use.
+* Record package, version, source, device/API level, and original APK hash.
 {% endhint %}
 
 ## Configuration and Cryptography
@@ -63,4 +64,5 @@ grep -rniE 'cleartextTrafficPermitted|<pin-set' <decoded-directory>/res/xml/
 | Custom crypto / provider selection | Algorithm construction, JCA provider/version, explicit parameters, known advisories                 | Provider names and XOR loops alone do not prove a break; separate encoding, checksums, obfuscation, and real cryptography.                                           |
 | Keystore / StrongBox               | Key purposes, exportability, authentication policy, verified security level                         | Missing StrongBox is not automatically a finding; evaluate the required protection and device support.                                                               |
 
-Continue with [runtime cryptographic data-flow testing](../dynamic-testing/authentication-and-cryptography.md#trace-cryptographic-data-flow). Reference: [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
+* Validate findings with [runtime cryptographic data-flow testing](../dynamic-testing/authentication-and-cryptography.md#trace-cryptographic-data-flow).
+* Reference: [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).

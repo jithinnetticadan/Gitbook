@@ -1,12 +1,17 @@
 # Business Logic and Backend Trust
 
 {% hint style="warning" %}
-Use test tenants/accounts, sandbox payments, synthetic balances, and reversible records. Agree on concurrency and rate-limit budgets. Do not generate real ad traffic, rewards, purchases, referrals, or production charges to demonstrate an issue.
+* **Prerequisites:** test tenants/accounts, sandbox payments, synthetic balances, and reversible records.
+* Agree on concurrency and rate-limit budgets.
+* Do not generate real ad traffic, rewards, purchases, referrals, or production charges.
 {% endhint %}
 
 ## Establish the Authority
 
-Map each sensitive decision to local state, platform service, backend, or payment provider. Capture an authorized control case, change one client-controlled input, and verify the actual entitlement/data/action. UI changes alone are insufficient for claimed server impact; local offline protections can still have their own meaningful security requirements.
+* Identify the decision-maker: local state, platform service, backend, or payment provider.
+* Capture an authorized control; change one client-controlled input and verify the actual entitlement/data/action.
+* UI changes alone do not prove server impact.
+* Assess local/offline protections against their own security requirements.
 
 | Decision / Input                      | Test                                                                                                    | Confirm                                                                                                                                  |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -23,7 +28,8 @@ Map each sensitive decision to local state, platform service, backend, or paymen
 | Sync races / duplicate action         | Send a small agreed concurrent/retry set against test state                                             | Atomic updates, idempotency, and ownership prevent duplicate credit/debit or stale-state authorization.                                  |
 | Force-update / kill switch            | Test a supported old client/request against the approved environment                                    | Determine whether the policy is a local usability gate or a server-enforced security requirement.                                        |
 
-For Google Play, review [secure Billing integration](https://developer.android.com/google/play/billing/security) and supported [Billing tests](https://developer.android.com/google/play/billing/test). A missing visible API call in the app does not prove the backend fails to verify purchases; obtain backend evidence where needed.
+* Google Play references: [secure Billing integration](https://developer.android.com/google/play/billing/security), supported [Billing tests](https://developer.android.com/google/play/billing/test).
+* No visible app-side verification call does not prove missing backend verification; obtain backend evidence where needed.
 
 ## Request Signing and Replay
 
@@ -33,7 +39,8 @@ For Google Play, review [secure Billing integration](https://developer.android.c
 4. Confirm backend verification and binding. A strong MAC over attacker-chosen fields may still leave an authorization gap; a client-wide extractable secret cannot reliably attest genuine app execution.
 5. Assess freshness/idempotency for the operation. Repeating a read request or lacking an explicit nonce is not automatically a replay vulnerability; demonstrate an unintended accepted state change.
 
-See [Java/native instrumentation](java-and-native-instrumentation.md) and [crypto provenance](authentication-and-cryptography.md#trace-cryptographic-data-flow). Observing plaintext at `Cipher.doFinal` does not automatically reveal the key or bypass server request verification.
+* Trace implementation with [Java/native instrumentation](java-and-native-instrumentation.md) and [crypto provenance](authentication-and-cryptography.md#trace-cryptographic-data-flow).
+* Plaintext at `Cipher.doFinal` does not automatically reveal the key or bypass server request verification.
 
 ## Mobile Backend Variants
 
@@ -47,4 +54,6 @@ See [Java/native instrumentation](java-and-native-instrumentation.md) and [crypt
 | JWT / OAuth / magic links               | Verify signature, audience, redirect, PKCE, expiry, account/action binding                          | Use [authentication tests](authentication-and-cryptography.md); native-app "origin" is not a universal server-authentication mechanism.        |
 | Pinning versus mTLS                     | Identify server-authentication pinning, client certificates, and application credentials separately | Pinning is normally client-side. It does not imply mTLS, and the lack of client certificates is not itself a flaw.                             |
 
-Record request/response, identity/role, test-state before/after, signing/instrumentation prerequisites, and the server/local boundary demonstrated. Use [Validation and Reporting](validation-and-troubleshooting.md) to separate hardening recommendations from confirmed unauthorized behavior.
+* Record requests/responses, identity/role, and test state before/after.
+* State signing/instrumentation prerequisites and the demonstrated server/local boundary.
+* Use [Validation and Reporting](validation-and-troubleshooting.md) to separate hardening recommendations from confirmed unauthorized behavior.

@@ -1,7 +1,8 @@
 # URL Handling
 
 {% hint style="info" %}
-Record version, source, architecture, and original/extracted artifact hashes. Use authorized copies only; App Store binaries may be FairPlay-encrypted. Replace command placeholders before use.
+* Record version, source, architecture, and original/extracted artifact hashes.
+* Use authorized copies and replace command placeholders; App Store binaries may be FairPlay-encrypted.
 {% endhint %}
 
 ## URL Handling and Inter-App Requests
@@ -9,13 +10,13 @@ Record version, source, architecture, and original/extracted artifact hashes. Us
 * [ ] Validate caller, scheme, host, path, parameters, and authorization.
 * [ ] Review custom schemes, universal links, and inter-app requests.
 
-Inspect handlers:
+* Inspect handlers:
 
 * `application:didFinishLaunchingWithOptions:` and `application:willFinishLaunchingWithOptions:`.
 * `application:openURL:options:` and scene-based URL handling.
 * `openURL:options:completionHandler:` call sites.
 
-Search an extracted app bundle:
+* **Input:** extracted app bundle for the following search.
 
 ```sh
 grep -R -nE 'open.*options.*completionHandler|openURL\(|://' <Application.app>
@@ -28,4 +29,4 @@ rabin2 -zzq <app-binary> | grep -i openurl
 * `mt-encrypted-file://` is app-specific, not universal.
 * Check deprecated APIs: [UIKit documentation](https://developer.apple.com/documentation/uikit).
 
-Test these handlers at runtime: [URL Schemes, Web Views, and Client Behavior](../dynamic-testing/client-side-testing.md).
+* Validate handlers at runtime: [URL Schemes, Web Views, and Client Behavior](../dynamic-testing/client-side-testing.md).

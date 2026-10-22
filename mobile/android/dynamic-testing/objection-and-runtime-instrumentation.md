@@ -1,11 +1,13 @@
 # Objection and Runtime Instrumentation
 
 {% hint style="info" %}
-Use an authorized test device and test accounts. Preserve originals; protect dumps and restore the lab afterward. Replace command placeholders before use.
+* Use an authorized test device and test accounts; replace command placeholders before use.
+* Preserve originals, protect dumps, and restore the lab afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Complete the [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight) first. Host `frida`, device server, and Gadget must use the **same exact Frida version**.
+* **Prerequisite:** complete [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight).
+* Host `frida`, device server, and Gadget must use the **same exact Frida version**.
 {% endhint %}
 
 ## Runtime Instrumentation
@@ -31,7 +33,8 @@ objection --name <process-name> run 'android sslpinning disable'
 | `--no-pause`    | Immediate resume; omit when early hooks need a paused spawn.                                  |
 | `run`           | One-shot execution; do not assume hooks persist after exit. Use `start` for monitoring.       |
 
-Use long flags: global `-s` means spawn. Commands below run **inside Objection**; use in-session help for release-specific syntax.
+* Prefer long flags; global `-s` means spawn.
+* Run the commands below **inside Objection**; check in-session help for release-specific syntax.
 
 ### Classes and Activities
 
@@ -66,4 +69,5 @@ sqlite connect <database-file>
 * RMS: classes, arguments/returns, components, API monitoring, scripts.
 * MobSF: configure a compatible dynamic-analysis environment first.
 
-For observational scripts, overload/classloader diagnosis, and JNI/native hooks, continue with [Java and Native Instrumentation](java-and-native-instrumentation.md). Identify the actual check before running root/pinning commands; a hook message alone is not a verified result.
+* Use [Java and Native Instrumentation](java-and-native-instrumentation.md) for observational scripts, overload/classloader diagnosis, and JNI/native hooks.
+* Identify the actual check before running root/pinning commands; a hook message alone is not a verified result.

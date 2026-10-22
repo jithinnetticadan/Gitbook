@@ -1,11 +1,13 @@
 # Network Traffic and TLS
 
 {% hint style="info" %}
-Use an authorized test device and test accounts. Preserve originals; protect dumps and restore the lab afterward. Replace command placeholders before use.
+* Use an authorized test device and test accounts; replace command placeholders before use.
+* Preserve originals, protect dumps, and restore the lab afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Before testing, confirm the device can reach the proxy and the app accepts the CA. Check pinning separately. For Frida-based bypasses, complete the [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight).
+* **Prerequisites:** reachable proxy and CA trust accepted by the app; assess pinning separately.
+* For Frida-based bypasses, complete [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight).
 {% endhint %}
 
 ## Network Traffic and TLS
@@ -22,11 +24,13 @@ Before testing, confirm the device can reach the proxy and the app accepts the C
 * Setup: [MobSF Dynamic Analyzer](https://mobsf.github.io/docs/#/dynamic_analyzer), [Frida Android](https://frida.re/docs/android/).
 * Optional/legacy: [CuckooDroid](https://github.com/idanr1986/cuckoo-droid) sandboxing, [BlueStacks](https://www.bluestacks.com/) emulator, [RMS](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), [Ghost](https://github.com/EntySec/Ghost). Verify maintenance/root behavior.
 
-For `android sslpinning disable`, see [Objection and Runtime Instrumentation](objection-and-runtime-instrumentation.md).
+* For `android sslpinning disable`, see [Objection and Runtime Instrumentation](objection-and-runtime-instrumentation.md).
 
 ## Establish Network Visibility
 
-Record the original proxy settings before changing them. The proxy address must be reachable from the device; device loopback is not the host. Android Emulator commonly reaches the host through `10.0.2.2`; physical devices usually use the host's lab IP.
+* Record original proxy settings before changing them.
+* Use a device-reachable host address; device loopback is not the host.
+* Android Emulator commonly uses `10.0.2.2`; physical devices usually use the host's lab IP.
 
 ```sh
 adb shell settings get global http_proxy
@@ -34,13 +38,18 @@ adb shell settings put global http_proxy <proxy-ip>:8080
 adb shell am start -a android.intent.action.VIEW -d 'https://example.com'
 ```
 
-Verify the browser's HTTPS request in Burp, then trigger a specific app action and correlate its timestamp/domain. Browser success does not establish the app's CA policy. Some stacks ignore the global proxy. Restore the original setting and remove the test CA afterward; if there was no proxy, `adb shell settings put global http_proxy :0` commonly clears this override. Also restore any Wi-Fi-specific proxy configuration.
-
-System CA installation is device/version-specific: Android Verified Boot, dynamic partitions, SELinux, systemless root, and newer trust-store layouts affect the procedure. Do not assume remounting `/system` is possible. Installing a system CA does not bypass pinning; prefer an approved test trust configuration when available.
+* Verify browser HTTPS in Burp; trigger an app action and correlate its timestamp/domain.
+* Browser success does not establish the app's CA policy; some stacks also ignore the global proxy.
+* Restore original global and Wi-Fi-specific proxy settings; remove the test CA afterward.
+* If no proxy existed, `adb shell settings put global http_proxy :0` commonly clears the global override.
+* **System-CA dependencies:** device/version, Android Verified Boot, dynamic partitions, SELinux, systemless root, and trust-store layout.
+* Do not assume `/system` can be remounted.
+* A system CA does not bypass pinning; prefer an approved test trust configuration when available.
 
 ## Diagnose Before Bypassing
 
-These are hypotheses to test, not vulnerability verdicts. Trust and pinning failures can themselves appear as TLS handshake failures.
+* Treat the matrix as hypotheses, not vulnerability verdicts.
+* Trust/pinning failures may appear as TLS handshake failures.
 
 | Observation                           | Discriminating Check                                                                                          | Next Step / Success Evidence                                                                 |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
@@ -52,7 +61,9 @@ These are hypotheses to test, not vulnerability verdicts. Trust and pinning fail
 | TLS succeeds but the operation fails  | Inspect response body, authentication, integrity verdicts, request signing, and application-layer encryption. | Diagnose application rejection separately; HTTP status alone is insufficient.                |
 | Only some domains are visible         | Map each domain to its SDK, WebView, or HTTP client and domain-specific configuration.                        | Test each relevant stack independently; document remaining visibility gaps.                  |
 
-Packet capture requires suitable device privileges or an authorized lab gateway/capture facility. Tools such as `tcpdump` are not present on every device. Capture only scoped traffic; packet visibility alone does not decrypt TLS.
+* **Capture prerequisites:** suitable device privileges or an authorized lab gateway/capture facility.
+* Confirm tool availability; `tcpdump` is not installed on every device.
+* Capture only scoped traffic; packet visibility does not decrypt TLS.
 
 ## Match the Validation Implementation
 
@@ -69,7 +80,9 @@ Packet capture requires suitable device privileges or an authorized lab gateway/
 | Xamarin / .NET MAUI              | Identify the managed certificate callback and selected native/managed HTTP handler.                                      | AOT and framework versions affect visibility and hook selection.                                                |
 | Native TLS / Cronet              | Locate the loaded library and verification path; inspect UDP/QUIC when applicable.                                       | Java hooks may miss it; use build-specific native analysis, not copied offsets.                                 |
 
-**Confirm:** repeat the same action before/after the change, retain the matching request/response, and distinguish test-induced acceptance from the original validation behavior. A successful hook message alone proves nothing about interception or impact. Burp or [mitmproxy](https://mitmproxy.org/) can support this workflow.
+* **Confirm:** repeat the same action before/after the change and retain matching requests/responses.
+* Distinguish test-induced acceptance from original validation behavior; a hook message alone proves neither interception nor impact.
+* Use Burp or [mitmproxy](https://mitmproxy.org/) for this workflow.
 
 ## Protocol and Endpoint Checks
 
@@ -87,4 +100,7 @@ Packet capture requires suitable device privileges or an authorized lab gateway/
 | WebRTC / signaling / TURN      | Session authorization, peer/room binding, TURN credentials/expiry, ICE exposure                                     | Assess actual privacy/access impact; a visible private IP or reachable relay alone does not establish abuse.                                   |
 | Analytics / telemetry          | Compare consent states and fields actually sent to each recipient                                                   | Distinguish documented necessary processing from excess PII, secrets, cross-account mixing, or unapproved recipients.                          |
 
-Transparent interception requires a compatible proxy/listener and controlled device/gateway routing, including return traffic and DNS. Device NAT rules require suitable root/kernel tooling and may not cover IPv6/UDP; do not apply a generic `iptables` redirect without a rollback plan. TrustKit, custom pinning, and native clients still need the concrete verifier and a confirmed hook hit.
+* **Transparent interception dependencies:** compatible proxy/listener and controlled device/gateway routing, including return traffic and DNS.
+* Device NAT requires suitable root/kernel tooling; rules may not cover IPv6/UDP.
+* Do not apply generic `iptables` redirects without a rollback plan.
+* For TrustKit, custom pinning, and native clients, identify the actual verifier and confirm the hook fires.

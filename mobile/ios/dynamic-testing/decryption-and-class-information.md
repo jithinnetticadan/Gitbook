@@ -1,11 +1,13 @@
 # Decryption and Class Information
 
 {% hint style="info" %}
-Use authorized devices/builds and test accounts. Isolate the lab, protect evidence, and restore it afterward. Replace command placeholders before use.
+* Use authorized devices/builds and test accounts; replace command placeholders before use.
+* Isolate the lab, protect evidence, and restore it afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Use an authorized analysis copy only. Decryption tools need a working jailbroken-device setup: complete the [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight) first.
+* Use an authorized analysis copy only.
+* **Decryption prerequisite:** working jailbroken-device setup; complete [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight).
 {% endhint %}
 
 ## Decryption and Class Information
@@ -19,6 +21,5 @@ Use an authorized analysis copy only. Decryption tools need a working jailbroken
 class-dump <app-binary>
 ```
 
-Alternatives: Objection class/method listing; Hopper, Ghidra, or IDA Free for binary analysis.
-
-Binary checks that depend on encryption state: [Binary Analysis](../static-testing/binary-analysis.md).
+* Alternatives: Objection class/method listing; Hopper, Ghidra, or IDA Free for binary analysis.
+* For encryption-dependent checks, see [Binary Analysis](../static-testing/binary-analysis.md).

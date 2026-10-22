@@ -1,7 +1,8 @@
 # Local Data and Client Logic
 
 {% hint style="info" %}
-Test only in-scope apps. Record package, version, source, device/API level, and original APK hash. Replace command placeholders before use.
+* Test only in-scope apps; replace command placeholders before use.
+* Record package, version, source, device/API level, and original APK hash.
 {% endhint %}
 
 ## Local Data and Client-Side Logic
@@ -41,11 +42,13 @@ grep -rL 'FLAG_SECURE' --include='*Activity*.java' <decompiled-directory>
 | Temporary files / exports                     | Location, permissions, name generation, symlink/canonical-path handling | Check race/overwrite/readability under a realistic caller; `File.createTempFile` is not inherently predictable.                             |
 | Web storage / background jobs                 | Cookies, localStorage/IndexedDB, cache, WorkManager `Data` and database | Track account boundaries, logout, delayed work, retries, and logs; queued work must not reuse the wrong account's state.                    |
 
-Use the [data lifecycle and acquisition workflow](../dynamic-testing/local-data-logs-and-privacy.md) for controlled before/after checks. Include removable-media residue and reinstall/restore scenarios only on disposable installations.
+* Use the [data lifecycle and acquisition workflow](../dynamic-testing/local-data-logs-and-privacy.md) for controlled before/after checks.
+* **Prerequisite:** disposable installations for removable-media residue and reinstall/restore tests.
 
 ## Code Review Beyond Pattern Matching
 
-Trace an untrusted source to the actual sink and relevant control. Decompiled output is approximate; resolve important branches against SMALI/native code.
+* Trace untrusted input to the actual sink and relevant control.
+* Decompiled output is approximate; verify important branches against SMALI/native code.
 
 | Lead                                                    | Inspect                                                                      | Validate                                                                                                                                                 |
 | ------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |

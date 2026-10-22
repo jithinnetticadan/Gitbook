@@ -1,11 +1,13 @@
 # App Patching and Repackaging
 
 {% hint style="info" %}
-Use an authorized test device and test accounts. Preserve originals; protect dumps and restore the lab afterward. Replace command placeholders before use.
+* Use an authorized test device and test accounts; replace command placeholders before use.
+* Preserve originals, protect dumps, and restore the lab afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Gadget must match the host's **exact Frida version** and the app ABI. See [Verify Client and Server Versions](preflight-and-frida-setup.md#verify-client-and-server-versions).
+* **Dependencies:** Gadget must match the host's **exact Frida version** and the app ABI.
+* Complete [Verify Client and Server Versions](preflight-and-frida-setup.md#verify-client-and-server-versions).
 {% endhint %}
 
 ## App Patching and Repackaging
@@ -50,4 +52,4 @@ objection patchapk --source <app.apk> --gadget-version <frida-version>
 * Align before `apksigner`; legacy SHA1withRSA/SHA1 `jarsigner` is not the modern default.
 * An unrelated signing key normally prevents installing over the original, even with `adb install -r`. Preserve original APKs/splits and test data; use a disposable install. See [integrity validation](runtime-defenses-and-integrity.md#repackaging-and-signature-checks) for rebuilt controls and attestation caveats.
 
-References: [Gadget](https://frida.re/docs/gadget/), [apksigner](https://developer.android.com/tools/apksigner), [non-root walkthrough](https://koz.io/using-frida-on-android-without-root/).
+* References: [Gadget](https://frida.re/docs/gadget/), [apksigner](https://developer.android.com/tools/apksigner), [non-root walkthrough](https://koz.io/using-frida-on-android-without-root/).

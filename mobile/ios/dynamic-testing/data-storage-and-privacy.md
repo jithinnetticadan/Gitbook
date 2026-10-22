@@ -1,11 +1,13 @@
 # Data Storage and Privacy
 
 {% hint style="info" %}
-Use authorized devices/builds and test accounts. Isolate the lab, protect evidence, and restore it afterward. Replace command placeholders before use.
+* Use authorized devices/builds and test accounts; replace command placeholders before use.
+* Isolate the lab, protect evidence, and restore it afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Complete the [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight) first. Candidate storage locations come from [Configuration and Sensitive Data](../static-testing/configuration-and-sensitive-data.md).
+* **Prerequisite:** complete [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight).
+* Identify storage locations using [Configuration and Sensitive Data](../static-testing/configuration-and-sensitive-data.md).
 {% endhint %}
 
 ## Data Storage and Privacy
@@ -59,4 +61,4 @@ ios pasteboard monitor
 * Utilities: `wget`, `ps`, `sqlite3`, `unzip`, `dpkg`, BigBoss tools.
 * Verify provenance, maintenance, and jailbreak/iOS compatibility.
 
-For Objection session syntax, see [Runtime Instrumentation](runtime-instrumentation.md).
+* For Objection session syntax, see [Runtime Instrumentation](runtime-instrumentation.md).

@@ -1,12 +1,15 @@
 # WebView, IPC, and Dependency Checks
 
 {% hint style="info" %}
-Test only in-scope apps. Record package, version, source, device/API level, and original APK hash. Replace command placeholders before use.
+* Test only in-scope apps; replace command placeholders before use.
+* Record package, version, source, device/API level, and original APK hash.
 {% endhint %}
 
 ## Code-Level Pattern Checks
 
-Use grep hits as leads. Record code/configuration evidence, attacker capability, the relevant access path, and impact. Instrumentation or physical access may be valid prerequisites when stated explicitly. Use `<decompiled-directory>` for JADX output and `<decoded-directory>` for Apktool output.
+* Treat grep hits as leads; record code/configuration evidence, attacker capability, access path, and impact.
+* State instrumentation or physical-access prerequisites explicitly.
+* **Input paths:** `<decompiled-directory>` = JADX output; `<decoded-directory>` = Apktool output.
 
 ### WebView
 
@@ -37,7 +40,8 @@ grep -rn 'loadUrl(\|loadData(\|evaluateJavascript(' <decompiled-directory>
 | Remote debugging                                                    | Actual enabled setting, release behavior, authorized ADB/transport access                   | Being on the same Wi-Fi alone does not normally grant Chrome inspection access.                                                                                     |
 | Legacy bridge exposure                                              | Device WebView/provider version, Android/target SDK, annotated/exposed methods              | Historic pre-API-17 reflection attacks require the affected configuration; do not generalize them to modern annotated bridges.                                      |
 
-Use the [WebView runtime workflow](../dynamic-testing/component-testing.md#webview-runtime-checks) to establish attacker reachability; DevTools-injected JavaScript alone is not that evidence.
+* Establish attacker reachability with the [WebView runtime workflow](../dynamic-testing/component-testing.md#webview-runtime-checks).
+* DevTools-injected JavaScript alone does not prove attacker reachability.
 
 ### Content Provider SQL Injection
 
@@ -89,7 +93,7 @@ grep -rnE 'PendingIntent\.get(Activity|Activities|Broadcast|Service|ForegroundSe
 
 ## Quick Triage
 
-Run after decompiling with JADX and Apktool; review each result:
+* **Prerequisites:** JADX and Apktool output; review every search result manually.
 
 ```sh
 SRC=<decompiled-directory>

@@ -1,7 +1,9 @@
 # Java and Native Instrumentation
 
 {% hint style="warning" %}
-Complete [mandatory preflight](preflight-and-frida-setup.md#mandatory-preflight) and record an [unmodified baseline](methodology-and-baseline.md). The examples are templates for an authorized app, not universal bypass scripts. Adapt class names, signatures, library names, and paths to observed evidence.
+* **Prerequisites:** complete [mandatory preflight](preflight-and-frida-setup.md#mandatory-preflight) and record an [unmodified baseline](methodology-and-baseline.md).
+* Examples are authorized-app templates, not universal bypasses.
+* Adapt classes, signatures, libraries, and paths to observed evidence.
 {% endhint %}
 
 ## Attach or Spawn
@@ -13,13 +15,17 @@ frida -U -n <process-name> -l <hook.js>
 frida -U -f <package-name> -l <hook.js>
 ```
 
-Use attach for an existing process and spawn for early checks. Select the actual process/PID, including app subprocesses. Current Frida CLI resumes a spawn by default; use `--pause` and REPL `%resume` when needed. The PDF's Frida `--no-pause` flag is obsolete; Objection has its own separate CLI options.
-
-Frida 17 moved the Java bridge out of the core runtime. Current `frida` REPL / `frida-trace` tooling supplies it for these scripts. Custom agents loaded through bindings need a bundled `frida-java-bridge` dependency and `import Java from 'frida-java-bridge'`; installing the Python package alone does not bundle that agent dependency. Check [bridge setup](https://frida.re/docs/bridges/) when using custom loaders.
+* Attach to existing processes; spawn for early checks. Select the actual process/PID, including subprocesses.
+* Current Frida CLI resumes spawned processes by default; use `--pause` and REPL `%resume` when needed.
+* Frida's old `--no-pause` flag is obsolete; Objection has separate CLI options.
+* **Frida 17 dependency:** the Java bridge is separate from the core runtime; current `frida` REPL / `frida-trace` supplies it for these scripts.
+* Custom agents loaded through bindings need bundled `frida-java-bridge` and `import Java from 'frida-java-bridge'`.
+* Installing the Python package alone does not bundle the agent dependency; follow [bridge setup](https://frida.re/docs/bridges/) for custom loaders.
 
 ## Enumerate Before Selecting a Hook
 
-Replace the example class with a real runtime class; JADX aliases may differ after obfuscation. Run in a Frida script/REPL:
+* Replace the example class with an observed runtime class; obfuscated JADX aliases may differ.
+* Run in a Frida script/REPL:
 
 ```javascript
 Java.perform(function () {
@@ -32,11 +38,13 @@ Java.perform(function () {
 });
 ```
 
-An invalid overload specification can throw an error; a valid but unused overload simply will not fire. Inner classes use `$`; Kotlin-generated methods and coroutine signatures may not resemble source-level functions.
+* Invalid overload specification: may throw an error. Valid but unused overload: hook will not fire.
+* Inner classes use `$`; Kotlin-generated methods and coroutine signatures may differ from source-level functions.
 
 ## Observe Without Changing Behavior
 
-This template assumes the observed `login(String, String)` overload. It calls the original exactly once, returns its result, and avoids logging passwords or tokens:
+* **Required signature:** observed `login(String, String)` overload.
+* Template behavior: call the original once, return its result, and avoid logging passwords/tokens.
 
 ```javascript
 Java.perform(function () {
@@ -51,7 +59,9 @@ Java.perform(function () {
 });
 ```
 
-**Confirm:** trigger the exact flow, correlate the hook with the request/state change, then repeat without the hook. A method returning does not prove authentication succeeded. For an asynchronous method, inspect the eventual callback/result as well. Use synthetic values when argument/return inspection is necessary.
+* **Confirm:** trigger the exact flow, correlate the hook with the request/state change, and repeat without the hook.
+* A method returning does not prove authentication succeeded; inspect eventual callbacks/results for asynchronous methods.
+* Use synthetic values when inspecting arguments/returns.
 
 ## Class or Hook Not Found
 
@@ -63,7 +73,8 @@ Java.perform(function () {
 
 ## Native / JNI Workflow
 
-Use host ELF tools such as binutils `readelf`/`strings` or Android NDK LLVM equivalents. Extract the correct `.so` from the matching APK/split and preserve its hash:
+* **Dependencies:** host ELF tools such as binutils `readelf`/`strings`, or Android NDK LLVM equivalents.
+* Extract the correct `.so` from the matching APK/split; preserve its hash.
 
 ```sh
 unzip -l <app.apk> | grep '\.so$'
@@ -72,9 +83,11 @@ readelf -Ws <libtarget.so>
 strings <libtarget.so> | grep -iE 'root|debug|crypto|verify'
 ```
 
-Map an observed call from Java to JNI and the loaded module. `Process.enumerateModules()` lists modules regardless of whether the desired function is exported. For Frida 17+, use module-instance export lookup; the old static `Module.findExportByName` API was removed.
-
-The observational template below handles already-loaded and later-loaded libraries. The symbol is illustrative and must exist in the target build:
+* Trace the observed Java call through JNI to the loaded module.
+* `Process.enumerateModules()` lists modules even when the target function is not exported.
+* **Frida 17+:** use module-instance export lookup; static `Module.findExportByName` was removed.
+* The template handles already-loaded and later-loaded libraries.
+* Replace the illustrative symbol with one present in the target build.
 
 ```javascript
 const moduleObserver = Process.attachModuleObserver({
@@ -100,11 +113,13 @@ const moduleObserver = Process.attachModuleObserver({
 * Change a return value only after proving its semantics. `0` can mean success, failure, false, or a null pointer depending on the function.
 * Preserve normal return/exception behavior during observation. Reduce logging on hot functions; crashes can be script/type/timing defects rather than anti-hooking.
 
-References: [Frida JavaScript API](https://frida.re/docs/javascript-api/), [Frida 17 API changes](https://frida.re/news/2025/05/17/frida-17-0-0-released/), [Frida CLI implementation](https://github.com/frida/frida-tools/blob/main/frida_tools/repl.py).
+* References: [Frida JavaScript API](https://frida.re/docs/javascript-api/), [Frida 17 API changes](https://frida.re/news/2025/05/17/frida-17-0-0-released/), [Frida CLI implementation](https://github.com/frida/frida-tools/blob/main/frida_tools/repl.py).
 
 ## Native Review and Bounded Fuzzing
 
-Inspect the exact libraries and ABI used at runtime, not merely one extracted `.so`. Use `readelf -h -l -d -Ws`, Ghidra/radare2, and the relevant NDK tooling; apply hardening scanners only when they support Android ELF conventions.
+* Inspect the libraries and ABI actually used at runtime, not merely one extracted `.so`.
+* Use `readelf -h -l -d -Ws`, Ghidra/radare2, and relevant NDK tools.
+* Use hardening scanners only when they support Android ELF conventions.
 
 | Lead                            | Inspect / Test                                                                                | Interpretation                                                                                                                                           |
 | ------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -114,4 +129,8 @@ Inspect the exact libraries and ABI used at runtime, not merely one extracted `.
 | Library search/loading          | `dlopen`, `System.load`, extracted/downloaded libraries, writable directories                 | Prove control of the loaded path or contents; verify authenticity and rollback checks.                                                                   |
 | Native secrets / debug material | Symbols, embedded keys, debug paths, logs, signing routines                                   | Debug symbols aid analysis but are not automatically a disclosure finding; establish exposed information or authority.                                   |
 
-For authorized fuzzing, isolate a parser/JNI entry point with a reproducible harness, small seed corpus, time/memory limits, and disposable data. Prefer existing engines such as libFuzzer with a compatible NDK/sanitizer build when source is available. Preserve crashing input, build/ABI, sanitizer/tombstone details, and a minimized reproducer; distinguish harness mistakes, ordinary parse rejection, local denial of service, and exploitable corruption. Do not fuzz production devices/services or claim remote code execution from a crash alone.
+* **Fuzzing prerequisites:** authorization, isolated parser/JNI entry point, reproducible harness, small seed corpus, time/memory limits, and disposable data.
+* With source, prefer an existing engine such as libFuzzer and a compatible NDK/sanitizer build.
+* Preserve crashing input, build/ABI, sanitizer/tombstone details, and a minimized reproducer.
+* Distinguish harness errors, normal parse rejection, local denial of service, and exploitable corruption.
+* Do not fuzz production devices/services or infer remote code execution from a crash alone.

@@ -1,7 +1,8 @@
 # Preflight and Tools
 
 {% hint style="info" %}
-Test only in-scope apps. Record package, version, source, device/API level, and original APK hash. Replace command placeholders before use.
+* Test only in-scope apps; replace command placeholders before use.
+* Record package, version, source, device/API level, and original APK hash.
 {% endhint %}
 
 ## Mandatory Preflight
@@ -23,7 +24,7 @@ Test only in-scope apps. Record package, version, source, device/API level, and 
 * `keytool`, `jarsigner`, `zipalign`, and Android SDK signing tools - inspect or prepare test artifacts when repackaging is authorized.
 * Legacy/optional: [Androwarn](https://github.com/maaaaz/androwarn), Andrubis, ApkAnalyser, [QARK](https://github.com/linkedin/qark), [Santoku](https://santoku-linux.com/), [PimpMyKali](https://github.com/Dewalt-arch/pimpmykali). Verify maintenance and compatibility.
 
-Use current maintainer instructions; package availability varies by OS/release.
+* Use current maintainer instructions; package availability varies by OS/release.
 
 ### Optional Tools by Purpose
 
@@ -39,7 +40,8 @@ Use current maintainer instructions; package availability varies by OS/release.
 | Proxy helpers            | Burp, compatible Android proxy/CA utilities                      | An iOS-only Burp Mobile Assistant workflow is not an Android setup. Verify platform support; a preconfigured emulator does not ensure the app trusts its CA.                                 |
 | Historical scanners      | AndroBugs, QARK and older suites                                 | Label legacy/unmaintained output; do not downgrade the lab or treat scanner silence as coverage.                                                                                             |
 
-For every optional tool record version, source, required privileges, artifact compatibility, and validation method. Use a tool because it answers a test question, not to mark every tool-name row as a mandatory installation.
+* Record each optional tool's version, source, required privileges, artifact compatibility, and validation method.
+* Install tools needed for the test question; checklist tool names are not mandatory dependencies.
 
 ### Windows
 
@@ -50,7 +52,7 @@ For every optional tool record version, source, required privileges, artifact co
 
 ### Kali Linux
 
-Install available packages:
+* Install packages available for the selected distribution:
 
 ```sh
 sudo apt-get update
@@ -65,7 +67,7 @@ jadx-gui
 
 ### macOS
 
-Install [Homebrew](https://brew.sh/) after reviewing its installer, then:
+* **Prerequisite:** review and install [Homebrew](https://brew.sh/) before running:
 
 ```sh
 brew install jadx apktool android-platform-tools
@@ -74,4 +76,4 @@ apktool --version
 adb version
 ```
 
-Install Android Studio separately. Platform tools also include `fastboot`.
+* Install Android Studio separately; platform tools also include `fastboot`.

@@ -2,7 +2,8 @@
 
 ## Turn Observations Into Findings
 
-State the attacker capability, reachable input/action, intended control, crossed security boundary, and impact. Keep tool output separate from the conclusion it supports.
+* State attacker capability, reachable input/action, intended control, crossed security boundary, and impact.
+* Separate tool output from the conclusion it supports.
 
 1. Record a normal control case and the exact app/build/device/account state.
 2. Reproduce with one controlled difference, preserving the relevant request/response, local artifact, or protected action.
@@ -10,7 +11,8 @@ State the attacker capability, reachable input/action, intended control, crossed
 4. Repeat under the claimed attacker capability. Root, hooks, physical access, or a malicious local app may be valid threat models; disclose them rather than requiring every test to work without Frida.
 5. Verify API behavior for claimed server impact. For local findings, verify the local data/action boundary; server involvement is not mandatory.
 
-Static evidence can establish findings too. A complete exposed secret or demonstrably unsafe configuration does not become harmless because a particular runtime test was blocked. State what is established, what remains a hypothesis, and which flows were not covered.
+* Static evidence can establish findings: an exposed secret or demonstrably unsafe configuration may remain valid when runtime testing is blocked.
+* Distinguish established facts, hypotheses, and untested flows.
 
 ## Connect Static Leads to Runtime Tests
 
@@ -51,7 +53,8 @@ Static evidence can establish findings too. A complete exposed secret or demonst
 | Only part of traffic appears   | Compare domains, SDK clients, WebViews, native sockets, and QUIC.                                             | Track coverage per stack/domain; record unobserved paths.                                                            |
 | Static function not observed   | Confirm installed version/splits, conditions, account/feature flags, native/reflection paths, caches.         | Mark untested or establish an alternate path; lack of a hit does not prove unreachable code.                         |
 
-Stop repeated bypass attempts when the next step exceeds scope, risks availability, or prevents higher-value tests. Preserve evidence of the constraint and use the [runtime-defense stop criteria](runtime-defenses-and-integrity.md#stop-criteria).
+* Stop repeated bypass attempts when the next step exceeds scope, risks availability, or prevents higher-value tests.
+* Preserve constraint evidence and follow the [runtime-defense stop criteria](runtime-defenses-and-integrity.md#stop-criteria).
 
 ## Finding Template
 
@@ -71,7 +74,8 @@ Severity rationale and applicable MASVS/MASTG references:
 Remediation and retest criteria:
 ```
 
-Store raw tokens, private data, and memory dumps in the approved evidence location, not the GitBook. Redact shared excerpts while retaining enough detail to reproduce with synthetic data.
+* Store raw tokens, private data, and memory dumps in the approved evidence location, not GitBook.
+* Redact shared excerpts; retain enough detail for reproduction with synthetic data.
 
 ## Completion and Cleanup
 
@@ -83,4 +87,5 @@ Store raw tokens, private data, and memory dumps in the approved evidence locati
 * [ ] Frida/Drozer servers stopped; test forwarding, scripts, staging copies, and companion apps removed.
 * [ ] Test sessions revoked and approved records restored/deleted; dumps and captures retained or destroyed according to agreement.
 
-Do not erase evidence or user data indiscriminately during cleanup. References: [OWASP MASTG](https://mas.owasp.org/MASTG/), [OWASP MASVS](https://mas.owasp.org/MASVS/).
+* Do not indiscriminately erase evidence or user data during cleanup.
+* References: [OWASP MASTG](https://mas.owasp.org/MASTG/), [OWASP MASVS](https://mas.owasp.org/MASVS/).

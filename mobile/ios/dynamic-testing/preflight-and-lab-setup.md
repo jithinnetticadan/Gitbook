@@ -1,13 +1,16 @@
 # Preflight and Lab Setup
 
 {% hint style="info" %}
-Use authorized devices/builds and test accounts. Isolate the lab, protect evidence, and restore it afterward. Replace command placeholders before use.
+* Use authorized devices/builds and test accounts; replace command placeholders before use.
+* Isolate the lab, protect evidence, and restore it afterward.
 {% endhint %}
 
 ## Mandatory Preflight
 
 {% hint style="warning" %}
-Use the **same exact Frida version** for the host `frida` library, device `frida-server`, and any injected Frida Gadget. `frida-tools` and Objection have separate version numbers; do not match the server to those numbers. Recheck after package upgrades.
+* **Version dependency:** host `frida`, device `frida-server`, and injected Gadget must use the **same exact Frida version**.
+* `frida-tools` and Objection have independent version numbers; do not use them to select the server version.
+* Recheck version compatibility after package upgrades.
 {% endhint %}
 
 * [ ] Device is connected, unlocked, and trusts the testing Mac; confirm the selected device.
@@ -29,7 +32,7 @@ Use the **same exact Frida version** for the host `frida` library, device `frida
 * Validate hardware-sensitive findings on a physical device. Your own development builds need not be jailbroken for debugging.
 * Profile filename: `embedded.mobileprovision`, not `embedded.mobileprovisioning`. An arbitrary app's profile may not fit.
 
-References: [Xcode documentation](https://developer.apple.com/documentation/xcode), [downloads](https://developer.apple.com/download/all/?q=Xcode).
+* References: [Xcode documentation](https://developer.apple.com/documentation/xcode), [downloads](https://developer.apple.com/download/all/?q=Xcode).
 
 ## Jailbroken Test Device
 
@@ -48,7 +51,8 @@ objection --name <app-process-name> start
 
 ### Verify Client and Server Versions
 
-Run on the Mac, using the device SSH access configured for the lab:
+* **Prerequisite:** configured SSH access to the test device.
+* Run these checks on the Mac:
 
 ```sh
 frida --version

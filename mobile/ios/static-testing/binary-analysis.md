@@ -1,11 +1,13 @@
 # Binary Analysis
 
 {% hint style="info" %}
-Record version, source, architecture, and original/extracted artifact hashes. Use authorized copies only; App Store binaries may be FairPlay-encrypted. Replace command placeholders before use.
+* Record version, source, architecture, and original/extracted artifact hashes.
+* Use authorized copies and replace command placeholders; App Store binaries may be FairPlay-encrypted.
 {% endhint %}
 
 {% hint style="warning" %}
-Verify architecture and encryption state first. Run `otool` on macOS. See [Preflight, Tools, and IPA](preflight-tools-and-ipa.md#mandatory-preflight).
+* **Prerequisites:** verified architecture/encryption state and macOS for `otool`.
+* Complete [Preflight, Tools, and IPA](preflight-tools-and-ipa.md#mandatory-preflight).
 {% endhint %}
 
 ## App and Binary Review
@@ -17,7 +19,7 @@ Verify architecture and encryption state first. Run `otool` on macOS. See [Prefl
 
 ### Binary Protections
 
-Run on macOS; interpret indicators in context:
+* Run on macOS; interpret indicators in context:
 
 ```sh
 otool -hv <app-binary> | grep PIE
@@ -39,7 +41,7 @@ otool -l <app-binary> | grep -A4 LC_ENCRYPTION_INFO
 
 ### Sensitive and Risky API Indicators
 
-Search symbols, then inspect call sites/data flow:
+* Search symbols, then inspect call sites and data flow:
 
 ```sh
 otool -Iv <app-binary> | grep -w '_CC_MD5'
@@ -56,10 +58,10 @@ otool -Iv <app-binary> | grep -E '_(gets|memcpy|strncpy|strlen|vsnprintf|sscanf|
 * `malloc`/`memcpy`/`strlen`/`printf` are not inherently vulnerabilities. Check bounds, sizes, format strings, and allocation failures.
 * Validate MobSF API findings. Parse Mach-O symbols/strings; text grep does not analyze binary code.
 
-Disassemble with:
+* Disassemble with:
 
 ```sh
 otool -tV <app-binary>
 ```
 
-For class metadata, see [Decryption and Class Information](../dynamic-testing/decryption-and-class-information.md).
+* For class metadata, see [Decryption and Class Information](../dynamic-testing/decryption-and-class-information.md).

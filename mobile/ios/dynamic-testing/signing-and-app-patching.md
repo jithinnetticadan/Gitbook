@@ -1,11 +1,14 @@
 # Signing and App Patching
 
 {% hint style="info" %}
-Use authorized devices/builds and test accounts. Isolate the lab, protect evidence, and restore it afterward. Replace command placeholders before use.
+* Use authorized devices/builds and test accounts; replace command placeholders before use.
+* Isolate the lab, protect evidence, and restore it afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Gadget must match the host's **exact Frida version**. You need a valid signing identity, a matching profile, and a suitable unencrypted executable. See the [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight).
+* **Version dependency:** Gadget must match the host's **exact Frida version**.
+* **Signing prerequisites:** valid signing identity, matching profile, and suitable unencrypted executable.
+* Complete [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight).
 {% endhint %}
 
 ## Signing and App Patching
@@ -18,11 +21,14 @@ applesign -L
 applesign -i <signing-identity> -m <embedded.mobileprovision> <app.ipa>
 ```
 
-Install Node.js/npm first, then [applesign](https://github.com/nowsecure/node-applesign): `npm install -g applesign` (not `appliesign`). Homebrew is one way to install Node.js on macOS. Verify `node --version` and `npm --version`, then check `applesign --help` for release-specific input/options.
+* **Dependencies:** install Node.js/npm first; Homebrew is one macOS option.
+* Verify `node --version` and `npm --version`.
+* Install [applesign](https://github.com/nowsecure/node-applesign): `npm install -g applesign` (not `appliesign`).
+* Check `applesign --help` for release-specific inputs/options.
 
 ### Non-Jailbroken App Patching
 
-Embed Gadget and re-sign a suitable IPA:
+* Embed Gadget and re-sign a suitable IPA:
 
 ```sh
 objection patchipa --help

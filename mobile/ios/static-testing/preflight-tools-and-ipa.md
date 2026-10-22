@@ -1,7 +1,8 @@
 # Preflight, Tools, and IPA
 
 {% hint style="info" %}
-Record version, source, architecture, and original/extracted artifact hashes. Use authorized copies only; App Store binaries may be FairPlay-encrypted. Replace command placeholders before use.
+* Record version, source, architecture, and original/extracted artifact hashes.
+* Use authorized copies and replace command placeholders; App Store binaries may be FairPlay-encrypted.
 {% endhint %}
 
 ## Mandatory Preflight
@@ -23,11 +24,11 @@ Record version, source, architecture, and original/extracted artifact hashes. Us
 * [Historical Veracode iRET](https://www.veracode.com/sites/default/files/Resources/Tools/iRETTool.zip) - distributions may differ or be unmaintained.
 * [AnyTrans](https://www.imobie.com/anytrans/download.htm), iMazing - authorized artifact management; acquisition restrictions apply.
 
-Use macOS/Xcode for Apple signing/development. Follow current installation/license requirements.
+* **Signing/development dependencies:** macOS and Xcode; follow current installation/license requirements.
 
 ## Obtain and Extract an IPA
 
-Preserve the IPA; extract a working copy (ZIP format):
+* Preserve the original IPA; extract a working copy as a ZIP archive:
 
 ```sh
 unzip <app.ipa> -d <extracted-directory>
@@ -40,4 +41,5 @@ unzip <app.ipa> -d <extracted-directory>
 | `iTunesMetadata.plist`                 | Distribution metadata, if present.                              |
 | Profile/signature files                | Signing and provisioning metadata, if included.                 |
 
-Confirm actual paths; use MobSF for initial triage. Renaming IPA to ZIP does not decrypt the executable.
+* Confirm actual paths; use MobSF for initial triage.
+* Renaming an IPA to ZIP does not decrypt its executable.

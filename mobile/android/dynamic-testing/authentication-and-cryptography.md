@@ -1,12 +1,16 @@
 # Authentication, Authorization, and Cryptography
 
 {% hint style="info" %}
-Use disposable accounts and owned records. Agree on rate-limit/lockout budgets before testing. Record the normal flow first; obtain network visibility through [Network Traffic and TLS](network-traffic-and-tls.md) when assessing API controls.
+* **Prerequisites:** disposable accounts, owned records, and agreed rate-limit/lockout budgets.
+* Record the normal flow before testing.
+* For API controls, establish visibility with [Network Traffic and TLS](network-traffic-and-tls.md).
 {% endhint %}
 
 ## Authentication and Session Matrix
 
-Capture a successful control request, then vary one condition at a time. Distinguish access tokens, refresh tokens, cookies, local session flags, and cached responses. Keep secrets out of shared reports and shell history.
+* Capture a successful control request; vary one condition at a time.
+* Distinguish access tokens, refresh tokens, cookies, local session flags, and cached responses.
+* Keep secrets out of shared reports and shell history.
 
 | Test                                 | Controlled Action                                                                                   | Verify                                                                                                                                  |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,7 +22,9 @@ Capture a successful control request, then vary one condition at a time. Disting
 | Account switching                    | Switch A to B, restart, refresh, and follow a sensitive link.                                       | B cannot inherit A's cookies, cached data, object permissions, or refresh context.                                                      |
 | Recovery / fallback                  | Exercise approved alternate MFA, biometric fallback, and recovery paths.                            | A weaker path does not bypass the intended authentication requirement.                                                                  |
 
-An HTTP `200` may carry an error or public/cached content. Verify protected data or a harmless authorized test action to establish replay impact. Missing `429` alone does not prove missing rate limits: delays, challenge invalidation, lockouts, and body-level errors may enforce them. Do not perform uncontrolled OTP guessing.
+* HTTP `200` may contain an error or public/cached content; verify protected data or a harmless test action to prove replay impact.
+* Missing `429` does not prove missing rate limits; check delays, invalidated challenges, lockouts, and body-level errors.
+* Do not perform uncontrolled OTP guessing.
 
 ### OAuth, Identity Tokens, and Passkeys
 
@@ -32,7 +38,9 @@ An HTTP `200` may carry an error or public/cached content. Verify protected data
 | Session fixation / remember-me     | Supplied session values in links, rotation at login/privilege change, long-lived token revocation                                     | Verify that a known pre-auth session cannot become someone else's authenticated session; persistence and lack of device binding need policy/context.                    |
 | Reinstall / restore / silent login | Disposable reinstall and supported restore with known test credentials                                                                | Identify whether backup, account services, browser SSO, or device identifiers restore access; distinguish expected SSO from unauthorized session resurrection.          |
 
-Prefer an external user-agent for native OAuth per [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252). An embedded WebView is a design concern, not automatic evidence of credential theft. For passkeys, inspect the actual provider and [Credential Manager integration](https://developer.android.com/identity/sign-in/credential-manager); do not infer account security from the UI alone.
+* Prefer an external user-agent for native OAuth: [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252).
+* An embedded WebView is a design concern, not proof of credential theft.
+* For passkeys, inspect the provider and [Credential Manager integration](https://developer.android.com/identity/sign-in/credential-manager); UI appearance alone does not establish account security.
 
 ## Horizontal and Vertical Authorization
 
@@ -42,11 +50,12 @@ Prefer an external user-agent for native OAuth per [RFC 8252](https://www.rfc-ed
 4. Repeat relevant read/write/export/list operations and tenant boundaries within scope. Do not enumerate unrelated users' identifiers.
 5. Replay a higher-role operation with the lower-role session. Hiding a button, launching an internal activity, or changing a local `isAdmin` flag is not proof of server privilege escalation.
 
-Classify horizontal BOLA/IDOR versus vertical function-level authorization. For a local-only feature, validate the local protected data/action; a server is not required for a real local security issue.
+* Distinguish horizontal BOLA/IDOR from vertical function-level authorization failures.
+* For local-only features, validate the protected data/action; a server is not required for a real local security issue.
 
 ## Biometrics and Auth-Bound Keystore
 
-Treat callback/UI state, key authorization, and server authorization as separate controls.
+* Assess callback/UI state, key authorization, and server authorization separately.
 
 1. Identify the concrete AndroidX/platform `BiometricPrompt` callback or legacy fingerprint path. Observe success, failure, cancellation, fallback, and exception handling without replacing them initially.
 2. Trace whether the operation uses a `CryptoObject` containing a `Cipher`, `Signature`, or `Mac`, or a time-window-based auth-bound key. Missing `CryptoObject` alone does not prove a bypass.
@@ -55,13 +64,19 @@ Treat callback/UI state, key authorization, and server authorization as separate
 5. If assessing callback manipulation, target the actual app callback and validate the subsequent decryption/signing or protected operation. A hook that merely logs/replaces the success callback body does not cause authentication success and may break the app.
 6. Confirm any claimed server-side impact with the server result. For offline data, demonstrate unauthorized access to the protected local data instead.
 
-Use `KeyInfo` security-level information where supported and key attestation when required to establish backing, not the provider name alone. A successful UI transition or swallowed exception does not prove that a hardware-backed key was used without authorization. Root access does not automatically expose keys inside a TEE/StrongBox. See [Android Keystore](https://developer.android.com/privacy-and-security/keystore) and [biometric authentication](https://developer.android.com/identity/sign-in/biometric-auth).
-
-Enumerate the app-accessible Keystore aliases/types/providers through its own UID context, then inspect the policy of keys actually used by the sensitive operation. Enumeration does not grant access to every app's keys. Assess `BIOMETRIC_WEAK` versus `BIOMETRIC_STRONG` and device-credential fallback against the required assurance; hardware key authorization constrains supported authenticators. Verify enrollment-invalidation behavior under the configured auth policy rather than reporting a missing explicit setter as a flaw.
+* Establish backing with supported `KeyInfo` security-level data and, when required, key attestation; the provider name alone is insufficient.
+* A UI transition or swallowed exception does not prove unauthorized use of a hardware-backed key.
+* Root access does not automatically expose TEE/StrongBox keys.
+* References: [Android Keystore](https://developer.android.com/privacy-and-security/keystore), [biometric authentication](https://developer.android.com/identity/sign-in/biometric-auth).
+* **Caller context:** enumerate aliases/types/providers under the app's own UID; this does not expose every app's keys.
+* Inspect the policies of keys actually used by the sensitive operation.
+* Compare `BIOMETRIC_WEAK`, `BIOMETRIC_STRONG`, and device-credential fallback with required assurance and hardware-key authenticator constraints.
+* Test enrollment invalidation under the configured auth policy; a missing explicit setter alone is not a flaw.
 
 ## Trace Cryptographic Data Flow
 
-Map input > encoding/serialization > key source/derivation > algorithm/mode/IV/nonce > output > consumer/storage. Determine whether the operation protects a real secret, verifies integrity, or is merely a non-security checksum.
+* Trace: input > encoding/serialization > key source/derivation > algorithm/mode/IV/nonce > output > consumer/storage.
+* Identify the purpose: secret protection, integrity verification, or a non-security checksum.
 
 | Observation Point                                 | Record                                                               | Check                                                                                                          |
 | ------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -71,7 +86,8 @@ Map input > encoding/serialization > key source/derivation > algorithm/mode/IV/n
 | `SecureRandom` / other RNG                        | Generator, seeding and security-sensitive use                        | Repeatability is a clue, not proof of predictability; assess entropy and use.                                  |
 | Encoders / hashes                                 | Base64/hex/compression/digest and downstream use                     | Encoding is not encryption; a weak digest used for a cache key is not equivalent to password hashing.          |
 
-The following observational template logs metadata for only `Cipher.doFinal(byte[])`. It does not dump keys or plaintext and does not cover streaming/no-argument overloads or native crypto:
+* **Template scope:** metadata for `Cipher.doFinal(byte[])` only; no key/plaintext dumps.
+* **Not covered:** streaming/no-argument overloads or native crypto.
 
 ```javascript
 Java.perform(function () {
@@ -87,8 +103,11 @@ Java.perform(function () {
 });
 ```
 
-Correlate specific cipher instances, `init` parameters, and consumers using synthetic test data. Capture additional values only when necessary and protect those artifacts. Compare repeated operations under the **same key**, app restarts, and account changes. Changing keys between sessions does not prove server origin; `getEncoded()` returning null may reflect a non-exportable key, not an analysis failure.
-
-Report cryptographic weaknesses with the relevant key access, message control, and impact. Seeing plaintext in process memory during legitimate use alone is not a cryptographic break. Use [local data lifecycle testing](local-data-logs-and-privacy.md) to assess retention and exposure.
-
-**Related:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | [Component Testing](component-testing.md)
+* Correlate cipher instances, `init` parameters, and consumers with synthetic test data.
+* Capture additional values only when necessary; protect the resulting artifacts.
+* Compare repeated operations under the **same key**, app restarts, and account changes.
+* Key changes between sessions do not prove server origin.
+* `getEncoded()` returning null may indicate a non-exportable key, not an analysis failure.
+* Report key-access prerequisites, attacker control over messages, and demonstrated impact.
+* Plaintext in memory during legitimate use is not itself a cryptographic break; assess retention/exposure with [local data lifecycle testing](local-data-logs-and-privacy.md).
+* **Related:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | [Component Testing](component-testing.md).

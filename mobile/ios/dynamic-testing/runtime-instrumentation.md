@@ -1,11 +1,13 @@
 # Runtime Instrumentation
 
 {% hint style="info" %}
-Use authorized devices/builds and test accounts. Isolate the lab, protect evidence, and restore it afterward. Replace command placeholders before use.
+* Use authorized devices/builds and test accounts; replace command placeholders before use.
+* Isolate the lab, protect evidence, and restore it afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Complete the [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight) first. Host `frida`, device server, and Gadget must use the **same exact Frida version**.
+* **Prerequisite:** complete [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight).
+* Host `frida`, device server, and Gadget must use the **same exact Frida version**.
 {% endhint %}
 
 ## Runtime Analysis and Instrumentation
@@ -43,7 +45,8 @@ objection --name <app-process-name> run 'ios info binary'
 | `--no-pause`  | Immediate resume; omit for early hooks needing a paused spawn.                        |
 | `run`         | One-shot; do not assume hooks survive exit. Use `start` for monitoring.               |
 
-Use long flags: global `-s` means spawn. Interactive commands below run **inside Objection**, not the host shell.
+* Prefer long flags; global `-s` means spawn.
+* Run interactive commands **inside Objection**, not the host shell.
 
 ### Classes, Hooks, and Local Checks
 
@@ -83,11 +86,13 @@ objection --name <app-process-name> start --startup-command 'ios jailbreak disab
 objection --name <app-process-name> start --startup-command 'ios sslpinning disable'
 ```
 
-Check `--startup-command`/`--startup-script` in `objection start --help` and the [CLI source](https://github.com/sensepost/objection/blob/master/objection/console/cli.py). Instrumenting a detection return value does not establish server-side privilege bypass.
+* Verify `--startup-command`/`--startup-script` using `objection start --help` and the [CLI source](https://github.com/sensepost/objection/blob/master/objection/console/cli.py).
+* Changing a detection return value does not prove server-side privilege bypass.
 
 ### r2frida
 
-Requires radare2 and a compatible r2frida plugin installed in the host environment; installing radare2 alone does not provide the plugin. Follow the plugin's current installation and command syntax.
+* **Host dependencies:** radare2 and a compatible r2frida plugin; radare2 alone does not install the plugin.
+* Follow the plugin's current installation instructions and command syntax.
 
 ```
 r2 frida://spawn//usb//<bundle-id>
@@ -96,4 +101,5 @@ r2 frida://spawn//usb//<bundle-id>
 :dtf <function-address>
 ```
 
-Verify plugin syntax; addresses apply to the active process. Inspect dumps with `strings <dump-file>`; protect/delete them afterward.
+* Verify plugin syntax; addresses apply to the active process.
+* Inspect dumps with `strings <dump-file>`; protect them during analysis and delete them afterward.

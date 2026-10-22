@@ -1,11 +1,13 @@
 # URL Schemes, Web Views, and Client Behavior
 
 {% hint style="info" %}
-Use authorized devices/builds and test accounts. Isolate the lab, protect evidence, and restore it afterward. Replace command placeholders before use.
+* Use authorized devices/builds and test accounts; replace command placeholders before use.
+* Isolate the lab, protect evidence, and restore it afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Complete the [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight) first. Candidate handlers come from [URL Handling](../static-testing/url-handling.md).
+* **Prerequisite:** complete [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight).
+* Identify candidate handlers using [URL Handling](../static-testing/url-handling.md).
 {% endhint %}
 
 ## URL Schemes, Web Views, and Client Behavior

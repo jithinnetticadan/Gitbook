@@ -1,12 +1,14 @@
 # Runtime Defenses and Integrity
 
 {% hint style="warning" %}
-Assess only an authorized lab copy. Record the [baseline](methodology-and-baseline.md) before changing checks. A blocked emulator or instrumented app is a test constraint, not automatically a vulnerability.
+* Assess only an authorized lab copy; record the [baseline](methodology-and-baseline.md) before changing checks.
+* A blocked emulator or instrumented app is a test constraint, not automatically a vulnerability.
 {% endhint %}
 
 ## Locate the Check That Actually Runs
 
-Compare the same operation on the original environment, with an instrumentation connection but no hooks, and with one observational hook. Record when the warning/exit occurs and collect relevant logs before assuming anti-Frida behavior.
+* Compare the same operation across three states: original environment, instrumentation without hooks, and one observational hook.
+* Record warning/exit timing and relevant logs before attributing the behavior to anti-Frida checks.
 
 | Signal Family           | Likely Observation Points                                                                                        | Interpretation                                                                                 |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -19,7 +21,9 @@ Compare the same operation on the original environment, with an instrumentation 
 
 ## Observe a Root-Check Input
 
-After [Frida setup](preflight-and-frida-setup.md), this Java template logs only selected file probes and preserves their original results. Adapt paths from observed code; it is not comprehensive root detection or a bypass:
+* **Prerequisite:** complete [Frida setup](preflight-and-frida-setup.md).
+* Template behavior: log selected file probes and preserve original results; adapt paths from observed code.
+* This is neither comprehensive root detection nor a bypass.
 
 ```javascript
 Java.perform(function () {
@@ -37,7 +41,11 @@ Java.perform(function () {
 });
 ```
 
-**Next:** correlate the probe and its caller with the block, then change only the identified decision/input if needed for the test. Re-run the same protected operation. For command/property/package checks, preserve correct return types and normal behavior for unrelated calls; globally falsifying file access or command execution can invalidate the run. Native checks may need the [JNI workflow](java-and-native-instrumentation.md#native--jni-workflow).
+* Correlate the probe and caller with the block; change only the identified decision/input when needed.
+* Re-run the same protected operation.
+* Preserve correct return types and unrelated-call behavior for command/property/package checks.
+* Globally falsifying file access or command execution can invalidate the run.
+* Native checks may require the [JNI workflow](java-and-native-instrumentation.md#native--jni-workflow).
 
 ## Isolate Instrumentation Detection
 
@@ -47,7 +55,8 @@ Java.perform(function () {
 4. Test a narrowly identified signal only. Failure after renaming a server does not prove behavioral detection: other signatures, root checks, and compatibility failures remain possible.
 5. If a new port is needed for a controlled experiment, keep it loopback-bound and forward it over authorized ADB. Do not expose an unauthenticated Frida server on all network interfaces.
 
-Optional nondefault-port example, after stopping the existing lab server and checking its `--help`. Run the server in one terminal and the forwarding/client commands in another:
+* **Prerequisites:** stop the existing lab server and check its `--help` before this optional nondefault-port test.
+* Run the server in one terminal; run forwarding/client commands in another.
 
 ```sh
 adb shell "su -c '/data/local/tmp/frida-server -l 127.0.0.1:31337'"
@@ -59,7 +68,9 @@ frida-ps -H 127.0.0.1:31337
 frida -H 127.0.0.1:31337 -n <process-name>
 ```
 
-This tests a port-specific hypothesis, not a general evasion method. Stop the temporary server and remove that forwarding with `adb forward --remove tcp:31337` afterward. Rooted/emulated devices and patched builds may still fail independent integrity checks.
+* This tests a port-specific hypothesis, not a general evasion method.
+* Stop the temporary server and remove forwarding with `adb forward --remove tcp:31337` afterward.
+* Rooted/emulated devices and patched builds may still fail independent integrity checks.
 
 ## Repackaging and Signature Checks
 
@@ -69,13 +80,19 @@ This tests a port-specific hypothesis, not a general evasion method. Stop the te
 4. Confirm whether the app exits locally, hides a feature, or receives a server rejection. A UI change does not bypass backend attestation.
 5. For Play Integrity, assess server verification, expected app identity, freshness/replay controls, and binding to the intended request/session. Standard and classic request flows differ; evaluate the implemented flow, not just a client Boolean.
 
-Android normally rejects an update signed with an unrelated key. `adb install -r` is not a bypass for that check. Use a disposable device/profile or an approved uninstall/reinstall after protecting test data; uninstalling can remove data and keys. Production app identity, signature permissions, App Links, and backend integrations can legitimately change after re-signing.
+* Android normally rejects updates signed with unrelated keys; `adb install -r` does not bypass this check.
+* Use a disposable device/profile or an approved uninstall/reinstall; protect test data first.
+* Uninstalling may remove data and keys.
+* Re-signing can legitimately change app identity, signature permissions, App Links, and backend integrations.
 
 ## Stop Criteria
 
-Time-box bypass work against the test objective. Stop and document the blocked coverage when the next step exceeds authorization, risks data/device availability, or has little value compared with other tests. Obtain an owner-provided test build/environment or continue scoped API/static testing where possible. Do not change the production build or attestation policy without approval.
-
-Commercial RASP may require specialist analysis. Report the environment, attempted checks, evidence, and remaining uncertainty, not an unproven claim that a defense is unbreakable or absent.
+* Time-box bypass work against the test objective.
+* Stop and document blocked coverage when the next step exceeds authorization, risks availability, or offers little value compared with other tests.
+* Request an owner-provided test build/environment, or continue scoped API/static testing.
+* Do not change production builds or attestation policies without approval.
+* Commercial RASP may require specialist analysis.
+* Report environment, attempted checks, evidence, and uncertainty; do not claim a defense is unbreakable or absent without evidence.
 
 ## Framework-Specific Defense Leads
 
@@ -87,6 +104,5 @@ Commercial RASP may require specialist analysis. Report the environment, attempt
 * Runtime string decryption can expose obfuscated configuration, but observing a decrypted string does not prove it is a privileged secret. Trace its consumer and redact captured values.
 * SafetyNet Attestation was [fully shut down in January 2025](https://developer.android.com/privacy-and-security/safetynet/deprecation-timeline). Review stale integrations and fail-open behavior; do not treat old SafetyNet bypass recipes as a supported current path. Android native hook checks concern mechanisms such as ELF PLT/GOT or instruction changes; Windows `Ldrp` terminology is not an Android API.
 
-References: [Android app signing](https://developer.android.com/studio/publish/app-signing), [Play Integrity](https://developer.android.com/google/play/integrity/overview), [Frida troubleshooting](https://frida.re/docs/troubleshooting/).
-
-**Related:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | [Network Traffic and TLS](network-traffic-and-tls.md)
+* References: [Android app signing](https://developer.android.com/studio/publish/app-signing), [Play Integrity](https://developer.android.com/google/play/integrity/overview), [Frida troubleshooting](https://frida.re/docs/troubleshooting/).
+* **Related:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | [Network Traffic and TLS](network-traffic-and-tls.md).

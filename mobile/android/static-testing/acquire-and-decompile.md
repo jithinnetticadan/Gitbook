@@ -1,12 +1,13 @@
 # Acquire and Decompile
 
 {% hint style="info" %}
-Test only in-scope apps. Record package, version, source, device/API level, and original APK hash. Replace command placeholders before use.
+* Test only in-scope apps; replace command placeholders before use.
+* Record package, version, source, device/API level, and original APK hash.
 {% endhint %}
 
 ## Acquire the APK
 
-Find the installed package and pull its APK:
+* Find the installed package and pull its APK:
 
 ```sh
 adb shell
@@ -42,7 +43,8 @@ apkleaks -f <app.apk>
 
 ## Reconnaissance and Build Comparison
 
-Maintain a small inventory of package/version, source, acquisition date, APK/split SHA-256 hashes, signing identity, SDK levels, and backend environment. Compare the delivered build with public/store metadata rather than assuming staged rollouts are identical.
+* Inventory: package/version, source, acquisition date, APK/split SHA-256 hashes, signer, SDK levels, and backend environment.
+* Compare the delivered build with public/store metadata; staged rollouts may differ.
 
 | Source / Artifact                        | Review                                                                                     | Scope / Interpretation                                                                                                                                                    |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -55,11 +57,15 @@ Maintain a small inventory of package/version, source, acquisition date, APK/spl
 
 ### App Bundles and Delivered Features
 
-An AAB is a publishing artifact, not an APK to install with `adb install`. With owner-provided bundles, use a compatible [bundletool](https://developer.android.com/tools/bundletool) and Java environment to inspect/build the device-specific APK set; record any test re-signing. For installed apps, `pm path` shows currently installed splits, not every feature the app could later download.
-
-Trigger authorized on-demand features, re-enumerate installed artifacts, and inspect their code, permissions, resources, endpoints, and libraries. Compare base/split package versions and signer identity; Android normally requires a consistent package/signature set. A modified split accepted by an unusual device requires device-specific evidence, not an assumption.
-
-For legacy Instant App artifacts, establish whether the deployment still exists and whether the behavior applies to the assessed version. Do not assume all historical Play delivery modes remain supported. Map [framework clues](../dynamic-testing/methodology-and-baseline.md#fingerprint-the-implementation) to the code actually executed.
+* **AAB:** publishing artifact, not an installable APK for `adb install`.
+* **Dependencies:** owner-provided bundle, compatible [bundletool](https://developer.android.com/tools/bundletool), and Java environment.
+* Build/inspect the device-specific APK set; record any test re-signing.
+* `pm path` lists installed splits, not every downloadable feature.
+* Trigger authorized on-demand features; reacquire and inspect their code, permissions, resources, endpoints, and libraries.
+* Compare base/split versions and signers; Android normally requires a consistent package/signature set.
+* Prove unusual modified-split acceptance on the actual device; do not assume it.
+* **Legacy Instant Apps:** confirm the deployment exists and applies to the assessed version; historical delivery modes may be unsupported.
+* Map [framework clues](../dynamic-testing/methodology-and-baseline.md#fingerprint-the-implementation) to the code actually executed.
 
 ## Framework-Specific Recovery
 

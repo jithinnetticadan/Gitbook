@@ -1,11 +1,14 @@
 # Dynamic Testing
 
 {% hint style="info" %}
-Use an authorized test device and test accounts. Preserve originals; protect dumps and restore the lab afterward. Replace command placeholders before use.
+* Use an authorized test device and test accounts; replace command placeholders before use.
+* Preserve originals, protect dumps, and restore the lab afterward.
 {% endhint %}
 
 {% hint style="warning" %}
-Before instrumentation, complete [Preflight and Frida Setup](preflight-and-frida-setup.md). Host `frida`, device `frida-server`, and any Gadget must use the **same exact Frida version**. Record an unmodified baseline before applying hooks or bypasses.
+* **Prerequisite:** complete [Preflight and Frida Setup](preflight-and-frida-setup.md).
+* Host `frida`, device `frida-server`, and Gadget must use the **same exact Frida version**.
+* Record an unmodified baseline before hooks or bypasses.
 {% endhint %}
 
 ## Further Reading
