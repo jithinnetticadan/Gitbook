@@ -10,7 +10,7 @@
 
 * Capture a successful control request; vary one condition at a time.
 * Distinguish access tokens, refresh tokens, cookies, local session flags, and cached responses.
-* Keep secrets out of shared reports and shell history.
+* Keep secrets out of notes and shell history.
 
 | Test                                 | Controlled Action                                                                                   | Verify                                                                                                                                  |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
@@ -88,6 +88,7 @@
 
 * **Template scope:** metadata for `Cipher.doFinal(byte[])` only; no key/plaintext dumps.
 * **Not covered:** streaming/no-argument overloads or native crypto.
+* **Run:** Frida CLI script/REPL after [instrumentation setup](java-and-native-instrumentation.md#attach-or-spawn); custom agents need the Java bridge.
 
 ```javascript
 Java.perform(function () {
@@ -108,6 +109,6 @@ Java.perform(function () {
 * Compare repeated operations under the **same key**, app restarts, and account changes.
 * Key changes between sessions do not prove server origin.
 * `getEncoded()` returning null may indicate a non-exportable key, not an analysis failure.
-* Report key-access prerequisites, attacker control over messages, and demonstrated impact.
+* Note key-access prerequisites and whether an attacker controls the messages.
 * Plaintext in memory during legitimate use is not itself a cryptographic break; assess retention/exposure with [local data lifecycle testing](local-data-logs-and-privacy.md).
 * **Related:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | [Component Testing](component-testing.md).

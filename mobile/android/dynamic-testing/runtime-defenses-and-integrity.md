@@ -92,7 +92,7 @@ frida -H 127.0.0.1:31337 -n <process-name>
 * Request an owner-provided test build/environment, or continue scoped API/static testing.
 * Do not change production builds or attestation policies without approval.
 * Commercial RASP may require specialist analysis.
-* Report environment, attempted checks, evidence, and uncertainty; do not claim a defense is unbreakable or absent without evidence.
+* Note environment, attempted checks, and what remains untested; do not assume a defense is unbreakable or absent without evidence.
 
 ## Framework-Specific Defense Leads
 

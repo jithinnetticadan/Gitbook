@@ -6,7 +6,7 @@
 {% endhint %}
 
 {% hint style="warning" %}
-* **Prerequisite:** complete [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight).
+* **Prerequisites:** authorized ADB/test accounts; private-file access needs a debuggable app or an approved privileged/export path. Complete [Frida preflight](preflight-and-frida-setup.md#mandatory-preflight) only for instrumentation.
 * Identify candidates using [Local Data and Client Logic](../static-testing/local-data-and-client-logic.md).
 {% endhint %}
 

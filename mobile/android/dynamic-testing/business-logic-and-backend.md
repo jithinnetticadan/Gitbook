@@ -56,4 +56,4 @@
 
 * Record requests/responses, identity/role, and test state before/after.
 * State signing/instrumentation prerequisites and the demonstrated server/local boundary.
-* Use [Validation and Reporting](validation-and-troubleshooting.md) to separate hardening recommendations from confirmed unauthorized behavior.
+* Troubleshooting: [Troubleshooting and Test Cleanup](validation-and-troubleshooting.md).

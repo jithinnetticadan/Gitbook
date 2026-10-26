@@ -11,7 +11,7 @@
 * [ ] Preserve/hash the original APK and collect all required splits/resources/native libraries.
 * [ ] Record package, app version, min/target SDK, and test-device Android/API level.
 * [ ] Verify MobSF/other tool requirements for the selected release; manually validate automated findings.
-* [ ] Before runtime checks or repackaging, follow [Dynamic Testing prerequisites](../dynamic-testing/preflight-and-frida-setup.md#mandatory-preflight).
+* [ ] For Frida instrumentation/repackaging, follow [Frida prerequisites](../dynamic-testing/preflight-and-frida-setup.md#mandatory-preflight). Basic [ADB/component tests](../dynamic-testing/component-testing.md#adb-probes-and-caller-identity) do not require Frida or root.
 
 ## Lab Tools and Setup
 

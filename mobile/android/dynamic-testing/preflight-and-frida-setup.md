@@ -33,7 +33,7 @@ adb shell cat /proc/version
 adb shell cat /proc/cpuinfo
 ```
 
-* Select Frida by app-compatible ABI; kernel information alone is insufficient.
+* **Server:** device ABI. **Gadget:** target app ABI, which may differ on a 64-bit device. Kernel information alone is insufficient.
 
 * Install client tools in an isolated environment:
 
@@ -54,6 +54,7 @@ objection start --help
 ### Start Frida Server
 
 * **Prerequisite:** root-capable ADB image; ordinary production builds do not support `adb root`.
+* Download the matching version/ABI from [Frida releases](https://github.com/frida/frida/releases), extract the `.xz`, and name the extracted binary `frida-server` for these commands.
 
 ```sh
 adb root

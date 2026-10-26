@@ -34,16 +34,23 @@ objection patchapk --source <app.apk> --gadget-version <frida-version>
     const-string v0, "frida-gadget"
     invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
     ```
-4.  Rebuild, sign, and align the disposable test artifact:
+4.  Rebuild, align, then sign the disposable test artifact; use current SDK Build Tools supporting `-P 16`:
 
     ```sh
     apktool b <decoded-directory> -o <unsigned-test.apk>
     keytool -genkey -v -keystore <test.keystore> -alias <test-alias> -keyalg RSA -keysize 2048 -validity 10000
-    zipalign -p 4 <unsigned-test.apk> <aligned-test.apk>
+    zipalign -P 16 -v 4 <unsigned-test.apk> <aligned-test.apk>
     apksigner sign --ks <test.keystore> --ks-key-alias <test-alias> <aligned-test.apk>
     apksigner verify <aligned-test.apk>
     ```
 
+* **Legacy 4 KiB-only alternative:** use instead of the alignment line above, before signing. Deprecated `-p` does not provide 16 KiB alignment.
+
+```sh
+zipalign -p 4 <unsigned-test.apk> <aligned-test.apk>
+```
+
+* **16 KiB check:** APK ZIP alignment does not repair incompatible ELF segments; Gadget and other native libraries must also support the device's page size. [Alignment reference](https://developer.android.com/tools/zipalign).
 * `System.loadLibrary("frida-gadget")` requires **`libfrida-gadget.so`**, not `frida-gadget.so`.
 * Execute in the target process: suitable Application initialization or MainActivity/OnboardingActivity constructor.
 * Check free registers and `.locals`/`.registers` before using `v0`.

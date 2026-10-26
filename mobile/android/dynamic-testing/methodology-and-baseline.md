@@ -14,7 +14,7 @@
 4. Observe targeted calls.
 5. Make one controlled change.
 6. Verify the protected operation.
-7. Document evidence and limitations.
+7. Note limitations and untested paths.
 
 * Static analysis identifies code, configuration, and possible paths.
 * Dynamic testing establishes behavior only under tested conditions; untriggered paths remain untested, not proven safe.
@@ -23,7 +23,7 @@
 | Initial Pass | Deliverable                                                                                                                          |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | Fingerprint  | Package/version, APK/splits, ABI, target SDK, framework clues, exported components, and schemes.                                     |
-| Prepare      | Compatible device and reversible test environment; complete [mandatory preflight](preflight-and-frida-setup.md#mandatory-preflight). |
+| Prepare      | Compatible device and reversible lab; [Frida preflight](preflight-and-frida-setup.md#mandatory-preflight) only when instrumenting. |
 | Observe      | Unmodified startup, login/logout, permissions, logs, storage changes, network behavior, and blocks.                                  |
 | Map          | One complete flow from UI through local processing, IPC/WebView, API, response, storage, and background work.                        |
 | Instrument   | One observational hook that fires during a known action without changing its result.                                                 |

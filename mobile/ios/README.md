@@ -1,18 +1,19 @@
 # iOS
 
-**Before runtime testing:** complete the [Mandatory Preflight](dynamic-testing/preflight-and-lab-setup.md#mandatory-preflight), including exact Frida client/server/Gadget version matching.
+* **Basic runtime tests:** authorized app/accounts and [proxy setup](dynamic-testing/traffic-analysis-and-tls.md); jailbreak/Frida are not universally required.
+* **Instrumentation:** complete [lab preflight](dynamic-testing/preflight-and-lab-setup.md#mandatory-preflight), including exact Frida client/server/Gadget version matching.
 
 ## Quick Context
 
 * IPA bundles contain executable, metadata, resources, and property lists.
-* Runtime setup: compatible jailbroken device or signed/provisioned test build.
+* Instrumentation setup: compatible jailbreak, or an authorized debuggable/Gadget-signed development build.
 * Xcode/macOS: Apple signing/development; free accounts have provisioning limits/expiry.
 * Validate device-specific findings on representative hardware; Simulator behavior differs.
 * Assess URL handling and web content in `WKWebView`/other web views.
 
 ### JailBreak Bypass
 
-* HideJB - Cydia App
+* HideJB: legacy jailbreak-detection tweak; verify device/iOS compatibility, not a universal bypass.
 
 ### Static Analysis Tool
 

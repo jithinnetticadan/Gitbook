@@ -40,11 +40,16 @@ objection --name <process-name> run 'android sslpinning disable'
 
 ```
 env
-android hooking list
-android hooking search classes <keyword>
-android hooking watch class <class-name> --dump-args --dump-backtrace --dump-return
+android hooking list classes
+android hooking list class_methods <class-name>
+android hooking search <keyword> --only-classes
+android hooking watch <class-name> --dump-args --dump-backtrace --dump-return
+android hooking watch '<class-name>!<method-name>' --dump-args --dump-backtrace --dump-return
 android intent launch_activity <activity-name>
 ```
+
+* **Current upstream syntax:** `watch` takes a class/pattern; `search` takes a query. Older `watch class` / `search classes` forms require an older compatible release.
+* `android hooking list` alone is a namespace; select `classes`, `class_methods`, or another supported subcommand.
 
 ### Clipboard, Screenshots, Memory, and SQLite
 
@@ -56,11 +61,13 @@ memory list modules
 memory list exports <module-name>
 memory search 4141 --string
 memory write <address> <value> --string
-android heap options
+android heap search instances <class-name>
+android heap print fields <instance-hashcode>
+android heap print methods <instance-hashcode>
 sqlite connect <database-file>
 ```
 
-* `android heap options` / `android hooking list`: historical examples; confirm in-session help (`help android heap`).
+* `android heap options` is not a current command; use the heap commands above and the hashcode returned by `search instances`.
 * `FLAG_SECURE false` changes app behavior; assess original screenshot protections separately.
 * `memory write` changes live data and may crash the app.
 * Protect/delete memory dumps. Alternative: [Fridump](https://github.com/rootbsd/fridump).
@@ -71,3 +78,4 @@ sqlite connect <database-file>
 
 * Use [Java and Native Instrumentation](java-and-native-instrumentation.md) for observational scripts, overload/classloader diagnosis, and JNI/native hooks.
 * Identify the actual check before running root/pinning commands; a hook message alone is not a verified result.
+* Syntax source: [Objection command registry](https://github.com/sensepost/objection/blob/master/objection/console/commands.py); confirm against your installed release.

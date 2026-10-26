@@ -24,8 +24,8 @@ grep -rL 'FLAG_SECURE' --include='*Activity*.java' <decompiled-directory>
 
 * App-level plaintext and Android file-based encryption are different layers. Private preferences/files are normally UID-sandboxed, not world-readable. Assess actual access through a debuggable build, authorized root, backup, device state, or another demonstrated path before rating disclosure.
 * `MODE_WORLD_*` is unsupported on modern Android; its presence still marks legacy insecure storage code.
-* `run-as <package-name>` reads app files only for debuggable apps; it does not prove access on a release build.
-* Logging: debug `Log.*` calls left in release builds expose data through Logcat, bug reports, and crash-reporting SDKs. Confirm release builds do not strip or disable them.
+* `run-as <package-name>` normally requires a debuggable app; that access does not prove access to a non-debuggable build.
+* Logging: confirm `Log.*` calls execute in release builds and sensitive values reach Logcat or collected reports. Record reader privileges; crash SDKs do not universally collect every log.
 * `FLAG_SECURE` is per window. The last command only lists candidate Activities; check sensitive screens (PIN, OTP, payment, seed phrase) and any base Activity that sets it.
 * Overlay/tapjacking defenses: look for `filterTouchesWhenObscured` on sensitive confirmation views.
 

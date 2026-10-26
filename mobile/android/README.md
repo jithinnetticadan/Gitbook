@@ -1,6 +1,7 @@
 # Android
 
-**Before runtime testing:** complete the [Mandatory Preflight](dynamic-testing/preflight-and-frida-setup.md#mandatory-preflight), including exact Frida client/server/Gadget version matching.
+* **Basic runtime tests:** [ADB/component prerequisites](dynamic-testing/component-testing.md#adb-probes-and-caller-identity); Frida/root are not universally required.
+* **Instrumentation:** complete [Frida preflight](dynamic-testing/preflight-and-frida-setup.md#mandatory-preflight), including exact client/server/Gadget version matching.
 
 ## Quick Context
 

@@ -63,4 +63,4 @@ adb shell getprop ro.build.fingerprint
 
 * Record applicability as applicable / not applicable / unknown, with primary advisory and checked date.
 * Record exact prerequisites, observed evidence, fix status, and owner: app, OS, browser, hardware, or backend.
-* Validate the assessed environment before using generic severity labels, success rates, or research timings in a finding.
+* Validate the assessed environment before relying on generic severity labels, success rates, or research timings.

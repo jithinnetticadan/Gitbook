@@ -11,7 +11,7 @@
 * [ ] Verify binary architecture/platform and encryption state before disassembly or class extraction.
 * [ ] Use a suitable authorized unencrypted copy when encryption blocks analysis; extracting ZIP contents does not decrypt code.
 * [ ] Run `otool`/Apple tooling on a compatible macOS host, or use a suitable Mach-O parser.
-* [ ] Before patching/signing or runtime checks, follow [Dynamic Testing prerequisites](../dynamic-testing/preflight-and-lab-setup.md#mandatory-preflight).
+* [ ] For patching/signing or instrumentation, follow [lab prerequisites](../dynamic-testing/preflight-and-lab-setup.md#mandatory-preflight). Basic URL/proxy tests do not require Frida or jailbreak.
 
 ## Lab Tools
 

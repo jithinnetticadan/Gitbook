@@ -6,8 +6,8 @@
 {% endhint %}
 
 {% hint style="warning" %}
-* **Prerequisite:** complete [Preflight and Lab Setup](preflight-and-lab-setup.md).
-* Host `frida`, device `frida-server`, and Gadget must use the **same exact Frida version**.
+* **Prerequisites:** follow the selected workflow; ordinary URL/proxy tests do not require Frida or jailbreak.
+* **Instrumentation:** complete [Preflight and Lab Setup](preflight-and-lab-setup.md); pin host `frida`, server, and Gadget to the same exact version.
 {% endhint %}
 
 ## Further Reading

@@ -6,7 +6,7 @@
 {% endhint %}
 
 {% hint style="warning" %}
-* **Prerequisite:** complete [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight).
+* **Prerequisites:** an authorized container/export path; SSH requires a compatible jailbreak or separately provided service. [Frida preflight](preflight-and-lab-setup.md#mandatory-preflight) applies to Objection/hooks.
 * Identify storage locations using [Configuration and Sensitive Data](../static-testing/configuration-and-sensitive-data.md).
 {% endhint %}
 
@@ -14,7 +14,7 @@
 
 * Locate containers with `env` or bundle-ID metadata correlation, not `find -name <bundle-id>`.
 * Typical path: `/var/mobile/Containers/Data/Application/<UUID>`; layout/access vary.
-* Retrieve authorized files through SSH/SFTP or [Cyberduck](https://cyberduck.io/).
+* Retrieve files through an approved app export/development-container workflow, or configured SSH/SFTP. [Cyberduck](https://cyberduck.io/) is a transfer client, not a sandbox bypass.
 
 | Storage/Surface                      | Check                                                                                               |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------- |
@@ -26,27 +26,35 @@
 
 ### File and Database Inspection
 
+* **Shell:** run against accessible test copies, or within the approved device SSH session.
+
 ```sh
 find <application-data-root> -type d -name <known-container-uuid>
 file <path-to-file>
 sqlite3 <database-file>
 ```
 
-```
+* **Objection console:** registered commands use `filesystem`, not `file`.
+
+```text
 env
-file cat <path-to-file>
-file download <path-to-file>
+filesystem cat <path-to-file>
+filesystem download <path-to-file>
 sqlite connect <database-file>
 ios nsuserdefaults get
 ios nsurlcredentialstorage dump
 ios plist cat Info.plist
+ios plist cat <app-bundle-path>/Info.plist
 ios keychain dump
 ios cookies get
 ios pasteboard monitor
 ```
 
+* `Info.plist` alone requires the current directory to be the app bundle; use `env` to resolve the bundle path for the explicit variant.
+
 ### Keychain and Cookies
 
+* **Objection Keychain dump:** app-entitled access groups and current item accessibility/authentication policy, not unrestricted device-wide access.
 * [Keychain-Dumper](https://github.com/ptoomey3/Keychain-Dumper): create `/tmp/keychain`; transfer a compatible `keychain_dumper` via SFTP.
 * In device SSH: `./keychain_dumper > keychain.txt`. Privileges/entitlements required; avoid collecting unrelated apps' data.
 * SQLite: install `sqlite3` if needed; use `.tables` and limited read-only queries.

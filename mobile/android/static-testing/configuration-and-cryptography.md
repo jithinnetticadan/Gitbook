@@ -13,7 +13,7 @@
 * Search: `grep -R -n 'SecretKeySpec' <decompiled-directory>`; also inspect `SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER` and `java.util.Random`.
 * `SecretKeySpec` is not inherently weak; check algorithm, key source, mode, IV/nonce, and use.
 * `java.util.Random` is unsuitable for security-sensitive values; prefer secure randomness.
-* Trace actual TLS/crypto behavior before reporting a string match.
+* Trace actual TLS/crypto behavior before treating a string match as a weakness.
 
 ### Cryptography Patterns
 
@@ -26,7 +26,7 @@ grep -rn 'new Random(' <decompiled-directory>
 
 * Plain `Cipher.getInstance("AES")` commonly defaults to ECB on Android; ECB leaks structure and has no IV.
 * MD5/SHA-1 are weak for passwords and signatures; they may be acceptable for non-security checksums.
-* Hardcoded key/IV byte arrays or string-derived keys are recoverable from the APK. Prefer Android Keystore-backed keys.
+* Embedded secret keys are recoverable; prefer suitable Keystore-backed keys. IVs/nonces need not be secret, but must meet the algorithm's unpredictability/uniqueness requirements.
 * `java.util.Random` becomes a finding only when it feeds OTPs, session tokens, reset codes, or nonces; ignore UI/animation use. Use `SecureRandom` instead.
 
 ### TLS and Cleartext Patterns
@@ -40,9 +40,10 @@ grep -rn '"http://' <decompiled-directory> | grep -v 'schemas.android.com\|w3.or
 grep -rniE 'cleartextTrafficPermitted|<pin-set' <decoded-directory>/res/xml/
 ```
 
-* An empty `checkServerTrusted()`, an allow-all hostname verifier, or a WebView calling `proceed()` on SSL errors is a lead. Establish which validation is bypassed, whether that implementation is used for sensitive traffic, and the attacker/impact before reporting it.
+* An empty `checkServerTrusted()`, an allow-all hostname verifier, or a WebView calling `proceed()` on SSL errors is a lead. Establish which validation is bypassed, whether that implementation is used for sensitive traffic, and the attacker/impact before treating it as exploitable.
 * Missing certificate pinning is a hardening gap, not automatically a vulnerability; rate by app risk. Check `CertificatePinner`, `<pin-set>`, and custom trust managers.
-* Cleartext: `android:usesCleartextTraffic`, `cleartextTrafficPermitted="true"` in `<base-config>` or `<domain-config>`, and `http://` endpoints. Cleartext is blocked by default when targeting API 28+.
+* Cleartext: inspect `usesCleartextTraffic`, per-domain/base `cleartextTrafficPermitted`, and `http://` endpoints.
+* Android 9+ defaults to blocking cleartext for target API 28+ in stacks honoring platform policy; inspect overrides and actual traffic. Raw/native sockets may bypass this policy. [Network Security Config](https://developer.android.com/privacy-and-security/security-config).
 
 ## Signing and Trust Boundaries
 

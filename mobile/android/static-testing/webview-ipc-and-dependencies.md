@@ -20,8 +20,9 @@ grep -rn -A3 'onReceivedSslError' <decompiled-directory> | grep 'proceed()'
 grep -rn 'loadUrl(\|loadData(\|evaluateJavascript(' <decompiled-directory>
 ```
 
-* `addJavascriptInterface` exposes methods annotated `@JavascriptInterface` (API 17+) to JavaScript in the loaded page. Impact depends on which methods are exposed and whether attacker-controlled content can load.
-* `setAllowFileAccess` defaults to `false` for apps targeting API 30+; the file-URL access settings default to `false` from API 16+. Enabling them with untrusted content is the risk.
+* `addJavascriptInterface`: annotation-limited exposure requires Android **and target API 17+**; legacy configurations expose more methods. Test the actual device/WebView.
+* The object is available to **all frames**, without a calling-origin parameter; inspect attacker-controlled pages/iframes and exposed methods. [Bridge behavior](https://developer.android.com/privacy-and-security/risks/insecure-webview-native-bridges).
+* `setAllowFileAccess` defaults to `false` for target API 30+; file-URL cross-access settings default to `false` for target API 16+ on supported platforms. Check explicit overrides and WebView version.
 * `proceed()` in `onReceivedSslError` accepts invalid certificates.
 * Trace what URLs reach `loadUrl` (intent extras, deep links, server data) and whether the page origin is validated.
 
@@ -36,7 +37,7 @@ grep -rn 'loadUrl(\|loadData(\|evaluateJavascript(' <decompiled-directory>
 | Geolocation / media permission callbacks                            | Origin, requested resource, Android permission, user consent                                | A blanket grant is a lead; distinguish WebView-origin consent from OS-level permission.                                                                             |
 | File chooser / capture                                              | Returned content URI, grants, MIME, source app, destination origin                          | Use a companion provider and harmless file to test upload disclosure; filesystem reach alone is not proof of cross-origin theft.                                    |
 | Cookies / web storage                                               | Domain/path, Secure/HttpOnly/SameSite, logout, account isolation, separate data directories | Cookies can be shared within the app's WebView profile, not globally across unrelated apps. JavaScript cannot read HttpOnly cookies merely because a bridge exists. |
-| Bridge reflection / third-party script                              | Allowed native methods/arguments and code running in frames/page origin                     | A third-party script included by a page often runs with that page's privileges; an iframe has a different origin. Evaluate the actual bridge API and frame access.  |
+| Bridge reflection / third-party script                              | Allowed native methods/arguments and code running in frames/page origin                     | Included scripts run in the page context; iframes may be same-origin or cross-origin. `addJavascriptInterface` is exposed to both. Check actual frame/bridge access. |
 | Remote debugging                                                    | Actual enabled setting, release behavior, authorized ADB/transport access                   | Being on the same Wi-Fi alone does not normally grant Chrome inspection access.                                                                                     |
 | Legacy bridge exposure                                              | Device WebView/provider version, Android/target SDK, annotated/exposed methods              | Historic pre-API-17 reflection attacks require the affected configuration; do not generalize them to modern annotated bridges.                                      |
 
@@ -80,7 +81,7 @@ grep -rn 'getIntent()\.getData()\|getQueryParameter(\|getStringExtra(' <decompil
 grep -rnE 'PendingIntent\.get(Activity|Activities|Broadcast|Service|ForegroundService)' <decompiled-directory> | grep -v 'FLAG_IMMUTABLE'
 ```
 
-* Apps targeting API 31+ must specify `FLAG_IMMUTABLE` or `FLAG_MUTABLE`. Before that, `PendingIntent` is mutable by default.
+* On Android 12+, apps targeting API 31+ must specify `FLAG_IMMUTABLE` or `FLAG_MUTABLE`. Older behavior defaults to mutable unless a supported immutable flag is set (`FLAG_IMMUTABLE`: API 23+).
 * Risk is highest with mutable PendingIntents wrapping empty or implicit Intents, which another app may fill in. Check the base Intent's component, action, and extras.
 
 ### Third-Party Dependencies (SCA)

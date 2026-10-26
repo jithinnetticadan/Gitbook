@@ -14,7 +14,8 @@
 {% endhint %}
 
 * [ ] Device is connected, unlocked, and trusts the testing Mac; confirm the selected device.
-* [ ] Choose one runtime path: compatible jailbreak with running server **or** an authorized Gadget-patched/signed build.
+* [ ] Choose a runtime path: jailbreak/server, Gadget-patched/signed app, or Frida injection into an authorized debuggable development build.
+* [ ] iOS 16+ development-signed builds: enable **Settings > Privacy & Security > Developer Mode**, restart, and confirm.
 * [ ] Server supports the device; Gadget matches the app architecture and device/Simulator platform.
 * [ ] Verify exact versions; `frida-ps -Uai` confirms the physical-device connection.
 * [ ] Non-jailbroken build: suitable unencrypted executable, valid signing identity/private key, matching profile/device/entitlements, successful install.
@@ -31,6 +32,8 @@
 * Intel Simulator: commonly x86\_64; Apple Silicon Simulator: ARM64. Simulator/device ARM64 binaries still target different platforms.
 * Validate hardware-sensitive findings on a physical device. Your own development builds need not be jailbroken for debugging.
 * Profile filename: `embedded.mobileprovision`, not `embedded.mobileprovisioning`. An arbitrary app's profile may not fit.
+* **Debuggable non-jailbroken path:** compatible Xcode/device support, Developer Disk Image/services, and matching cached Gadget; follow [Frida iOS setup](https://frida.re/docs/ios/#without-jailbreak).
+* Developer Mode is for development workflows, not an App Store/TestFlight prerequisite. [Apple setup](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device).
 
 * References: [Xcode documentation](https://developer.apple.com/documentation/xcode), [downloads](https://developer.apple.com/download/all/?q=Xcode).
 

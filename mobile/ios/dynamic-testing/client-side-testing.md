@@ -6,7 +6,7 @@
 {% endhint %}
 
 {% hint style="warning" %}
-* **Prerequisite:** complete [Mandatory Preflight](preflight-and-lab-setup.md#mandatory-preflight).
+* **Prerequisites:** authorized installed app, test accounts/links, and approved capture tools. [Frida preflight](preflight-and-lab-setup.md#mandatory-preflight) applies only to instrumentation.
 * Identify candidate handlers using [URL Handling](../static-testing/url-handling.md).
 {% endhint %}
 

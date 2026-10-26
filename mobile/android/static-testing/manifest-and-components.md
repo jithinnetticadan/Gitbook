@@ -50,8 +50,9 @@ grep -nE 'android:(allowBackup|dataExtractionRules|fullBackupContent|debuggable|
 
 * Export defaults depend on component type and target/platform version. Activities, services, and receivers historically derive defaults from intent filters; providers have different defaults (notably target API 16 versus 17+). Apps targeting API 31+ must explicitly set `android:exported` on activities, services, and receivers with intent filters. Inspect the installed package rather than treating one rule as universal.
 * For each exported hit, check for `android:permission` (providers: `readPermission`/`writePermission`/`grantUriPermissions`) and for authorization in code. Multi-line `grep -B` pipelines are unreliable; review each hit.
-* `android:allowBackup` defaults to `true` when unset. Open the files named by `android:dataExtractionRules` (Android 12+) and `android:fullBackupContent` (Android 11 and earlier) under `res/xml/`; excludes can limit exposure.
-* `adb backup` data extraction is restricted for apps targeting API 31+ unless debuggable; confirm behavior on the test device.
+* `android:allowBackup` defaults to `true`. Inspect referenced XML rules: `dataExtractionRules` for Android 12+ with target API 31+; `fullBackupContent` on older devices or for apps targeting API 30 or lower.
+* Check cloud backup and device transfer separately; some manufacturers permit transfer despite `allowBackup=false`. [Backup rules](https://developer.android.com/identity/data/autobackup).
+* On Android 12+, `adb backup` excludes data from apps targeting API 31+ unless debuggable; command availability and older-device behavior vary.
 * `android:debuggable="true"` in a release build allows JDWP attach. On a non-rooted device, `adb shell run-as <package-name> id` succeeding also indicates a debuggable app.
 
 * Validate exported components at runtime: [Component Testing](../dynamic-testing/component-testing.md).

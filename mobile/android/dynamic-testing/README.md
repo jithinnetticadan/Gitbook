@@ -6,14 +6,14 @@
 {% endhint %}
 
 {% hint style="warning" %}
-* **Prerequisite:** complete [Preflight and Frida Setup](preflight-and-frida-setup.md).
-* Host `frida`, device `frida-server`, and Gadget must use the **same exact Frida version**.
+* **Prerequisites:** follow the selected workflow; ordinary ADB/API tests do not require Frida or root.
+* **Instrumentation:** complete [Preflight and Frida Setup](preflight-and-frida-setup.md); pin host `frida`, server, and Gadget to the same exact version.
 * Record an unmodified baseline before hooks or bypasses.
 {% endhint %}
 
 ## Further Reading
 
-* [Workbook Coverage](/broken/pages/jpVYwNJB7hvRLvqAN3dY): all 373 checklist IDs mapped to workflows, with source qualifications and conditional/legacy cases.
+* [Source checklist](../README.md): attached Android pentest workbook; validate each item's platform, prerequisites, and applicability. A checklist is not proof of completed coverage.
 * Vidhan Thakur, _Android Dynamic Application Security Testing_, Field Guide 02 (63-page PDF), embedded on the [Android page](../). Commands and conclusions here are qualified against current platform/tool behavior; older guide snippets may not run unchanged.
 * [Objection](https://github.com/sensepost/objection)
 * [Runtime Mobile Security](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security)
