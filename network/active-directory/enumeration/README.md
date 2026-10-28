@@ -16,6 +16,18 @@
   * [#domain-enumeration-generic](ad-and-powerview-modules.md#domain-enumeration-generic "mention")
 * [Password Policy Guide](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh994562\(v=ws.11\))
 
+* **Fine-grained policies:** enumerate PSOs, then resolve the policy applying to the specific account.
+
+```sh
+nxc ldap '<dc-ip>' -u '<username>' -p '<password>' -d '<domain>' --pso
+```
+
+* **Active Directory PowerShell module:** no resultant PSO means the domain default policy applies to that user.
+
+```powershell
+Get-ADUserResultantPasswordPolicy -Identity '<username>'
+```
+
 #### [credential-attacks](../../exploitation/credential-attacks/ "mention")
 
 #### Spawn a Shell using credentials obtained using above or [initial-access-foothold](initial-access-foothold/ "mention")
@@ -44,12 +56,15 @@
 * _**Domain Users**_
   * `net user /domain`&#x20;
   * `net user <username> /domain`
+  * **NetExec protected-account candidates:** `nxc ldap '<dc-ip>' -u '<username>' -p '<password>' -d '<domain>' --admin-count --log admincount.txt`
+  * `adminCount=1` can be stale and is not an exhaustive current-admin list; check actual group membership, including nested groups.
 * _**Local Users**_
   * `net user`&#x20;
 * _**Domain Groups**_
   * `net group /domain`&#x20;
   * Domain Admins, Administrators, Enterprise Admins, Server Operators and Backup Operators and any group with “Admin”
   * `net group  <Group-Name> /domain`&#x20;
+  * **NetExec group members:** `nxc ldap '<dc-ip>' -u '<username>' -p '<password>' -d '<domain>' --groups '<group-name>'`
 * _**Local Groups**_
   * `net localgroup`&#x20;
   * `net localgroup <Group-Name>`&#x20;
@@ -66,6 +81,22 @@
 
 * Search Using WMIC - `wmic service get` or `wmic service get Name,StartName`  or  `Get-WmiObject Win32_Service | select Name, StartName`&#x20;
 * Search Using SC - `sc query state= all`  -> `sc qc <serivice-name>`&#x20;
+
+* **Filtered identities, current NetExec:** use `--wmi-query`; WMI namespace/DCOM access is required. Local service enumeration may work without administrator rights.
+
+```sh
+nxc smb '<target-ip>' -u '<username>' -p '<password>' -d '<domain>' --wmi-query "SELECT Name,StartName,State FROM Win32_Service WHERE StartName IS NOT NULL AND StartName <> 'LocalSystem' AND NOT StartName LIKE 'NT AUTHORITY%' AND NOT StartName LIKE 'NT SERVICE%'" --log service-identities.txt
+```
+
+* **PowerShell equivalent:** `Get-CimInstance` works in modern PowerShell; `Get-WmiObject` is a Windows PowerShell command, not a CMD command, and is absent from PowerShell 7.
+
+```powershell
+$filter = "StartName IS NOT NULL AND StartName <> 'LocalSystem' AND NOT StartName LIKE 'NT AUTHORITY%' AND NOT StartName LIKE 'NT SERVICE%'"
+Get-CimInstance -ClassName Win32_Service -Filter $filter | Select-Object Name, StartName, State
+```
+
+* Append `AND State = 'Running'` to either filter for running services only. Results include ordinary domain/local identities and possibly managed accounts; they do not prove a password is stored in LSA.
+* Follow with [LSA/LSASS collection](../../exploitation/credentials-harvesting/windows.md#dumping-lsa--lsass-secrets-remotely) according to the actual account/storage type.
 
 #### Environment Variables and Registry
 
