@@ -92,7 +92,7 @@ An open-source automation server written in Java that helps developers build and
     ```
 * **Reviewed local PowerShell script:** use a script already placed on the selected node; do not assume loading a function definition invokes that function.
   * ```groovy
-    def commaand = ['powershell.exe', '-NoProfile', '-NonInteractive', '-File', '<reviewed-local-script.ps1>']
+    def command = ['powershell.exe', '-NoProfile', '-NonInteractive', '-File', '<reviewed-local-script.ps1>']
     ```
 * **Shared runner:** concurrent stdout/stderr reads and a bounded wait.
   * <pre class="language-groovy" data-line-numbers><code class="lang-groovy">def process = new ProcessBuilder(command).start()
