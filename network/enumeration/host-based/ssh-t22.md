@@ -2,7 +2,7 @@
 
 ### Default Configuration
 
-* `cat /etc/ssh/sshd_config | grep -v "#" | sed -r '/^\s*$/d'`&#x20;
+* `cat /etc/ssh/sshd_config | grep -v "#" | sed -r '/^\s*$/d'`
 
 ### Dangerous Settings <a href="#dangerous-settings" id="dangerous-settings"></a>
 
@@ -27,10 +27,11 @@ ssh-audit.py <IP>
 {% endtab %}
 {% endtabs %}
 
-### Change Authentication Method
+### Connection Methods
 
 * `ssh -v <username>@<IP>`
 * `ssh -v <username>@<IP> -o PreferredAuthentications=password`
+* `ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" <username>@<IP>`  <sup><sub>(In the real world, using either (or both) of these options would open us up to man-in-the-middle attacks.)<sub></sup>
 
 ### Brute Force
 
@@ -85,5 +86,4 @@ medusa -M ssh -H targets.txt -u root -P passwords.txt
 ### Tools
 
 * [ssh-audit](https://github.com/jtesta/ssh-audit)
-* &#x20;[mRemoteNG](https://mremoteng.org/)
-
+* [mRemoteNG](https://mremoteng.org/)
