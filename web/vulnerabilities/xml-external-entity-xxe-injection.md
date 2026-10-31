@@ -118,7 +118,7 @@
 ## Blind XXE Vulnerabilities
 
 * **To Exfiltrate Data use 2 Methods**
-  * OAST technique using collaborator or similar tools
+  * OAST technique using collaborator or [interactsh](https://github.com/projectdiscovery/interactsh) or similar tools
   * By triggering error messages that can contain sensitive data
 
 ### Out-of-Band Interaction

@@ -27,7 +27,7 @@ Allow an attacker to perform arbitrary command execution.
 * You can URL-encode characters to confuse the URL-parsing code. This is particularly useful if the code that implements the filter handles URL-encoded characters differently than the code that performs the back-end HTTP request.
 * You can use combinations of these techniques together.
 * Eg: `http%3A%2F%2F127.0.0.1%2523@stock.weliketoshop.net/admin/delete?username=carlos` (app check for the domain name if it is stock.weliketoshop.net
-* bypass this filter using `@` and double encoded `#`  (`%2523`)
+* bypass this filter using `@` and double encoded `#` (`%2523`)
 
 ### Bypassing SSRF Filters via Open Redirection
 
@@ -40,3 +40,7 @@ Allow an attacker to perform arbitrary command execution.
 * Referrer header initiated a http request if URL provided along with the contents of user-agent string
 * Provide the shellshock payload in the user-agent header
 * Brute force an internal system by providing IP in referrer header which will send the user-agent content and gets executed on the internal system
+
+### Tools
+
+* [interactsh](https://github.com/projectdiscovery/interactsh)
