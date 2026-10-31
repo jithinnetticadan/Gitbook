@@ -25,21 +25,19 @@
     	</domain-config>
     </network-security-config>
     ```
-* Snippets are illustrative, not complete manifests.
 * Also inspect backup/data-extraction rules and OS behavior.
 
 ### Exported Components, Backup, and Debug Triage
 
 * **Required artifact:** manifest from the **release APK**, not a debug build or source tree.
-
-```sh
-grep -n 'android:exported="true"' <decoded-directory>/AndroidManifest.xml
-grep -nE 'android:(allowBackup|dataExtractionRules|fullBackupContent|debuggable|usesCleartextTraffic|networkSecurityConfig)' <decoded-directory>/AndroidManifest.xml
-```
-
-* Export defaults depend on component type and target/platform version. Activities, services, and receivers historically derive defaults from intent filters; providers have different defaults (notably target API 16 versus 17+). Apps targeting API 31+ must explicitly set `android:exported` on activities, services, and receivers with intent filters. Inspect the installed package rather than treating one rule as universal.
+* ```bash
+  grep -n 'android:exported="true"' <decoded-directory>/AndroidManifest.xml
+  grep -nE 'android:(allowBackup|dataExtractionRules|fullBackupContent|debuggable|usesCleartextTraffic|networkSecurityConfig)' <decoded-directory>/AndroidManifest.xml
+  ```
+* Export defaults depend on component type and target/platform version. Activities, services, and receivers historically derive defaults from intent filters; providers have different defaults (notably target API 16 versus 17+).&#x20;
+* Apps targeting API 31+ must explicitly set `android:exported` on activities, services, and receivers with intent filters. Inspect the installed package rather than treating one rule as universal.
 * For each exported hit, check for `android:permission` (providers: `readPermission`/`writePermission`/`grantUriPermissions`) and for authorization in code. Multi-line `grep -B` pipelines are unreliable; review each hit.
-* `android:allowBackup` defaults to `true`. Inspect referenced XML rules: `dataExtractionRules` for Android 12+ with target API 31+; `fullBackupContent` on older devices or for apps targeting API 30 or lower.
+* **`android:allowBackup` defaults to `true`**. Inspect referenced XML rules: `dataExtractionRules` for Android 12+ with target API 31+; `fullBackupContent` on older devices or for apps targeting API 30 or lower.
 * Check cloud backup and device transfer separately; some manufacturers permit transfer despite `allowBackup=false`. [Backup rules](https://developer.android.com/identity/data/autobackup).
 * On Android 12+, `adb backup` excludes data from apps targeting API 31+ unless debuggable; command availability and older-device behavior vary.
 * `android:debuggable="true"` in a release build allows JDWP attach. On a non-rooted device, `adb shell run-as <package-name> id` succeeding also indicates a debuggable app.
@@ -48,7 +46,6 @@ grep -nE 'android:(allowBackup|dataExtractionRules|fullBackupContent|debuggable|
 ## Permissions, Tasks, and Special Access
 
 * Compare the merged release manifest with code use and runtime grants.
-* Treat declarations as attack-surface leads, not proof of unauthorized access.
 
 | Surface                                  | Review                                                                            | Validate                                                                                                                                                                       |
 | ---------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

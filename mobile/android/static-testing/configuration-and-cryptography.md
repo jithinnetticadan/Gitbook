@@ -1,10 +1,5 @@
 # Configuration and Cryptography
 
-{% hint style="info" %}
-* Test only in-scope apps; replace command placeholders before use.
-* Record package, version, source, device/API level, and original APK hash.
-{% endhint %}
-
 ## Configuration and Cryptography
 
 * Inspect certificates: `apksigner verify --verbose --print-certs <app.apk>`.
