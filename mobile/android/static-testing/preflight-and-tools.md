@@ -1,10 +1,5 @@
 # Preflight and Tools
 
-{% hint style="info" %}
-* Test only in-scope apps; replace command placeholders before use.
-* Record package, version, source, device/API level, and original APK hash.
-{% endhint %}
-
 ## Mandatory Preflight
 
 * [ ] Java JDK is compatible with the selected JADX/Apktool releases; required tools are available in `PATH`.
@@ -23,25 +18,21 @@
 * Android Studio and Android SDK Platform Tools - device/package management and artifact acquisition.
 * `keytool`, `jarsigner`, `zipalign`, and Android SDK signing tools - inspect or prepare test artifacts when repackaging is authorized.
 * Legacy/optional: [Androwarn](https://github.com/maaaaz/androwarn), Andrubis, ApkAnalyser, [QARK](https://github.com/linkedin/qark), [Santoku](https://santoku-linux.com/), [PimpMyKali](https://github.com/Dewalt-arch/pimpmykali). Verify maintenance and compatibility.
-
 * Use current maintainer instructions; package availability varies by OS/release.
 
-### Optional Tools by Purpose
+### Optional Tools
 
 | Purpose                  | Options                                                          | Prerequisite / Limitation                                                                                                                                                                    |
 | ------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Native review            | Ghidra, radare2, NDK/LLVM tools                                  | Match ABI/build; use supported Java/runtime requirements for the selected tool release.                                                                                                      |
 | Protector fingerprinting | [APKiD](https://github.com/rednaga/APKiD)                        | Install its supported Python/YARA dependencies; fingerprints are leads, not an authoritative inventory of library versions.                                                                  |
-| Alternate decompilation  | GDA, Bytecode Viewer, APK Studio                                 | Verify current platform/runtime support and compare output against SMALI; no decompiler guarantees original source recovery.                                                                 |
+| Alternate decompilers    | GDA, Bytecode Viewer, APK Studio                                 | Verify current platform/runtime support and compare output against SMALI; no decompiler guarantees original source recovery.                                                                 |
 | Secret scanning          | TruffleHog filesystem mode, Gitleaks directory mode, APKLeaks    | Use current CLI help and scan extracted artifacts; avoid remote credential verification without permission. Regex matches need manual authority/impact review.                               |
 | Re-signing               | [Uber APK Signer](https://github.com/patrickfav/uber-apk-signer) | Requires a compatible Java runtime; choose/record a test key. It does not possess production keys or bypass update-signature checks.                                                         |
 | Runtime UI helpers       | RMS, House, Inspeckage                                           | RMS/House releases have their own Frida/container dependencies. Inspeckage is Xposed-based, not just a Frida wrapper; review maintenance and device compatibility.                           |
 | Virtual labs             | Android Emulator, Genymotion, Corellium, Waydroid                | Check host/guest/ABI support and licensing. Waydroid uses a Linux container environment, not a native Windows emulator. Hardware-backed assurance needs evidence from the relevant hardware. |
 | Proxy helpers            | Burp, compatible Android proxy/CA utilities                      | An iOS-only Burp Mobile Assistant workflow is not an Android setup. Verify platform support; a preconfigured emulator does not ensure the app trusts its CA.                                 |
 | Historical scanners      | AndroBugs, QARK and older suites                                 | Label legacy/unmaintained output; do not downgrade the lab or treat scanner silence as coverage.                                                                                             |
-
-* Record each optional tool's version, source, required privileges, artifact compatibility, and validation method.
-* Install tools needed for the test question; checklist tool names are not mandatory dependencies.
 
 ### Windows
 
@@ -53,14 +44,11 @@
 ### Kali Linux
 
 * Install packages available for the selected distribution:
-
-```sh
-sudo apt-get update
-sudo apt-get install adb apktool default-jdk jadx
-java --version
-jadx-gui
-```
-
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">sudo apt-get update
+    sudo apt-get install adb apktool default-jdk jadx
+    java --version
+    jadx-gui
+    </code></pre>
 * Install Android Studio separately.
 * PimpMyKali is optional; it does not guarantee every tool is installed.
 * MobSF: use dependencies/setup for the selected release, not another release's `requirements.txt`.
@@ -68,12 +56,9 @@ jadx-gui
 ### macOS
 
 * **Prerequisite:** review and install [Homebrew](https://brew.sh/) before running:
-
-```sh
-brew install jadx apktool android-platform-tools
-jadx-gui
-apktool --version
-adb version
-```
-
-* Install Android Studio separately; platform tools also include `fastboot`.
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">brew install jadx apktool android-platform-tools
+    jadx-gui
+    apktool --version
+    adb version
+    </code></pre>
+* Install Android Studio separately.

@@ -23,12 +23,11 @@
 * Alternatives: [Proxyman](https://proxyman.io/), HTTP Canary (including Flutter attempts); verify platform/TLS compatibility.
 * Setup: [MobSF Dynamic Analyzer](https://mobsf.github.io/docs/#/dynamic_analyzer), [Frida Android](https://frida.re/docs/android/).
 * Optional/legacy: [CuckooDroid](https://github.com/idanr1986/cuckoo-droid) sandboxing, [BlueStacks](https://www.bluestacks.com/) emulator, [RMS](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), [Ghost](https://github.com/EntySec/Ghost). Verify maintenance/root behavior.
-
 * For `android sslpinning disable`, see [Objection and Runtime Instrumentation](objection-and-runtime-instrumentation.md).
+* For flutter apps,  [FlutterTap](https://github.com/script-or-script/FlutterTap)
 
 ## Establish Network Visibility
 
-* Record original proxy settings before changing them.
 * Use a device-reachable host address; device loopback is not the host.
 * Android Emulator commonly uses `10.0.2.2`; physical devices usually use the host's lab IP.
 

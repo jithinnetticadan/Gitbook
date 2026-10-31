@@ -8,15 +8,12 @@
 ## Acquire the APK
 
 * Find the installed package and pull its APK:
-
-```sh
-adb shell
-pm list packages | grep <app-name-fragment>
-pm path <package-name>
-exit
-adb pull <device-apk-path> <local-file.apk>
-```
-
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell
+    pm list packages | grep &#x3C;app-name-fragment>
+    pm path &#x3C;package-name>
+    exit
+    adb pull &#x3C;device-apk-path> &#x3C;local-file.apk>
+    </code></pre>
 * Create a local output directory.
 * Strip `package:` from each `pm path` result before pulling.
 * Split APKs: collect all required splits; record the set.
@@ -24,22 +21,18 @@ adb pull <device-apk-path> <local-file.apk>
 
 ## Decompile and Inspect
 
-```sh
-jadx-gui <app.apk>
-apktool d <app.apk> -o <decoded-directory>
-```
-
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">jadx-gui &#x3C;app.apk>
+  apktool d &#x3C;app.apk> -o &#x3C;decoded-directory>
+  </code></pre>
 * Compare JADX code with Apktool resources/SMALI; resolve obfuscation or tool differences.
 * Inspect `.so` native libraries separately.
 * Optional DEX-to-JAR and string scanning:
-
-```sh
-d2j-dex2jar.sh <app.apk>
-apkleaks -f <app.apk>
-```
-
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">d2j-dex2jar.sh &#x3C;app.apk>
+  apkleaks -f &#x3C;app.apk>
+  </code></pre>
 * Open the generated JAR in JD-GUI. dex2jar converts DEX to Java bytecode, not original source.
 * MobSF: inspect decompiled code/SMALI; validate automated findings manually.
+* Use [#tools](./#tools "mention")
 
 ## Reconnaissance and Build Comparison
 
