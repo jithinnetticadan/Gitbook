@@ -10,24 +10,21 @@
 * Dangerous permissions and whether each is necessary for app functionality.
 * References: [Android manifest introduction](https://developer.android.com/guide/topics/manifest/manifest-intro), [Android permissions](https://developer.android.com/reference/android/Manifest.permission), and [Android security overview](https://source.android.com/docs/security/overview/app-security).
 * Example settings:
-
-```xml
-<!-- AndroidManifest.xml: example application attributes -->
-<application
-	android:allowBackup="false"
-	android:debuggable="false"
-	android:networkSecurityConfig="@xml/network_security_config" />
-```
-
-```xml
-<!-- res/xml/network_security_config.xml: example domain policy -->
-<network-security-config>
-	<domain-config cleartextTrafficPermitted="false">
-		<domain includeSubdomains="true">example.com</domain>
-	</domain-config>
-</network-security-config>
-```
-
+  * ```xml
+    <!-- AndroidManifest.xml: example application attributes -->
+    <application
+    	android:allowBackup="false"
+    	android:debuggable="false"
+    	android:networkSecurityConfig="@xml/network_security_config" />
+    ```
+  * ```xml
+    <!-- res/xml/network_security_config.xml: example domain policy -->
+    <network-security-config>
+    	<domain-config cleartextTrafficPermitted="false">
+    		<domain includeSubdomains="true">example.com</domain>
+    	</domain-config>
+    </network-security-config>
+    ```
 * Snippets are illustrative, not complete manifests.
 * Also inspect backup/data-extraction rules and OS behavior.
 
