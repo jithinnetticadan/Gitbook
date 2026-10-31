@@ -1,10 +1,5 @@
 # Secrets and Cloud
 
-{% hint style="info" %}
-* Test only in-scope apps; replace command placeholders before use.
-* Record package, version, source, device/API level, and original APK hash.
-{% endhint %}
-
 ## Secrets, Cloud Configuration, and Endpoints
 
 * Search: `api`, `id`, `password`, `username`, `.com`, `aws`, `gcp`, `azure`, `http`, `https`, `secret`, `key`.
@@ -22,9 +17,7 @@ grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' <de
 * Secrets also hide in native `.so` libraries, not just Java/Kotlin code.
 * `AIza...` matches are Google API keys. Many are restricted client identifiers; check what the key authorizes before rating it.
 * A match is a lead until you confirm it is reachable and grants access.
-
 * **Prerequisites:** explicit cloud-test authorization and scoped credentials.
-
 * [cloud\_enum](https://github.com/initstring/cloud_enum) can identify candidate cloud assets.
 * [firebaseEnum](https://github.com/Sambal0x/firebaseEnum) can help assess Firebase exposure.
 * Use the [AWS CLI](https://aws.amazon.com/cli/) only with an authorized profile, e.g. `aws configure --profile <assessment-name>`. Never place credentials in notes or shell history.

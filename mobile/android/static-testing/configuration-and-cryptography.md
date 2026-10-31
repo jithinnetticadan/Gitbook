@@ -1,48 +1,38 @@
 # Configuration and Cryptography
 
-## Configuration and Cryptography
+## Cryptography Patterns
 
-* Inspect certificates: `apksigner verify --verbose --print-certs <app.apk>`.
-* Debug certificate/build: assess release context and impact, not just its presence.
-* Review v1/v2/v3 schemes. Janus (CVE-2017-13156) depends on OS patch level and accepted scheme; v1 alone is not proof.
-* Search: `grep -R -n 'SecretKeySpec' <decompiled-directory>`; also inspect `SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER` and `java.util.Random`.
-* `SecretKeySpec` is not inherently weak; check algorithm, key source, mode, IV/nonce, and use.
-* `java.util.Random` is unsuitable for security-sensitive values; prefer secure randomness.
-* Trace actual TLS/crypto behavior before treating a string match as a weakness.
-
-### Cryptography Patterns
-
-```sh
-grep -rnE 'Cipher\.getInstance\("(DES|DESede|RC4|ARCFOUR|Blowfish|AES/ECB|AES")' <decompiled-directory>
-grep -rnE 'MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' <decompiled-directory>
-grep -rnE 'byte\[\] *(key|iv)[A-Za-z0-9_]* *=|IvParameterSpec\(|SecretKeySpec\(' <decompiled-directory>
-grep -rn 'new Random(' <decompiled-directory>
-```
-
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rnE 'Cipher\.getInstance\("(DES|DESede|RC4|ARCFOUR|Blowfish|AES/ECB|AES")' &#x3C;decompiled-directory>
+  grep -rnE 'MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' &#x3C;decompiled-directory>
+  grep -rnE 'byte\[\] *(key|iv)[A-Za-z0-9_]* *=|IvParameterSpec\(|SecretKeySpec\(' &#x3C;decompiled-directory>
+  grep -rn 'new Random(' &#x3C;decompiled-directory>
+  </code></pre>
 * Plain `Cipher.getInstance("AES")` commonly defaults to ECB on Android; ECB leaks structure and has no IV.
 * MD5/SHA-1 are weak for passwords and signatures; they may be acceptable for non-security checksums.
 * Embedded secret keys are recoverable; prefer suitable Keystore-backed keys. IVs/nonces need not be secret, but must meet the algorithm's unpredictability/uniqueness requirements.
 * `java.util.Random` becomes a finding only when it feeds OTPs, session tokens, reset codes, or nonces; ignore UI/animation use. Use `SecureRandom` instead.
 
-### TLS and Cleartext Patterns
+## TLS,  Cleartext Patterns & Certificate Pinning
 
-```sh
-grep -rn -A4 'checkServerTrusted' <decompiled-directory>
-grep -rn 'ALLOW_ALL_HOSTNAME_VERIFIER\|HostnameVerifier' <decompiled-directory>
-grep -rn -A3 'onReceivedSslError' <decompiled-directory> | grep 'proceed()'
-grep -rn 'CertificatePinner' <decompiled-directory>
-grep -rn '"http://' <decompiled-directory> | grep -v 'schemas.android.com\|w3.org'
-grep -rniE 'cleartextTrafficPermitted|<pin-set' <decoded-directory>/res/xml/
-```
-
+* Search: `grep -R -n 'SecretKeySpec' <decompiled-directory>`; also inspect `SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER` and `java.util.Random`.
+* `SecretKeySpec` is not inherently weak; check algorithm, key source, mode, IV/nonce, and use.
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rn -A4 'checkServerTrusted' &#x3C;decompiled-directory>
+  grep -rn 'ALLOW_ALL_HOSTNAME_VERIFIER\|HostnameVerifier' &#x3C;decompiled-directory>
+  grep -rn -A3 'onReceivedSslError' &#x3C;decompiled-directory> | grep 'proceed()'
+  grep -rn 'CertificatePinner' &#x3C;decompiled-directory>
+  grep -rn '"http://' &#x3C;decompiled-directory> | grep -v 'schemas.android.com\|w3.org'
+  grep -rniE 'cleartextTrafficPermitted|&#x3C;pin-set' &#x3C;decoded-directory>/res/xml/
+  </code></pre>
 * An empty `checkServerTrusted()`, an allow-all hostname verifier, or a WebView calling `proceed()` on SSL errors is a lead. Establish which validation is bypassed, whether that implementation is used for sensitive traffic, and the attacker/impact before treating it as exploitable.
-* Missing certificate pinning is a hardening gap, not automatically a vulnerability; rate by app risk. Check `CertificatePinner`, `<pin-set>`, and custom trust managers.
-* Cleartext: inspect `usesCleartextTraffic`, per-domain/base `cleartextTrafficPermitted`, and `http://` endpoints.
-* Android 9+ defaults to blocking cleartext for target API 28+ in stacks honoring platform policy; inspect overrides and actual traffic. Raw/native sockets may bypass this policy. [Network Security Config](https://developer.android.com/privacy-and-security/security-config).
+* Missing certificate pinning is a hardening gap, not automatically a vulnerability. Check `CertificatePinner`, `<pin-set>`, and custom trust managers.
+* Inspect `usesCleartextTraffic`, per-domain/base `cleartextTrafficPermitted`, and `http://` endpoints.
+* Android 9+ defaults to blocking cleartext for target API 28+ in stacks honoring platform policy; inspect overrides actual traffic. Raw/native sockets may bypass this policy. [Network Security Config](https://developer.android.com/privacy-and-security/security-config).
 
 ## Signing and Trust Boundaries
 
-* Inspect v1/v2/v3 verification and signer identity with `apksigner`; v4 uses a separate incremental-install signature artifact and is not a replacement for APK authenticity verification. Absence of every newer scheme is not automatically exploitable.
+* Inspect v1/v2/v3 verification and signer identity with `apksigner`; v4 uses a separate incremental-install signature artifact and is not a replacement for APK authenticity verification.
+  * `apksigner verify --verbose --print-certs <app.apk>`
+* Review v1/v2/v3 schemes. Janus (CVE-2017-13156) depends on OS patch level and accepted scheme; v1 alone is not proof.
 * APK signing certificates are normally self-signed. Do not confuse that with a weak signing key, a known private debug key, or an unsafe TLS trust anchor. A debug-looking certificate does not prove `debuggable`/backup flags are enabled.
 * Review actual key algorithms/sizes, release-key custody, certificate rotation, and signature-dependent permissions/App Links. Janus needs an affected, unpatched verifier and a relevant accepted signing path.
 * For Network Security Config, resolve per-domain inheritance, `includeSubdomains`, debug overrides, user/system/custom trust anchors, and pin expiry/backup pins. Custom trust anchors can be legitimate; assess provenance, intended endpoints, and actual validation. Non-platform HTTP stacks may not honor this configuration.
