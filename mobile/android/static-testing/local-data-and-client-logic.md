@@ -1,27 +1,12 @@
 # Local Data and Client Logic
 
-{% hint style="info" %}
-* Test only in-scope apps; replace command placeholders before use.
-* Record package, version, source, device/API level, and original APK hash.
-{% endhint %}
+## Storage, Logging, and Screen-Protection Signals
 
-## Local Data and Client-Side Logic
-
-* Inspect shared preferences, SQLite, internal/external files, caches, and backups.
-* Check protection of tokens, personal data, and business state; assess cross-app/backup access.
-* Trace local roles/tokens/account state; verify independent server authorization.
-* Review attacker-controlled SQL input and query construction.
-* Flag logs, clipboard, screenshots, and keyboard behavior for [dynamic testing](../dynamic-testing/local-data-logs-and-privacy.md).
-
-### Storage, Logging, and Screen-Protection Signals
-
-```sh
-grep -rnE 'getSharedPreferences\(|openFileOutput\(|MODE_WORLD_(READABLE|WRITEABLE)|getExternalFilesDir|getExternalStorage' <decompiled-directory>
-grep -rniE 'Log\.(v|d|i|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)' <decompiled-directory>
-grep -rn 'FLAG_SECURE\|setFilterTouchesWhenObscured\|filterTouchesWhenObscured' <decompiled-directory>
-grep -rL 'FLAG_SECURE' --include='*Activity*.java' <decompiled-directory>
-```
-
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rnE 'getSharedPreferences\(|openFileOutput\(|MODE_WORLD_(READABLE|WRITEABLE)|getExternalFilesDir|getExternalStorage' &#x3C;decompiled-directory>
+  grep -rniE 'Log\.(v|d|ia|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)' &#x3C;decompiled-directory>
+  grep -rn 'FLAG_SECURE\|setFilterTouchesWhenObscured\|filterTouchesWhenObscured' &#x3C;decompiled-directory>
+  grep -rL 'FLAG_SECURE' --include='*Activity*.java' &#x3C;decompiled-directory>
+  </code></pre>
 * App-level plaintext and Android file-based encryption are different layers. Private preferences/files are normally UID-sandboxed, not world-readable. Assess actual access through a debuggable build, authorized root, backup, device state, or another demonstrated path before rating disclosure.
 * `MODE_WORLD_*` is unsupported on modern Android; its presence still marks legacy insecure storage code.
 * `run-as <package-name>` normally requires a debuggable app; that access does not prove access to a non-debuggable build.
@@ -31,31 +16,10 @@ grep -rL 'FLAG_SECURE' --include='*Activity*.java' <decompiled-directory>
 
 ## Additional Storage Formats
 
-| Format / Surface                              | Static Lead                                                             | Runtime Follow-Through                                                                                                                      |
-| --------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Jetpack DataStore                             | Preferences/Proto serializers and file locations                        | Identify the actual format and sensitive fields; protobuf is not encryption.                                                                |
-| Room / SQLCipher                              | Database builder, open-helper factory, version-specific passphrase APIs | Determine whether encryption is enabled and how the key is obtained; opening plaintext in-process is not extraction of a hardware key.      |
-| EncryptedSharedPreferences                    | AndroidX Security version, key alias/provider, migration                | Assess key policy, backups, failures, and plaintext lifetime; do not assume root makes the master key exportable.                           |
-| Realm / MMKV                                  | Configuration, file path, encryption option, key source                 | Use compatible tooling and trace configured protection; do not assume all versions/builds use the same defaults.                            |
-| SQLite sidecars / deleted records             | WAL, rollback journal, page residue                                     | Preserve a consistent database/sidecar set; demonstrate relevant retained data and access rather than assuming deletion securely erases it. |
-| External files / MediaStore / removable media | Shared collections, app-specific paths, URI grants                      | Test OS/target-specific access and uninstall residue. MediaStore does not expose every file in another app's private external directory.    |
-| Temporary files / exports                     | Location, permissions, name generation, symlink/canonical-path handling | Check race/overwrite/readability under a realistic caller; `File.createTempFile` is not inherently predictable.                             |
-| Web storage / background jobs                 | Cookies, localStorage/IndexedDB, cache, WorkManager `Data` and database | Track account boundaries, logout, delayed work, retries, and logs; queued work must not reuse the wrong account's state.                    |
+<table><thead><tr><th width="162">Format / Surface</th><th>Static Lead</th><th>Runtime Follow-Through</th></tr></thead><tbody><tr><td>Jetpack DataStore</td><td>Preferences/Proto serializers and file locations</td><td>Identify the actual format and sensitive fields; protobuf is not encryption.</td></tr><tr><td>Room / SQLCipher</td><td>Database builder, open-helper factory, version-specific passphrase APIs</td><td>Determine whether encryption is enabled and how the key is obtained; opening plaintext in-process is not extraction of a hardware key.</td></tr><tr><td>EncryptedSharedPreferences</td><td>AndroidX Security version, key alias/provider, migration</td><td>Assess key policy, backups, failures, and plaintext lifetime; do not assume root makes the master key exportable.</td></tr><tr><td>Realm / MMKV</td><td>Configuration, file path, encryption option, key source</td><td>Use compatible tooling and trace configured protection; do not assume all versions/builds use the same defaults.</td></tr><tr><td>SQLite sidecars / deleted records</td><td>WAL, rollback journal, page residue</td><td>Preserve a consistent database/sidecar set; demonstrate relevant retained data and access rather than assuming deletion securely erases it.</td></tr><tr><td>External files / MediaStore / removable media</td><td>Shared collections, app-specific paths, URI grants</td><td>Test OS/target-specific access and uninstall residue. MediaStore does not expose every file in another app's private external directory.</td></tr><tr><td>Temporary files / exports</td><td>Location, permissions, name generation, symlink/canonical-path handling</td><td>Check race/overwrite/readability under a realistic caller; <code>File.createTempFile</code> is not inherently predictable.</td></tr><tr><td>Web storage / background jobs</td><td>Cookies, localStorage/IndexedDB, cache, WorkManager <code>Data</code> and database</td><td>Track account boundaries, logout, delayed work, retries, and logs; queued work must not reuse the wrong account's state.</td></tr></tbody></table>
 
 * Use the [data lifecycle and acquisition workflow](../dynamic-testing/local-data-logs-and-privacy.md) for controlled before/after checks.
-* **Prerequisite:** disposable installations for removable-media residue and reinstall/restore tests.
 
-## Code Review Beyond Pattern Matching
+## Code Review
 
-* Trace untrusted input to the actual sink and relevant control.
-* Decompiled output is approximate; verify important branches against SMALI/native code.
-
-| Lead                                                    | Inspect                                                                      | Validate                                                                                                                                                 |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Runtime.exec` / `ProcessBuilder`                       | Shell invocation, argument boundaries, input control                         | `Runtime.exec` is not itself a shell parser. Prove shell/argument injection using harmless markers rather than treating every call as command injection. |
-| `Class.forName`, reflection, `DexClassLoader`           | Class/code origin, storage writability, integrity/authenticity checks        | Reflection is common; an attacker must control meaningful code or dispatch input. Check downloaded DEX/JAR/native updates and rollback.                  |
-| `ObjectInputStream.readObject`, JSON, Parcelable/Bundle | Trust source, supported types, custom adapters, class loaders                | Deserialization is not uniformly code execution. Assess reachable gadgets/custom behavior, type confusion, data changes, and bounded denial of service.  |
-| Coroutines / threads / shared mutable state             | Authentication-state transitions, Mutex/transaction boundaries, cancellation | Use a bounded concurrent test to reproduce a stale check or double action; a `suspend` function alone is not a race.                                     |
-| WorkManager / delayed tasks                             | Stored arguments, session ownership, retry/cancellation                      | Reproduce logout/account switch between scheduling and execution; verify current authorization at execution.                                             |
-| R8 / DexGuard / encrypted strings                       | Renamed identifiers, reflection dispatch, string decryption, control flow    | Plan targeted runtime observation; no obfuscation is not automatically a security defect.                                                                |
-| Deprecated APIs                                         | Target/platform behavior and replacement path                                | Deprecation is a review lead, not proof of exploitation on the tested version.                                                                           |
+<table><thead><tr><th width="177">Lead</th><th>Inspect</th><th>Validate</th></tr></thead><tbody><tr><td><code>Runtime.exec</code> / <code>ProcessBuilder</code></td><td>Shell invocation, argument boundaries, input control</td><td><code>Runtime.exec</code> is not itself a shell parser. Prove shell/argument injection using harmless markers rather than treating every call as command injection.</td></tr><tr><td><code>Class.forName</code>, reflection, <code>DexClassLoader</code></td><td>Class/code origin, storage writability, integrity/authenticity checks</td><td>Reflection is common; an attacker must control meaningful code or dispatch input. Check downloaded DEX/JAR/native updates and rollback.</td></tr><tr><td><code>ObjectInputStream.readObject</code>, JSON, Parcelable/Bundle</td><td>Trust source, supported types, custom adapters, class loaders</td><td>Deserialization is not uniformly code execution. Assess reachable gadgets/custom behavior, type confusion, data changes, and bounded denial of service.</td></tr><tr><td>Coroutines / threads / shared mutable state</td><td>Authentication-state transitions, Mutex/transaction boundaries, cancellation</td><td>Use a bounded concurrent test to reproduce a stale check or double action; a <code>suspend</code> function alone is not a race.</td></tr><tr><td>WorkManager / delayed tasks</td><td>Stored arguments, session ownership, retry/cancellation</td><td>Reproduce logout/account switch between scheduling and execution; verify current authorization at execution.</td></tr><tr><td>R8 / DexGuard / encrypted strings</td><td>Renamed identifiers, reflection dispatch, string decryption, control flow</td><td>Plan targeted runtime observation; no obfuscation is not automatically a security defect.</td></tr><tr><td>Deprecated APIs</td><td>Target/platform behavior and replacement path</td><td>Deprecation is a review lead, not proof of exploitation on the tested version.</td></tr></tbody></table>
