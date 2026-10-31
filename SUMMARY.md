@@ -239,9 +239,9 @@
 
 * [Android](mobile/android/README.md)
   * [Static Testing](mobile/android/static-testing/README.md)
-    * [Preflight and Tools](mobile/android/static-testing/preflight-and-tools.md)
-    * [Acquire and Decompile](mobile/android/static-testing/acquire-and-decompile.md)
     * [App Architecture](mobile/android/static-testing/app-architecture.md)
+    * [Preflight and Lab Setup](mobile/android/static-testing/preflight-and-tools.md)
+    * [Acquire and Decompile](mobile/android/static-testing/acquire-and-decompile.md)
     * [Manifest and Components](mobile/android/static-testing/manifest-and-components.md)
     * [Configuration and Cryptography](mobile/android/static-testing/configuration-and-cryptography.md)
     * [Secrets and Cloud](mobile/android/static-testing/secrets-and-cloud.md)

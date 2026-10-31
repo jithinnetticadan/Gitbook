@@ -1,22 +1,14 @@
 # Manifest and Components
 
-{% hint style="info" %}
-* Test only in-scope apps; replace command placeholders before use.
-* Record package, version, source, device/API level, and original APK hash.
-{% endhint %}
-
 ## Manifest and Component Review
 
 * Inspect `AndroidManifest.xml` in JADX and Apktool:
-
 * `minSdkVersion`, target SDK, permissions, application settings, activities, services, receivers, and providers.
 * `android:exported`, component permissions, intent filters, deep links, and sensitive-action authorization. Intent filters are **not authentication**.
 * Debug, backup, cleartext, and `android:networkSecurityConfig` settings. Check production behavior.
 * Content provider authorities, exported status, path permissions, and query/update behavior.
 * Dangerous permissions and whether each is necessary for app functionality.
-
 * References: [Android manifest introduction](https://developer.android.com/guide/topics/manifest/manifest-intro), [Android permissions](https://developer.android.com/reference/android/Manifest.permission), and [Android security overview](https://source.android.com/docs/security/overview/app-security).
-
 * Example settings:
 
 ```xml
@@ -54,7 +46,6 @@ grep -nE 'android:(allowBackup|dataExtractionRules|fullBackupContent|debuggable|
 * Check cloud backup and device transfer separately; some manufacturers permit transfer despite `allowBackup=false`. [Backup rules](https://developer.android.com/identity/data/autobackup).
 * On Android 12+, `adb backup` excludes data from apps targeting API 31+ unless debuggable; command availability and older-device behavior vary.
 * `android:debuggable="true"` in a release build allows JDWP attach. On a non-rooted device, `adb shell run-as <package-name> id` succeeding also indicates a debuggable app.
-
 * Validate exported components at runtime: [Component Testing](../dynamic-testing/component-testing.md).
 
 ## Permissions, Tasks, and Special Access
