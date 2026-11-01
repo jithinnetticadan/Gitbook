@@ -1,13 +1,5 @@
 # Advanced IPC and Content Providers
 
-[Intents / Binder](advanced-ipc-and-providers.md#intent-result-and-binder-boundaries) | [Providers](advanced-ipc-and-providers.md#provider-operation-matrix) | [Dirty Stream](advanced-ipc-and-providers.md#dirty-stream-untrusted-provider-metadata)
-
-{% hint style="info" %}
-* Start with [Component Testing](component-testing.md).
-* **Prerequisites:** minimally privileged companion app, owned test records, and explicit mutation/fuzzing authorization.
-* Record caller UID, permissions, signer, grants, OS/target SDK, and account state.
-{% endhint %}
-
 ## Scope and Entry Criteria
 
 * **Basic commands:** [Component Testing](component-testing.md) for Intent delivery, Messenger, provider reads/CRUD/scanners.
@@ -18,16 +10,7 @@
 
 ## Intent, Result, and Binder Boundaries
 
-| Surface                                | Test                                                                                    | Confirm                                                                       |
-| -------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Intent redirection                     | Nested Intent/`intent:` through exported forwarder; vary destination/action/data/grants | Protected operation reached using intermediary authority                      |
-| Activity results                       | Companion launches for result; logged-out/cancel paths                                  | Sensitive extras/grants returned before authorization                         |
-| Mutable PendingIntent                  | Obtain shared token; fill unspecified fields, especially empty/implicit base Intent     | Unintended operation as creator; mutability alone is not a flaw               |
-| PendingIntent replay / reuse           | Repeat owned token after use, logout, privilege change                                  | Unauthorized repeat action; missing `FLAG_ONE_SHOT` alone is not a flaw       |
-| Bound service / AIDL / Messenger       | Known methods, owned records, callbacks, returned Binder handles                        | Per-method caller/role/object checks; binding alone is insufficient           |
-| Binder identity handling               | Checks, `clearCallingIdentity`, async handoff, restoration                              | Authorization uses intended external caller, not substituted service identity |
-| Implicit / sticky / ordered broadcasts | Recipients, permissions/package, results, registration flags                            | Unintended reception/injection under actual platform restrictions             |
-| Task transitions                       | Launcher, recents, reparenting, `singleTask`                                            | Unintended task/UI transition; assess platform advisories separately          |
+<table><thead><tr><th width="172">Surface</th><th width="274">Test</th><th>Confirm</th></tr></thead><tbody><tr><td>Intent redirection</td><td>Nested Intent/<code>intent:</code> through exported forwarder; vary destination/action/data/grants</td><td>Protected operation reached using intermediary authority</td></tr><tr><td>Activity results</td><td>Companion launches for result; logged-out/cancel paths</td><td>Sensitive extras/grants returned before authorization</td></tr><tr><td>Mutable PendingIntent</td><td>Obtain shared token; fill unspecified fields, especially empty/implicit base Intent</td><td>Unintended operation as creator; mutability alone is not a flaw</td></tr><tr><td>PendingIntent replay / reuse</td><td>Repeat owned token after use, logout, privilege change</td><td>Unauthorized repeat action; missing <code>FLAG_ONE_SHOT</code> alone is not a flaw</td></tr><tr><td>Bound service / AIDL / Messenger</td><td>Known methods, owned records, callbacks, returned Binder handles</td><td>Per-method caller/role/object checks; binding alone is insufficient</td></tr><tr><td>Binder identity handling</td><td>Checks, <code>clearCallingIdentity</code>, async handoff, restoration</td><td>Authorization uses intended external caller, not substituted service identity</td></tr><tr><td>Implicit / sticky / ordered broadcasts</td><td>Recipients, permissions/package, results, registration flags</td><td>Unintended reception/injection under actual platform restrictions</td></tr><tr><td>Task transitions</td><td>Launcher, recents, reparenting, <code>singleTask</code></td><td>Unintended task/UI transition; assess platform advisories separately</td></tr></tbody></table>
 
 * **Malformed inputs:** missing extras, wrong types, short invalid URIs; agree size/attempt limits.
 * **No flooding:** reproduce bounded failures; a crash alone is not code execution.
@@ -37,23 +20,9 @@
 * Map each authority's documented/code-discovered URI routes, operations, permissions, accounts, and data owners.
 * Compare an unauthorized caller with an authorized control.
 
-| Surface                             | Test                                                                 | Confirm / Caveat                                                              |
-| ----------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `query`, `update`, `delete`         | Selection, bound arguments, permitted rows                           | Parameters do not protect raw SQL/identifiers; disposable mutations only      |
-| Projection / sorting / grouping     | Columns, expressions, order/limit                                    | Forbidden test column/route accessible; avoid unnecessary dumps               |
-| `openFile` / typed assets           | Decoding, canonical paths, modes, symlinks/races                     | Harmless file stays inside root; prefix checks respect path boundaries        |
-| FileProvider                        | Roots, URI, read/write/prefix/persistable grants                     | Actual grant scope/lifetime; `grantUriPermissions=true` is not blanket access |
-| Route variants / undocumented paths | Matcher, encoded segments, trailing separators, alternate operations | Consistent authorization after normalization; establish valid routes first    |
-| Family apps / shared UID            | Signing/install prerequisites, permissions, caller UID               | Demonstrate access; one compromised app does not imply universal access       |
-| `notifyChange` / ContentObserver    | URI contents, permissions, registration/delivery                     | Unauthorized observer receives sensitive data; not an unrestricted broadcast  |
-| Malformed requests                  | Bounded invalid selection, URI, offsets, types                       | Rejection/crash and recovery; no repeated DoS                                 |
-
-* Test URI grant revocation, recipient changes, and logout independently.
-* A non-exported provider may intentionally serve a narrowly granted URI; this alone is not an export-control failure.
+<table><thead><tr><th width="182">Surface</th><th>Test</th><th>Confirm / Caveat</th></tr></thead><tbody><tr><td><code>query</code>, <code>update</code>, <code>delete</code></td><td>Selection, bound arguments, permitted rows</td><td>Parameters do not protect raw SQL/identifiers; disposable mutations only</td></tr><tr><td>Projection / sorting / grouping</td><td>Columns, expressions, order/limit</td><td>Forbidden test column/route accessible; avoid unnecessary dumps</td></tr><tr><td><code>openFile</code> / typed assets</td><td>Decoding, canonical paths, modes, symlinks/races</td><td>Harmless file stays inside root; prefix checks respect path boundaries</td></tr><tr><td>FileProvider</td><td>Roots, URI, read/write/prefix/persistable grants</td><td>Actual grant scope/lifetime; <code>grantUriPermissions=true</code> is not blanket access</td></tr><tr><td>Route variants / undocumented paths</td><td>Matcher, encoded segments, trailing separators, alternate operations</td><td>Consistent authorization after normalization; establish valid routes first</td></tr><tr><td>Family apps / shared UID</td><td>Signing/install prerequisites, permissions, caller UID</td><td>Demonstrate access; one compromised app does not imply universal access</td></tr><tr><td><code>notifyChange</code> / ContentObserver</td><td>URI contents, permissions, registration/delivery</td><td>Unauthorized observer receives sensitive data; not an unrestricted broadcast</td></tr><tr><td>Malformed requests</td><td>Bounded invalid selection, URI, offsets, types</td><td>Rejection/crash and recovery; no repeated DoS</td></tr></tbody></table>
 
 ## Dirty Stream: Untrusted Provider Metadata
-
-* Test the shared-file consumer even when its own provider is correctly configured.
 
 1. **Find consumer:** reachable import/share/picker; reads display name, `_data`, size, MIME, or URI segment.
 2. **Trace destination:** remote metadata used as a local path versus safe generated name.

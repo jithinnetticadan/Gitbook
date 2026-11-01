@@ -1,4 +1,4 @@
-# Troubleshooting and Test Cleanup
+# Validation, Reporting, and Troubleshooting
 
 ## Connect Static Leads to Runtime Tests
 
@@ -26,16 +26,4 @@
 | Only part of traffic appears   | Compare domains, SDK clients, WebViews, native sockets, and QUIC.                                             | Track coverage per stack/domain; record unobserved paths.                                                            |
 | Static function not observed   | Confirm installed version/splits, conditions, account/feature flags, native/reflection paths, caches.         | Mark untested or establish an alternate path; lack of a hit does not prove unreachable code.                         |
 
-* Stop repeated bypass attempts when the next step exceeds scope, risks availability, or prevents higher-value tests.
 * Follow the [runtime-defense stop criteria](runtime-defenses-and-integrity.md#stop-criteria).
-
-## Test Completion and Cleanup
-
-* [ ] Critical login/logout/reset/refresh, authorization, IPC/links/WebView, network, storage/privacy, backup, and crypto flows tested or marked untested.
-* [ ] Each control tested individually with a normal control case.
-* [ ] Proxy/Wi-Fi/VPN settings and trust changes restored; temporary CAs removed.
-* [ ] Frida/Drozer servers stopped; test forwarding, scripts, staging copies, and companion apps removed.
-* [ ] Test sessions revoked and approved records restored/deleted; dumps and captures retained or destroyed according to agreement.
-
-* Do not erase unrelated user data during cleanup.
-* Reference: [OWASP MASTG](https://mas.owasp.org/MASTG/).

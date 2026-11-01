@@ -17,11 +17,6 @@
 * **Shared URI:** Intent carries URI/grants; `ContentResolver` accesses the provider.
 * Deep links and WebViews are related surfaces, not additional component types.
 
-### Relationship to Advanced IPC
-
-* **Here:** enumerate, invoke, test access/inputs; Intent and provider commands.
-* [**Advanced IPC**](advanced-ipc-and-providers.md)**:** forwarding, results, PendingIntent, Binder identity, provider query/path/grant abuse, Dirty Stream.
-
 ## Runtime Component Testing
 
 1. **Enumerate:** names/authorities, export state, permissions, registrations, grants.
@@ -29,61 +24,39 @@
 3. **Baseline:** legitimate action on owned data; record local/API effects.
 4. **Compare:** intended/unauthorized caller; logged out; owned accounts A/B and roles.
 5. **Vary:** one input at a time; bounded values and harmless destinations.
-6. **Confirm/restore:** protected data/action accessed; test state cleaned up.
-
-* Follow [Activities](component-testing.md#activities), [Services](component-testing.md#services), [Broadcast Receivers](component-testing.md#broadcast-receivers), then [Content Providers](component-testing.md#content-providers).
-* `exported=true`, successful command delivery, or a crash alone does not show an access-control failure.
-* Track each discovered input, method, route, operation, and caller/grant combination: **tested / N/A / blocked**. Commands alone are not full coverage.
+6. **Confirm/restore:** protected data/action accessed.
 
 ### ADB Probes and Caller Identity
 
 * **Need:** SDK Platform Tools, USB debugging, authorized host.
-* **Run:** `sh` blocks on host; replace placeholders; preserve shell quoting for spaces, `$`, and `&`.
+* **Run:** `sh` blocks on host; preserve shell quoting for spaces, `$`, and `&`.
 * **Multiple devices:** add `-s <device-serial>` after every `adb`, including forwards.
-* **Before testing:** preserve baseline logs; launches can change state.
-
-```sh
-adb version
-adb devices -l
-adb shell getprop ro.build.version.sdk
-adb shell dumpsys package "<package-name>"
-```
-
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb version
+  adb devices -l
+  adb shell getprop ro.build.version.sdk
+  adb shell dumpsys package "&#x3C;package-name>"
+  </code></pre>
 * **Record:** build, OS/target SDK, user/profile, component/authority, caller.
 * **ADB = shell UID**, not an ordinary app; root is separate.
 * **Confirm app-level access:** minimally privileged companion/Drozer agent; record permissions, signer, grants.
-* Do not add root/permissions to force a denied ordinary-app test to pass.
 
-| Boundary       | Check                                                                  | Confirm                                                                            |
-| -------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Reachability   | Export state, OS restrictions, receiver registration, URI grants       | The specified caller can reach the component.                                      |
-| Permission     | Manifest/runtime permission, signature permission, sender restrictions | A caller without the intended permission can still perform the relevant operation. |
-| Authentication | Logged out, expired, or unauthenticated state                          | Protected local data/action is available without required authentication.          |
-| Authorization  | Different owned account/role/object                                    | An authenticated but unauthorized caller crosses a specific access boundary.       |
+<table><thead><tr><th width="137">Boundary</th><th>Check</th><th>Confirm</th></tr></thead><tbody><tr><td>Reachability</td><td>Export state, OS restrictions, receiver registration, URI grants</td><td>The specified caller can reach the component.</td></tr><tr><td>Permission</td><td>Manifest/runtime permission, signature permission, sender restrictions</td><td>A caller without the intended permission can still perform the relevant operation.</td></tr><tr><td>Authentication</td><td>Logged out, expired, or unauthenticated state</td><td>Protected local data/action is available without required authentication.</td></tr><tr><td>Authorization</td><td>Different owned account/role/object</td><td>An authenticated but unauthorized caller crosses a specific access boundary.</td></tr></tbody></table>
 
 ### Drozer Setup
 
 * **Need:** compatible [Drozer](https://github.com/WithSecureLabs/drozer) console + agent APK; follow release requirements.
 * **Device:** enable agent server; verify port (`31415` by default).
 * **Host:**
-
-```sh
-adb forward tcp:31415 tcp:31415
-drozer console connect
-```
-
-* **Drozer console:** run all `run`/`help` commands here; check installed module help.
-* Component `info -u` includes non-exported candidates; test reachability separately.
-
-```
-run app.package.attacksurface <package-name>
-run app.package.manifest <package-name>
-run app.package.debuggable
-help intents
-```
-
-* `app.package.debuggable`: inventory only, not proof of access.
-* Runtime receivers: inspect registration code and trigger the relevant app state.
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">adb forward tcp:31415 tcp:31415
+    drozer console connect
+    </code></pre>
+* **Drozer console:** run all `run`/`help` commands here.
+* Component `info -u` includes non-exported candidates.
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.package.attacksurface &#x3C;package-name>
+    run app.package.manifest &#x3C;package-name>
+    run app.package.debuggable
+    help intents
+    </code></pre>
 
 ## Activities
 
@@ -91,29 +64,21 @@ help intents
 
 * **Map:** full class name, permissions, filters, extras, data URIs.
 * **Trace:** `onCreate` / `onNewIntent`; note activity reuse.
-* **Baseline:** open normally; record account, protected action/data, preceding checks.
-
-```
-run app.activity.info -a <package-name>
-```
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.activity.info -a &#x3C;package-name>
+  </code></pre>
 
 ### Test Direct Access and Inputs
 
-* **ADB:** bare launch, then harmless input. Types: `--es` string, `--ei` integer, `--ez` Boolean.
-
-```sh
-adb shell am start -n "<package-name>/<fully-qualified-activity-name>"
-adb shell am start -W -n "<package-name>/<activity-name>" --es "<extra-name>" "<test-value>"
-```
-
+* **ADB:** bare launch, extra input. Types: `--es` string, `--ei` integer, `--ez` Boolean.
+  * ```bash
+    adb shell am start -n "<package-name>/<fully-qualified-activity-name>"
+    adb shell am start -W -n "<package-name>/<activity-name>" --es "<extra-name>" "<test-value>"
+    ```
 * **Drozer:** bare launch, extra, or supported data URI.
-
-```
-run app.activity.start --component <package-name> <activity-name>
-run app.activity.start --component <package-name> <activity-name> --extra string <extra-name> <test-value>
-run app.activity.start --component <package-name> <activity-name> --data-uri <authorized-test-uri>
-```
-
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.activity.start --component &#x3C;package-name> &#x3C;activity-name>
+    run app.activity.start --component &#x3C;package-name> &#x3C;activity-name> --extra string &#x3C;extra-name> &#x3C;test-value>
+    run app.activity.start --component &#x3C;package-name> &#x3C;activity-name> --data-uri &#x3C;authorized-test-uri>
+    </code></pre>
 * **States:** logged out, expired session, owned accounts/roles A/B.
 * **Inputs:** missing extra, different owned ID, short invalid value; vary one at a time.
 * **Lifecycle:** fresh launch versus existing task (`onCreate` / `onNewIntent`).
@@ -134,26 +99,20 @@ run app.activity.start --component <package-name> <activity-name> --data-uri <au
 * **Started:** `onStartCommand` inputs. **Bound:** `onBind` and returned interface.
 * **Messenger:** `Handler.handleMessage`; accepted `what`, `arg1`, `arg2`, Bundle fields/types.
 * **AIDL/Binder:** methods, types, callbacks, caller checks; not interchangeable with Messenger.
-
-```
-run app.service.info -a <package-name>
-help app.service.send
-```
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.service.info -a &#x3C;package-name>
+  help app.service.send
+  </code></pre>
 
 ### Test a Started Service
 
 * **Baseline:** trigger normally, then repeat the same harmless input below.
-
-```sh
-adb shell am startservice -n "<package-name>/<service-name>" --es "<extra-name>" "<test-value>"
-```
-
+  * ```bash
+    adb shell am startservice -n "<package-name>/<service-name>" --es "<extra-name>" "<test-value>"
+    ```
 * **Drozer:** compare agent versus shell access.
-
-```
-run app.service.start --component <package-name> <service-name> --extra string <extra-name> <test-value>
-```
-
+  * ```bash
+    run app.service.start --component <package-name> <service-name> --extra string <extra-name> <test-value>    
+    ```
 * **Vary:** missing/malformed inputs, unauthorized account/object; disposable state only.
 * **Blocked delivery:** check OS background/foreground restrictions separately from authorization.
 * Foreground start requires a compatible notification/lifecycle; do not switch blindly.
@@ -161,18 +120,14 @@ run app.service.start --component <package-name> <service-name> --extra string <
 ### Test a Bound Service
 
 * **Messenger only:** use observed integer codes, not generic sample values. Default Bundle: `Message.getData()`.
-
-```
-run app.service.send <package-name> <service-name> --msg <what> <arg1> <arg2> --extra string <parameter> <test-value>
-```
-
+* ```bash
+  run app.service.send <package-name> <service-name> --msg <what> <arg1> <arg2> --extra string <parameter> <test-value>
+  ```
 * `--msg`: `what arg1 arg2`. `--extra`: Bundle field.
 * **Object Bundle variant:** only when the handler expects `Message.obj`.
-
-```
-run app.service.send <package-name> <service-name> --msg <what> <arg1> <arg2> --extra string <parameter> <test-value> --bundle-as-obj
-```
-
+* ```bash
+  run app.service.send <package-name> <service-name> --msg <what> <arg1> <arg2> --extra string <parameter> <test-value> --bundle-as-obj
+  ```
 * **No reply:** inconclusive; check state/callbacks, one-way/async behavior, rejection, protocol mismatch.
 * **AIDL/Binder:** compatible companion client; baseline an owned-record method, then vary one input.
 * **Check:** per-method/record authorization, callbacks, caller identity. Successful binding is insufficient.
@@ -182,10 +137,9 @@ run app.service.send <package-name> <service-name> --msg <what> <arg1> <arg2> --
 * **Pass:** only intended callers can start/bind and perform each protected operation.
 * **Fail:** unauthorized work, protected response data, or a state change under the service's authority; a successful bind/start alone is insufficient.
 * **Cleanup:** stop only disposable work started by the test and unbind companion clients; stopping a started service does not necessarily remove active bindings.
-
-```sh
-adb shell am stopservice -n "<package-name>/<service-name>"
-```
+  * ```bash
+    adb shell am stopservice -n "<package-name>/<service-name>"
+    ```
 
 ## Broadcast Receivers
 
@@ -194,38 +148,28 @@ adb shell am stopservice -n "<package-name>/<service-name>"
 * **Map:** class, actions, data/categories, export state, sender permissions, registration lifetime.
 * **Runtime:** inspect `registerReceiver` flags/permissions; keep the required feature open.
 * **Baseline:** legitimate event with synthetic data; record action/outgoing broadcast.
-
-```
-run app.broadcast.info -a <package-name>
-run app.broadcast.info -a <package-name> -i
-```
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.broadcast.info -a &#x3C;package-name>
+  run app.broadcast.info -a &#x3C;package-name> -i
+  </code></pre>
 
 ### Test Unauthorized Sending
 
 * **Explicit ADB:** manifest receiver, observed action, harmless extras.
-
-```sh
-adb shell am broadcast -n "<package-name>/<receiver-name>" -a "<observed-action>" --es "<extra-name>" "<test-value>"
-```
-
+  * ```bash
+    adb shell am broadcast -n "<package-name>/<receiver-name>" -a "<observed-action>" --es "<extra-name>" "<test-value>"
+    ```
 * **Explicit Drozer:** do not grant the permission being tested.
-
-```
-run app.broadcast.send --component <package-name> <receiver-name> --action <observed-action> --extra string <extra-name> <test-value>
-```
-
+  * ```bash
+    run app.broadcast.send --component <package-name> <receiver-name> --action <observed-action> --extra string <extra-name> <test-value>
+    ```
 * **Implicit Drozer:** isolated lab/approved recipients only; other matching apps can receive this.
-
-```
-run app.broadcast.send --action <intent-name> --extra string <parameter> <test-value>
-```
-
+  * ```bash
+    run app.broadcast.send --action <intent-name> --extra string <parameter> <test-value>
+    ```
 * **Package-targeted ADB:** runtime receiver must be registered with a matching filter; class targeting may not work.
-
-```sh
-adb shell am broadcast -a "<observed-action>" -p "<package-name>" --es "<extra-name>" "<test-value>"
-```
-
+  * ```bash
+    adb shell am broadcast -a "<observed-action>" -p "<package-name>" --es "<extra-name>" "<test-value>"
+    ```
 * **Vary:** missing/wrong-type extras, owned-record IDs; check authorization before side effects.
 * Protected broadcasts/sender restrictions can block injection; record the restriction, do not bypass it.
 
@@ -233,11 +177,9 @@ adb shell am broadcast -a "<observed-action>" -p "<package-name>" --es "<extra-n
 
 * **Select:** app-generated action with synthetic marker; exclude unrelated traffic.
 * **Listen first**, then trigger the app's sending flow:
-
-```
-run app.broadcast.sniff --action <observed-action>
-```
-
+  * ```bash
+    run app.broadcast.sniff --action <observed-action>
+    ```
 * **Need:** matching data/categories and OS-compatible receiver registration.
 * **Incompatible helper:** companion receiver with matching filters and explicit export/permission settings.
 * **Record:** receiver permissions; explicit / package / permission-restricted / implicit / ordered / sticky delivery.
@@ -258,53 +200,38 @@ run app.broadcast.sniff --action <observed-action>
 * **Map:** authority/routes, operations, export state, read/write/path permissions, grants.
 * **Trace:** URI matcher and query/file handlers; authority alone is not a valid route.
 * **Baseline:** create test record/file normally; record URI/ID and authorized behavior.
-
-```
-run app.provider.info -a <package-name>
-run app.provider.finduri <package-name>
-```
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.provider.info -a &#x3C;package-name>
+  run app.provider.finduri &#x3C;package-name>
+  </code></pre>
 
 ### Test Scoped Reads
 
 * **ADB:** numeric test ID; adapt schema and shell quoting.
-
-```sh
-adb shell content query --uri "<content-uri>" --projection "<known-column>" --where "<id-column>=<numeric-test-record-id>"
-```
-
+  * ```bash
+    adb shell content query --uri "<content-uri>" --projection "<known-column>" --where "<id-column>=<numeric-test-record-id>"
+    ```
 * **Drozer:** scoped columns/record; compare unauthorized caller and owned accounts A/B.
-
-```
-run app.provider.query <content-uri> --projection <known-column> --selection "<id-column>=?" --selection-args <owned-record-id>
-```
-
+  * ```bash
+    run app.provider.query <content-uri> --projection <known-column> --selection "<id-column>=?" --selection-args <owned-record-id>
+    ```
 * **Minimal query/columns:** owned item URI or small disposable dataset only; unfiltered collections may return all rows.
-
-```
-run app.provider.query <content-uri>
-run app.provider.columns <content-uri>
-```
-
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.provider.query &#x3C;content-uri>
+    run app.provider.columns &#x3C;content-uri>
+    </code></pre>
 * **Columns:** metadata query. Check installed module availability.
 * **File read:** URI serving a harmless test file, not a table/collection.
-
-```
-run app.provider.read <content-uri>
-```
-
-* Console file output is not binary-safe; use a binary-safe export for file contents.
+  * ```bash
+    run app.provider.read <content-uri>
+    ```
 
 ### Test Writes and File/Grant Boundaries
 
 * **Writes require:** approval, disposable records, known columns/types, cleanup plan; otherwise skip.
 * **Insert:** valid synthetic data; record returned URI/ID for update/delete.
-
-```
-run app.provider.insert <content-uri> --string <column> <test-value>
-run app.provider.update <content-uri> --selection "<id-column>=?" --selection-args <owned-record-id> --string <column> <replacement-value>
-run app.provider.delete <content-uri> --selection "<id-column>=?" --selection-args <owned-record-id>
-```
-
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.provider.insert &#x3C;content-uri> --string &#x3C;column> &#x3C;test-value>
+    run app.provider.update &#x3C;content-uri> --selection "&#x3C;id-column>=?" --selection-args &#x3C;owned-record-id> --string &#x3C;column> &#x3C;replacement-value>
+    run app.provider.delete &#x3C;content-uri> --selection "&#x3C;id-column>=?" --selection-args &#x3C;owned-record-id>
+    </code></pre>
 * **Types:** repeat typed flags per schema. Keep update/delete selections scoped.
 * **Authorization:** test each operation, including observed `call()` methods; read access does not imply write access.
 * **Files/grants:** roots, modes, recipients, lifetime, revocation, logout; harmless files only.
@@ -313,16 +240,14 @@ run app.provider.delete <content-uri> --selection "<id-column>=?" --selection-ar
 
 ### Optional Provider Scanners
 
-* **Need:** compatible modules, approved package, disposable data, agreed scan scope; read installed help.
+* **Need:** compatible modules, approved package, disposable data, agreed scan scope.
 * **Order below:** URI discovery, SQL-injection probes, SQL-table enumeration via candidate injection paths.
-* Broad scans may expose schema or probe multiple routes without per-record limits; use manual tests when scope is narrower.
-
-```
-run scanner.provider.finduris -a <package-name>
-run scanner.provider.injection -a <package-name>
-run scanner.provider.sqltables -a <package-name>
-```
-
+* Broad scans may expose schema or probe multiple routes without per-record limits.
+* ```bash
+  run scanner.provider.finduris -a <package-name>
+  run scanner.provider.injection -a <package-name>
+  run scanner.provider.sqltables -a <package-name>
+  ```
 * **Confirm hits:** controlled inputs + [provider matrix](advanced-ipc-and-providers.md#provider-operation-matrix); scanner output alone is insufficient.
 
 ### Expected Result
@@ -337,37 +262,27 @@ run scanner.provider.sqltables -a <package-name>
 ### Deep Links and Verified App Links
 
 * **Custom scheme / package-constrained:** use the app's observed route.
-
-```sh
-adb shell am start -a android.intent.action.VIEW -d "<scheme>://<host>/<path>?<parameter>=<test-value>" <package-name>
-```
-
+  * ```bash
+    adb shell am start -a android.intent.action.VIEW -d "<scheme>://<host>/<path>?<parameter>=<test-value>" <package-name>
+    ```
 * **Implicit Drozer:** harmless in-scope URI; record handler/chooser.
-
-```
-run app.activity.start --action android.intent.action.VIEW --data-uri <authorized-test-uri>
-```
-
+  * ```bash
+    run app.activity.start --action android.intent.action.VIEW --data-uri <authorized-test-uri>
+    ```
 * **Compare:** explicit component, package-constrained, unconstrained routing.
 * **Verification command:** Android 12+; older versions require manifest/resolver checks.
 * **HTTPS baseline:** inspect verification, then launch.
-
-```sh
-adb shell pm get-app-links <package-name>
-adb shell "am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'https://app.example.test/profile?id=test-record&mode=view' -p com.example.app"
-```
-
-* Replace example host/package/record; outer quotes protect URI `&` on the device shell.
-* **Unconstrained variant:** also test from browser/companion; targeted launches do not prove default-handler ownership.
-
-```sh
-adb shell "am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'https://app.example.test/profile?id=test-record&mode=view'"
-```
-
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell pm get-app-links &#x3C;package-name>
+    adb shell "am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'https://app.example.test/profile?id=test-record&#x26;mode=view' -p com.example.app"
+    </code></pre>
+* **Unconstrained variant:** also test from browser/companion.
+  * ```bash
+    adb shell "am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'https://app.example.test/profile?id=test-record&mode=view'"
+    ```
 * **Routing:** custom schemes versus verified HTTPS; domain association, signer, defaults, redirects, competing handlers, broad paths.
 * **Vary one:** scheme, host/subdomain, path, query, fragment, encoding, duplicate/missing parameters, redirect; owned IDs/destinations only.
 * **States:** logged out, accounts A/B, post-logout, expired session; verify reached data/action.
-* **Login/reset:** one-time codes, state/session binding, redirects, PKCE; redact live codes/history.
+* **Login/reset:** one-time codes, state/session binding, redirects, PKCE.
 * **Association:** inspect `https://<authorized-host>/.well-known/assetlinks.json`.
 * **Match:** relation, `android_app`, package, SHA-256 app-signing fingerprints against the installed build.
 * **Certificates:** compare using `apksigner verify --print-certs`; upload signer may differ, re-signing can change verification.
@@ -390,16 +305,7 @@ adb shell "am start -W -a android.intent.action.VIEW -c android.intent.category.
 * Static candidates: [WebView, IPC, and Dependency Checks](../static-testing/webview-ipc-and-dependencies.md).
 * References: [App Link verification](https://developer.android.com/training/app-links/verify-android-applinks), [WebView debugging](https://developer.chrome.com/docs/devtools/remote-debugging/webviews/).
 
-## Cleanup
+## References
 
-* For API effects, verify server-side authorization/results; intent filters and preceding screens are not access controls.
-* Restore disposable state, remove test listeners/grants, and stop the Drozer agent server.
-* Remove only the test forward; preserve unrelated forwards.
-
-```sh
-adb forward --remove tcp:31415
-```
-
-* Stuck or unexpected results: [Troubleshooting and Test Cleanup](validation-and-troubleshooting.md).
-* References: [Android app components](https://developer.android.com/guide/components/fundamentals), [Intents and intent filters](https://developer.android.com/guide/components/intents-filters).
-* Drozer argument references: [service modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/service.py), [broadcast modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/broadcast.py), [provider modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/provider.py). Installed release behavior may differ from the development branch.
+* [Android app components](https://developer.android.com/guide/components/fundamentals), [Intents and intent filters](https://developer.android.com/guide/components/intents-filters).
+* Drozer: [service modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/service.py), [broadcast modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/broadcast.py), [provider modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/provider.py)
