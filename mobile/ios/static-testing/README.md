@@ -1,9 +1,9 @@
 # Static Testing
 
-{% hint style="info" %}
-* Record version, source, architecture, and original/extracted artifact hashes.
-* Use authorized copies and replace command placeholders; App Store binaries may be FairPlay-encrypted.
-{% endhint %}
+## Automated Tool
+
+* [ipaauditor](https://ipaauditor.com/)
+* [ipascope](https://github.com/sudouday/ipascope)
 
 ## Further Reading
 

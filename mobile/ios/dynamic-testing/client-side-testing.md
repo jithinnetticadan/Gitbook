@@ -1,15 +1,5 @@
 # URL Schemes, Web Views, and Client Behavior
 
-{% hint style="info" %}
-* Use authorized devices/builds and test accounts; replace command placeholders before use.
-* Isolate the lab, protect evidence, and restore it afterward.
-{% endhint %}
-
-{% hint style="warning" %}
-* **Prerequisites:** authorized installed app, test accounts/links, and approved capture tools. [Frida preflight](preflight-and-lab-setup.md#mandatory-preflight) applies only to instrumentation.
-* Identify candidate handlers using [URL Handling](../static-testing/url-handling.md).
-{% endhint %}
-
 ## URL Schemes, Web Views, and Client Behavior
 
 * [ ] Custom/universal links: valid, malformed, unauthorized inputs; validate caller and parameters.

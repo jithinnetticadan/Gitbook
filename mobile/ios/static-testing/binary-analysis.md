@@ -1,15 +1,5 @@
 # Binary Analysis
 
-{% hint style="info" %}
-* Record version, source, architecture, and original/extracted artifact hashes.
-* Use authorized copies and replace command placeholders; App Store binaries may be FairPlay-encrypted.
-{% endhint %}
-
-{% hint style="warning" %}
-* **Prerequisites:** verified architecture/encryption state and macOS for `otool`.
-* Complete [Preflight, Tools, and IPA](preflight-tools-and-ipa.md#mandatory-preflight).
-{% endhint %}
-
 ## App and Binary Review
 
 * Find the executable via `Info.plist`; inspect linked frameworks.
@@ -20,48 +10,29 @@
 ### Binary Protections
 
 * Run on macOS; interpret indicators in context:
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">otool -hv &#x3C;app-binary> | grep PIE
+    otool -I -v &#x3C;app-binary> | grep stack_chk
+    otool -I -v &#x3C;app-binary> | grep objc_release
+    otool -arch all -Vl &#x3C;app-binary> | grep -A5 LC_ENCRYPT
+    otool -l &#x3C;app-binary> | grep -A4 LC_ENCRYPTION_INFO
+    </code></pre>
 
-```sh
-otool -hv <app-binary> | grep PIE
-otool -I -v <app-binary> | grep stack_chk
-otool -I -v <app-binary> | grep objc_release
-otool -arch all -Vl <app-binary> | grep -A5 LC_ENCRYPT
-otool -l <app-binary> | grep -A4 LC_ENCRYPTION_INFO
-```
-
-| Check      | Indicator                               | Limitation                                                    |
-| ---------- | --------------------------------------- | ------------------------------------------------------------- |
-| PIE        | Supports address randomization.         | Not proof of overall binary security.                         |
-| Canaries   | `stack_chk_guard`, `stack_chk_fail`.    | Checks some stack corruption at return; not all code.         |
-| ARC        | `_objc_release`.                        | Reference-lifetime management, not complete memory safety.    |
-| Encryption | `cryptid=1` encrypted; `0` unencrypted. | Development/decrypted copies need not be App Store-encrypted. |
-
-* Missing symbols may reflect optimization or language/runtime differences.
-* Windows: use a macOS host or suitable Mach-O parser.
+<table><thead><tr><th width="121">Check</th><th width="284.0001220703125">Indicator</th><th>Limitation</th></tr></thead><tbody><tr><td>PIE</td><td>Supports address randomization.</td><td>Not proof of overall binary security.</td></tr><tr><td>Canaries</td><td><code>stack_chk_guard</code>, <code>stack_chk_fail</code>.</td><td>Checks some stack corruption at return; not all code.</td></tr><tr><td>ARC</td><td><code>_objc_release</code>.</td><td>Reference-lifetime management, not complete memory safety.</td></tr><tr><td>Encryption</td><td><code>cryptid=1</code> encrypted; <code>0</code> unencrypted.</td><td>Development/decrypted copies need not be App Store-encrypted.</td></tr></tbody></table>
 
 ### Sensitive and Risky API Indicators
 
 * Search symbols, then inspect call sites and data flow:
-
-```sh
-otool -Iv <app-binary> | grep -w '_CC_MD5'
-otool -Iv <app-binary> | grep -w '_CC_SHA1'
-otool -Iv <app-binary> | grep -w '_random'
-otool -Iv <app-binary> | grep -w '_srand'
-otool -Iv <app-binary> | grep -w '_rand'
-otool -Iv <app-binary> | grep -w '_malloc'
-otool -Iv <app-binary> | grep -E '_(gets|memcpy|strncpy|strlen|vsnprintf|sscanf|strtok|alloca|sprintf|printf|vsprintf)'
-```
-
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">otool -Iv &#x3C;app-binary> | grep -w '_CC_MD5'
+  otool -Iv &#x3C;app-binary> | grep -w '_CC_SHA1'
+  otool -Iv &#x3C;app-binary> | grep -w '_random'
+  otool -Iv &#x3C;app-binary> | grep -w '_srand'
+  otool -Iv &#x3C;app-binary> | grep -w '_rand'
+  otool -Iv &#x3C;app-binary> | grep -w '_malloc'
+  otool -Iv &#x3C;app-binary> | grep -E '_(gets|memcpy|strncpy|strlen|vsnprintf|sscanf|strtok|alloca|sprintf|printf|vsprintf)'
+  </code></pre>
 * Source/text search: `grep -R -E '_CC_MD5|_CC_SHA1|_rand|_malloc' <analysis-directory>`.
 * Review hash purpose and security-sensitive randomness; unused/system-linked matches may be false positives.
 * `malloc`/`memcpy`/`strlen`/`printf` are not inherently vulnerabilities. Check bounds, sizes, format strings, and allocation failures.
 * Validate MobSF API findings. Parse Mach-O symbols/strings; text grep does not analyze binary code.
-
-* Disassemble with:
-
-```sh
-otool -tV <app-binary>
-```
-
+* Disassemble with: `otool -tV <app-binary>`
 * For class metadata, see [Decryption and Class Information](../dynamic-testing/decryption-and-class-information.md).

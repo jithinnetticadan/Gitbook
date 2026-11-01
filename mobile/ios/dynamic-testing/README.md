@@ -1,12 +1,6 @@
 # Dynamic Testing
 
-{% hint style="info" %}
-* Use authorized devices/builds and test accounts; replace command placeholders before use.
-* Isolate the lab, protect evidence, and restore it afterward.
-{% endhint %}
-
 {% hint style="warning" %}
-* **Prerequisites:** follow the selected workflow; ordinary URL/proxy tests do not require Frida or jailbreak.
 * **Instrumentation:** complete [Preflight and Lab Setup](preflight-and-lab-setup.md); pin host `frida`, server, and Gadget to the same exact version.
 {% endhint %}
 

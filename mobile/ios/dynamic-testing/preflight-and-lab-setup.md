@@ -1,9 +1,4 @@
-# Preflight and Lab Setup
-
-{% hint style="info" %}
-* Use authorized devices/builds and test accounts; replace command placeholders before use.
-* Isolate the lab, protect evidence, and restore it afterward.
-{% endhint %}
+# Preflight and Setup
 
 ## Mandatory Preflight
 
@@ -34,37 +29,30 @@
 * Profile filename: `embedded.mobileprovision`, not `embedded.mobileprovisioning`. An arbitrary app's profile may not fit.
 * **Debuggable non-jailbroken path:** compatible Xcode/device support, Developer Disk Image/services, and matching cached Gadget; follow [Frida iOS setup](https://frida.re/docs/ios/#without-jailbreak).
 * Developer Mode is for development workflows, not an App Store/TestFlight prerequisite. [Apple setup](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device).
-
 * References: [Xcode documentation](https://developer.apple.com/documentation/xcode), [downloads](https://developer.apple.com/download/all/?q=Xcode).
 
 ## Jailbroken Test Device
 
-* Use hardware/iOS-compatible jailbreaks; checkra1n (`checkra.in`) and palera1n are not universal.
-* Cydia/Sileo: package managers; install only trusted OpenSSH and Frida packages (`https://build.frida.re` in the notes).
+* Use hardware/iOS-compatible jailbreaks.
+* Cydia/Sileo: package managers; install only trusted OpenSSH and Frida packages (`https://build.frida.re` ).
 * Match server and host `frida` library versions **exactly**; use supported architecture/platform builds.
-* SSH: change historical `root` / `alpine` defaults; isolate/restrict access and remove it afterward.
-* Utilities: OpenSSH/SFTP, Filza, `apt-get`/`dpkg`; availability varies.
-* Non-jailbroken device: use the patched/signed workflow in [Signing and App Patching](signing-and-app-patching.md); app restrictions apply.
-
-```sh
-ssh root@<device-ip>
-frida-ps -Uai
-objection --name <app-process-name> start
-```
+* SSH: `root` / `alpine` default.
+* Utilities: OpenSSH/SFTP, Filza, `apt-get`/`dpkg`
+* Non-jailbroken device: use the patched/signed workflow in [Signing and App Patching](signing-and-app-patching.md)
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">ssh root@&#x3C;device-ip>
+  frida-ps -Uai
+  objection --name &#x3C;app-process-name> start
+  </code></pre>
 
 ### Verify Client and Server Versions
 
 * **Prerequisite:** configured SSH access to the test device.
 * Run these checks on the Mac:
-
-```sh
-frida --version
-pip3 show frida frida-tools objection
-ssh <ssh-user>@<device-ip> "frida-server --version"
-frida-ps -Uai
-```
-
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida --version
+    pip3 show frida frida-tools objection
+    ssh &#x3C;ssh-user>@&#x3C;device-ip> "frida-server --version"
+    frida-ps -Uai
+    </code></pre>
 * Client and server version outputs must match exactly; use the same host environment for Frida/Objection.
 * If `frida-server` is not in the device's `PATH`, use its installed package path; rootless/rootful locations vary.
 * Confirm the server service is running. After replacing it, restart via the package's supported service workflow.
-* Objection installation/upgrades can change Frida dependencies; recheck before testing.
