@@ -1,11 +1,6 @@
 # Dynamic Testing
 
-{% hint style="warning" %}
-* **Prerequisites:** follow the selected workflow; ordinary ADB/API tests do not require Frida or root.
-* **Instrumentation:** complete [Preflight and Frida Setup](preflight-and-frida-setup.md); pin host `frida`, server, and Gadget to the same exact version.
-{% endhint %}
-
-## Tools
+## Automated Tools
 
 * [thorfinn](https://github.com/PhonePe/thorfinn)
 

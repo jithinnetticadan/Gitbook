@@ -1,11 +1,5 @@
 # Authentication, Authorization, and Cryptography
 
-{% hint style="info" %}
-* **Prerequisites:** disposable accounts, owned records, and agreed rate-limit/lockout budgets.
-* Record the normal flow before testing.
-* For API controls, establish visibility with [Network Traffic and TLS](network-traffic-and-tls.md).
-{% endhint %}
-
 ## Authentication and Session Matrix
 
 * Capture a successful control request; vary one condition at a time.

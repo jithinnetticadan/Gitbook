@@ -1,15 +1,5 @@
 # Network Traffic and TLS
 
-{% hint style="info" %}
-* Use an authorized test device and test accounts; replace command placeholders before use.
-* Preserve originals, protect dumps, and restore the lab afterward.
-{% endhint %}
-
-{% hint style="warning" %}
-* **Prerequisites:** reachable proxy and CA trust accepted by the app; assess pinning separately.
-* For Frida-based bypasses, complete [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight).
-{% endhint %}
-
 ## Network Traffic and TLS
 
 1. Bind Burp to the lab interface; firewall any "All interfaces" listener.

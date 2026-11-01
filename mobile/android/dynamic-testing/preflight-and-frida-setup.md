@@ -1,16 +1,10 @@
-# Preflight and Frida Setup
-
-{% hint style="info" %}
-* Use an authorized test device and test accounts; replace command placeholders before use.
-* Preserve originals, protect dumps, and restore the lab afterward.
-{% endhint %}
+# Preflight and Setup
 
 ## Mandatory Preflight
 
 {% hint style="warning" %}
 * **Version dependency:** host `frida`, device `frida-server`, and injected Gadget must use the **same exact Frida version**.
 * `frida-tools` and Objection have independent version numbers; do not use them to select the server version.
-* Recheck version compatibility after package upgrades.
 {% endhint %}
 
 * [ ] `adb devices -l` shows the intended device as authorized, not `offline`/`unauthorized`.
@@ -24,72 +18,49 @@
 
 * Use a compatible Android Studio emulator or test device.
 * Verify root availability; API level/Play Store status alone is insufficient.
-
 * Identify the device architecture before selecting Frida server:
-
-```sh
-adb shell getprop ro.product.cpu.abilist
-adb shell cat /proc/version
-adb shell cat /proc/cpuinfo
-```
-
-* **Server:** device ABI. **Gadget:** target app ABI, which may differ on a 64-bit device. Kernel information alone is insufficient.
-
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell getprop ro.product.cpu.abilist
+  adb shell cat /proc/version
+  adb shell cat /proc/cpuinfo
+  </code></pre>
+* **Server:** device ABI. **Gadget:** target app ABI, which may differ on a 64-bit device.&#x20;
 * Install client tools in an isolated environment:
-
-```sh
-pip3 install frida-tools
-pip3 install objection
-frida --version
-objection version
-objection --help
-objection start --help
-```
-
-* Match the host `frida` library and device server **exactly**; record version and ABI.
-* Objection installs Frida dependencies and can change the installed version; recheck after installation/upgrades.
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">pip3 install frida-tools
+    pip3 install objection
+    frida --version
+    objection version
+    objection --help
+    objection start --help
+    </code></pre>
+* Match the host `frida` library and device server **exactly.**
+* Objection installs Frida dependencies and can change the installed version.
 * Current CLI: `objection [OPTIONS] COMMAND [ARGS]...`; `--name` selects, `start` opens a session.
 * Subcommand options: check installed help and [CLI source](https://github.com/sensepost/objection/blob/master/objection/console/cli.py).
 
 ### Start Frida Server
 
-* **Prerequisite:** root-capable ADB image; ordinary production builds do not support `adb root`.
 * Download the matching version/ABI from [Frida releases](https://github.com/frida/frida/releases), extract the `.xz`, and name the extracted binary `frida-server` for these commands.
-
-```sh
-adb root
-adb push frida-server /data/local/tmp/frida-server
-adb shell "chmod 755 /data/local/tmp/frida-server"
-adb shell "/data/local/tmp/frida-server &"
-```
-
-* **Alternative prerequisite:** authorized `su` access.
-
-```sh
-adb push frida-server /data/local/tmp/frida-server
-adb shell "su -c 'chmod 755 /data/local/tmp/frida-server'"
-adb shell "su -c '/data/local/tmp/frida-server &'"
-```
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb root
+  adb push frida-server /data/local/tmp/frida-server
+  adb shell "chmod 755 /data/local/tmp/frida-server"
+  adb shell "/data/local/tmp/frida-server &#x26;"
+  # OR #
+  adb push frida-server /data/local/tmp/frida-server
+  adb shell "su -c 'chmod 755 /data/local/tmp/frida-server'"
+  adb shell "su -c '/data/local/tmp/frida-server &#x26;'"
+  </code></pre>
 
 ### Verify Client and Server Versions
 
-* **Prerequisites:** transfer the server and grant executable permission before running these checks.
-
-```sh
-adb devices -l
-frida --version
-pip3 show frida frida-tools objection
-adb shell /data/local/tmp/frida-server --version
-```
-
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb devices -l
+  frida --version
+  pip3 show frida frida-tools objection
+  adb shell /data/local/tmp/frida-server --version
+  </code></pre>
 * `frida --version` and `frida-server --version` must match exactly.
 * Use the same host environment for Frida and Objection.
-* If mismatched: replace/pin the client or server, restart the server, then retry `frida-ps -Uai`.
-
 * List installed apps and attach:
-
-```sh
-frida-ps -Uai
-frida -U -n <process-name>
-objection --name <process-name> start
-```
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida-ps -Uai
+    frida -U -n &#x3C;process-name>
+    objection --name &#x3C;process-name> start
+    </code></pre>

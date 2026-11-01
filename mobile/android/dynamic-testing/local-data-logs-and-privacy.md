@@ -1,17 +1,5 @@
 # Local Data, Logs, and Privacy
 
-{% hint style="info" %}
-* Use an authorized test device and test accounts; replace command placeholders before use.
-* Preserve originals, protect dumps, and restore the lab afterward.
-{% endhint %}
-
-{% hint style="warning" %}
-* **Prerequisites:** authorized ADB/test accounts; private-file access needs a debuggable app or an approved privileged/export path. Complete [Frida preflight](preflight-and-frida-setup.md#mandatory-preflight) only for instrumentation.
-* Identify candidates using [Local Data and Client Logic](../static-testing/local-data-and-client-logic.md).
-{% endhint %}
-
-## Local Data, Logs, and Privacy Controls
-
 * Inspect preferences, SQLite, internal/external files, caches, and backups.
 * Use Android Studio Device File Explorer or Objection `env` for accessible paths.
 * Inspect test copies with [DB Browser for SQLite](https://sqlitebrowser.org/) or the CLI:
@@ -25,21 +13,18 @@ sqlite3 <database-copy.db>
 SELECT * FROM <test_table> LIMIT 10;
 ```
 
-* `.tables` is a SQLite CLI command, not SQL.
-* Use approved test keyboards/clipboard observers; OS restrictions apply.
-
-* Check the following storage and privacy surfaces:
-
+* [ ] `.tables` is a SQLite CLI command, not SQL.
+* [ ] Use approved test keyboards/clipboard observers; OS restrictions apply.
+* [ ] Check the following storage and privacy surfaces:
 * [ ] Sensitive logs, clipboard (`android clipboard monitor`), keyboard data, screenshots/`FLAG_SECURE`.
 * [ ] Backup exposure using an OS-supported workflow.
 * [ ] Local role/state tampering; verify server authorization.
 * [ ] SQL injection using non-destructive test records.
 * [ ] Biometrics: success/failure callbacks and exception handling; verify key/server protections independently.
-
-* Biometric scripts: [Keystore Audit](https://github.com/FSecureLABS/android-keystore-audit/tree/master/frida-scripts).
-* Targeted examples: [callback bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass.js), [exception bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass-via-exception-handling.js).
-* UI bypass does not prove hardware-key/server bypass; validate the operation with the [biometric and auth-bound Keystore workflow](authentication-and-cryptography.md#biometrics-and-auth-bound-keystore).
-* **Legacy command:** `adb backup -apk -nosystem <package-name>`; deprecated/unavailable on current Android and may not extract all data.
+* [ ] Biometric scripts: [Keystore Audit](https://github.com/FSecureLABS/android-keystore-audit/tree/master/frida-scripts).
+* [ ] Targeted examples: [callback bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass.js), [exception bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass-via-exception-handling.js).
+* [ ] UI bypass does not prove hardware-key/server bypass; validate the operation with the [biometric and auth-bound Keystore workflow](authentication-and-cryptography.md#biometrics-and-auth-bound-keystore).
+* [ ] **Legacy command:** `adb backup -apk -nosystem <package-name>`; deprecated/unavailable on current Android and may not extract all data.
 
 ### Logs and Screenshots
 
@@ -53,7 +38,6 @@ adb logcat --pid=<pid-from-previous-command>
 * Refresh PID after app restart; avoid brittle `ps | awk | grep` filters.
 * Windows: use `findstr` or Android Studio Logcat. Protect log evidence.
 * Screenshot artifacts: system-managed paths such as `/data/system_ce/<user-id>/`; locations/access vary.
-
 * Save relevant baseline logs **before** `adb logcat -c`; clearing logs destroys existing evidence.
 * Record capture scope; a PID filter may miss other app processes or OS messages.
 
@@ -62,14 +46,7 @@ adb logcat --pid=<pid-from-previous-command>
 * Use distinguishable synthetic test records.
 * Track each token/identifier through creation, network, memory, storage, logs, backup, clipboard, notifications, keyboard, and screens.
 
-| Transition               | Inspect                                                         | Confirm                                                                                                                                                                          |
-| ------------------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Before / after login     | Preferences, databases, files, caches, WebView cookies          | Which values appear, who can read them, and what they authorize.                                                                                                                 |
-| Background / resume      | Recent-task snapshot, notifications, clipboard, background sync | Sensitive data is not exposed outside the intended session/display context.                                                                                                      |
-| Process restart / reboot | Persisted files, device-/credential-protected storage           | What survives, when it becomes available, and whether access requires device/app authentication.                                                                                 |
-| Logout / token expiry    | Files, cookies, memory references, queued jobs                  | Local cleanup and server revocation are separate; test retained credentials according to [session policy](authentication-and-cryptography.md#authentication-and-session-matrix). |
-| Account A to B           | Cache keys, database rows, cookies, pending work                | B cannot access A's data or inherit A's session.                                                                                                                                 |
-| Backup / restore         | Included paths, restored secrets/state, key availability        | Restored data does not unexpectedly restore authorization or expose another user's data.                                                                                         |
+<table><thead><tr><th width="124">Transition</th><th>Inspect</th><th>Confirm</th></tr></thead><tbody><tr><td>Before / after login</td><td>Preferences, databases, files, caches, WebView cookies</td><td>Which values appear, who can read them, and what they authorize.</td></tr><tr><td>Background / resume</td><td>Recent-task snapshot, notifications, clipboard, background sync</td><td>Sensitive data is not exposed outside the intended session/display context.</td></tr><tr><td>Process restart / reboot</td><td>Persisted files, device-/credential-protected storage</td><td>What survives, when it becomes available, and whether access requires device/app authentication.</td></tr><tr><td>Logout / token expiry</td><td>Files, cookies, memory references, queued jobs</td><td>Local cleanup and server revocation are separate; test retained credentials according to <a href="authentication-and-cryptography.md#authentication-and-session-matrix">session policy</a>.</td></tr><tr><td>Account A to B</td><td>Cache keys, database rows, cookies, pending work</td><td>B cannot access A's data or inherit A's session.</td></tr><tr><td>Backup / restore</td><td>Included paths, restored secrets/state, key availability</td><td>Restored data does not unexpectedly restore authorization or expose another user's data.</td></tr></tbody></table>
 
 * Record access prerequisites: ordinary app, authorized ADB, debuggable `run-as`, root, physical access, or approved backup account.
 * Root-readable plaintext is not automatically cross-app exposure.
@@ -119,12 +96,7 @@ adb pull /sdcard/lab-screen.png .
 * `allowBackup` and backup rules identify candidates; they do not guarantee extraction.
 * Record Android/target SDK/OEM, transport, account access, device unlock/consent, and actual backup mechanism.
 
-| Mechanism                  | Validation                                                                                                                                                         |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Auto Backup / cloud        | Inspect applicable `fullBackupContent` or `dataExtractionRules`, inclusion/exclusion rules, transport/encryption, and a supported test backup/restore.             |
-| Device-to-device transfer  | Test separately from cloud backup; supported rules and OEM behavior can differ.                                                                                    |
-| Legacy ADB backup          | Check `adb help`, OS support, app eligibility, user confirmation, and whether actual data was captured. An empty/header-only archive is not successful extraction. |
-| App export / custom backup | Test export access, format/encryption, secrets included, import validation, and account binding.                                                                   |
+<table><thead><tr><th width="161">Mechanism</th><th>Validation</th></tr></thead><tbody><tr><td>Auto Backup / cloud</td><td>Inspect applicable <code>fullBackupContent</code> or <code>dataExtractionRules</code>, inclusion/exclusion rules, transport/encryption, and a supported test backup/restore.</td></tr><tr><td>Device-to-device transfer</td><td>Test separately from cloud backup; supported rules and OEM behavior can differ.</td></tr><tr><td>Legacy ADB backup</td><td>Check <code>adb help</code>, OS support, app eligibility, user confirmation, and whether actual data was captured. An empty/header-only archive is not successful extraction.</td></tr><tr><td>App export / custom backup</td><td>Test export access, format/encryption, secrets included, import validation, and account binding.</td></tr></tbody></table>
 
 * Use the legacy backup command only where supported.
 * Inspect compatible `.ab` archives with [Android Backup Extractor](https://github.com/nelenkov/android-backup-extractor).

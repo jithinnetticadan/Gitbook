@@ -29,7 +29,6 @@
 | Legacy bridge exposure                                              | Device WebView/provider version, Android/target SDK, annotated/exposed methods              | Historic pre-API-17 reflection attacks require the affected configuration; do not generalize them to modern annotated bridges.                                       |
 
 * Establish attacker reachability with the [WebView runtime workflow](../dynamic-testing/component-testing.md#webview-runtime-checks).
-* DevTools-injected JavaScript alone does not prove attacker reachability.
 
 ## Content Provider SQL Injection
 

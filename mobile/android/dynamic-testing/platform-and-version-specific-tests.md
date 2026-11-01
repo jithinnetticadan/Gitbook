@@ -1,10 +1,8 @@
 # Platform and Version-Specific Tests
 
 {% hint style="warning" %}
-* Separate app defects from device/OS vulnerabilities and explicitly granted capabilities.
 * **Prerequisites:** approved companion tools and disposable lab devices.
 * **Separate explicit scope required:** kernel/GPU exploits, pairing attacks, device-owner changes, wipe operations, and hardware testing.
-* These activities are not routine app-test prerequisites.
 {% endhint %}
 
 ## Record Applicability First

@@ -1,16 +1,9 @@
 # Component Testing
 
-[Setup](#adb-probes-and-caller-identity) | [Drozer](#drozer-setup) | [Activities](#activities) | [Services](#services) | [Receivers](#broadcast-receivers) | [Providers](#content-providers) | [Deep Links](#deep-links-and-verified-app-links) | [WebViews](#webview-runtime-checks)
-
-{% hint style="info" %}
-* Use an authorized test device and test accounts; replace command placeholders before use.
-* Preserve originals, protect dumps, and restore the lab afterward.
-{% endhint %}
+[Setup](component-testing.md#adb-probes-and-caller-identity) | [Drozer](component-testing.md#drozer-setup) | [Activities](component-testing.md#activities) | [Services](component-testing.md#services) | [Receivers](component-testing.md#broadcast-receivers) | [Providers](component-testing.md#content-providers) | [Deep Links](component-testing.md#deep-links-and-verified-app-links) | [WebViews](component-testing.md#webview-runtime-checks)
 
 {% hint style="warning" %}
-* **Basic prerequisites:** installed test app, authorized ADB access, observed component names/inputs, and disposable test records.
 * Root and Frida are **not required** for ordinary ADB/Drozer component tests. Complete [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight) only when using instrumentation or a patched build.
-* Identify candidates using [Manifest and Components](../static-testing/manifest-and-components.md); confirm them against the installed build.
 {% endhint %}
 
 ## Components, Intents, and Provider URIs
@@ -29,7 +22,7 @@
 ### Relationship to Advanced IPC
 
 * **Here:** enumerate, invoke, test access/inputs; Intent and provider commands.
-* **[Advanced IPC](advanced-ipc-and-providers.md):** forwarding, results, PendingIntent, Binder identity, provider query/path/grant abuse, Dirty Stream.
+* [**Advanced IPC**](advanced-ipc-and-providers.md)**:** forwarding, results, PendingIntent, Binder identity, provider query/path/grant abuse, Dirty Stream.
 
 ## Runtime Component Testing
 
@@ -40,7 +33,7 @@
 5. **Vary:** one input at a time; bounded values and harmless destinations.
 6. **Confirm/restore:** protected data/action accessed; test state cleaned up.
 
-* Follow [Activities](#activities), [Services](#services), [Broadcast Receivers](#broadcast-receivers), then [Content Providers](#content-providers).
+* Follow [Activities](component-testing.md#activities), [Services](component-testing.md#services), [Broadcast Receivers](component-testing.md#broadcast-receivers), then [Content Providers](component-testing.md#content-providers).
 * `exported=true`, successful command delivery, or a crash alone does not show an access-control failure.
 * Track each discovered input, method, route, operation, and caller/grant combination: **tested / N/A / blocked**. Commands alone are not full coverage.
 
@@ -84,7 +77,7 @@ drozer console connect
 * **Drozer console:** run all `run`/`help` commands here; check installed module help.
 * Component `info -u` includes non-exported candidates; test reachability separately.
 
-```text
+```
 run app.package.attacksurface <package-name>
 run app.package.manifest <package-name>
 run app.package.debuggable
@@ -102,7 +95,7 @@ help intents
 * **Trace:** `onCreate` / `onNewIntent`; note activity reuse.
 * **Baseline:** open normally; record account, protected action/data, preceding checks.
 
-```text
+```
 run app.activity.info -a <package-name>
 ```
 
@@ -117,7 +110,7 @@ adb shell am start -W -n "<package-name>/<activity-name>" --es "<extra-name>" "<
 
 * **Drozer:** bare launch, extra, or supported data URI.
 
-```text
+```
 run app.activity.start --component <package-name> <activity-name>
 run app.activity.start --component <package-name> <activity-name> --extra string <extra-name> <test-value>
 run app.activity.start --component <package-name> <activity-name> --data-uri <authorized-test-uri>
@@ -127,7 +120,7 @@ run app.activity.start --component <package-name> <activity-name> --data-uri <au
 * **Inputs:** missing extra, different owned ID, short invalid value; vary one at a time.
 * **Lifecycle:** fresh launch versus existing task (`onCreate` / `onNewIntent`).
 * **Results/nested intents/grants:** companion app + [advanced checks](advanced-ipc-and-providers.md#intent-result-and-binder-boundaries).
-* **Implicit routing:** [Deep Links](#deep-links-and-verified-app-links); explicit launch does not prove handler ownership.
+* **Implicit routing:** [Deep Links](component-testing.md#deep-links-and-verified-app-links); explicit launch does not prove handler ownership.
 
 ### Expected Result
 
@@ -144,7 +137,7 @@ run app.activity.start --component <package-name> <activity-name> --data-uri <au
 * **Messenger:** `Handler.handleMessage`; accepted `what`, `arg1`, `arg2`, Bundle fields/types.
 * **AIDL/Binder:** methods, types, callbacks, caller checks; not interchangeable with Messenger.
 
-```text
+```
 run app.service.info -a <package-name>
 help app.service.send
 ```
@@ -159,7 +152,7 @@ adb shell am startservice -n "<package-name>/<service-name>" --es "<extra-name>"
 
 * **Drozer:** compare agent versus shell access.
 
-```text
+```
 run app.service.start --component <package-name> <service-name> --extra string <extra-name> <test-value>
 ```
 
@@ -171,14 +164,14 @@ run app.service.start --component <package-name> <service-name> --extra string <
 
 * **Messenger only:** use observed integer codes, not generic sample values. Default Bundle: `Message.getData()`.
 
-```text
+```
 run app.service.send <package-name> <service-name> --msg <what> <arg1> <arg2> --extra string <parameter> <test-value>
 ```
 
 * `--msg`: `what arg1 arg2`. `--extra`: Bundle field.
 * **Object Bundle variant:** only when the handler expects `Message.obj`.
 
-```text
+```
 run app.service.send <package-name> <service-name> --msg <what> <arg1> <arg2> --extra string <parameter> <test-value> --bundle-as-obj
 ```
 
@@ -204,7 +197,7 @@ adb shell am stopservice -n "<package-name>/<service-name>"
 * **Runtime:** inspect `registerReceiver` flags/permissions; keep the required feature open.
 * **Baseline:** legitimate event with synthetic data; record action/outgoing broadcast.
 
-```text
+```
 run app.broadcast.info -a <package-name>
 run app.broadcast.info -a <package-name> -i
 ```
@@ -219,13 +212,13 @@ adb shell am broadcast -n "<package-name>/<receiver-name>" -a "<observed-action>
 
 * **Explicit Drozer:** do not grant the permission being tested.
 
-```text
+```
 run app.broadcast.send --component <package-name> <receiver-name> --action <observed-action> --extra string <extra-name> <test-value>
 ```
 
 * **Implicit Drozer:** isolated lab/approved recipients only; other matching apps can receive this.
 
-```text
+```
 run app.broadcast.send --action <intent-name> --extra string <parameter> <test-value>
 ```
 
@@ -243,7 +236,7 @@ adb shell am broadcast -a "<observed-action>" -p "<package-name>" --es "<extra-n
 * **Select:** app-generated action with synthetic marker; exclude unrelated traffic.
 * **Listen first**, then trigger the app's sending flow:
 
-```text
+```
 run app.broadcast.sniff --action <observed-action>
 ```
 
@@ -268,7 +261,7 @@ run app.broadcast.sniff --action <observed-action>
 * **Trace:** URI matcher and query/file handlers; authority alone is not a valid route.
 * **Baseline:** create test record/file normally; record URI/ID and authorized behavior.
 
-```text
+```
 run app.provider.info -a <package-name>
 run app.provider.finduri <package-name>
 ```
@@ -283,13 +276,13 @@ adb shell content query --uri "<content-uri>" --projection "<known-column>" --wh
 
 * **Drozer:** scoped columns/record; compare unauthorized caller and owned accounts A/B.
 
-```text
+```
 run app.provider.query <content-uri> --projection <known-column> --selection "<id-column>=?" --selection-args <owned-record-id>
 ```
 
 * **Minimal query/columns:** owned item URI or small disposable dataset only; unfiltered collections may return all rows.
 
-```text
+```
 run app.provider.query <content-uri>
 run app.provider.columns <content-uri>
 ```
@@ -297,7 +290,7 @@ run app.provider.columns <content-uri>
 * **Columns:** metadata query. Check installed module availability.
 * **File read:** URI serving a harmless test file, not a table/collection.
 
-```text
+```
 run app.provider.read <content-uri>
 ```
 
@@ -308,7 +301,7 @@ run app.provider.read <content-uri>
 * **Writes require:** approval, disposable records, known columns/types, cleanup plan; otherwise skip.
 * **Insert:** valid synthetic data; record returned URI/ID for update/delete.
 
-```text
+```
 run app.provider.insert <content-uri> --string <column> <test-value>
 run app.provider.update <content-uri> --selection "<id-column>=?" --selection-args <owned-record-id> --string <column> <replacement-value>
 run app.provider.delete <content-uri> --selection "<id-column>=?" --selection-args <owned-record-id>
@@ -326,7 +319,7 @@ run app.provider.delete <content-uri> --selection "<id-column>=?" --selection-ar
 * **Order below:** URI discovery, SQL-injection probes, SQL-table enumeration via candidate injection paths.
 * Broad scans may expose schema or probe multiple routes without per-record limits; use manual tests when scope is narrower.
 
-```text
+```
 run scanner.provider.finduris -a <package-name>
 run scanner.provider.injection -a <package-name>
 run scanner.provider.sqltables -a <package-name>
@@ -353,7 +346,7 @@ adb shell am start -a android.intent.action.VIEW -d "<scheme>://<host>/<path>?<p
 
 * **Implicit Drozer:** harmless in-scope URI; record handler/chooser.
 
-```text
+```
 run app.activity.start --action android.intent.action.VIEW --data-uri <authorized-test-uri>
 ```
 

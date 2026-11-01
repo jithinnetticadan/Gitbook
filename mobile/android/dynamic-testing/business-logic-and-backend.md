@@ -1,11 +1,5 @@
 # Business Logic and Backend Trust
 
-{% hint style="warning" %}
-* **Prerequisites:** test tenants/accounts, sandbox payments, synthetic balances, and reversible records.
-* Agree on concurrency and rate-limit budgets.
-* Do not generate real ad traffic, rewards, purchases, referrals, or production charges.
-{% endhint %}
-
 ## Establish the Authority
 
 * Identify the decision-maker: local state, platform service, backend, or payment provider.
