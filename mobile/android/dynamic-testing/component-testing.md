@@ -1,7 +1,5 @@
 # Component Testing
 
-[Setup](component-testing.md#adb-probes-and-caller-identity) | [Drozer](component-testing.md#drozer-setup) | [Activities](component-testing.md#activities) | [Services](component-testing.md#services) | [Receivers](component-testing.md#broadcast-receivers) | [Providers](component-testing.md#content-providers) | [Deep Links](component-testing.md#deep-links-and-verified-app-links) | [WebViews](component-testing.md#webview-runtime-checks)
-
 {% hint style="warning" %}
 * Root and Frida are **not required** for ordinary ADB/Drozer component tests. Complete [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight) only when using instrumentation or a patched build.
 {% endhint %}

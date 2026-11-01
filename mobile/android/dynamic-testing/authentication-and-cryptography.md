@@ -4,33 +4,12 @@
 
 * Capture a successful control request; vary one condition at a time.
 * Distinguish access tokens, refresh tokens, cookies, local session flags, and cached responses.
-* Keep secrets out of notes and shell history.
 
-| Test                                 | Controlled Action                                                                                   | Verify                                                                                                                                  |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Logout                               | Capture an authenticated request, log out normally, then replay it and separately attempt refresh.  | Protected data/action is denied according to the session policy; record any allowed access-token lifetime/revocation delay.             |
-| Expiry                               | Reuse the test token after its intended expiry; assess refresh separately.                          | Server-enforced expiry and rotation, not merely a UI timer or decoded JWT claim.                                                        |
-| Password reset                       | Use a token for its intended account, then try one reuse and a different owned account/session.     | Expiry, one-time use, account binding, and required session invalidation. Some reset links intentionally work in a new browser session. |
-| Password change / session revocation | Change the test password or revoke a session; repeat a protected action from a second test session. | Behavior matches documented policy, including refresh-token invalidation.                                                               |
-| OTP / MFA                            | Try wrong, expired, previously used, and wrong-account challenges within the agreed attempt budget. | Challenge/account/transaction binding, server-side limits, and no protected action with only a pre-MFA session.                         |
-| Account switching                    | Switch A to B, restart, refresh, and follow a sensitive link.                                       | B cannot inherit A's cookies, cached data, object permissions, or refresh context.                                                      |
-| Recovery / fallback                  | Exercise approved alternate MFA, biometric fallback, and recovery paths.                            | A weaker path does not bypass the intended authentication requirement.                                                                  |
-
-* HTTP `200` may contain an error or public/cached content; verify protected data or a harmless test action to prove replay impact.
-* Missing `429` does not prove missing rate limits; check delays, invalidated challenges, lockouts, and body-level errors.
-* Do not perform uncontrolled OTP guessing.
+<table><thead><tr><th width="117">Test</th><th>Controlled Action</th><th>Verify</th></tr></thead><tbody><tr><td>Logout</td><td>Capture an authenticated request, log out normally, then replay it and separately attempt refresh.</td><td>Protected data/action is denied according to the session policy; record any allowed access-token lifetime/revocation delay.</td></tr><tr><td>Expiry</td><td>Reuse the test token after its intended expiry; assess refresh separately.</td><td>Server-enforced expiry and rotation, not merely a UI timer or decoded JWT claim.</td></tr><tr><td>Password reset</td><td>Use a token for its intended account, then try one reuse and a different owned account/session.</td><td>Expiry, one-time use, account binding, and required session invalidation. Some reset links intentionally work in a new browser session.</td></tr><tr><td>Password change / session revocation</td><td>Change the test password or revoke a session; repeat a protected action from a second test session.</td><td>Behavior matches documented policy, including refresh-token invalidation.</td></tr><tr><td>OTP / MFA</td><td>Try wrong, expired, previously used, and wrong-account challenges within the agreed attempt budget.</td><td>Challenge/account/transaction binding, server-side limits, and no protected action with only a pre-MFA session.</td></tr><tr><td>Account switching</td><td>Switch A to B, restart, refresh, and follow a sensitive link.</td><td>B cannot inherit A's cookies, cached data, object permissions, or refresh context.</td></tr><tr><td>Recovery / fallback</td><td>Exercise approved alternate MFA, biometric fallback, and recovery paths.</td><td>A weaker path does not bypass the intended authentication requirement.</td></tr></tbody></table>
 
 ### OAuth, Identity Tokens, and Passkeys
 
-| Flow                               | Test                                                                                                                                  | Expected Boundary                                                                                                                                                       |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Native OAuth                       | External browser/Custom Tabs, exact redirect registration, PKCE `S256`, state and issuer/session binding                              | Verify the authorization server rejects an incorrect verifier/redirect and prevents code replay; absence of a visible parameter alone is not an account-takeover proof. |
-| Callback handler                   | Competing custom-scheme handler, verified App Links, duplicate/missing parameters, account context                                    | A captured code may still be unusable without its PKCE verifier; demonstrate the protected result under controlled accounts.                                            |
-| Google Sign-In / other OIDC        | Backend ID-token signature, trusted issuer, audience, expiry and nonce when required; minimal scopes                                  | A decoded token or client-supplied email is not authenticated identity. ID tokens and API access tokens have different intended uses.                                   |
-| JWT access tokens                  | Allowed algorithms, signature/key selection, issuer/audience, expiry, token type                                                      | Test approved malformed/tampered tokens against a harmless endpoint; a parser accepting `alg:none` is not a flaw unless the verifier accepts it as authenticated.       |
-| Credential Manager / passkeys      | Registration/assertion challenge, RP ID, expected Android/web origin, signature, user verification policy, credential/account binding | Verify challenge freshness and wrong-account/wrong-origin rejection on the server. Availability depends on OS/provider/library versions, not only Android 14+.          |
-| Session fixation / remember-me     | Supplied session values in links, rotation at login/privilege change, long-lived token revocation                                     | Verify that a known pre-auth session cannot become someone else's authenticated session; persistence and lack of device binding need policy/context.                    |
-| Reinstall / restore / silent login | Disposable reinstall and supported restore with known test credentials                                                                | Identify whether backup, account services, browser SSO, or device identifiers restore access; distinguish expected SSO from unauthorized session resurrection.          |
+<table><thead><tr><th width="160.9998779296875">Flow</th><th>Test</th><th>Expected Boundary</th></tr></thead><tbody><tr><td>Native OAuth</td><td>External browser/Custom Tabs, exact redirect registration, PKCE <code>S256</code>, state and issuer/session binding</td><td>Verify the authorization server rejects an incorrect verifier/redirect and prevents code replay; absence of a visible parameter alone is not an account-takeover proof.</td></tr><tr><td>Callback handler</td><td>Competing custom-scheme handler, verified App Links, duplicate/missing parameters, account context</td><td>A captured code may still be unusable without its PKCE verifier; demonstrate the protected result under controlled accounts.</td></tr><tr><td>Google Sign-In / other OIDC</td><td>Backend ID-token signature, trusted issuer, audience, expiry and nonce when required; minimal scopes</td><td>A decoded token or client-supplied email is not authenticated identity. ID tokens and API access tokens have different intended uses.</td></tr><tr><td>JWT access tokens</td><td>Allowed algorithms, signature/key selection, issuer/audience, expiry, token type</td><td>Test approved malformed/tampered tokens against a harmless endpoint; a parser accepting <code>alg:none</code> is not a flaw unless the verifier accepts it as authenticated.</td></tr><tr><td>Credential Manager / passkeys</td><td>Registration/assertion challenge, RP ID, expected Android/web origin, signature, user verification policy, credential/account binding</td><td>Verify challenge freshness and wrong-account/wrong-origin rejection on the server. Availability depends on OS/provider/library versions, not only Android 14+.</td></tr><tr><td>Session fixation / remember-me</td><td>Supplied session values in links, rotation at login/privilege change, long-lived token revocation</td><td>Verify that a known pre-auth session cannot become someone else's authenticated session; persistence and lack of device binding need policy/context.</td></tr><tr><td>Reinstall / restore / silent login</td><td>Disposable reinstall and supported restore with known test credentials</td><td>Identify whether backup, account services, browser SSO, or device identifiers restore access; distinguish expected SSO from unauthorized session resurrection.</td></tr></tbody></table>
 
 * Prefer an external user-agent for native OAuth: [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252).
 * An embedded WebView is a design concern, not proof of credential theft.
@@ -49,8 +28,6 @@
 
 ## Biometrics and Auth-Bound Keystore
 
-* Assess callback/UI state, key authorization, and server authorization separately.
-
 1. Identify the concrete AndroidX/platform `BiometricPrompt` callback or legacy fingerprint path. Observe success, failure, cancellation, fallback, and exception handling without replacing them initially.
 2. Trace whether the operation uses a `CryptoObject` containing a `Cipher`, `Signature`, or `Mac`, or a time-window-based auth-bound key. Missing `CryptoObject` alone does not prove a bypass.
 3. Review the actual key generation/import policy: alias/provider, `setUserAuthenticationRequired`, allowed authenticators, per-use versus time-window authorization, and enrollment/device-lock invalidation rules.
@@ -65,39 +42,31 @@
 * **Caller context:** enumerate aliases/types/providers under the app's own UID; this does not expose every app's keys.
 * Inspect the policies of keys actually used by the sensitive operation.
 * Compare `BIOMETRIC_WEAK`, `BIOMETRIC_STRONG`, and device-credential fallback with required assurance and hardware-key authenticator constraints.
-* Test enrollment invalidation under the configured auth policy; a missing explicit setter alone is not a flaw.
+* Test enrollment invalidation under the configured auth policy.
 
 ## Trace Cryptographic Data Flow
 
 * Trace: input > encoding/serialization > key source/derivation > algorithm/mode/IV/nonce > output > consumer/storage.
 * Identify the purpose: secret protection, integrity verification, or a non-security checksum.
 
-| Observation Point                                 | Record                                                               | Check                                                                                                          |
-| ------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `SecretKeySpec`, KDF, or key import               | Origin, derivation parameters, scope/lifetime, and caller            | Trace bytes back to constants, storage, generation, or network; unchanged bytes alone do not prove hardcoding. |
-| `KeyGenerator`, `KeyPairGenerator`, Keystore      | Provider, alias, purposes, auth policy, backing                      | Whether key export/use is possible under the stated attacker capability.                                       |
-| `Cipher.getInstance`, `init`, `update`, `doFinal` | Transformation, operation, key identity, IV/nonce, AAD, input/output | Same-key nonce reuse, integrity validation, mode misuse, and error handling in the actual flow.                |
-| `SecureRandom` / other RNG                        | Generator, seeding and security-sensitive use                        | Repeatability is a clue, not proof of predictability; assess entropy and use.                                  |
-| Encoders / hashes                                 | Base64/hex/compression/digest and downstream use                     | Encoding is not encryption; a weak digest used for a cache key is not equivalent to password hashing.          |
+<table><thead><tr><th width="170">Observation Point</th><th>Record</th><th>Check</th></tr></thead><tbody><tr><td><code>SecretKeySpec</code>, KDF, or key import</td><td>Origin, derivation parameters, scope/lifetime, and caller</td><td>Trace bytes back to constants, storage, generation, or network; unchanged bytes alone do not prove hardcoding.</td></tr><tr><td><code>KeyGenerator</code>, <code>KeyPairGenerator</code>, Keystore</td><td>Provider, alias, purposes, auth policy, backing</td><td>Whether key export/use is possible under the stated attacker capability.</td></tr><tr><td><code>Cipher.getInstance</code>, <code>init</code>, <code>update</code>, <code>doFinal</code></td><td>Transformation, operation, key identity, IV/nonce, AAD, input/output</td><td>Same-key nonce reuse, integrity validation, mode misuse, and error handling in the actual flow.</td></tr><tr><td><code>SecureRandom</code> / other RNG</td><td>Generator, seeding and security-sensitive use</td><td>Repeatability is a clue, not proof of predictability; assess entropy and use.</td></tr><tr><td>Encoders / hashes</td><td>Base64/hex/compression/digest and downstream use</td><td>Encoding is not encryption; a weak digest used for a cache key is not equivalent to password hashing.</td></tr></tbody></table>
 
 * **Template scope:** metadata for `Cipher.doFinal(byte[])` only; no key/plaintext dumps.
 * **Not covered:** streaming/no-argument overloads or native crypto.
 * **Run:** Frida CLI script/REPL after [instrumentation setup](java-and-native-instrumentation.md#attach-or-spawn); custom agents need the Java bridge.
-
-```javascript
-Java.perform(function () {
-    const Cipher = Java.use('javax.crypto.Cipher');
-    const doFinal = Cipher.doFinal.overload('[B');
-    doFinal.implementation = function (input) {
-        const output = doFinal.call(this, input);
-        console.log(this.getAlgorithm().toString() +
-            ' inputBytes=' + (input === null ? 0 : input.length) +
-            ' outputBytes=' + (output === null ? 0 : output.length));
-        return output;
-    };
-});
-```
-
+  * ```javascript
+    Java.perform(function () {
+        const Cipher = Java.use('javax.crypto.Cipher');
+        const doFinal = Cipher.doFinal.overload('[B');
+        doFinal.implementation = function (input) {
+            const output = doFinal.call(this, input);
+            console.log(this.getAlgorithm().toString() +
+                ' inputBytes=' + (input === null ? 0 : input.length) +
+                ' outputBytes=' + (output === null ? 0 : output.length));
+            return output;
+        };
+    });
+    ```
 * Correlate cipher instances, `init` parameters, and consumers with synthetic test data.
 * Capture additional values only when necessary; protect the resulting artifacts.
 * Compare repeated operations under the **same key**, app restarts, and account changes.
