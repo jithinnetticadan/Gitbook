@@ -57,8 +57,11 @@ medusa -M mysql -h <IP> -n <custom-port> -u root -P passwords.txt
 mysql -u <username> -p<password> -h <IP> ## no space for password field
 ## Windows
 mysql.exe -u <username> -p<password> -h <IP>
-Commands
+# SQL Commands
 show databases;, use <database>;, show tables;, show columns from <table>;, select * from <table>;, select * from <table> where <column> = "<string>";
+# Current Account and Grants
+mysql --batch --skip-column-names -u <username> -p -h <IP> -P 3306 -e "SELECT CURRENT_USER(), USER(); SHOW GRANTS;"
+mysql -Bse 'select distinct(password),user from mysql.user;' -u <username>  <IP> -P 3306
 ```
 {% endcode %}
 {% endtab %}
@@ -67,13 +70,6 @@ show databases;, use <database>;, show tables;, show columns from <table>;, sele
 
 {% endtab %}
 {% endtabs %}
-
-#### Current Account and Grants
-
-* **Inspect the authenticated account and its privileges:** `CURRENT_USER()` is the MySQL account used for privilege checks; `USER()` reports the client-supplied identity and source host.
-  * ```shellscript
-    mysql --batch --skip-column-names -u <username> -p -h <IP> -P 3306 -e "SELECT CURRENT_USER(), USER(); SHOW GRANTS;"
-    ```
 
 ### Exploitation
 
