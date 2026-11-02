@@ -10,33 +10,27 @@
 
 {% tabs %}
 {% tab title="Frida" %}
-
-### Frida CLI
-
-* **Attach to a running process:**
+- **Attach to a running process:**
   * ```bash
     frida -U -n <process-name>
     ```
-* **Attach and load a script:**
+- **Attach and load a script:**
   * ```bash
     frida -U -n <process-name> -l <hook.js>
     ```
-* **Spawn and load a script:**
+- **Spawn and load a script:**
   * ```bash
     frida -U -f <package-name> -l <hook.js>
     ```
-* Frida CLI resumes spawned processes by default; use `--pause` and REPL `%resume` when needed.
-* **CLI options:**
+- Frida CLI resumes spawned processes by default; use `--pause` and REPL `%resume` when needed.
+- **CLI options:**
   * ```bash
     frida --help
     ```
-* Custom script examples: [Java and Native Instrumentation](java-and-native-instrumentation.md).
-
+- Custom script examples: [Java and Native Instrumentation](java-and-native-instrumentation.md).
 {% endtab %}
+
 {% tab title="Objection" %}
-
-### Objection Session
-
 * **Attach to a running process:**
   * ```bash
     objection --name <process-name> start
@@ -46,23 +40,21 @@
     objection --name <package-name> --spawn start
     ```
 * **Device selection, startup scripts/hooks, and one-shot commands:**
-  * ```bash
-    objection --serial <device-serial> --name <process-name> start
-    objection --name <process-name> start --startup-script <script.js>
-    objection --name <process-name> start --startup-command 'android root disable'
-    objection --name <process-name> start --startup-command 'android sslpinning disable'
-    objection --name <process-name> run 'android root disable'
-    objection --name <process-name> run 'android sslpinning disable'
-    ```
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">objection --serial &#x3C;device-serial> --name &#x3C;process-name> start
+    objection --name &#x3C;process-name> start --startup-script &#x3C;script.js>
+    objection --name &#x3C;process-name> start --startup-command 'android root disable'
+    objection --name &#x3C;process-name> start --startup-command 'android sslpinning disable'
+    objection --name &#x3C;process-name> run 'android root disable'
+    objection --name &#x3C;process-name> run 'android sslpinning disable'
+    </code></pre>
 
 <table><thead><tr><th width="155">Option/Mode</th><th>Use</th></tr></thead><tbody><tr><td><code>--name</code></td><td>Attach by process name; spawn by package ID. Gadget may expose a different name.</td></tr><tr><td>Global options</td><td><code>--name</code>, <code>--serial</code>, <code>--spawn</code>, <code>--no-pause</code> go <strong>before</strong> <code>start</code>/<code>run</code>.</td></tr><tr><td>Startup options</td><td><code>--startup-command</code>, <code>--startup-script</code> go <strong>after</strong> <code>start</code>; check <code>objection start --help</code>.</td></tr><tr><td><code>--no-pause</code></td><td>Immediate resume; omit when early hooks need a paused spawn.</td></tr><tr><td><code>run</code></td><td>One-shot execution; do not assume hooks persist after exit. Use <code>start</code> for monitoring.</td></tr></tbody></table>
-
 {% endtab %}
 {% endtabs %}
 
 ## Classes and Hooks
 
-* <pre class="language-text" data-line-numbers><code class="lang-text">env
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">env
   android hooking list classes
   android hooking list class_methods &#x3C;class-name>
   android hooking search &#x3C;keyword> --only-classes
@@ -76,17 +68,16 @@
 ## Keystore and Device Checks
 
 * **Inside Objection:**
-  * ```text
-    android keystore list
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">android keystore list
     android keystore detail
     android keystore watch
     android root disable
     android sslpinning disable
-    ```
+    </code></pre>
 
 ## Clipboard, Screenshots, Memory, and SQLite
 
-* <pre class="language-text" data-line-numbers><code class="lang-text">android clipboard monitor
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">android clipboard monitor
   android ui FLAG_SECURE false
   memory dump all &#x3C;output-file>.dmp
   memory list modules
