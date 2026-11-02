@@ -1,7 +1,7 @@
-# Local Data, Logs, and Privacy
+# Data Storage and Privacy
 
 * Inspect preferences, SQLite, internal/external files, caches, and backups.
-* Use Android Studio Device File Explorer or Objection `env` for accessible paths.
+* Use Android Studio Device File Explorer or the [Objection environment command](objection-and-runtime-instrumentation.md#classes-and-hooks) for accessible paths.
 * Inspect test copies with [DB Browser for SQLite](https://sqlitebrowser.org/) or the CLI:
   * <pre class="language-bash" data-line-numbers><code class="lang-bash">sqlite3 &#x3C;database-copy.db>
     .tables
@@ -11,7 +11,7 @@
 - [ ] `.tables` is a SQLite CLI command, not SQL.
 - [ ] Use approved test keyboards/clipboard observers; OS restrictions apply.
 - [ ] Check the following storage and privacy surfaces:
-- [ ] Sensitive logs, clipboard (`android clipboard monitor`), keyboard data, screenshots/`FLAG_SECURE`.
+- [ ] Sensitive logs, [clipboard monitoring](objection-and-runtime-instrumentation.md#clipboard-screenshots-memory-and-sqlite), keyboard data, screenshots/`FLAG_SECURE`.
 - [ ] Backup exposure using an OS-supported workflow.
 - [ ] Local role/state tampering; verify server authorization.
 - [ ] SQL injection using non-destructive test records.
@@ -40,14 +40,28 @@
 * App-level plaintext may coexist with Android file-based encryption; assess device state, sandbox access, and app protection separately.
 * For memory remnants, establish realistic access and lifetime; a string match alone is insufficient.
 
-## Acquire Consistent Storage Evidence
+## File and Database Inspection
+
+* **Debuggable app, host Bash:** confirm `run-as` identity, inspect one file, or export the private directory as a binary tar stream.
+  * ```bash
+    adb shell run-as '<package-name>' id
+    adb shell run-as '<package-name>' ls -la
+    adb shell run-as '<package-name>' cat 'shared_prefs/<preferences-file>.xml'
+    adb exec-out run-as '<package-name>' tar -cf - . > app-data.tar
+    ```
+* Extract each app state into a separate host directory and compare the same paths; close/quiesce database writers before acquisition.
+  * ```bash
+    mkdir -p before
+    tar -xf app-data.tar -C before
+    diff -ru before after
+    ```
 
 1. Resolve the correct user/profile and paths using `env`, package details, or Device File Explorer. `/data/data` is commonly an alias for user 0; do not assume that user for every installation.
 2. Prefer an app-supported SQLite snapshot/backup or quiesce the app before copying. A live database copied without its matching `-wal` and `-shm` files can be incomplete/inconsistent.
 3. Use Device File Explorer, `adb pull` with appropriate device access, or a binary-safe export. Standard `adbd` cannot read private app data merely because `su` is installed. `run-as` generally requires a debuggable app; its failure does not prove all storage is protected.
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb root
-  adb shell am force-stop &#x3C;package-name>
+* **Root-capable adbd:** use the [root startup command](preflight-and-frida-setup.md#start-frida-server) first.
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell am force-stop &#x3C;package-name>
   adb pull /data/user/0/&#x3C;package-name>/databases ./test-databases
   adb pull /data/user/0/&#x3C;package-name>/shared_prefs ./test-shared-prefs
   </code></pre>
@@ -65,6 +79,21 @@
 * Clipboard artifacts: system-managed paths such as `/data/system_ce/<user-id>/`; locations/access vary.
 
 ## Backup and Restore Validation
+
+* **Device with an enabled backup transport:** select the actual restore-set token from `bmgr list sets`; commands depend on OS and transport availability.
+  * ```bash
+    adb shell bmgr enabled
+    adb shell bmgr list transports
+    adb shell bmgr backupnow '<package-name>'
+    adb shell bmgr list sets
+    adb shell bmgr restore '<restore-set-token>' '<package-name>'
+    ```
+* **Legacy ADB backup, only where supported:** inspect the resulting archive for a known marker before treating extraction as successful.
+  * ```bash
+    adb backup -f app-backup.ab -apk -nosystem '<package-name>'
+    java -jar abe.jar unpack app-backup.ab app-backup.tar
+    ```
+* Encrypted archives require the password using the extractor's documented input method. Reopen the app and compare the restored login/storage state.
 
 * `allowBackup` and backup rules identify candidates.
 * Record Android/target SDK/OEM, transport, account access, device unlock/consent, and actual backup mechanism.

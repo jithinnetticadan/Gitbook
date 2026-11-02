@@ -13,8 +13,18 @@
 
 ## Request Signing and Replay
 
+* **Replay:** use the [captured JSON request template](authentication-and-cryptography.md#captured-request-replay) for each observed checkout, receipt, balance, or feature endpoint; edit its actual fields rather than generic guessed names.
+* **Offline/network transitions, ADB:** run each state separately and repeat the same app operation.
+	* ```bash
+		adb shell svc wifi disable
+		adb shell svc data disable
+		adb shell svc wifi enable
+		adb shell svc data enable
+		```
+* Cellular commands require a supported device/radio; emulator Ethernet or VPN routes may keep connectivity active.
+
 1. Identify the actual request signature header/body and trace its producer through Java, managed code, platform service, or JNI. Failure to find a Java key does not by itself prove native storage.
-2. Establish key origin and scope: public app-wide embedded secret, per-install key, authenticated server provisioning, or non-exportable signing key. Observe only test data and redact key material.
+2. Establish key origin and scope: public app-wide embedded secret, per-install key, authenticated server provisioning, or non-exportable signing key.
 3. Determine what is signed: method, path, canonical query/body, account/session, timestamp/nonce, and action. Test one harmless field mismatch or replay at a time.
 4. Confirm backend verification and binding. A strong MAC over attacker-chosen fields may still leave an authorization gap; a client-wide extractable secret cannot reliably attest genuine app execution.
 5. Assess freshness/idempotency for the operation. Repeating a read request or lacking an explicit nonce is not automatically a replay vulnerability; demonstrate an unintended accepted state change.
@@ -28,4 +38,4 @@
 
 * Record requests/responses, identity/role, and test state before/after.
 * State signing/instrumentation prerequisites and the demonstrated server/local boundary.
-* Troubleshooting: [Troubleshooting and Test Cleanup](validation-and-troubleshooting.md).
+* Troubleshooting: [Testing and Troubleshooting](validation-and-troubleshooting.md).

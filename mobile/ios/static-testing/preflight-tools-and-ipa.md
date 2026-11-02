@@ -1,4 +1,4 @@
-# Preflight and Setup
+# Preflight and Tools
 
 ## Mandatory Preflight
 
@@ -8,7 +8,7 @@
 * [ ] Run `otool`/Apple tooling on a compatible macOS host, or use a suitable Mach-O parser.
 * [ ] For patching/signing or instrumentation, follow [lab prerequisites](../dynamic-testing/preflight-and-lab-setup.md#mandatory-preflight). Basic URL/proxy tests do not require Frida or jailbreak.
 
-## Lab Tools
+## Lab Tools and Setup
 
 * [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) - automated static analysis.
 * `otool` and [MachOView](https://sourceforge.net/projects/machoview/) - inspect Mach-O headers, load commands, and symbols. `otool` is provided by Xcode/Apple Command Line Tools.
@@ -20,7 +20,7 @@
 * [AnyTrans](https://www.imobie.com/anytrans/download.htm), iMazing - authorized artifact management; acquisition restrictions apply.
 * **Signing/development dependencies:** macOS and Xcode; follow current installation/license requirements.
 
-## Extract IPA
+## App Acquisition
 
 * ```bash
   unzip <app.ipa> -d <extracted-directory>

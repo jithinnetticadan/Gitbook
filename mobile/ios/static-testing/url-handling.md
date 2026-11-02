@@ -1,6 +1,17 @@
-# URL Handling
+# Deep Links and URL Handling
 
-## URL Handling and Inter-App Requests
+## Deep Links and URL Handling
+
+* **macOS terminal:** extract registered schemes and queryable schemes from the app plist.
+  * ```bash
+    /usr/libexec/PlistBuddy -c 'Print :CFBundleURLTypes' '<Application.app>/Info.plist'
+    /usr/libexec/PlistBuddy -c 'Print :LSApplicationQueriesSchemes' '<Application.app>/Info.plist'
+    ```
+* For Universal Links, read `com.apple.developer.associated-domains` using the [entitlement command](configuration-and-sensitive-data.md#configuration-and-sensitive-data).
+  * ```bash
+    curl -i 'https://<associated-domain>/.well-known/apple-app-site-association'
+    ```
+* Compare app identifiers and allowed components/paths with the installed build; registered custom schemes are not ownership verification.
 
 * [ ] Validate caller, scheme, host, path, parameters, and authorization.
 * [ ] Review custom schemes, universal links, and inter-app requests.
@@ -18,4 +29,4 @@
 - `sourceApplication` identifies a caller, not authorization by itself.
 - `mt-encrypted-file://` is app-specific, not universal.
 - Check deprecated APIs: [UIKit documentation](https://developer.apple.com/documentation/uikit).
-- Validate handlers at runtime: [URL Schemes, Web Views, and Client Behavior](../dynamic-testing/client-side-testing.md).
+- Validate handlers at runtime: [Deep Links and WebViews](../dynamic-testing/client-side-testing.md).

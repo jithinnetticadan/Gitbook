@@ -1,11 +1,6 @@
 # Acquire and Decompile
 
-{% hint style="info" %}
-* Test only in-scope apps; replace command placeholders before use.
-* Record package, version, source, device/API level, and original APK hash.
-{% endhint %}
-
-## Acquire the APK
+## App Acquisition
 
 * Find the installed package and pull its APK:
   * <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell
@@ -28,8 +23,8 @@
 * Inspect `.so` native libraries separately.
 * Optional DEX-to-JAR and string scanning:
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">d2j-dex2jar.sh &#x3C;app.apk>
-  apkleaks -f &#x3C;app.apk>
   </code></pre>
+* **APKLeaks:** use the [secret-scanning command](secrets-and-cloud.md#secrets-cloud-configuration-and-endpoints).
 * Open the generated JAR in JD-GUI. dex2jar converts DEX to Java bytecode, not original source.
 * MobSF: inspect decompiled code/SMALI; validate automated findings manually.
 * Use [#automated-tools](./#automated-tools "mention") as well.
@@ -41,11 +36,11 @@
 
 | Source / Artifact                        | Review                                                                                     | Scope / Interpretation                                                                                                                                                    |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Owner-supplied build / installed package | Exact production build, architecture/config splits, feature modules                        | Prefer a reproducible, authorized build. Preserve originals and record any unavailable splits.                                                                            |
-| Historical APK / public mirror           | Removed endpoints, old secrets, regressions, version drift                                 | Authenticate provenance and signing identity; do not install unknown packages on a personal device. A historical issue is not automatically present in the current build. |
-| Public repositories / archives           | Package/domain references, configuration, test endpoints, accidentally published keystores | Do not use discovered credentials beyond authorized validation. A certificate is public; a usable private key is different.                                               |
+| Owner-supplied build / installed package | Exact production build, architecture/config splits, feature modules                        | Record the delivered build and any unavailable splits.                                                                            |
+| Historical APK / public mirror           | Removed endpoints, old secrets, regressions, version drift                                 | Compare provenance, signing identity, and current-build applicability. |
+| Public repositories / archives           | Package/domain references, configuration, test endpoints, accidentally published keystores | Distinguish public certificates from usable private keys.                                               |
 | Play Store / developer metadata          | Publisher/domain, release history, Data Safety, permission disclosures                     | Compare disclosures against observed processing. Do not infer target SDK solely from store descriptions.                                                                  |
-| Endpoints and public CT/DNS records      | API/GraphQL hosts, staging/legacy domains, SDK collectors                                  | Add candidates to the scope inventory; a related hostname is not permission to probe it.                                                                                  |
+| Endpoints and public CT/DNS records      | API/GraphQL hosts, staging/legacy domains, SDK collectors                                  | Correlate discovered hosts with the app endpoints and backend environment.                                                                                  |
 | Assets / resources                       | `resources.arsc`, `res/raw`, HTML/JS bundles, configuration, offline test records          | Decode binary resources with Apktool/JADX; a plain archive listing alone does not interpret them.                                                                         |
 
 ### App Bundles and Delivered Features
@@ -53,6 +48,13 @@
 * **AAB:** publishing artifact, not an installable APK for `adb install`.
 * **Dependencies:** owner-provided bundle, compatible [bundletool](https://developer.android.com/tools/bundletool), and Java environment.
 * Build/inspect the device-specific APK set; record any test re-signing.
+  * ```bash
+    java -jar bundletool.jar get-device-spec --output=device.json
+    java -jar bundletool.jar build-apks --bundle='<app.aab>' --output=test.apks --device-spec=device.json --ks='<test.keystore>' --ks-key-alias='<test-alias>'
+    java -jar bundletool.jar extract-apks --apks=test.apks --output-dir=delivered-apks --device-spec=device.json
+    java -jar bundletool.jar install-apks --apks=test.apks
+    ```
+* Keystore passwords are prompted for by bundletool; use the signing key corresponding to the intended test install.
 * `pm path` lists installed splits, not every downloadable feature.
 * Trigger authorized on-demand features; reacquire and inspect their code, permissions, resources, endpoints, and libraries.
 * Compare base/split versions and signers; Android normally requires a consistent package/signature set.

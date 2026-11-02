@@ -16,9 +16,9 @@
 
 * **Host dependencies:** `unzip` and `grep`, such as in a configured WSL/Linux/macOS shell.
 
-```sh
-unzip -l <app.apk> | grep -E 'libflutter|libmonodroid|libunity|libil2cpp|index\.android\.bundle|libhermes|cordova\.js|libcronet|\.so$'
-```
+* ```sh
+  unzip -l <app.apk> | grep -E 'libflutter|libmonodroid|libunity|libil2cpp|index\.android\.bundle|libhermes|cordova\.js|libcronet|\.so$'
+  ```
 
 * Inspect all relevant split APKs.
 * No match does not prove a Java-only app; renamed assets, packing, dynamic delivery, and newer framework layouts may hide indicators.
@@ -30,9 +30,8 @@ unzip -l <app.apk> | grep -E 'libflutter|libmonodroid|libunity|libil2cpp|index\.
 ## Capture the Baseline
 
 * Split packages require `adb install-multiple` and the complete required split set, not single-APK `adb install`.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb devices -l
-  adb shell getprop ro.product.cpu.abilist
-  adb install &#x3C;app.apk>
+* **Connection:** [ADB device commands](component-testing.md#adb-probes-and-caller-identity); **ABI:** [device architecture commands](preflight-and-frida-setup.md#device-and-frida-setup).
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb install &#x3C;app.apk>
   adb shell monkey -p &#x3C;package-name> -c android.intent.category.LAUNCHER 1
   adb logcat -d -v threadtime > baseline.log
   </code></pre>

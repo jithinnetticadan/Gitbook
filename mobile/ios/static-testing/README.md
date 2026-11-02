@@ -1,6 +1,6 @@
 # Static Testing
 
-## Automated Tool
+## Automated Tools
 
 * [ipaauditor](https://ipaauditor.com/)
 * [ipascope](https://github.com/sudouday/ipascope)

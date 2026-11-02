@@ -1,9 +1,7 @@
-# Signing and App Patching
+# App Patching and Signing
 
-{% hint style="warning" %}
 * **Version dependency:** Gadget must match the host's **exact Frida version**.
 * **Signing prerequisites:** valid signing identity, matching profile, and suitable unencrypted executable.
-{% endhint %}
 
 ## Signing
 
@@ -16,9 +14,9 @@
   applesign -i &#x3C;signing-identity> -m &#x3C;embedded.mobileprovision> &#x3C;app.ipa>
   </code></pre>
 
-## Non-Jailbroken App Patching
+## Automated Patching
 
-* Embed Gadget and re-sign a suitable IPA:
+* **Non-jailbroken iOS:** embed Gadget and re-sign a suitable IPA:
   * ```bash
     objection patchipa --help
     objection patchipa --source <app.ipa> --codesign-signature <signing-identity> --provision-file <embedded.mobileprovision> --gadget-version <frida-version>

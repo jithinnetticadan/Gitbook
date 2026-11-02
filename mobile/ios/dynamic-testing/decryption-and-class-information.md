@@ -2,9 +2,9 @@
 
 ## Decryption and Class Information
 
-* FairPlay-encrypted app: use an authorized analysis copy only; do not redistribute decrypted/modified apps.
+* FairPlay-encrypted apps need a suitable decrypted executable for static code analysis.
 * Tools: [frida-ios-dump](https://github.com/AloneMonkey/frida-ios-dump), [Clutch](https://github.com/KJCracks/Clutch), [bfinject](https://github.com/BishopFox/bfinject).
-* Configure release-specific Python dependencies and secure SSH; example: `python dump.py <bundle-id>`. Never commit SSH passwords.
+* Configure the selected tool's Python dependencies and SSH connection; example: `python dump.py <bundle-id>`.
 * Extract the app, identify its executable, and dump compatible Objective-C metadata:
   * ```bash
     class-dump <app-binary>

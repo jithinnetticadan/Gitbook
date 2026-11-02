@@ -1,8 +1,6 @@
 # Dynamic Testing
 
-{% hint style="warning" %}
 * **Instrumentation:** complete [Preflight and Lab Setup](preflight-and-lab-setup.md); pin host `frida`, server, and Gadget to the same exact version.
-{% endhint %}
 
 ## Further Reading
 

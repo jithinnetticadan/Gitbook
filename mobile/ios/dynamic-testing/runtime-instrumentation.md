@@ -1,10 +1,8 @@
 # Runtime Instrumentation
 
-{% hint style="warning" %}
 * Host `frida`, device server, and Gadget must use the **same exact Frida version**.
-{% endhint %}
 
-### Frida and Objection Connection
+## Objection Session
 
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida-ps -Uai
   frida -U -n &#x3C;app-process-name>
@@ -26,9 +24,9 @@
 
 <table><thead><tr><th width="153.0001220703125">Option/Mode</th><th>Use</th></tr></thead><tbody><tr><td>Global flags</td><td><code>--name</code>, <code>--serial</code>, <code>--local</code>, <code>--spawn</code>, <code>--no-pause</code> go <strong>before</strong> <code>start</code>/<code>run</code>.</td></tr><tr><td>Startup flags</td><td>Go <strong>after</strong> <code>start</code>; verify <code>objection start --help</code>.</td></tr><tr><td><code>--local</code></td><td>iOS Simulator, not a physical device; compatible instrumentation required.</td></tr><tr><td><code>--no-pause</code></td><td>Immediate resume; omit for early hooks needing a paused spawn.</td></tr><tr><td><code>run</code></td><td>One-shot; do not assume hooks survive exit. Use <code>start</code> for monitoring.</td></tr></tbody></table>
 
-### Classes, Hooks, and Local Checks
+## Classes and Hooks
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">env
+* <pre class="language-text" data-line-numbers><code class="lang-text">env
   ios hooking list classes
   ios hooking list class_methods &#x3C;class-name>
   ios hooking watch &#x3C;class-name>
@@ -39,9 +37,9 @@
 * Use `+` for class methods. `--dump-args` may fail on non-object arguments; inspect types first.
 * **Frida 17+:** current CLI tools supply the ObjC bridge; custom agents need bundled `frida-objc-bridge`. See [bridge setup](https://frida.re/docs/bridges/).
 
-### Storage, Privacy, and Memory
+## Clipboard, Screenshots, Memory, and SQLite
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">ios pasteboard monitor
+* <pre class="language-text" data-line-numbers><code class="lang-text">ios pasteboard monitor
   ios nsuserdefaults get
   ios nsurlcredentialstorage dump
   ios plist cat Info.plist
@@ -52,6 +50,12 @@
   ios cookies get
   memory dump all &#x3C;output-file>.dmp
   </code></pre>
+* **Files and SQLite, inside Objection:**
+  * ```text
+    filesystem cat <path-to-file>
+    filesystem download <path-to-file>
+    sqlite connect <database-file>
+    ```
 * `ios monitor crypto` monitors supported CommonCrypto calls, not all cryptography. [Command registry](https://github.com/sensepost/objection/blob/master/objection/console/commands.py).
 * Detection Bypass: Hestia, Shadow, Objection.
 * Alternatives: [RMS](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), [Grapefruit](https://github.com/ChiChou/grapefruit).
@@ -62,7 +66,7 @@
   objection --name &#x3C;app-process-name> start --startup-command 'ios sslpinning disable'
   </code></pre>
 
-### r2frida
+## r2frida
 
 * **Host dependencies:** radare2 and a compatible r2frida plugin; radare2 alone does not install the plugin.
 * Follow the plugin's current installation instructions and command syntax.

@@ -1,4 +1,4 @@
-# Validation, Reporting, and Troubleshooting
+# Testing and Troubleshooting
 
 ## Connect Static Leads to Runtime Tests
 
@@ -26,4 +26,4 @@
 | Only part of traffic appears   | Compare domains, SDK clients, WebViews, native sockets, and QUIC.                                             | Track coverage per stack/domain; record unobserved paths.                                                            |
 | Static function not observed   | Confirm installed version/splits, conditions, account/feature flags, native/reflection paths, caches.         | Mark untested or establish an alternate path; lack of a hit does not prove unreachable code.                         |
 
-* Follow the [runtime-defense stop criteria](runtime-defenses-and-integrity.md#stop-criteria).
+* Continue with [instrumentation diagnosis](runtime-defenses-and-integrity.md#isolate-instrumentation-detection).

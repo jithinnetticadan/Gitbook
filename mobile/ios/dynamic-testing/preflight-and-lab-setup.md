@@ -2,11 +2,9 @@
 
 ## Mandatory Preflight
 
-{% hint style="warning" %}
 * **Version dependency:** host `frida`, device `frida-server`, and injected Gadget must use the **same exact Frida version**.
 * `frida-tools` and Objection have independent version numbers; do not use them to select the server version.
 * Recheck version compatibility after package upgrades.
-{% endhint %}
 
 * [ ] Device is connected, unlocked, and trusts the testing Mac; confirm the selected device.
 * [ ] Choose a runtime path: jailbreak/server, Gadget-patched/signed app, or Frida injection into an authorized debuggable development build.
@@ -38,11 +36,10 @@
 * Match server and host `frida` library versions **exactly**; use supported architecture/platform builds.
 * SSH: `root` / `alpine` default.
 * Utilities: OpenSSH/SFTP, Filza, `apt-get`/`dpkg`
-* Non-jailbroken device: use the patched/signed workflow in [Signing and App Patching](signing-and-app-patching.md)
+* Non-jailbroken device: use the patched/signed workflow in [App Patching and Signing](signing-and-app-patching.md)
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">ssh root@&#x3C;device-ip>
-  frida-ps -Uai
-  objection --name &#x3C;app-process-name> start
   </code></pre>
+* **Attach/spawn:** [Frida and Objection connection commands](runtime-instrumentation.md#objection-session).
 
 ### Verify Client and Server Versions
 
@@ -51,7 +48,6 @@
   * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida --version
     pip3 show frida frida-tools objection
     ssh &#x3C;ssh-user>@&#x3C;device-ip> "frida-server --version"
-    frida-ps -Uai
     </code></pre>
 * Client and server version outputs must match exactly; use the same host environment for Frida/Objection.
 * If `frida-server` is not in the device's `PATH`, use its installed package path; rootless/rootful locations vary.

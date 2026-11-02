@@ -4,13 +4,13 @@
 
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rn 'addJavascriptInterface\|setJavaScriptEnabled(true)' &#x3C;decompiled-directory>
   grep -rn 'setAllowFileAccess(true)\|setAllowUniversalAccessFromFileURLs(true)\|setAllowFileAccessFromFileURLs(true)' &#x3C;decompiled-directory>
-  grep -rn -A3 'onReceivedSslError' &#x3C;decompiled-directory> | grep 'proceed()'
   grep -rn 'loadUrl(\|loadData(\|evaluateJavascript(' &#x3C;decompiled-directory>
   </code></pre>
 * `addJavascriptInterface`: annotation-limited exposure requires Android **and target API 17+**; legacy configurations expose more methods. Test the actual device/WebView.
 * The object is available to **all frames**, without a calling-origin parameter; inspect attacker-controlled pages/iframes and exposed methods. [Bridge behavior](https://developer.android.com/privacy-and-security/risks/insecure-webview-native-bridges).
 * `setAllowFileAccess` defaults to `false` for target API 30+; file-URL cross-access settings default to `false` for target API 16+ on supported platforms. Check explicit overrides and WebView version.
 * `proceed()` in `onReceivedSslError` accepts invalid certificates.
+* **TLS-error search command:** [TLS and pinning patterns](configuration-and-cryptography.md).
 * Trace what URLs reach `loadUrl` (intent extras, deep links, server data) and whether the page origin is validated.
 
 #### WebView Boundaries Beyond JavaScript Enablement
@@ -46,7 +46,7 @@
 * Check whether `../` sequences in filenames from intents, deep links, or URIs are rejected after canonicalization.
 * Overly broad `FileProvider` paths (for example `<external-path path="."/>` or `<root-path>`) can expose more files than intended. Check `android:exported="false"` and `android:grantUriPermissions` on the provider.
 
-## Deep Links and Intent Input
+## Deep Links and URL Handling
 
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -n -A6 'android:scheme' &#x3C;decoded-directory>/AndroidManifest.xml
   grep -rn 'getIntent()\.getData()\|getQueryParameter(\|getStringExtra(' &#x3C;decompiled-directory>
@@ -75,13 +75,13 @@
 
 * **Prerequisites:** JADX and Apktool output; review every search result manually.
 
-```sh
-SRC=<decompiled-directory>
-MANIFEST=<decoded-directory>/AndroidManifest.xml
-grep -rniE 'api[_-]?key|secret|password|BEGIN (RSA |EC )?PRIVATE KEY' "$SRC"
-grep -nE 'allowBackup|dataExtractionRules|fullBackupContent|debuggable|usesCleartextTraffic|networkSecurityConfig' "$MANIFEST"
-grep -rnE 'Cipher\.getInstance\("(DES|RC4|AES/ECB|AES")|MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' "$SRC"
-grep -n 'android:exported="true"' "$MANIFEST"
-grep -rn 'addJavascriptInterface\|onReceivedSslError\|checkServerTrusted' "$SRC"
-grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' "$SRC"
-```
+* ```sh
+  SRC=<decompiled-directory>
+  MANIFEST=<decoded-directory>/AndroidManifest.xml
+  grep -rniE 'api[_-]?key|secret|password|BEGIN (RSA |EC )?PRIVATE KEY' "$SRC"
+  grep -nE 'allowBackup|dataExtractionRules|fullBackupContent|debuggable|usesCleartextTraffic|networkSecurityConfig' "$MANIFEST"
+  grep -rnE 'Cipher\.getInstance\("(DES|RC4|AES/ECB|AES")|MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' "$SRC"
+  grep -n 'android:exported="true"' "$MANIFEST"
+  grep -rn 'addJavascriptInterface\|onReceivedSslError\|checkServerTrusted' "$SRC"
+  grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' "$SRC"
+  ```

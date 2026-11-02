@@ -1,8 +1,6 @@
 # Component Testing
 
-{% hint style="warning" %}
 * Root and Frida are **not required** for ordinary ADB/Drozer component tests. Complete [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight) only when using instrumentation or a patched build.
-{% endhint %}
 
 ## Components, Intents, and Provider URIs
 
@@ -24,7 +22,7 @@
 3. **Baseline:** legitimate action on owned data; record local/API effects.
 4. **Compare:** intended/unauthorized caller; logged out; owned accounts A/B and roles.
 5. **Vary:** one input at a time; bounded values and harmless destinations.
-6. **Confirm/restore:** protected data/action accessed.
+6. **Confirm:** protected data/action accessed.
 
 ### ADB Probes and Caller Identity
 
@@ -52,7 +50,7 @@
     </code></pre>
 * **Drozer console:** run all `run`/`help` commands here.
 * Component `info -u` includes non-exported candidates.
-  * <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.package.attacksurface &#x3C;package-name>
+  * <pre class="language-text" data-line-numbers><code class="lang-text">run app.package.attacksurface &#x3C;package-name>
     run app.package.manifest &#x3C;package-name>
     run app.package.debuggable
     help intents
@@ -64,7 +62,7 @@
 
 * **Map:** full class name, permissions, filters, extras, data URIs.
 * **Trace:** `onCreate` / `onNewIntent`; note activity reuse.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.activity.info -a &#x3C;package-name>
+* <pre class="language-text" data-line-numbers><code class="lang-text">run app.activity.info -a &#x3C;package-name>
   </code></pre>
 
 ### Test Direct Access and Inputs
@@ -75,7 +73,7 @@
     adb shell am start -W -n "<package-name>/<activity-name>" --es "<extra-name>" "<test-value>"
     ```
 * **Drozer:** bare launch, extra, or supported data URI.
-  * <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.activity.start --component &#x3C;package-name> &#x3C;activity-name>
+  * <pre class="language-text" data-line-numbers><code class="lang-text">run app.activity.start --component &#x3C;package-name> &#x3C;activity-name>
     run app.activity.start --component &#x3C;package-name> &#x3C;activity-name> --extra string &#x3C;extra-name> &#x3C;test-value>
     run app.activity.start --component &#x3C;package-name> &#x3C;activity-name> --data-uri &#x3C;authorized-test-uri>
     </code></pre>
@@ -83,7 +81,7 @@
 * **Inputs:** missing extra, different owned ID, short invalid value; vary one at a time.
 * **Lifecycle:** fresh launch versus existing task (`onCreate` / `onNewIntent`).
 * **Results/nested intents/grants:** companion app + [advanced checks](advanced-ipc-and-providers.md#intent-result-and-binder-boundaries).
-* **Implicit routing:** [Deep Links](component-testing.md#deep-links-and-verified-app-links); explicit launch does not prove handler ownership.
+* **Implicit routing:** [Deep Links](component-testing.md#deep-links-and-url-handling); explicit launch does not prove handler ownership.
 
 ### Expected Result
 
@@ -99,7 +97,7 @@
 * **Started:** `onStartCommand` inputs. **Bound:** `onBind` and returned interface.
 * **Messenger:** `Handler.handleMessage`; accepted `what`, `arg1`, `arg2`, Bundle fields/types.
 * **AIDL/Binder:** methods, types, callbacks, caller checks; not interchangeable with Messenger.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.service.info -a &#x3C;package-name>
+* <pre class="language-text" data-line-numbers><code class="lang-text">run app.service.info -a &#x3C;package-name>
   help app.service.send
   </code></pre>
 
@@ -136,7 +134,7 @@
 
 * **Pass:** only intended callers can start/bind and perform each protected operation.
 * **Fail:** unauthorized work, protected response data, or a state change under the service's authority; a successful bind/start alone is insufficient.
-* **Cleanup:** stop only disposable work started by the test and unbind companion clients; stopping a started service does not necessarily remove active bindings.
+* **Stop a started service:** active client bindings may keep a bound service alive.
   * ```bash
     adb shell am stopservice -n "<package-name>/<service-name>"
     ```
@@ -148,7 +146,7 @@
 * **Map:** class, actions, data/categories, export state, sender permissions, registration lifetime.
 * **Runtime:** inspect `registerReceiver` flags/permissions; keep the required feature open.
 * **Baseline:** legitimate event with synthetic data; record action/outgoing broadcast.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.broadcast.info -a &#x3C;package-name>
+* <pre class="language-text" data-line-numbers><code class="lang-text">run app.broadcast.info -a &#x3C;package-name>
   run app.broadcast.info -a &#x3C;package-name> -i
   </code></pre>
 
@@ -191,7 +189,7 @@
 * **Pass (reception):** sensitive payloads reach only intended/permitted recipients.
 * **Fail:** a protected side effect from an unauthorized sender, or sensitive test data received by an unintended caller.
 * ADB's `Broadcast completed` message does not prove the intended receiver ran or that authorization failed.
-* **Cleanup:** Ctrl+C stops sniff output; verify test listeners are removed, unregister companion receivers, and stop the test-agent process if a listener remains.
+* Ctrl+C stops sniff output; the helper receiver can remain registered until its process exits.
 
 ## Content Providers
 
@@ -200,7 +198,7 @@
 * **Map:** authority/routes, operations, export state, read/write/path permissions, grants.
 * **Trace:** URI matcher and query/file handlers; authority alone is not a valid route.
 * **Baseline:** create test record/file normally; record URI/ID and authorized behavior.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.provider.info -a &#x3C;package-name>
+* <pre class="language-text" data-line-numbers><code class="lang-text">run app.provider.info -a &#x3C;package-name>
   run app.provider.finduri &#x3C;package-name>
   </code></pre>
 
@@ -215,7 +213,7 @@
     run app.provider.query <content-uri> --projection <known-column> --selection "<id-column>=?" --selection-args <owned-record-id>
     ```
 * **Minimal query/columns:** owned item URI or small disposable dataset only; unfiltered collections may return all rows.
-  * <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.provider.query &#x3C;content-uri>
+  * <pre class="language-text" data-line-numbers><code class="lang-text">run app.provider.query &#x3C;content-uri>
     run app.provider.columns &#x3C;content-uri>
     </code></pre>
 * **Columns:** metadata query. Check installed module availability.
@@ -226,9 +224,9 @@
 
 ### Test Writes and File/Grant Boundaries
 
-* **Writes require:** approval, disposable records, known columns/types, cleanup plan; otherwise skip.
+* **Write inputs:** known columns/types and the test record's URI/ID.
 * **Insert:** valid synthetic data; record returned URI/ID for update/delete.
-  * <pre class="language-bash" data-line-numbers><code class="lang-bash">run app.provider.insert &#x3C;content-uri> --string &#x3C;column> &#x3C;test-value>
+  * <pre class="language-text" data-line-numbers><code class="lang-text">run app.provider.insert &#x3C;content-uri> --string &#x3C;column> &#x3C;test-value>
     run app.provider.update &#x3C;content-uri> --selection "&#x3C;id-column>=?" --selection-args &#x3C;owned-record-id> --string &#x3C;column> &#x3C;replacement-value>
     run app.provider.delete &#x3C;content-uri> --selection "&#x3C;id-column>=?" --selection-args &#x3C;owned-record-id>
     </code></pre>
@@ -255,11 +253,10 @@
 * **Pass:** authorized caller, operation, record, file path, and grant scope are enforced independently.
 * **Fail:** a specific unauthorized read/write, unsafe query effect, unintended file access, or excessive grant.
 * An empty cursor, exception, or guessed-URI failure is inconclusive without a known valid authorized control.
-* **Cleanup:** remove inserted records/staging files, restore modified test values, and revoke temporary grants without deleting unrelated data.
 
 ## Related Entry-Point Tests
 
-### Deep Links and Verified App Links
+### Deep Links and URL Handling
 
 * **Custom scheme / package-constrained:** use the app's observed route.
   * ```bash

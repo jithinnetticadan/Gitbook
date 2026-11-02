@@ -37,7 +37,7 @@
 2. Compare server not running, server running without attachment, attachment with no hooks, and one observational hook. Each comparison changes one variable.
 3. Capture the exit reason/stack and identify checks in Java/native code. Account for watchdog timing and server-side rejection.
 4. Test a narrowly identified signal only. Failure after renaming a server does not prove behavioral detection: other signatures, root checks, and compatibility failures remain possible.
-5. If a new port is needed for a controlled experiment, keep it loopback-bound and forward it over authorized ADB. Do not expose an unauthenticated Frida server on all network interfaces.
+5. To test a port-specific check, change the server's loopback port and forward that port over ADB.
 
 * **Prerequisites:** stop the existing lab server and check its `--help` before this optional nondefault-port test.
 * Run the server in one terminal; run forwarding/client commands in another.
@@ -49,30 +49,29 @@
   frida-ps -H 127.0.0.1:31337
   frida -H 127.0.0.1:31337 -n <process-name>
   ```
-* Stop the temporary server and remove forwarding with `adb forward --remove tcp:31337` afterward.
+* **Forward management:** `adb forward --remove tcp:31337`.
 * Rooted/emulated devices and patched builds may still fail independent integrity checks.
 
 ## Repackaging and Signature Checks
 
-1. Preserve the original APK/splits and signing certificate details. Use the established [align/sign/verify sequence](app-patching.md#manual-patching) for a disposable test artifact.
+1. Use the [align/sign/verify sequence](app-patching.md#manual-patching) to prepare the rebuilt test artifact.
 2. Compare the original, a rebuilt/re-signed control with no intended logic change, and the targeted patch. Packaging/resource/signature problems  must be separated from anti-tampering.
 3. Trace the actual certificate comparison. Older code may use `GET_SIGNATURES` / `PackageInfo.signatures`; newer code uses `GET_SIGNING_CERTIFICATES` / `signingInfo`. Key rotation and multiple signers affect the comparison.
 4. Confirm whether the app exits locally, hides a feature, or receives a server rejection. A UI change does not bypass backend attestation.
 5. For Play Integrity, assess server verification, expected app identity, freshness/replay controls, and binding to the intended request/session. Standard and classic request flows differ; evaluate the implemented flow, not just a client Boolean.
 
 * Android normally rejects updates signed with unrelated keys; `adb install -r` does not bypass this check.
-* Use a disposable device/profile or an approved uninstall/reinstall; protect test data first.
 * Uninstalling may remove data and keys.
 * Re-signing can legitimately change app identity, signature permissions, App Links, and backend integrations.
 
 ## Framework-Specific Defense Leads
 
 * RootBeer/library methods, installer-source checks, Build fields, sensor/telephony queries, and process maps are leads to the executing decision. `Build.MODEL` and similar values are fields, not universally available getters; verify the concrete API instead of copying a guessed hook.
-* Xposed/LSPosed, Magisk/Zygisk, DenyList, and related modules alter the environment and may be detected. They are optional lab approaches, not guaranteed bypasses. Check maintenance and OS/architecture compatibility; snapshot before changes and avoid unreviewed modules on personal devices.
+* Xposed/LSPosed, Magisk/Zygisk, DenyList, and related modules alter the environment and may be detected. Check module, OS, and architecture compatibility; these are not guaranteed bypasses.
 * Native code can issue direct system calls and bypass libc-level observations. Confirm the executing instruction, ABI, arguments, and build before considering lower-level instrumentation; absence of a libc hook hit is not proof that no check occurred.
 * Installer package names are client-side signals, not server proof of authenticity. An installer-source change may also affect licensing, delivery, and integrity results.
 * Play Integrity bypass-module/keybox claims are version-, provisioning-, revocation-, and backend-policy-dependent. Do not treat leaked attestation credentials or reported verdict strings as reliable evidence of a server bypass. Use authorized test provisioning and verify backend request/session binding.
-* Runtime string decryption can expose obfuscated configuration, but observing a decrypted string does not prove it is a privileged secret. Trace its consumer and redact captured values.
+* Runtime string decryption can expose obfuscated configuration; trace the consumer to determine whether the value is a privileged secret.
 * SafetyNet Attestation was [fully shut down in January 2025](https://developer.android.com/privacy-and-security/safetynet/deprecation-timeline). Review stale integrations and fail-open behavior; do not treat old SafetyNet bypass recipes as a supported current path. Android native hook checks concern mechanisms such as ELF PLT/GOT or instruction changes; Windows `Ldrp` terminology is not an Android API.
 * References: [Android app signing](https://developer.android.com/studio/publish/app-signing), [Play Integrity](https://developer.android.com/google/play/integrity/overview), [Frida troubleshooting](https://frida.re/docs/troubleshooting/).
 * **Related:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | [Network Traffic and TLS](network-traffic-and-tls.md).

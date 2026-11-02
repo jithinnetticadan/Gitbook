@@ -3,6 +3,13 @@
 ## Manifest and Component Review
 
 * Inspect `AndroidManifest.xml` in JADX and Apktool:
+  * ```bash
+    apkanalyzer manifest print '<app.apk>'
+    apkanalyzer manifest application-id '<app.apk>'
+    apkanalyzer manifest min-sdk '<app.apk>'
+    apkanalyzer manifest target-sdk '<app.apk>'
+    apkanalyzer manifest permissions '<app.apk>'
+    ```
 * `minSdkVersion`, target SDK, permissions, application settings, activities, services, receivers, and providers.
 * `android:exported`, component permissions, intent filters, deep links, and sensitive-action authorization. Intent filters are **not authentication**.
 * Debug, backup, cleartext, and `android:networkSecurityConfig` settings. Check production behavior.
@@ -40,7 +47,7 @@
 * **`android:allowBackup` defaults to `true`**. Inspect referenced XML rules: `dataExtractionRules` for Android 12+ with target API 31+; `fullBackupContent` on older devices or for apps targeting API 30 or lower.
 * Check cloud backup and device transfer separately; some manufacturers permit transfer despite `allowBackup=false`. [Backup rules](https://developer.android.com/identity/data/autobackup).
 * On Android 12+, `adb backup` excludes data from apps targeting API 31+ unless debuggable; command availability and older-device behavior vary.
-* `android:debuggable="true"` in a release build allows JDWP attach. On a non-rooted device, `adb shell run-as <package-name> id` succeeding also indicates a debuggable app.
+* `android:debuggable="true"` in a release build allows JDWP attach. Check [run-as identity and private-file access](../dynamic-testing/local-data-logs-and-privacy.md#file-and-database-inspection) on the installed build.
 * Validate exported components at runtime: [Component Testing](../dynamic-testing/component-testing.md).
 
 ## Permissions, Tasks, and Special Access

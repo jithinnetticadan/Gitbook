@@ -3,7 +3,7 @@
 ## Mandatory Preflight
 
 * [ ] Java JDK is compatible with the selected JADX/Apktool releases; required tools are available in `PATH`.
-* [ ] Preserve/hash the original APK and collect all required splits/resources/native libraries.
+* [ ] Collect the APK and all required splits/resources/native libraries.
 * [ ] Record package, app version, min/target SDK, and test-device Android/API level.
 * [ ] Verify MobSF/other tool requirements for the selected release; manually validate automated findings.
 * [ ] For Frida instrumentation/repackaging, follow [Frida prerequisites](../dynamic-testing/preflight-and-frida-setup.md#mandatory-preflight). Basic [ADB/component tests](../dynamic-testing/component-testing.md#adb-probes-and-caller-identity) do not require Frida or root.
@@ -27,7 +27,7 @@
 | Native review            | Ghidra, radare2, NDK/LLVM tools                                  | Match ABI/build; use supported Java/runtime requirements for the selected tool release.                                                                                                      |
 | Protector fingerprinting | [APKiD](https://github.com/rednaga/APKiD)                        | Install its supported Python/YARA dependencies; fingerprints are leads, not an authoritative inventory of library versions.                                                                  |
 | Alternate decompilers    | GDA, Bytecode Viewer, APK Studio                                 | Verify current platform/runtime support and compare output against SMALI; no decompiler guarantees original source recovery.                                                                 |
-| Secret scanning          | TruffleHog filesystem mode, Gitleaks directory mode, APKLeaks    | Use current CLI help and scan extracted artifacts; avoid remote credential verification without permission. Regex matches need manual authority/impact review.                               |
+| Secret scanning          | TruffleHog filesystem mode, Gitleaks directory mode, APKLeaks    | Use current CLI help and scan extracted artifacts; trace matched values to their actual consumer and privileges.                               |
 | Re-signing               | [Uber APK Signer](https://github.com/patrickfav/uber-apk-signer) | Requires a compatible Java runtime; choose/record a test key. It does not possess production keys or bypass update-signature checks.                                                         |
 | Runtime UI helpers       | RMS, House, Inspeckage                                           | RMS/House releases have their own Frida/container dependencies. Inspeckage is Xposed-based, not just a Frida wrapper; review maintenance and device compatibility.                           |
 | Virtual labs             | Android Emulator, Genymotion, Corellium, Waydroid                | Check host/guest/ABI support and licensing. Waydroid uses a Linux container environment, not a native Windows emulator. Hardware-backed assurance needs evidence from the relevant hardware. |
@@ -59,6 +59,6 @@
   * <pre class="language-bash" data-line-numbers><code class="lang-bash">brew install jadx apktool android-platform-tools
     jadx-gui
     apktool --version
-    adb version
     </code></pre>
 * Install Android Studio separately.
+  * Verify ADB using the [device connection commands](../dynamic-testing/component-testing.md#adb-probes-and-caller-identity).

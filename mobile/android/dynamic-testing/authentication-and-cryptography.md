@@ -15,6 +15,24 @@
 * An embedded WebView is a design concern, not proof of credential theft.
 * For passkeys, inspect the provider and [Credential Manager integration](https://developer.android.com/identity/sign-in/credential-manager); UI appearance alone does not establish account security.
 
+### Captured-Request Replay
+
+* **Host Bash/curl:** use the captured URL and authentication format; compare the response body and record ownership.
+    * ```bash
+        curl -i --proxy 'http://127.0.0.1:8080' --cacert '<burp-ca.pem>' 'https://<api-host>/<owned-record-path>' -H 'Authorization: Bearer <account-A-access-token>'
+        curl -i --proxy 'http://127.0.0.1:8080' --cacert '<burp-ca.pem>' 'https://<api-host>/<account-B-record-path>' -H 'Authorization: Bearer <account-A-access-token>'
+        curl -i --proxy 'http://127.0.0.1:8080' --cacert '<burp-ca.pem>' 'https://<api-host>/<owned-record-path>'
+        ```
+* Replay the first request again after logout/expiry with the original token. For cookie sessions, use the captured Cookie header instead of Bearer authentication.
+* **Observed refresh endpoint:** substitute its actual parameter names and client-auth requirements.
+    * ```bash
+        curl -i 'https://<auth-host>/<token-endpoint>' --data-urlencode 'grant_type=refresh_token' --data-urlencode 'refresh_token=<test-refresh-token>' --data-urlencode 'client_id=<observed-client-id>'
+        ```
+* **OTP/reset/transaction body:** edit one captured JSON field in Burp Repeater or a local test body file; retain the captured method and required headers.
+    * ```bash
+        curl -i 'https://<api-host>/<observed-endpoint>' -H 'Authorization: Bearer <test-access-token>' -H 'Content-Type: application/json' --data-binary '@<captured-test-body.json>'
+        ```
+
 ## Horizontal and Vertical Authorization
 
 1. Create two normal test accounts, A and B, with separate owned objects. Add an authorized lower/higher-role pair when available.
@@ -28,10 +46,42 @@
 
 ## Biometrics and Auth-Bound Keystore
 
+* **Inside Objection:** [Keystore commands](objection-and-runtime-instrumentation.md#keystore-and-device-checks). For concrete callback implementations, use the [class/method watcher](objection-and-runtime-instrumentation.md#classes-and-hooks) with the observed callback class.
+* **Frida Java script:** enumerate key policy in the current app UID; Android 6+ for `KeyInfo`, Android 12+ for `getSecurityLevel()`.
+  * ```javascript
+    Java.perform(function () {
+        const KeyStore = Java.use('java.security.KeyStore');
+        const KeyInfo = Java.use('android.security.keystore.KeyInfo');
+        const SecretKey = Java.use('javax.crypto.SecretKey');
+        const SecretKeyFactory = Java.use('javax.crypto.SecretKeyFactory');
+        const KeyFactory = Java.use('java.security.KeyFactory');
+        const store = KeyStore.getInstance('AndroidKeyStore');
+        store.load(null);
+        const aliases = store.aliases();
+        while (aliases.hasMoreElements()) {
+            const alias = aliases.nextElement().toString();
+            try {
+                const key = store.getKey(alias, null);
+                if (key === null) continue;
+                const factory = SecretKey.class.isInstance(key)
+                    ? SecretKeyFactory.getInstance(key.getAlgorithm(), 'AndroidKeyStore')
+                    : KeyFactory.getInstance(key.getAlgorithm(), 'AndroidKeyStore');
+                const info = Java.cast(factory.getKeySpec(key, KeyInfo.class), KeyInfo);
+                console.log(JSON.stringify({ alias: alias, algorithm: key.getAlgorithm().toString(),
+                    authRequired: info.isUserAuthenticationRequired(),
+                    authSeconds: info.getUserAuthenticationValidityDurationSeconds(),
+                    backing: info.getSecurityLevel ? info.getSecurityLevel() : info.isInsideSecureHardware() }));
+            } catch (error) {
+                console.log(alias + ': ' + error);
+            }
+        }
+    });
+    ```
+
 1. Identify the concrete AndroidX/platform `BiometricPrompt` callback or legacy fingerprint path. Observe success, failure, cancellation, fallback, and exception handling without replacing them initially.
 2. Trace whether the operation uses a `CryptoObject` containing a `Cipher`, `Signature`, or `Mac`, or a time-window-based auth-bound key. Missing `CryptoObject` alone does not prove a bypass.
 3. Review the actual key generation/import policy: alias/provider, `setUserAuthenticationRequired`, allowed authenticators, per-use versus time-window authorization, and enrollment/device-lock invalidation rules.
-4. On a disposable setup, attempt the protected operation after cancellation, failed authentication, and expiry of the permitted authentication window. Test enrollment/device-lock changes only when explicitly approved; they can invalidate keys.
+4. Attempt the protected operation after cancellation, failed authentication, and expiry of the authentication window. Compare enrollment/device-lock changes with the key's configured invalidation policy.
 5. If assessing callback manipulation, target the actual app callback and validate the subsequent decryption/signing or protected operation. A hook that merely logs/replaces the success callback body does not cause authentication success and may break the app.
 6. Confirm any claimed server-side impact with the server result. For offline data, demonstrate unauthorized access to the protected local data instead.
 
@@ -68,7 +118,7 @@
     });
     ```
 * Correlate cipher instances, `init` parameters, and consumers with synthetic test data.
-* Capture additional values only when necessary; protect the resulting artifacts.
+* Capture the values needed to trace key provenance and compare repeated operations.
 * Compare repeated operations under the **same key**, app restarts, and account changes.
 * Key changes between sessions do not prove server origin.
 * `getEncoded()` returning null may indicate a non-exportable key, not an analysis failure.

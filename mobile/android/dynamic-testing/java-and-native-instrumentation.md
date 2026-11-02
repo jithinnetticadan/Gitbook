@@ -3,10 +3,10 @@
 ## Attach or Spawn
 
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida --help
-  frida-ps -Uai
   frida -U -n &#x3C;process-name> -l &#x3C;hook.js>
   frida -U -f &#x3C;package-name> -l &#x3C;hook.js>
   </code></pre>
+* **Process/app listing:** [Frida connection check](preflight-and-frida-setup.md#verify-client-and-server-versions).
 * Attach to existing processes; spawn for early checks. Select the actual process/PID, including subprocesses.
 * Frida CLI resumes spawned processes by default; use `--pause` and REPL `%resume` when needed.
 * Custom agents loaded through bindings need bundled `frida-java-bridge` and `import Java from 'frida-java-bridge'`.
@@ -102,5 +102,12 @@
 
 * **Fuzzing prerequisites:** authorization, isolated parser/JNI entry point, reproducible harness, small seed corpus, time/memory limits, and disposable data.
 * With source, prefer an existing engine such as libFuzzer and a compatible NDK/sanitizer build.
+* **Existing libFuzzer harness on a matching test device:** use the built executable and its known corpus; this is not a harness generator for arbitrary JNI methods.
+    * ```bash
+        adb push '<parser-fuzzer>' /data/local/tmp/parser-fuzzer
+        adb push '<seed-corpus-directory>' /data/local/tmp/parser-corpus
+        adb shell chmod 755 /data/local/tmp/parser-fuzzer
+        adb shell /data/local/tmp/parser-fuzzer /data/local/tmp/parser-corpus -runs=100 -max_len=4096 -timeout=2 -rss_limit_mb=256
+        ```
 * Preserve crashing input, build/ABI, sanitizer/tombstone details, and a minimized reproducer.
 * Distinguish harness errors, normal parse rejection, local denial of service, and exploitable corruption.
