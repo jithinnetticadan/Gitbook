@@ -68,6 +68,13 @@ show databases;, use <database>;, show tables;, show columns from <table>;, sele
 {% endtab %}
 {% endtabs %}
 
+#### Current Account and Grants
+
+* **Inspect the authenticated account and its privileges:** `CURRENT_USER()` is the MySQL account used for privilege checks; `USER()` reports the client-supplied identity and source host.
+  * ```shellscript
+    mysql --batch --skip-column-names -u <username> -p -h <IP> -P 3306 -e "SELECT CURRENT_USER(), USER(); SHOW GRANTS;"
+    ```
+
 ### Exploitation
 
 * #### Write Local Files <a href="#write-local-files" id="write-local-files"></a>
