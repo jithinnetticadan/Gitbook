@@ -103,7 +103,7 @@
 
 * **Template scope:** metadata for `Cipher.doFinal(byte[])` only; no key/plaintext dumps.
 * **Not covered:** streaming/no-argument overloads or native crypto.
-* **Run:** Frida CLI script/REPL after [instrumentation setup](java-and-native-instrumentation.md#attach-or-spawn); custom agents need the Java bridge.
+* **Run:** Frida CLI script/REPL using the [attach/spawn commands](objection-and-runtime-instrumentation.md#attach-or-spawn); custom agents need the [Java bridge setup](java-and-native-instrumentation.md#custom-agent-setup).
   * ```javascript
     Java.perform(function () {
         const Cipher = Java.use('javax.crypto.Cipher');

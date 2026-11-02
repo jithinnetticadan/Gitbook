@@ -2,12 +2,51 @@
 
 * Host `frida`, device server, and Gadget must use the **same exact Frida version**.
 
-## Objection Session
+## Attach or Spawn
 
-* **Host terminal:**
+* **Choose Frida or Objection below; run the selected commands on the host.** Attach to a running process, or spawn by package ID for startup checks.
+* Frida loads custom scripts; Objection provides packaged commands and hooks using Frida internally. Both require a working Frida connection.
+* **App/process listing:** [Frida connection check](preflight-and-frida-setup.md#verify-client-and-server-versions).
+
+{% tabs %}
+{% tab title="Frida" %}
+
+### Frida CLI
+
+* **Attach to a running process:**
+  * ```bash
+    frida -U -n <process-name>
+    ```
+* **Attach and load a script:**
+  * ```bash
+    frida -U -n <process-name> -l <hook.js>
+    ```
+* **Spawn and load a script:**
+  * ```bash
+    frida -U -f <package-name> -l <hook.js>
+    ```
+* Frida CLI resumes spawned processes by default; use `--pause` and REPL `%resume` when needed.
+* **CLI options:**
+  * ```bash
+    frida --help
+    ```
+* Custom script examples: [Java and Native Instrumentation](java-and-native-instrumentation.md).
+
+{% endtab %}
+{% tab title="Objection" %}
+
+### Objection Session
+
+* **Attach to a running process:**
   * ```bash
     objection --name <process-name> start
+    ```
+* **Spawn and start a session:**
+  * ```bash
     objection --name <package-name> --spawn start
+    ```
+* **Device selection, startup scripts/hooks, and one-shot commands:**
+  * ```bash
     objection --serial <device-serial> --name <process-name> start
     objection --name <process-name> start --startup-script <script.js>
     objection --name <process-name> start --startup-command 'android root disable'
@@ -17,6 +56,9 @@
     ```
 
 <table><thead><tr><th width="155">Option/Mode</th><th>Use</th></tr></thead><tbody><tr><td><code>--name</code></td><td>Attach by process name; spawn by package ID. Gadget may expose a different name.</td></tr><tr><td>Global options</td><td><code>--name</code>, <code>--serial</code>, <code>--spawn</code>, <code>--no-pause</code> go <strong>before</strong> <code>start</code>/<code>run</code>.</td></tr><tr><td>Startup options</td><td><code>--startup-command</code>, <code>--startup-script</code> go <strong>after</strong> <code>start</code>; check <code>objection start --help</code>.</td></tr><tr><td><code>--no-pause</code></td><td>Immediate resume; omit when early hooks need a paused spawn.</td></tr><tr><td><code>run</code></td><td>One-shot execution; do not assume hooks persist after exit. Use <code>start</code> for monitoring.</td></tr></tbody></table>
+
+{% endtab %}
+{% endtabs %}
 
 ## Classes and Hooks
 

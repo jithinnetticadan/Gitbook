@@ -58,8 +58,7 @@
 * `frida --version` and `frida-server --version` must match exactly.
 * Use the same host environment for Frida and Objection.
 * **ADB connection:** [device selection and authorization commands](component-testing.md#adb-probes-and-caller-identity).
-* List installed apps and attach:
+* List installed apps:
   * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida-ps -Uai
-    frida -U -n &#x3C;process-name>
     </code></pre>
-* **Objection sessions:** [attach, spawn, serial selection, and startup hooks](objection-and-runtime-instrumentation.md#objection-session).
+* **Runtime sessions:** [Frida CLI and Objection attach/spawn variants](objection-and-runtime-instrumentation.md#attach-or-spawn).

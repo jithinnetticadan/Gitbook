@@ -1,14 +1,10 @@
 # Java and Native Instrumentation
 
-## Attach or Spawn
+* **Custom hook workflows:** class/signature discovery, observational Java hooks, classloaders, JNI/native hooks, and native fuzzing.
+* **Connect/load a script:** [Frida CLI or Objection](objection-and-runtime-instrumentation.md#attach-or-spawn).
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">frida --help
-  frida -U -n &#x3C;process-name> -l &#x3C;hook.js>
-  frida -U -f &#x3C;package-name> -l &#x3C;hook.js>
-  </code></pre>
-* **Process/app listing:** [Frida connection check](preflight-and-frida-setup.md#verify-client-and-server-versions).
-* Attach to existing processes; spawn for early checks. Select the actual process/PID, including subprocesses.
-* Frida CLI resumes spawned processes by default; use `--pause` and REPL `%resume` when needed.
+## Custom Agent Setup
+
 * Custom agents loaded through bindings need bundled `frida-java-bridge` and `import Java from 'frida-java-bridge'`.
 * Installing the Python package alone does not bundle the agent dependency; follow [bridge setup](https://frida.re/docs/bridges/) for custom loaders.
 
