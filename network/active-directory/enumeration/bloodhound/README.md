@@ -14,8 +14,8 @@ Enumerates key AD elements such as:
 
 ## **Types of Data Collectors**
 
-* [RustHound-CE](https://github.com/g0h4n/RustHound-CE) <sup><sub>(efficient as it collects more details like certificate  templates etc compared to netexec and python ingestors)<sub></sup>
-  * `rusthound-ce.exe -u <username> -p <password> -d <domain> -c All -z`   <sup><sub>(linux/windows)<sub></sup>
+* [RustHound-CE](https://github.com/g0h4n/RustHound-CE) <sup><sub>(efficient as it collects more details like certificate templates etc compared to netexec and python ingestors)<sub></sup>
+  * `rusthound-ce.exe -u <username> -p <password> -d <domain> -c All -z` <sup><sub>(linux/windows)<sub></sup>
 * **NetExec**
   * `nxc ldap <dc-ip> -u <username> -p <password> --bloodhound --collection All --dns-server <dc-ip>`
 * [SharpHound](https://github.com/SpecterOps/SharpHound)
@@ -31,6 +31,7 @@ Enumerates key AD elements such as:
   * `SOAPHound.exe --buildcache -c C:\AD\Tools\cache.txt` <sub>(Build a cache that includes basic info about domain objects.)</sub>
   * `SOAPHound.exe -c C:\AD\Tools\cache.txt --bhdump -o C:\AD\Tools\bloodhound-output --nolaps` <sub>(Collect BloodHound compatible data)</sub>
 * [SoaPy](https://github.com/xforcered/SoaPy)
+* [DACLhound](https://github.com/gzzcoo/DACLhound) - Shows _WriteProperty_ rights. It labels the permission directly, for example _WriteUserAccountControl_ or _WriteLogonHours_, etc.
 
 ## Security Considerations
 
