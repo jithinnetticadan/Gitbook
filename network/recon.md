@@ -17,6 +17,8 @@ layout:
     visible: true
   actions:
     visible: true
+  anchors:
+    visible: true
 ---
 
 # Recon
@@ -109,6 +111,8 @@ sudo nmap -iL hosts.txt -p- --packet-trace --disable-arp-ping -Pn -n --reason
 ## Common ports -p 80,443,8000,8080,8180,8888,10000
 ## Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
 https://github.com/leonjza/awesome-nmap-grep
+nc -nv -w 1 -z <IP> 3388-3390
+1..65535 | % {echo ((New-Object Net.Sockets.TcpClient).Connect("<IP>", $_)) "TCP port $_ is open"} 2>$null
 ```
 
 * #### UDP Scan
@@ -120,6 +124,7 @@ nmap -Pn -sV -sU -sC -v -T3 --max-retries 2 --host-timeout 15m --open -p U:53,69
 sudo nmap -iL hosts.txt -p- -sV -sU -Pn -n --disable-arp-ping --packet-trace --reason 
 ## Nmap grep cheatsheet to "cut through the noise" and extract the most useful information from the scan.
 https://github.com/leonjza/awesome-nmap-grep
+nc -nv -u -z -w 1 <IP> 120-123
 ```
 {% endcode %}
 
@@ -137,10 +142,10 @@ https://github.com/leonjza/awesome-nmap-grep
 
 ### Parse Nmap Results
 
-* [**EyeWitness**](https://github.com/FortyNorthSecurity/EyeWitness) <sup><sub>(for web app evidence collection)<sub></sup>
+* [EyeWitness](https://github.com/FortyNorthSecurity/EyeWitness) <sup><sub>(for web app evidence collection)<sub></sup>
   * `eyewitness --web -x *.xml -d <folder>`
   * `eyewitness -f scope.txt -d eyewitness-results`
-* [**`Aquatone`**](https://github.com/michenriksen/aquatone) `or` [`aquatone`](https://github.com/shelld3v/aquatone) <sup><sub>`(for web app evidence collection)`<sub></sup>
+* [Aquatone](https://github.com/michenriksen/aquatone) `or` [aquatone](https://github.com/shelld3v/aquatone) <sup><sub>(for web app evidence collection)<sub></sup>
   * `cat nmap.xml | ./aquatone -nmap`
 * **Metasploit**
   * `workspace -a <name>` -> `workspace <name>` -> `db_import *.xml` -> `load alias` -> `alias sv services`
