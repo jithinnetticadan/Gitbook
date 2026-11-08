@@ -53,7 +53,8 @@ gobuster dns -d <domain.com> -w /usr/share/SecLists/Discovery/DNS/namelist.txt #
 {% tab title="dnsrecon" %}
 {% code lineNumbers="true" %}
 ```shellscript
-dnsrecon -t brt -d <domain.com>
+dnsrecon -d <domain.com> -D ~/wordlist.txt -t brt
+dnsrecon -d <domain.com> -t std
 ```
 {% endcode %}
 {% endtab %}
