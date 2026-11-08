@@ -46,6 +46,7 @@ Fuller OSINT technique table (DNS history, web archive, social media, code repos
 {% code lineNumbers="true" %}
 ```shellscript
 whois <domain> ## WhoisFreaks website
+# A protocol that uses TCP port 43 to communicate with public databases
 ```
 {% endcode %}
 
@@ -70,10 +71,12 @@ intext:<domain> inurl:blob.core.windows.net //Search for Azure
 ```
 {% endcode %}
 
+* [dorksearch](https://dorksearch.com/)
+
 ### Passive Fingerprinting
 
 * BuiltWith
-* Netcraft
+* [netcraft](https://www.netcraft.com/)
 
 ## Active Recon - Unauthenticated
 
