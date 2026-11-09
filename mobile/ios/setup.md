@@ -54,7 +54,6 @@
 ## Jailbroken Physical Test Device
 
 * Select a jailbreak matching the device/iOS version.
-* Install OpenSSH through [Sileo/Cydia sources](setup.md#sileo-repositories-and-device-utilities).
 * **SSH connection choices, on the Mac** <sup><sub>(Alternatives; select the device's account/port)<sub></sup>:
   * ```bash
     ssh root@<device-ip>
@@ -156,12 +155,10 @@
     ```
 * **Partial-SIP path** <sup><sub>(Alternative path; required only with partial SIP)<sub></sup>: after a host restart, run `make amfidont_allow_vphone` before `make boot`.
 * Complete the iOS setup screens. Open **Sileo** and **TrollStore** from the Home Screen.
-* Add the [Sileo repositories and packages](setup.md#sileo-repositories-and-device-utilities) below; install **OpenSSH**, then reboot the VM.
 * **Inspect the jailbreak setup log** <sup><sub>(Optional; troubleshooting)<sub></sup>: in the VM console:
   * ```bash
     cat /var/log/vphone_jb_setup.log
     ```
-* Continue with [SSH connectivity](setup.md#virtual-device-ssh-and-frida-connectivity), [host Frida/Objection](setup.md#host-frida-and-objection), and proxy setup below.
 
 ### Current Upstream <sup><sub>(Alternative)<sub></sup>
 
