@@ -22,54 +22,50 @@ layout:
 
 # PTGuide
 
-{% content-ref url="web/recon-and-enum.md" %}
-[Web - Recon & Enum](web/recon-and-enum.md)
+{% content-ref url="web/README.md" %}
+[Web](web/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="network/methodology.md" %}
-[Network - Methodology](network/methodology.md)
+{% content-ref url="network/README.md" %}
+[Network](network/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="thickclient/recon.md" %}
-[ThickClient - Recon](thickclient/recon.md)
+{% content-ref url="thickclient/README.md" %}
+[ThickClient](thickclient/README.md)
+{% endcontent-ref %}
+
+{% content-ref url="mobile/README.md" %}
+[Mobile](mobile/README.md)
 {% endcontent-ref %}
 
 {% content-ref url="mobile/android/README.md" %}
-[Mobile - Android](mobile/android/README.md)
+[Android](mobile/android/README.md)
 {% endcontent-ref %}
 
 {% content-ref url="mobile/ios/README.md" %}
-[Mobile - iOS](mobile/ios/README.md)
+[iOS](mobile/ios/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="cloud/aws/README.md" %}
-[Cloud - AWS](cloud/aws/README.md)
+{% content-ref url="cloud/README.md" %}
+[Cloud](cloud/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="cloud/gcp/README.md" %}
-[Cloud - GCP](cloud/gcp/README.md)
+{% content-ref url="serverless/README.md" %}
+[Serverless](serverless/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="cloud/azure/README.md" %}
-[Cloud - Azure](cloud/azure/README.md)
+{% content-ref url="iot-and-hardware/README.md" %}
+[IoT and Hardware](iot-and-hardware/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="serverless/containers/README.md" %}
-[Serverless - Containers](serverless/containers/README.md)
+{% content-ref url="ai-sec/README.md" %}
+[AI-Sec](ai-sec/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="serverless/docker/README.md" %}
-[Serverless - Docker](serverless/docker/README.md)
+{% content-ref url="osint/README.md" %}
+[OSINT](osint/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="serverless/kubernetes/README.md" %}
-[Serverless - Kubernetes](serverless/kubernetes/README.md)
-{% endcontent-ref %}
-
-{% content-ref url="osint/passive.md" %}
-[OSINT](osint/passive.md)
-{% endcontent-ref %}
-
-{% content-ref url="tools/tool-links.md" %}
-[Tools](tools/tool-links.md)
+{% content-ref url="tools/README.md" %}
+[Tools](tools/README.md)
 {% endcontent-ref %}

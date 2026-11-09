@@ -6,12 +6,12 @@
 * [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) - automated static analysis.
 * `otool` and [MachOView](https://sourceforge.net/projects/machoview/) - inspect Mach-O headers, load commands, and symbols. `otool` is provided by Xcode/Apple Command Line Tools.
 * [class-dump](http://stevenygard.com/projects/class-dump/) - Objective-C interfaces. Legacy `class-dump-z` is not automatically interchangeable.
-* [Hopper](https://www.hopperapp.com/), [Ghidra](https://github.com/NationalSecurityAgency/ghidra/), and [IDA Free](https://hex-rays.com/ida-free/) - disassembly and reverse engineering.
+* [Hopper](https://www.hopperapp.com/), [Ghidra](https://github.com/NationalSecurityAgency/ghidra/), and [IDA Free](https://hex-rays.com/ida-free) - disassembly and reverse engineering.
 * Flawfinder and Clang Static Analyzer can assist with authorized source code.
-* [radare2](https://rada.re/n/) (`rabin2`, `r2`), [iRET](https://github.com/S3Jensen/iRET), [LIEF](https://lief-project.github.io/), `pagestuff` - additional binary tools; verify support and install requirements.
+* [radare2](https://rada.re/n/) (`rabin2`, `r2`), [iRET](https://github.com/S3Jensen/iRET), [LIEF](https://lief.re/), `pagestuff` - additional binary tools; verify support and install requirements.
 * [AnyTrans](https://www.imobie.com/anytrans/download.htm), iMazing - authorized artifact management; acquisition restrictions apply.
 * **Signing/development dependencies:** macOS and Xcode; follow current installation/license requirements.
-* Optional host helpers: [Frida-Launcher](https://github.com/thecybersandeep/Frida-Launcher), [ioscpy](https://github.com/lautarovculic/ioscpy), and [Cyberduck](https://cyberduck.io/) for SFTP. Verify support for the selected device and connection.
+* Host helpers <sup><sub>(Optional)</sub></sup>: [Frida-Launcher](https://github.com/thecybersandeep/Frida-Launcher), [ioscpy](https://github.com/lautarovculic/ioscpy), and [Cyberduck](https://cyberduck.io/) for SFTP. Verify support for the selected device and connection.
 
 ## App Preparation
 
@@ -54,8 +54,8 @@
 ## Jailbroken Physical Test Device
 
 * Select a jailbreak matching the device/iOS version.
-* Install OpenSSH through [Sileo/Cydia sources](setup.md#sileo-repositories-and-device-utilities).
-* **SSH variants, on the Mac:**
+* Install OpenSSH through [Sileo/Cydia sources](#sileo-repositories-and-device-utilities).
+* **SSH connection choices, on the Mac** <sup><sub>(Alternatives; select the device's account/port)</sub></sup>:
   * ```bash
     ssh root@<device-ip>
     ssh mobile@<device-ip>
@@ -87,7 +87,7 @@
     sudo nvram boot-args="amfi_get_out_of_my_way=1 -v"
     sudo shutdown -r now
     ```
-* **Partial-SIP alternative:** use this instead of the full-disable path. In Recovery Terminal:
+* **Partial-SIP path** <sup><sub>(Alternative to full SIP disable)</sub></sup>: in Recovery Terminal:
   * ```bash
     csrutil enable --without debug
     csrutil allow-research-guests enable
@@ -128,7 +128,7 @@
     git checkout 30fcc05ca57a727033b4cf2cfd41ba4c0a4c96ab
     git submodule update --init --recursive
     ```
-* **Partial-SIP path only, from this directory:** install the tools and start the AMFI helper before setup/boot.
+* **Partial-SIP helper** <sup><sub>(Alternative path; required only with partial SIP)</sub></sup>: from this directory, install the tools and start the AMFI helper before setup/boot.
   * ```bash
     make setup_tools
     xcrun python3 -m pip install amfidont
@@ -139,7 +139,7 @@
     make setup_machine JB=1 IPHONE_VERSION=26.1 IPHONE_BUILD=23B85
     ```
 * Setup builds the VM, downloads/prepares firmware, enters virtual DFU, restores/installs patched firmware, and performs the first boot. No physical-iPhone recovery-button sequence is needed.
-*   **Other setup variants** - select one instead of the command above:
+*   **Other setup variants** <sup><sub>(Alternatives; select one instead of the command above)</sub></sup>:
 
     | Variant                     | Command                                                                                 |
     | --------------------------- | --------------------------------------------------------------------------------------- |
@@ -154,16 +154,16 @@
   * ```bash
     make boot
     ```
-* **Partial-SIP path:** after a host restart, run `make amfidont_allow_vphone` before `make boot`.
+* **Partial-SIP path** <sup><sub>(Alternative path; required only with partial SIP)</sub></sup>: after a host restart, run `make amfidont_allow_vphone` before `make boot`.
 * Complete the iOS setup screens. Open **Sileo** and **TrollStore** from the Home Screen.
-* Add the [#sileo-repositories-and-device-utilities](setup.md#sileo-repositories-and-device-utilities "mention")below; install **OpenSSH**, then reboot the VM.
-* If jailbreak setup stalls, inspect the log in the VM console:
+* Add the [Sileo repositories and packages](#sileo-repositories-and-device-utilities) below; install **OpenSSH**, then reboot the VM.
+* **Inspect the jailbreak setup log** <sup><sub>(Optional; troubleshooting)</sub></sup>: in the VM console:
   * ```bash
     cat /var/log/vphone_jb_setup.log
     ```
-* Continue with [SSH connectivity](setup.md#virtual-device-ssh-and-frida-connectivity), [host Frida/Objection](setup.md#host-frida-and-objection), and proxy setup below.
+* Continue with [SSH connectivity](#virtual-device-ssh-and-frida-connectivity), [host Frida/Objection](#host-frida-and-objection), and proxy setup below.
 
-### Current Upstream Alternative
+### Current Upstream <sup><sub>(Alternative)</sub></sup>
 
 * **Separate from the pinned Sileo VM:** install Launchpad and its matching `VPhone.bundle`. Distributed bundles need no Xcode/Homebrew at runtime.
 * Enter macOS Recovery as in step 1 and use the partial-SIP commands. Launchpad handles VM allowlisting; standalone CLI prints the required command during preflight.
@@ -176,7 +176,7 @@
       --bootstrap roothide
     vphone-cli vm launch ios-lab
     ```
-* **Creation variants:** `--cpu 8 --memory 8192 --disk-size 64`; `--network nat` or `--network bridged`. CFW installation requires root privileges.
+* **Resource overrides** <sup><sub>(Optional)</sub></sup>: `--cpu 8 --memory 8192 --disk-size 64`. **Network choices** <sup><sub>(Alternatives)</sub></sup>: `--network nat` or `--network bridged`. CFW installation requires root privileges.
 * **Existing VM without packages:** Apps > Install Bootstrap > roothide; in Irisin, install `owngoal-bootstrap-vphone` using **Bootstrap Install**.
 * This bootstrap uses Irisin, not Sileo/TrollStore.
 * **List / stop:**
@@ -185,7 +185,7 @@
     vphone-cli vm stop ios-lab
     ```
 
-### Virtual Device SSH and Frida Connectivity
+### Virtual Device SSH and Frida Connectivity <a id="virtual-device-ssh-and-frida-connectivity"></a>
 
 * **Pinned Sileo VM:** install OpenSSH in Sileo and reboot the VM.
 * **Mac Terminal 1:** keep the SSH forwarder running:
@@ -196,8 +196,8 @@
   * ```bash
     ssh -p 2222 mobile@127.0.0.1
     ```
-* **Initial password:** `alpine`. **Direct guest-IP variant:** `ssh mobile@<vm-ip>`; guest port 22, forwarded host port 2222.
-* **After completing Frida installation below, verify from the Mac:**
+* **Initial password:** `alpine`. **Direct guest-IP connection** <sup><sub>(Alternative to localhost forwarding)</sub></sup>: `ssh mobile@<vm-ip>`; guest port 22, forwarded host port 2222.
+* **After completing Frida installation below, verify from the Mac** <sup><sub>(Alternative transports; select one of the `frida-ps` commands)</sub></sup>:
   * ```bash
     frida-ls-devices
     frida-ps -Uai
@@ -209,7 +209,7 @@
 * **Next:** [keychain/storage](dynamic-testing/data-storage-and-privacy.md), [runtime/memory](dynamic-testing/runtime-instrumentation.md).
 * **Physical-device validation:** hardware-backed Keychain/SEP, biometrics, NFC/camera, attestation, and Apple services are not fully represented by the VM.
 
-## Sileo Repositories and Device Utilities
+## Sileo Repositories and Device Utilities <a id="sileo-repositories-and-device-utilities"></a>
 
 * **Physical jailbroken device / Sileo-based VM:** Sileo > Sources > + > add URL > refresh.
 * Packages must match iOS, architecture, and bootstrap layout (rootful/rootless/roothide).
@@ -223,9 +223,8 @@
 | `https://opa334.github.io/`                  | Choicy and opa334 utilities.                                                     |
 | `https://havoc.app/`                         | General packages; commonly preconfigured.                                        |
 | `https://apt.procurs.us/`                    | Procursus Unix packages; preserve the bootstrap's configured suite/architecture. |
-| `http://apt.thebigboss.org/repofiles/cydia/` | BigBoss packages; legacy HTTP source.                                            |
-| `https://cydia.radare.org/`                  | radare tooling; legacy source.                                                   |
-| `https://cydia.akemi.ai/`                    | Karen/Akemi packages, including legacy AppSync Unified.                          |
+
+* **Historical sources, not verified as usable:** BigBoss (`http://apt.thebigboss.org/repofiles/cydia/`, HTTP 403); Radare (`https://cydia.radare.org/`, certificate mismatch); Akemi (`https://cydia.akemi.ai/`, timeout; legacy AppSync Unified).
 
 * **Install through Sileo search:**
   * Access/files: OpenSSH, Filza, NewTerm or NewTerm 3 Beta, wget, `ps`, `sqlite3`, `unzip`.
@@ -237,9 +236,9 @@
     dpkg -l
     sudo apt-get update
     ```
-* **Burp Mobile Assistant source:** `http://<mac-ip>:8080`; use the [PortSwigger workflow](https://portswigger.net/burp/documentation/desktop/tools/mobile-assistant/installing) for supported devices. This is the local Burp server, not a public repository.
+* **Legacy Burp Mobile Assistant source:** `http://<mac-ip>:8080`, served by a compatible local Burp installation. The installation guide has been retired; use the [current iOS proxy/CA setup](https://portswigger.net/burp/documentation/desktop/mobile/config-ios-device) for traffic interception.
 
-## Host Frida and Objection
+## Host Frida and Objection <a id="host-frida-and-objection"></a>
 
 * Host `frida`, server, and Gadget must use the **same exact Frida version**; `frida-tools` and Objection have independent version numbers.
 * **Create and activate the host environment, on the Mac:**
@@ -252,7 +251,7 @@
     python -m pip install "frida==17.9.0" "frida-tools==14.8.0" "objection==1.12.4"
     python -m pip check
     ```
-* **Current-version alternative, instead of the pinned install:**
+* **Current-version tools** <sup><sub>(Alternative to the pinned install)</sub></sup>:
   * ```bash
     python -m pip install frida-tools objection
     frida --version
@@ -269,11 +268,11 @@
     dpkg -i frida_17.9.0_iphoneos-arm64.deb
     frida-server --version
     ```
-* **Manual startup variant** - when the package has not already started a server service:
+* **Manual server startup** <sup><sub>(Alternative to the package service; only if no server is running)</sub></sup>:
   * ```bash
     frida-server -D
     ```
-* **Optional Frida 17+ memory dumper, in the Mac's activated environment:**
+* **Frida 17+ memory dumper** <sup><sub>(Optional)</sub></sup>: in the Mac's activated environment:
   * ```bash
     python -m pip install fridump3
     python -m pip check
@@ -291,9 +290,9 @@
     python -m pip show frida frida-tools objection
     ssh <ssh-user>@<device-ip> "frida-server --version"
     ```
-* For the historical VM's localhost SSH forward, replace the last command with `ssh -p 2222 mobile@127.0.0.1 "frida-server --version"`.
+* **Localhost SSH forwarding** <sup><sub>(Alternative to direct device IP)</sub></sup>: for the historical VM, replace the last command with `ssh -p 2222 mobile@127.0.0.1 "frida-server --version"`.
 * Client/server versions must match **exactly**; use the installed server path if absent from `PATH`.
-* List apps with the [selected transport](setup.md#virtual-device-ssh-and-frida-connectivity), then [attach with Frida/Objection](dynamic-testing/runtime-instrumentation.md#objection-session).
+* List apps with the [selected transport](#virtual-device-ssh-and-frida-connectivity), then [attach with Frida/Objection](dynamic-testing/runtime-instrumentation.md#objection-session).
 
 ## References
 
@@ -301,6 +300,6 @@
 * [Pinned Sileo/TrollStore revision and Makefile instructions](https://github.com/Lakr233/vphone-cli/tree/30fcc05ca57a727033b4cf2cfd41ba4c0a4c96ab)
 * [Virtual iPhone build and host setup](https://mrbypass.medium.com/mastering-vphone-cli-part-1-building-a-jailbroken-ios-26-1-virtual-iphone-on-apple-silicon-06ed5a4b13d2)
 * [Sileo, SSH, Frida, and proxy configuration](https://mrbypass.medium.com/mastering-vphone-cli-part-2-configuring-the-jailbroken-ios-26-1-b10d964a9103)
-* [Current release: Quick Start](https://lakr233.github.io/vphone-cli/get-started/quick-start), [Host Setup](https://lakr233.github.io/vphone-cli/get-started/host-setup.html), [firmware compatibility](https://lakr233.github.io/vphone-cli/firmware/compatibility.html), [CLI workflow](https://lakr233.github.io/vphone-cli/machines/create-and-run.html), [package environment](https://lakr233.github.io/vphone-cli/machines/package-environment.html).
+* [Current release: Quick Start](https://lakr233.github.io/vphone-cli/get-started/quick-start.html), [Host Setup](https://lakr233.github.io/vphone-cli/get-started/host-setup.html), [firmware compatibility](https://lakr233.github.io/vphone-cli/firmware/compatibility.html), [CLI workflow](https://lakr233.github.io/vphone-cli/machines/create-and-run.html), [package environment](https://lakr233.github.io/vphone-cli/machines/package-environment.html).
 * [Frida server releases](https://github.com/frida/frida/releases)
 * [fridump3.1](https://github.com/Xenorf/fridump3.1)
