@@ -268,14 +268,6 @@
   * ```bash
     frida-server -D
     ```
-* **Frida 17+ memory dumper** <sup><sub>(Optional)<sub></sup>: in the Mac's activated environment:
-  * ```bash
-    python -m pip install fridump3
-    python -m pip check
-    fridump3 --help
-    frida --version
-    ```
-* [Memory-dump commands](dynamic-testing/runtime-instrumentation.md#optional-fridump3-memory-capture).
 
 ### Verify Client and Server Versions
 
