@@ -4,12 +4,12 @@
 
 ## OSINT
 
-* [OSINT](osint/README.md)
+* [OSINT](osint/osint.md)
 * [Passive](osint/passive.md)
 
 ## Web
 
-* [Web](web/README.md)
+* [Web](web/web.md)
 * [Recon & Enum](web/recon-and-enum.md)
 * [Vulnerabilities](web/vulnerabilities/README.md)
   * [Authentication](web/vulnerabilities/authentication/README.md)
@@ -65,7 +65,7 @@
 
 ## Network
 
-* [Network](network/README.md)
+* [Network](network/network.md)
 * [Basic Utilities](network/basic-utilities.md)
 * [Recon](network/recon.md)
 * [Enumeration](network/enumeration/README.md)
@@ -226,7 +226,7 @@
 
 ## ThickClient
 
-* [ThickClient](thickclient/README.md)
+* [ThickClient](thickclient/thickclient.md)
 * [Recon](thickclient/recon.md)
 * [Traffic Analysis](thickclient/traffic-analysis.md)
 * [Hardcoded Credentials](thickclient/hardcoded-credentials.md)
@@ -241,7 +241,7 @@
 
 ## Mobile
 
-* [Mobile](mobile/README.md)
+* [Mobile](mobile/mobile.md)
 * [Android](mobile/android/README.md)
   * [Setup and Tools](mobile/android/setup.md)
   * [Static Testing](mobile/android/static-testing/README.md)
@@ -284,12 +284,12 @@
 
 ## IOT & Hardware
 
-* [IoT and Hardware](iot-and-hardware/README.md)
+* [IoT and Hardware](iot-and-hardware/iot-and-hardware.md)
 * [References](iot-and-hardware/references.md)
 
 ## AI-Sec
 
-* [AI-Sec](ai-sec/README.md)
+* [AI-Sec](ai-sec/ai-sec.md)
 * [Offensive AI](ai-sec/offensive-ai/README.md)
   * [References](ai-sec/offensive-ai/references.md)
 * [AI Augmented Pentest](ai-sec/ai-augmented-pentest/README.md)
@@ -297,7 +297,7 @@
 
 ## Cloud
 
-* [Cloud](cloud/README.md)
+* [Cloud](cloud/cloud.md)
 * [AWS](cloud/aws/README.md)
   * [Env Setup](cloud/aws/env-setup.md)
   * [IAM Enum](cloud/aws/iam-enum.md)
@@ -316,7 +316,7 @@
 
 ## Serverless
 
-* [Serverless](serverless/README.md)
+* [Serverless](serverless/serverless.md)
 * [Containers](serverless/containers/README.md)
   * [References](serverless/containers/references.md)
 * [Docker](serverless/docker/README.md)
@@ -327,5 +327,5 @@
 
 ## Tools
 
-* [Tools](tools/README.md)
+* [Tools](tools/tools.md)
 * [Tool Links](tools/tool-links.md)
