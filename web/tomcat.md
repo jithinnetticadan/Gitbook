@@ -31,7 +31,7 @@ An open-source web server that hosts applications written in Java. Tomcat was in
 * The `tomcat-users.xml` file is used to allow or disallow access to the `/manager` and `host-manager` admin pages.
 * The file shows us what each of the roles `manager-gui`, `manager-script`, `manager-jmx`, and `manager-status` provide access to.
 
-## Enumeration <a href="#tomcat-discovery-enumeration" id="tomcat-discovery-enumeration"></a>
+## Enumeration <a href="#tomcat-enumeration" id="tomcat-enumeration"></a>
 
 * Default Credentials - tomcat/tomcat, admin/admin
 * `nmap -p- -sC -Pn <IP/CIDR> --open`

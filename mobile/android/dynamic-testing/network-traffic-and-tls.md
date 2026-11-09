@@ -6,14 +6,14 @@
 2. Set the device proxy and install the CA: [Android Burp guide](https://portswigger.net/support/configuring-an-android-device-to-work-with-burp).
 3. Use DER where required; `.cer` renaming does not change encoding/trust. User-CA acceptance depends on OS/app policy.
 4. Test API authentication, authorization, sensitive data, and server-side behavior.
-5. If pinning blocks testing, use the [Objection pinning startup variant](objection-and-runtime-instrumentation.md#objection-session), a reviewed Frida script, or a patched test build.
+5. If pinning blocks testing, use the [Objection pinning startup variant](objection-and-runtime-instrumentation.md#attach-or-spawn), a reviewed Frida script, or a patched test build.
 
 * Trusted CA and pinning are separate checks.
 * Android 7+ apps targeting API 24+ do not trust user-installed CAs by default. Use an authorized test trust configuration/device setup; installing the CA alone may not allow interception.
 * Alternatives: [Proxyman](https://proxyman.io/), HTTP Canary (including Flutter attempts); verify platform/TLS compatibility.
 * Setup: [MobSF Dynamic Analyzer](https://mobsf.github.io/docs/#/dynamic_analyzer), [Frida Android](https://frida.re/docs/android/).
 * Optional/legacy: [CuckooDroid](https://github.com/idanr1986/cuckoo-droid) sandboxing, [BlueStacks](https://www.bluestacks.com/) emulator, [RMS](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), [Ghost](https://github.com/EntySec/Ghost). Verify maintenance/root behavior.
-* [Objection session and startup commands](objection-and-runtime-instrumentation.md#objection-session).
+* [Objection session and startup commands](objection-and-runtime-instrumentation.md#attach-or-spawn).
 * For flutter apps,  [FlutterTap](https://github.com/script-or-script/FlutterTap)
 
 ## Establish Network Visibility

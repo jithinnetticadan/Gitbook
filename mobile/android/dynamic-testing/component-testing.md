@@ -42,7 +42,7 @@
 
 ### Drozer Setup
 
-* **Need:** compatible [Drozer](https://github.com/WithSecureLabs/drozer) console + agent APK; follow release requirements.
+* **Need:** compatible [Drozer](https://github.com/ReversecLabs/drozer/) console + agent APK; follow release requirements.
 * **Device:** enable agent server; verify port (`31415` by default).
 * **Host:**
   * <pre class="language-bash" data-line-numbers><code class="lang-bash">adb forward tcp:31415 tcp:31415
@@ -305,4 +305,4 @@
 ## References
 
 * [Android app components](https://developer.android.com/guide/components/fundamentals), [Intents and intent filters](https://developer.android.com/guide/components/intents-filters).
-* Drozer: [service modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/service.py), [broadcast modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/broadcast.py), [provider modules](https://github.com/WithSecureLabs/drozer/blob/develop/src/drozer/modules/app/provider.py)
+* Drozer: [service modules](https://github.com/ReversecLabs/drozer/blob/develop/src/drozer/modules/app/service.py), [broadcast modules](https://github.com/ReversecLabs/drozer/blob/develop/src/drozer/modules/app/broadcast.py), [provider modules](https://github.com/ReversecLabs/drozer/blob/develop/src/drozer/modules/app/provider.py)

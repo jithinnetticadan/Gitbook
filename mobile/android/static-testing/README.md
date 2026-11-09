@@ -10,10 +10,10 @@
 ## Further Reading
 
 * [DroidArsenal](https://github.com/damodarnaik/DroidArsenal) - OWASP-aligned playbooks, JADX/Apktool/MobSF cheatsheets, and review tracking.
-* [OWASP Mobile Security Testing Guide: Android](https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05b-basic-security_testing)
+* [OWASP Mobile Security Testing Guide: Android](https://mas.owasp.org/MASTG/0x05b-Android-Security-Testing/)
 * [OWASP Mobile Top 10](https://owasp.org/www-project-mobile-top-10/)
-* [HackTricks Android checklist](https://book.hacktricks.xyz/mobile-apps-pentesting/android-checklist)
+* [HackTricks Android checklist](https://hacktricks.wiki/en/mobile-pentesting/android-checklist.html)
 * [Intro to Mobile Pentesting](https://www.hackthebox.com/blog/intro-to-mobile-pentesting)
-* [OWASP mobile testing overview](https://mobile-security.gitbook.io/mobile-security-testing-guide/overview/0x03-overview)
-* [HackTricks Android app pentesting](https://book.hacktricks.xyz/mobile-pentesting/android-app-pentesting)
+* [OWASP mobile testing overview](https://mas.owasp.org/MASTG/0x03-Overview/)
+* [HackTricks Android app pentesting](https://hacktricks.wiki/en/mobile-pentesting/android-app-pentesting/index.html)
 * Vidhan Thakur, "Android Static Application Security Testing" (PDF; included on the [Android page](../))

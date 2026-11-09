@@ -14,7 +14,7 @@ An open-source automation server written in Java that helps developers build and
 * **Type of the Operating System:** `http://[jenkinsurl]/computer/`
 * **Security Settings:** `http://[jenkinsurl]:8000/configureSecurity/`
 
-## Enumeration <a href="#jenkins-discovery-enumeration" id="jenkins-discovery-enumeration"></a>
+## Enumeration <a href="#jenkins-enumeration" id="jenkins-enumeration"></a>
 
 * Default credentials such as `admin:admin` or does not have any type of authentication enabled.
 

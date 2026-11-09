@@ -10,7 +10,7 @@ Containers operate at the operating system level and virtual machines at the har
 
 ### Linux Daemon (LXD)
 
-* Linux Daemon ([LXD](https://github.com/lxc/lxd)) is similar in some respects but is designed to contain a complete operating system. Thus it is not an application container but a system container. Before we can use this service to escalate our privileges, we must be in either the `lxc` or `lxd` group.
+* Linux Daemon ([LXD](https://github.com/canonical/lxd)) is similar in some respects but is designed to contain a complete operating system. Thus it is not an application container but a system container. Before we can use this service to escalate our privileges, we must be in either the `lxc` or `lxd` group.
 * LXD is similar to Docker and is Ubuntu's container manager. Upon installation, all users are added to the LXD group.
 * Membership of this group can be used to escalate privileges by creating an LXD container, making it privileged, and then accessing the host file system at `/mnt/root`&#x20;
 

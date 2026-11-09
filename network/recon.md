@@ -142,7 +142,7 @@ https://github.com/leonjza/awesome-nmap-grep
 
 ### Parse Nmap Results
 
-* [EyeWitness](https://github.com/FortyNorthSecurity/EyeWitness) <sup><sub>(for web app evidence collection)<sub></sup>
+* [EyeWitness](https://github.com/RedSiege/EyeWitness/) <sup><sub>(for web app evidence collection)<sub></sup>
   * `eyewitness --web -x *.xml -d <folder>`
   * `eyewitness -f scope.txt -d eyewitness-results`
 * [Aquatone](https://github.com/michenriksen/aquatone) `or` [aquatone](https://github.com/shelld3v/aquatone) <sup><sub>(for web app evidence collection)<sub></sup>
@@ -156,12 +156,12 @@ https://github.com/leonjza/awesome-nmap-grep
 
 ### Passive
 
-* [#usernames-wordlist-generation](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#usernames-wordlist-generation "mention")
+* [#usernames-wordlist-generation](exploitation/credential-attacks/user-enumeration.md#usernames-wordlist-generation "mention")
 * Username List -> [Insidetrust](https://github.com/insidetrust/statistically-likely-usernames)
 
 ### Active
 
-* [#username-enumeration](exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md#username-enumeration "mention")
+* [#username-enumeration](exploitation/credential-attacks/user-enumeration.md#username-enumeration "mention")
 * `kerbrute userenum -d <domain> --dc <IP> wordlist.txt -o valid_ad_users` <sup><sub>(<sub></sup>[<sup><sub>Kerbrute<sub></sup>](https://github.com/ropnop/kerbrute)<sup><sub>)<sub></sup>
 
 ## Identifying Potential Vulnerabilities

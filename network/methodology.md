@@ -187,7 +187,7 @@ Full command reference: [windows.md](exploitation/privilege-escalation/windows.m
 
 ### 3.3 Credential Access Techniques
 
-* [ ] Kerberoasting - [kerberoasting.md](../../network/active-directory/exploitation/credential-harvesting/kerberoasting.md "mention").
+* [ ] Kerberoasting - [kerberoasting.md](active-directory/exploitation/credential-harvesting/kerberoasting.md "mention").
 * [ ] AS-REP Roasting - [as-rep-roasting.md](active-directory/enumeration/initial-access-foothold/as-rep-roasting.md "mention").
 * [ ] LLMNR/NBT-NS poisoning with Responder - [llmnr-nbt-ns-poisoning.md](active-directory/enumeration/initial-access-foothold/llmnr-nbt-ns-poisoning.md "mention") (should already be running passively per the checklist above).
 * [ ] Coercion + relay attacks (PetitPotam/PrinterBug/DFSCoerce) - [coercion-relay-attacks.md](active-directory/enumeration/initial-access-foothold/coercion-relay-attacks.md "mention").

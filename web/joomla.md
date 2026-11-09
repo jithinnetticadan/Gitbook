@@ -17,7 +17,7 @@
 
 ## Enumeration <a href="#joomla-discovery-enumeration" id="joomla-discovery-enumeration"></a>
 
-* [droopescan](https://github.com/droope/droopescan), a plugin-based scanner that works for SilverStripe, WordPress, and Drupal with limited functionality for Joomla and Moodle.
+* [droopescan](https://github.com/SamJoan/droopescan/), a plugin-based scanner that works for SilverStripe, WordPress, and Drupal with limited functionality for Joomla and Moodle.
   * `droopescan scan joomla --url <value>`&#x20;
 * [JoomlaScan](https://github.com/drego85/JoomlaScan), which is a Python tool inspired by the now-defunct OWASP [joomscan](https://github.com/OWASP/joomscan) tool.
   * `python2 joomlascan.py -u http://<value>`&#x20;

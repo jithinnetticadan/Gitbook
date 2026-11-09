@@ -227,7 +227,7 @@ Use Word for **Windows**, not Mac - Mac Word lacks the VB Editor and produces br
 
 * At minimum, maintain a sanitized findings library to copy/paste from - prevents wasted time and inconsistent recommendations across a team.
 * **Free:** [Ghostwriter](https://github.com/GhostManager/Ghostwriter), [Dradis CE](https://dradisframework.com/ce/), [VECTR](https://github.com/SecurityRiskAdvisors/VECTR), [WriteHat](https://github.com/blacklanternsecurity/writehat).
-* **Paid:** [AttackForge](https://attackforge.com/), [PlexTrac](https://plextrac.com/), [Rootshell Prism](https://www.rootshellsecurity.net/why-prism/).
+* **Paid:** [AttackForge](https://attackforge.com/), [PlexTrac](https://plextrac.com/), [Rootshell Platform](https://www.rootshellsecurity.net/platform/).
 
 ### Misc Tips & Tricks
 

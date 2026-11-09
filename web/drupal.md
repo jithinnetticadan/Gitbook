@@ -19,7 +19,7 @@
 
 ## Enumeration
 
-* [droopescan](https://github.com/droope/droopescan), a plugin-based scanner that works for SilverStripe, WordPress, and Drupal.
+* [droopescan](https://github.com/SamJoan/droopescan/), a plugin-based scanner that works for SilverStripe, WordPress, and Drupal.
   * `droopescan scan drupal -u http://<URL>`&#x20;
 
 ## Exploitation

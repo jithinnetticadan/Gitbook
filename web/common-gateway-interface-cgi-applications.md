@@ -15,7 +15,7 @@ CGI scripts/applications are typically used for a few reasons:
 Broadly, the steps are as follows:
 
 * A directory is created on the web server containing the CGI scripts/applications. This directory is typically called `CGI-bin`.
-* The web application user sends a request to the server via a URL, i.e, [https://acme.com/cgi-bin/newchiscript.pl](https://acme.com/cgi-bin/newchiscript.pl)
+* The web application user sends a request to the server via a URL, e.g., `https://example.com/cgi-bin/script.pl`.
 * The server runs the script and passed the resultant output back to the web client
 {% endhint %}
 

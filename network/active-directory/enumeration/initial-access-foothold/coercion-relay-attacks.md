@@ -8,7 +8,7 @@
 
 </details>
 
-### NTLM Relay/SMB Relay <a href="#petitpotam-ms-efsrpc" id="petitpotam-ms-efsrpc"></a>
+### NTLM Relay/SMB Relay <a href="#ntlm-relay-smb-relay" id="ntlm-relay-smb-relay"></a>
 
 * **Server Message Block**
   * `sudo responder -I <network-iface> -dP`  // -dPw DHCP, ProxyAuth, Wpad

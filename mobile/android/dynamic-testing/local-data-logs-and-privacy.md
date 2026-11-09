@@ -16,8 +16,8 @@
 - [ ] Local role/state tampering; verify server authorization.
 - [ ] SQL injection using non-destructive test records.
 - [ ] Biometrics: success/failure callbacks and exception handling; verify key/server protections independently.
-- [ ] Biometric scripts: [Keystore Audit](https://github.com/FSecureLABS/android-keystore-audit/tree/master/frida-scripts).
-- [ ] Targeted examples: [callback bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass.js), [exception bypass](https://github.com/FSecureLABS/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass-via-exception-handling.js).
+- [ ] Biometric scripts: [Keystore Audit](https://github.com/ReversecLabs/android-keystore-audit/tree/master/frida-scripts).
+- [ ] Targeted examples: [callback bypass](https://github.com/ReversecLabs/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass.js), [exception bypass](https://github.com/ReversecLabs/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass-via-exception-handling.js).
 - [ ] UI bypass does not prove hardware-key/server bypass; validate the operation with the [biometric and auth-bound Keystore workflow](authentication-and-cryptography.md#biometrics-and-auth-bound-keystore).
 
 ## Logs

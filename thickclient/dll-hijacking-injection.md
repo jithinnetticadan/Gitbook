@@ -1,6 +1,6 @@
 # DLL Hijacking/Injection
 
-## DLL Injection <a href="#loadlibrary" id="loadlibrary"></a>
+## DLL Injection <a href="#dll-injection" id="dll-injection"></a>
 
 * `DLL injection` is a method that involves inserting a piece of code, structured as a Dynamic Link Library (DLL), into a running process. This technique allows the inserted code to run within the process's context, thereby influencing its behavior or accessing its resources.
 
@@ -271,4 +271,4 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
 #### References
 
-* [Siofra-Research-Tool-Cybereason.pdf](https://www.cybereason.com/hubfs/Siofra-Research-Tool-Cybereason.pdf)
+* [Siofra-Research-Tool-Cybereason.pdf](https://github.com/Cybereason/siofra/blob/master/Siofra-Research-Tool-Cybereason.pdf)

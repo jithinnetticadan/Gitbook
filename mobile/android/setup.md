@@ -10,7 +10,7 @@
 * [APKLeaks](https://github.com/dwisiswant0/apkleaks) - search APKs for exposed strings and configuration.
 * Android Studio and Android SDK Platform Tools - device/package management and artifact acquisition.
 * `keytool`, `jarsigner`, `zipalign`, and Android SDK signing tools - inspect or prepare test artifacts when repackaging is authorized.
-* Legacy/optional: [Androwarn](https://github.com/maaaaz/androwarn), Andrubis, ApkAnalyser, [QARK](https://github.com/linkedin/qark), [Santoku](https://santoku-linux.com/), [PimpMyKali](https://github.com/Dewalt-arch/pimpmykali). Verify maintenance and compatibility.
+* Legacy/optional: [Androwarn](https://github.com/maaaaz/androwarn), Andrubis, ApkAnalyser, [QARK](https://github.com/linkedin/qark), [Santoku project repository](https://github.com/santoku/Santoku-Linux), [PimpMyKali](https://github.com/Dewalt-arch/pimpmykali). Verify maintenance and compatibility.
 * Use current maintainer instructions; package availability varies by OS/release.
 
 ### Optional Tools
@@ -64,12 +64,12 @@
 * Connect the device or start the emulator; enable USB debugging and accept the host authorization prompt.
 * **Connection and ABI:**
 
-  ```bash
-  adb devices -l
-  adb shell getprop ro.build.version.release
-  adb shell getprop ro.build.version.sdk
-  adb shell getprop ro.product.cpu.abilist
-  ```
+  * ```bash
+    adb devices -l
+    adb shell getprop ro.build.version.release
+    adb shell getprop ro.build.version.sdk
+    adb shell getprop ro.product.cpu.abilist
+    ```
 
 * With multiple devices, use `adb -s <serial> <command>`. [App acquisition/install variants](static-testing/acquire-and-decompile.md).
 * **Repackaging:** include required splits/libraries, align, sign, verify, then install. [Patching commands](dynamic-testing/app-patching.md).

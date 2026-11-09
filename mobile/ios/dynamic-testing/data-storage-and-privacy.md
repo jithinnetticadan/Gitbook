@@ -61,6 +61,6 @@
 
 * [iRET](https://github.com/S3Jensen/iRET), [Cycript](https://www.cycript.org/) (inspection/injection/foreign-function calls), [QuickTime](https://support.apple.com/downloads/quicktime) (recording).
 * [frida-ios-dump](https://github.com/AloneMonkey/frida-ios-dump): release-specific Python/SSH setup; never hardcode credentials.
-* Package sources: [Havoc](https://havoc.app/), [Shadow](https://ios.jjolano.me/), [Radare2](https://cydia.radare.org/), [Akemi](https://cydia.akemi.ai/), [opa334](https://opa334.github.io/).
+* Package sources: [Havoc](https://havoc.app/), [Shadow](https://ios.jjolano.me/), [opa334](https://opa334.github.io/). Legacy Radare2 and Akemi repositories are unavailable.
 * Utilities: `wget`, `ps`, `sqlite3`, `unzip`, `dpkg`, BigBoss tools.
 * For Objection session syntax, see [Runtime Instrumentation](runtime-instrumentation.md).

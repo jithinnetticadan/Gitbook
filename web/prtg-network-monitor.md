@@ -12,14 +12,13 @@
 * It can typically be found on common web ports such as 80, 443, or 8080.
 * We can see the service as part of the nmap scan `Indy httpd 17.3.33.2830 (Paessler PRTG bandwidth monitor)`
 
-## Enumeration <a href="#discoveryfootprintingenumeration" id="discoveryfootprintingenumeration"></a>
+## Enumeration <a href="#prtg-enumeration" id="prtg-enumeration"></a>
 
 * Default credentials `prtgadmin:prtgadmin`.&#x20;
 
 ## Exploitation
 
 ### Leveraging Known Vulnerabilities <a href="#leveraging-known-vulnerabilities" id="leveraging-known-vulnerabilities"></a>
-
 
 
 

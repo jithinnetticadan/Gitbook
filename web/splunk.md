@@ -11,7 +11,7 @@ A log analytics tool used to gather, analyze and visualize data. Though not orig
 * It is worth checking for common weak passwords such as `admin`, `Welcome`, `Welcome1`, `Password123`
 * We can discover Splunk with a quick Nmap service scan. We can see that Nmap identified the `Splunkd httpd` service on port 8000 and port 8089, the Splunk management port for communication with the Splunk REST API.
 
-## Enumeration <a href="#splunk-discovery-enumeration" id="splunk-discovery-enumeration"></a>
+## Enumeration <a href="#splunk-enumeration" id="splunk-enumeration"></a>
 
 * Splunk has multiple ways of running code, such as server-side Django applications, REST endpoints, scripted inputs, and alerting scripts.
 * A common method of gaining remote code execution on a Splunk server is through the use of a scripted input. These are designed to help integrate Splunk with data sources such as APIs or file servers that require custom methods to access. Scripted inputs are intended to run these scripts, with STDOUT provided as input to Splunk.

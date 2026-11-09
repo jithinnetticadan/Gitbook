@@ -31,4 +31,4 @@ Impacket-wmiexec <user>:"<pass>"@<IP> cmd
 
 ### Tools
 
-* [wmiexec.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/wmiexec.py)
+* [wmiexec.py](https://github.com/fortra/impacket/blob/master/examples/wmiexec.py)

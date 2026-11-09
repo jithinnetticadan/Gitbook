@@ -16,7 +16,7 @@
   * `javac -cp app.jar app.jar.src\htb\fatty\client\gui\ClientGuiTest.java` <sup><sub>(Run after modifying the sourcecode.)<sub></sup>
 * **Immunity Debugger**, [IDA Pro](https://hex-rays.com/ida-pro), [binary.ninja](https://binary.ninja/) - C/C++ decompiler\\
 * [decompiler-explorer](https://github.com/decompiler-explorer/decompiler-explorer) & [dogbolt.org](https://dogbolt.org/)
-* [Ghidra](https://www.ghidra-sre.org/)
+* [Ghidra](https://github.com/NationalSecurityAgency/ghidra/)
 * [OllyDbg](http://www.ollydbg.de/)
 * [Radare2](https://www.radare.org/r/index.html)
 * [x64dbg](https://x64dbg.com/)

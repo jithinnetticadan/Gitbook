@@ -35,7 +35,7 @@ Get-ADUserResultantPasswordPolicy -Identity '<username>'
 #### Understand the User Compromised
 
 * `whoami /all`&#x20;
-* _**Interesting Privileges**_ [#windows-privileges](../../exploitation/privilege-escalation/windows.md#windows-privileges "mention")
+* _**Interesting Privileges**_ [User Privileges](../../exploitation/privilege-escalation/windows.md#user-privileges "mention")
   * SeImpersonatePrivilege
   * SeAssignPrimaryTokenPrivilege
   * SeBackupPrivilege
@@ -127,7 +127,7 @@ Get-CimInstance -ClassName Win32_Service -Filter $filter | Select-Object Name, S
 * [PingCastle](https://www.pingcastle.com/documentation/)
 * [Active Directory Explorer](https://docs.microsoft.com/en-us/sysinternals/downloads/adexplorer)
 * [rpcclient](https://www.samba.org/samba/docs/current/man-html/rpcclient.1.html)
-* [enum4linux](https://labs.portcullis.co.uk/tools/enum4linux)/[enum4linux-ng](https://github.com/cddmp/enum4linux-ng)
+* [enum4linux](https://labs.portcullis.co.uk/tools/enum4linux/)/[enum4linux-ng](https://github.com/cddmp/enum4linux-ng)
 * [windapsearch](https://github.com/ropnop/windapsearch)
 * [ldapsearch](https://linux.die.net/man/1/ldapsearch)
 * [AdStrike](https://github.com/capture0x/AdStrike)

@@ -54,9 +54,9 @@ if(preg_match($pattern, $_GET["code"])) {
 ### Bypassing Security Filters
 
 * For eg: if a security filter was being used to detect injection vulnerabilities and only checked for injections in `POST` parameters (e.g. `$_POST['parameter']`), it may be possible to bypass it by simply changing the request method to `GET`.
-* #### Identify <a href="#identify" id="identify"></a>
+* #### Identify <a href="#identify-security-filters" id="identify-security-filters"></a>
   * Web application uses certain filters on the back-end to identify injection attempts and then blocks any malicious requests.
-* #### Exploit <a href="#exploit" id="exploit"></a>
+* #### Exploit <a href="#exploit-security-filters" id="exploit-security-filters"></a>
   * To try and exploit this vulnerability, intercept the request in Burp Suite (Burp) and then use `Change Request Method` to change it to another method.
 
 ### Insecure Configuration Examples

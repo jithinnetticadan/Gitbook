@@ -18,7 +18,7 @@
   * `nmap -p- -sC -Pn <IP> --open`
 * ColdFusion pages typically use ".cfm" or ".cfc" file extensions.
 
-## Enumeration <a href="#coldfusion-discovery-enumeration" id="coldfusion-discovery-enumeration"></a>
+## Enumeration <a href="#coldfusion-enumeration" id="coldfusion-enumeration"></a>
 
 * Check the HTTP response headers of the web application. ColdFusion typically sets specific headers, such as "Server: ColdFusion" or "X-Powered-By: ColdFusion"
 * Error messages may contain references to ColdFusion-specific tags or functions.

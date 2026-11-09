@@ -22,34 +22,54 @@ layout:
 
 # PTGuide
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/web" %}
-[Web](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/web)
+{% content-ref url="web/recon-and-enum.md" %}
+[Web - Recon & Enum](web/recon-and-enum.md)
 {% endcontent-ref %}
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/network" %}
-[Network](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/network)
+{% content-ref url="network/methodology.md" %}
+[Network - Methodology](network/methodology.md)
 {% endcontent-ref %}
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/thickclient" %}
-[ThickClient](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/thickclient)
+{% content-ref url="thickclient/recon.md" %}
+[ThickClient - Recon](thickclient/recon.md)
 {% endcontent-ref %}
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/mobile" %}
-[Mobile](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/mobile)
+{% content-ref url="mobile/android/README.md" %}
+[Mobile - Android](mobile/android/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/cloud" %}
-[Cloud](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/cloud)
+{% content-ref url="mobile/ios/README.md" %}
+[Mobile - iOS](mobile/ios/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/serverless" %}
-[Serverless](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/serverless)
+{% content-ref url="cloud/aws/README.md" %}
+[Cloud - AWS](cloud/aws/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint" %}
-[OSINT](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint)
+{% content-ref url="cloud/gcp/README.md" %}
+[Cloud - GCP](cloud/gcp/README.md)
 {% endcontent-ref %}
 
-{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/tools" %}
-[Tools](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/tools)
+{% content-ref url="cloud/azure/README.md" %}
+[Cloud - Azure](cloud/azure/README.md)
+{% endcontent-ref %}
+
+{% content-ref url="serverless/containers/README.md" %}
+[Serverless - Containers](serverless/containers/README.md)
+{% endcontent-ref %}
+
+{% content-ref url="serverless/docker/README.md" %}
+[Serverless - Docker](serverless/docker/README.md)
+{% endcontent-ref %}
+
+{% content-ref url="serverless/kubernetes/README.md" %}
+[Serverless - Kubernetes](serverless/kubernetes/README.md)
+{% endcontent-ref %}
+
+{% content-ref url="osint/passive.md" %}
+[OSINT](osint/passive.md)
+{% endcontent-ref %}
+
+{% content-ref url="tools/tool-links.md" %}
+[Tools](tools/tool-links.md)
 {% endcontent-ref %}

@@ -9,7 +9,7 @@ An open-source support ticketing system. It can be compared to systems such as J
 * osTicket instance uses a cookie named `OSTSESSID`&#x20;
 * osTicket installs will showcase the osTicket logo with the phrase `powered by` in front of it in the page's footer. The footer may also contain the words `Support Ticket System`.
 
-## Enumeration <a href="#footprintingdiscoveryenumeration" id="footprintingdiscoveryenumeration"></a>
+## Enumeration <a href="#osticket-enumeration" id="osticket-enumeration"></a>
 
 * Main functions of the application:
   * **User Input -** The core function of osTicket is to inform the company's employees about a problem so that a problem can be solved with the service or other components. So if our target company uses this or a similar application, we can cause a problem and "play dumb" and contact the company's staff. The simulated "lack of" knowledge about the services offered by the company in combination with a technical problem is a widespread social engineering approach to get more information from the company.
@@ -19,6 +19,5 @@ An open-source support ticketing system. It can be compared to systems such as J
 ## References
 
 * [intigriti-how-i-hacked-hundreds-of-companies-through-their-helpdesk](https://medium.com/intigriti/how-i-hacked-hundreds-of-companies-through-their-helpdesk-b7680ddc2d4c)
-
 
 

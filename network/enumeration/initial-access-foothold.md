@@ -1,6 +1,6 @@
 # Initial Access/Foothold
 
-### [OSINT](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint "mention")OSINT
+### [OSINT](../../osint/passive.md "mention")
 
 ### Phishing
 

@@ -11,4 +11,4 @@
 * [Frida iOS documentation](https://frida.re/docs/ios/)
 * [Objection](https://github.com/sensepost/objection)
 * [Apple Platform Security](https://support.apple.com/guide/security/welcome/web)
-* [HackTricks iOS testing checklist](https://book.hacktricks.xyz/mobile-apps-pentesting/ios-pentesting-checklist)
+* [HackTricks iOS testing checklist](https://hacktricks.wiki/en/mobile-pentesting/ios-pentesting-checklist.html)

@@ -89,7 +89,7 @@
   android heap print methods &#x3C;instance-hashcode>
   sqlite connect &#x3C;database-file>
   </code></pre>
-* Alternative memory tool: [Fridump](https://github.com/rootbsd/fridump).
+* Alternative memory tool: [fridump3](https://github.com/rootbsd/fridump3/).
 * Review [CodeShare](https://codeshare.frida.re/) scripts, bypass success depends on app/version.
 * Flutter: [reFlutter](https://github.com/ptswarm/reFlutter) for compatible instrumentation/traffic workflows.
 * [RMS-Runtime-Mobile-Security](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security): classes, arguments/returns, components, API monitoring, scripts.
