@@ -24,50 +24,42 @@ layout:
 
 # PTGuide
 
-{% content-ref url="web/web.md" %}
-[web.md](web/web.md)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/web" %}
+[Web](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/web)
 {% endcontent-ref %}
 
-{% content-ref url="network/network.md" %}
-[network.md](network/network.md)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/network" %}
+[Network](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/network)
 {% endcontent-ref %}
 
-{% content-ref url="thickclient/thickclient.md" %}
-[thickclient.md](thickclient/thickclient.md)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/thickclient" %}
+[ThickClient](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/thickclient)
 {% endcontent-ref %}
 
-{% content-ref url="mobile/mobile.md" %}
-[mobile.md](mobile/mobile.md)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/mobile" %}
+[Mobile](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/mobile)
 {% endcontent-ref %}
 
-{% content-ref url="mobile/android/" %}
-[android](mobile/android/)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/iot-and-hardware" %}
+[IOT & Hardware](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/iot-and-hardware)
 {% endcontent-ref %}
 
-{% content-ref url="mobile/ios/" %}
-[ios](mobile/ios/)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/ai-sec" %}
+[AI-Sec](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/ai-sec)
 {% endcontent-ref %}
 
-{% content-ref url="cloud/cloud.md" %}
-[cloud.md](cloud/cloud.md)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/cloud" %}
+[Cloud](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/cloud)
 {% endcontent-ref %}
 
-{% content-ref url="serverless/serverless.md" %}
-[serverless.md](serverless/serverless.md)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/serverless" %}
+[Serverless](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/serverless)
 {% endcontent-ref %}
 
-{% content-ref url="iot-and-hardware/iot-and-hardware.md" %}
-[iot-and-hardware.md](iot-and-hardware/iot-and-hardware.md)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint" %}
+[OSINT](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/osint)
 {% endcontent-ref %}
 
-{% content-ref url="ai-sec/ai-sec.md" %}
-[ai-sec.md](ai-sec/ai-sec.md)
-{% endcontent-ref %}
-
-{% content-ref url="osint/osint.md" %}
-[osint.md](osint/osint.md)
-{% endcontent-ref %}
-
-{% content-ref url="tools/tools.md" %}
-[tools.md](tools/tools.md)
+{% content-ref url="https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/tools" %}
+[Tools](https://app.gitbook.com/s/EfgK5ExBZtyCRpzOGGxV/tools)
 {% endcontent-ref %}
