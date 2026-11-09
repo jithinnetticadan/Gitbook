@@ -1,7 +1,7 @@
 # App Patching and Signing
 
 * **Dependencies:** Gadget must match the host's **exact Frida version** and the app ABI.
-* Complete [Verify Client and Server Versions](preflight-and-frida-setup.md#verify-client-and-server-versions).
+* Complete [Verify Client and Server Versions](../setup.md#verify-client-and-server-versions).
 
 ## Automated Patching
 
@@ -11,6 +11,25 @@
 * Replace `<frida-version>` with the host `frida --version` output; verify `--gadget-version` in the installed patcher's help.
 * Source/architecture flags belong to `patchapk`
 * `objection signapk --help`: alignment/signing with Objection's key.
+
+## Targeted SMALI Branch Patch
+
+* Decode with SMALI output, then locate the executing check across all DEX directories. **Host Bash:**
+  * ```bash
+    apktool d '<app.apk>' -o '<decoded-directory>'
+    grep -RniE 'isRooted|checkRoot|RootBeer|checkSignatures|CertificatePinner' '<decoded-directory>'/smali*
+    ```
+* Trace the matching method/caller in JADX and SMALI. Example: a Boolean root check returns into `v0`, then branches to an existing `:blocked` label:
+  * **Original:** `if-nez v0, :blocked`
+  * **Test patch:** `if-eqz v0, :blocked`
+* `if-eqz` branches on zero/null; `if-nez` branches on nonzero/non-null. Preserve the actual register/label; for an object-returning method, this tests nullness rather than a Boolean.
+* Rebuild, align, sign, and verify using [Manual Patching](#manual-patching), starting at step 4; Gadget injection is not required for this variant.
+* **Install and launch** on a test device without a differently signed copy of the package:
+  * ```bash
+    adb install '<aligned-test.apk>'
+    adb shell monkey -p '<package-name>' -c android.intent.category.LAUNCHER 1
+    ```
+* Compare an unchanged rebuilt control with the branch patch, then repeat the blocked operation. A local bypass does not establish a backend authorization/integrity bypass. [Integrity comparison](runtime-defenses-and-integrity.md#repackaging-and-signature-checks).
 
 ## Manual Patching
 

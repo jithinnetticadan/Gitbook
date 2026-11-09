@@ -60,6 +60,25 @@
 * Detection Bypass: Hestia, Shadow, Objection.
 * Alternatives: [RMS](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), [Grapefruit](https://github.com/ChiChou/grapefruit).
 
+### Optional fridump3 Memory Capture
+
+* **Prerequisite:** [host tool setup](../setup.md#host-frida-and-objection), Frida 17+, running target app.
+* **USB, on the Mac:**
+
+  ```bash
+  frida-ps -Ua
+  fridump3 -u -s -o ./memory-capture "<running-process-name>"
+  ```
+
+* **Network endpoint variant:**
+
+  ```bash
+  fridump3 -H <forwarded-host>:<frida-port> -s -o ./memory-capture "<running-process-name>"
+  ```
+
+* Use the process name, not the bundle ID. `-s` extracts strings; `-o` selects the output directory. [CLI reference](https://github.com/Xenorf/fridump3.1).
+* Exercise the target flow before capture; search generated strings for the test value.
+
 ### Startup Hooks
 
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">objection --name &#x3C;app-process-name> start --startup-command 'ios jailbreak disable'

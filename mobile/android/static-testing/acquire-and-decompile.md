@@ -29,6 +29,19 @@
 * MobSF: inspect decompiled code/SMALI; validate automated findings manually.
 * Use [#automated-tools](./#automated-tools "mention") as well.
 
+### Compiled Resources and Packaged Configuration
+
+* **Host Bash, SDK Build Tools (`aapt2`), Apktool, and unzip:**
+  * ```bash
+    unzip -l '<app.apk>' | grep -E 'resources\.arsc|res/raw/|assets/'
+    aapt2 dump resources '<app.apk>' > resource-table.txt
+    grep -niE 'firebase|api[_-]?key|https?://|bucket|secret' resource-table.txt
+    apktool d '<app.apk>' -o '<decoded-directory>'
+    grep -RniE 'https?://|firebase|bucket|api[_-]?key|secret' '<decoded-directory>/res' '<decoded-directory>/assets'
+    ```
+* `res/values/strings.xml` is reconstructed from `resources.arsc`; its absence from the ZIP does not mean strings are absent. Repeat for relevant resource splits.
+* Inspect `res/raw` and `assets` for JSON/XML configuration, JS bundles, certificates, and endpoints; trace values into the consuming code. Continue with [Secrets and Cloud](secrets-and-cloud.md).
+
 ## Reconnaissance and Build Comparison
 
 * Inventory: package/version, source, acquisition date, APK/split SHA-256 hashes, signer, SDK levels, and backend environment.

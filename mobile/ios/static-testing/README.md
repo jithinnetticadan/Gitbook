@@ -7,6 +7,7 @@
 
 ## Further Reading
 
+* [iOSArsenal](https://github.com/Savage-hack/iOSArsenal) - OWASP-aligned binary/signing review and static-patching playbooks with command examples and review tracking.
 * [OWASP iOS Testing Guide](https://mobile-security.gitbook.io/mobile-security-testing-guide/ios-testing-guide/0x06a-platform-overview)
 * [Apple Platform Security](https://support.apple.com/guide/security/welcome/web)
 * [OWASP Mobile Top 10](https://owasp.org/www-project-mobile-top-10/)

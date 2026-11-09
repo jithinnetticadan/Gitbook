@@ -6,7 +6,7 @@
 
 * **Choose Frida or Objection below; run the selected commands on the host.** Attach to a running process, or spawn by package ID for startup checks.
 * Frida loads custom scripts; Objection provides packaged commands and hooks using Frida internally. Both require a working Frida connection.
-* **App/process listing:** [Frida connection check](preflight-and-frida-setup.md#verify-client-and-server-versions).
+* **App/process listing:** [Frida connection check](../setup.md#verify-client-and-server-versions).
 
 {% tabs %}
 {% tab title="Frida" %}

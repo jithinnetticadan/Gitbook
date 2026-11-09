@@ -1,15 +1,8 @@
-# Preflight and Tools
+# Setup and Tools
 
-## Mandatory Preflight
+## Host Tools
 
-* [ ] Java JDK is compatible with the selected JADX/Apktool releases; required tools are available in `PATH`.
-* [ ] Collect the APK and all required splits/resources/native libraries.
-* [ ] Record package, app version, min/target SDK, and test-device Android/API level.
-* [ ] Verify MobSF/other tool requirements for the selected release; manually validate automated findings.
-* [ ] For Frida instrumentation/repackaging, follow [Frida prerequisites](../dynamic-testing/preflight-and-frida-setup.md#mandatory-preflight). Basic [ADB/component tests](../dynamic-testing/component-testing.md#adb-probes-and-caller-identity) do not require Frida or root.
-
-## Lab Tools and Setup
-
+* Install a Java JDK compatible with the selected JADX/Apktool releases; add command-line tools to `PATH`.
 * [JADX](https://github.com/skylot/jadx) / JADX-GUI - decompile DEX and inspect resources.
 * [Apktool](https://apktool.org/) - decode resources and SMALI; compare its output with JADX.
 * [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) - automated analysis. Use release-specific setup instructions; the course's `setup.bat` / `run.bat` and `setup.sh` / `run.sh` are historical examples.
@@ -61,4 +54,76 @@
     apktool --version
     </code></pre>
 * Install Android Studio separately.
-  * Verify ADB using the [device connection commands](../dynamic-testing/component-testing.md#adb-probes-and-caller-identity).
+  * Verify ADB using the [device connection commands](dynamic-testing/component-testing.md#adb-probes-and-caller-identity).
+
+* Optional launcher: [Frida-Launcher](https://github.com/thecybersandeep/Frida-Launcher); verify device and version support.
+
+## App and Device Preparation
+
+* Collect the APK, required splits/resources/native libraries; record package/version, min/target SDK, and device Android/API level.
+* Connect the device or start the emulator; enable USB debugging and accept the host authorization prompt.
+* **Connection and ABI:**
+
+  ```bash
+  adb devices -l
+  adb shell getprop ro.build.version.release
+  adb shell getprop ro.build.version.sdk
+  adb shell getprop ro.product.cpu.abilist
+  ```
+
+* With multiple devices, use `adb -s <serial> <command>`. [App acquisition/install variants](static-testing/acquire-and-decompile.md).
+* **Repackaging:** include required splits/libraries, align, sign, verify, then install. [Patching commands](dynamic-testing/app-patching.md).
+* **Proxy/CA:** [Network Traffic and TLS](dynamic-testing/network-traffic-and-tls.md); app CA trust and pinning are separate checks.
+* Basic [ADB/component tests](dynamic-testing/component-testing.md#adb-probes-and-caller-identity) do not require Frida or root.
+
+## Device and Frida Setup
+
+* Use a compatible Android Studio emulator or test device.
+* **Runtime path:** root-accessible Frida server or an app patched with Gadget.
+* **Root / kernel details:**
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell su -c id
+  adb shell cat /proc/version
+  adb shell cat /proc/cpuinfo
+  </code></pre>
+* **Server:** device ABI. **Gadget:** target app ABI, which may differ on a 64-bit device.&#x20;
+* Install client tools in an isolated environment:
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">pip3 install frida-tools
+    pip3 install objection
+    objection version
+    objection --help
+    objection start --help
+    </code></pre>
+* Match the host `frida` library and device server **exactly.**
+* Gadget uses the same exact Frida version. `frida-tools` and Objection have independent version numbers.
+* Objection installs Frida dependencies and can change the installed version.
+* Current CLI: `objection [OPTIONS] COMMAND [ARGS]...`; `--name` selects, `start` opens a session.
+* Subcommand options: check installed help and [CLI source](https://github.com/sensepost/objection/blob/master/objection/console/cli.py).
+
+### Start Frida Server
+
+* Download the matching version/ABI from [Frida releases](https://github.com/frida/frida/releases), extract the `.xz`, and name the extracted binary `frida-server` for these commands.
+* **Transfer the server once, then choose the root-adbd or su startup variant:**
+  * ```bash
+    adb push frida-server /data/local/tmp/frida-server
+    ```
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb root
+  adb shell "chmod 755 /data/local/tmp/frida-server"
+  adb shell "/data/local/tmp/frida-server &#x26;"
+  # OR #
+  adb shell "su -c 'chmod 755 /data/local/tmp/frida-server'"
+  adb shell "su -c '/data/local/tmp/frida-server &#x26;'"
+  </code></pre>
+
+### Verify Client and Server Versions
+
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">frida --version
+  pip3 show frida frida-tools objection
+  adb shell /data/local/tmp/frida-server --version
+  </code></pre>
+* `frida --version` and `frida-server --version` must match exactly.
+* Use the same host environment for Frida and Objection.
+* **ADB connection:** [device selection and authorization commands](dynamic-testing/component-testing.md#adb-probes-and-caller-identity).
+* List installed apps:
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida-ps -Uai
+    </code></pre>
+* **Runtime sessions:** [Frida CLI and Objection attach/spawn variants](dynamic-testing/objection-and-runtime-instrumentation.md#attach-or-spawn).

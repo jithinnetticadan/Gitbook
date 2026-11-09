@@ -32,7 +32,15 @@
 
 * Inspect v1/v2/v3 verification and signer identity with `apksigner`; v4 uses a separate incremental-install signature artifact and is not a replacement for APK authenticity verification.
   * `apksigner verify --verbose --print-certs <app.apk>`
-* Review v1/v2/v3 schemes. Janus (CVE-2017-13156) depends on OS patch level and accepted scheme; v1 alone is not proof.
+* **Janus (CVE-2017-13156) triage:** compare signing schemes with the actual device build/patch level.
+  * ```bash
+    apksigner verify --verbose --print-certs '<app.apk>'
+    apkanalyzer manifest min-sdk '<app.apk>'
+    adb shell getprop ro.build.version.release
+    adb shell getprop ro.build.version.sdk
+    adb shell getprop ro.build.version.security_patch
+    ```
+* Match the device to the [December 2017 Android bulletin](https://source.android.com/docs/security/bulletin/2017-12-01). A v1 signature or low `minSdkVersion` alone does not establish exposure; the device must have an affected verifier and accept the vulnerable signing path.
 * APK signing certificates are normally self-signed. Do not confuse that with a weak signing key, a known private debug key, or an unsafe TLS trust anchor. A debug-looking certificate does not prove `debuggable`/backup flags are enabled.
 * Review actual key algorithms/sizes, release-key custody, certificate rotation, and signature-dependent permissions/App Links. Janus needs an affected, unpatched verifier and a relevant accepted signing path.
 * For Network Security Config, resolve per-domain inheritance, `includeSubdomains`, debug overrides, user/system/custom trust anchors, and pin expiry/backup pins. Custom trust anchors can be legitimate; assess provenance, intended endpoints, and actual validation. Non-platform HTTP stacks may not honor this configuration.

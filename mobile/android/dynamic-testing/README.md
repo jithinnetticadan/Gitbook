@@ -3,9 +3,12 @@
 ## Automated Tools
 
 * [thorfinn](https://github.com/PhonePe/thorfinn)
+* [AndroidSpect](https://github.com/thecybersandeep/androidspect) - live Logcat, processes/sockets, root shell, app controls, and preferences editing; requires root, not Frida/Xposed.
+* [MobSuite](https://mobsuite.app/#features) - Frida attach/spawn, proxy traffic, component launching, device files/shell, and filtered Logcat.
 
 ## Further Reading
 
+* [DroidArsenal](https://github.com/damodarnaik/DroidArsenal) - runtime testing playbooks and ADB/Frida/Objection/Drozer cheatsheets with review tracking.
 * [Source checklist](../): attached Android pentest workbook; validate each item's platform, prerequisites, and applicability. A checklist is not proof of completed coverage.
 * Vidhan Thakur, _Android Dynamic Application Security Testing_, Field Guide 02 (63-page PDF), embedded on the [Android page](../). Commands and conclusions here are qualified against current platform/tool behavior; older guide snippets may not run unchanged.
 * [Objection](https://github.com/sensepost/objection)

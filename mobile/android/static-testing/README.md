@@ -4,9 +4,12 @@
 
 * [adbauditor](https://adbauditor.com/)
 * [apkstudio](https://github.com/vaibhavpandeyvpz/apkstudio)
+* [AndroidSpect](https://github.com/thecybersandeep/androidspect) - installed-app manifest/components, native libraries, SQLite, and preferences inspection; requires root.
+* [MobSuite](https://mobsuite.app/#features) - APK extraction/decompilation, manifest/component inspection, rebuilding, and signing.
 
 ## Further Reading
 
+* [DroidArsenal](https://github.com/damodarnaik/DroidArsenal) - OWASP-aligned playbooks, JADX/Apktool/MobSF cheatsheets, and review tracking.
 * [OWASP Mobile Security Testing Guide: Android](https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05b-basic-security_testing)
 * [OWASP Mobile Top 10](https://owasp.org/www-project-mobile-top-10/)
 * [HackTricks Android checklist](https://book.hacktricks.xyz/mobile-apps-pentesting/android-checklist)

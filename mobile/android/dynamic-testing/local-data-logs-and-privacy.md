@@ -60,7 +60,7 @@
 2. Prefer an app-supported SQLite snapshot/backup or quiesce the app before copying. A live database copied without its matching `-wal` and `-shm` files can be incomplete/inconsistent.
 3. Use Device File Explorer, `adb pull` with appropriate device access, or a binary-safe export. Standard `adbd` cannot read private app data merely because `su` is installed. `run-as` generally requires a debuggable app; its failure does not prove all storage is protected.
 
-* **Root-capable adbd:** use the [root startup command](preflight-and-frida-setup.md#start-frida-server) first.
+* **Root-capable adbd:** use the [root startup command](../setup.md#start-frida-server) first.
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell am force-stop &#x3C;package-name>
   adb pull /data/user/0/&#x3C;package-name>/databases ./test-databases
   adb pull /data/user/0/&#x3C;package-name>/shared_prefs ./test-shared-prefs

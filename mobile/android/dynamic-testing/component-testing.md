@@ -1,6 +1,6 @@
 # Component Testing
 
-* Root and Frida are **not required** for ordinary ADB/Drozer component tests. Complete [Mandatory Preflight](preflight-and-frida-setup.md#mandatory-preflight) only when using instrumentation or a patched build.
+* Root and Frida are **not required** for ordinary ADB/Drozer component tests. Use [Device and Frida Setup](../setup.md#device-and-frida-setup) when instrumenting or patching an app.
 
 ## Components, Intents, and Provider URIs
 
