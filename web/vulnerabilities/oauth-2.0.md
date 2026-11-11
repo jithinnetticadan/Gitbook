@@ -44,11 +44,68 @@
 * #### Resource Grant
   * OAuth server verifies token and responds with the requested resource.
 
-## Implicit Grant Type
+## Authorization Code Flow with PKCE
+
+* PKCE -> Proof Key for Code Exchange. Extends the authorization code grant; it is not a separate grant type.
+* Preferred replacement for implicit flow in single-page, mobile & native desktop apps. Required for public clients by current OAuth security best practice; also recommended for confidential server-side clients.
+* Binds the authorization code to a per-request `code_verifier`, preventing an intercepted code from being exchanged without the matching verifier.
+* #### Code Verifier and Challenge Generation <sup><sub>(on the client)</sub></sup>
+  * Generate a fresh cryptographically random `code_verifier` for each authorization request and bind it to that login transaction. Use 43-128 characters from `A-Z`, `a-z`, `0-9`, `-`, `.`, `_`, `~`; base64url-encoding 32 random bytes without padding produces a suitable 43-character verifier.
+  * Derive `code_challenge = BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))`, without `=` padding. Hash the verifier string, not the original random bytes or a hexadecimal digest.
+  * Use `code_challenge_method=S256`. With `plain`, the challenge equals the verifier and exposes it in the authorization request; do not downgrade from `S256` to `plain`.
+  * **Example pair** <sup><sub>(RFC 7636 test values; generate fresh values in real flows)</sub></sup>
+    * `code_verifier` -> `dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk`
+    * `code_challenge` -> `E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM`
+* #### Authorization Request <sup><sub>(via user browser)</sub></sup>
+  * Client redirects the browser to the OAuth authorization endpoint with `response_type=code`, the challenge & its method. Keep the verifier on the client; do not send it in this request.
+  * ```http
+    GET /authorization?client_id=12345&redirect_uri=https%3A%2F%2Fclient-app.com%2Fcallback&response_type=code&scope=openid%20profile&state=ae13d489bd00e3c24&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256 HTTP/1.1
+    Host: oauth-provider.com
+    ```
+  * `client_id`, `redirect_uri`, `scope` & `state` have the same roles as in the authorization code grant. `openid profile` requests OpenID Connect; plain OAuth uses the provider's resource scopes.
+* #### User Login and Consent
+  * Authorization server authenticates the user and asks them to approve the requested access, unless an existing login/consent allows this step to be skipped.
+* #### Authorization Code Grant <sup><sub>(via user browser)</sub></sup>
+  * Authorization server binds the `code_challenge` & `code_challenge_method` to the issued code, then redirects to the registered callback with the code, not an access token.
+  * ```http
+    HTTP/1.1 302 Found
+    Location: https://client-app.com/callback?code=a1b2c3d4e5f6g7h8&state=ae13d489bd00e3c24
+    ```
+  * Client validates the returned `state` against the stored transaction before exchanging the code, and retrieves that transaction's verifier.
+* #### Access Token Request <sup><sub>(client to OAuth token endpoint over HTTPS)</sub></sup>
+  * Client sends the code & original `code_verifier` in a form-encoded POST body. `grant_type` remains `authorization_code`, not `pkce`.
+  * ```http
+    POST /token HTTP/1.1
+    Host: oauth-provider.com
+    Content-Type: application/x-www-form-urlencoded
+
+    client_id=12345&redirect_uri=https%3A%2F%2Fclient-app.com%2Fcallback&grant_type=authorization_code&code=a1b2c3d4e5f6g7h8&code_verifier=dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk
+    ```
+  * **Public client** -> SPA sends this request from the browser; native app sends it directly. No `client_secret`; browser-based token requests require the provider's token endpoint to allow the client's origin through CORS.
+  * **Confidential client** -> Back-end sends the request and also authenticates using its registered token endpoint authentication method. PKCE does not replace client authentication.
+* #### Access Token Grant
+  * Authorization server recomputes the challenge from the supplied verifier using the method bound to the code, and compares it with the original challenge.
+  * Also validates the code's expiry, one-time use, client binding & matching `redirect_uri`. Missing or incorrect verifier must prevent token issuance; a mismatched verifier returns `invalid_grant`.
+  * On success, returns tokens in the response body rather than the redirect URL.
+  * ```http
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Cache-Control: no-store
+
+    {"access_token":"z0y9x8w7v6u5","token_type":"Bearer","expires_in":3600,"scope":"openid profile"}
+    ```
+  * Example shows access-token fields only. OpenID Connect also returns an `id_token`; a `refresh_token` may be issued depending on provider policy.
+* #### API call
+  * Client fetches the user's data from the resource server over HTTPS using `Authorization: Bearer z0y9x8w7v6u5`.
+* #### Resource Grant
+  * Resource server validates the access token, intended audience & required scopes before returning the requested resource.
+* **Difference from implicit** -> Browser redirect carries a short-lived code rather than an access token. PKCE protects code redemption, not a stolen access token or a client compromised by XSS.
+
+## Implicit Grant Type <sup><sub>(Not Recommended)</sub></sup>
 
 * Every communication happens via user's browser and can be observed by an attacker
 * Client app receives the access token immediately after the user gives their consent.
-* Suited for single-page & native desktop apps, which cannot easily store the `client_secret` on the back-end.
+* Historically used for single-page & native desktop apps that cannot keep a `client_secret` confidential. Use [authorization code flow with PKCE](#authorization-code-flow-with-pkce) instead to avoid issuing access tokens in the browser redirect URL.
 * #### Authorization Request
   * Same as authorization code grant type except the `response_type` should be set to `token`.
 * #### User Login and Consent
@@ -241,3 +298,5 @@ redirect_uri=https://victim.com&state=../../../../../attacker.com
 #### Reference
 
 * [What is OAuth, real-world examples and various OAuth attacks](https://shreyapohekar.com/blogs/what-is-oauth-real-world-examples-and-various-oauth-attacks/#google_vignette)
+* [RFC 7636 - Proof Key for Code Exchange](https://www.rfc-editor.org/rfc/rfc7636.html)
+* [RFC 9700 - OAuth 2.0 Security Best Current Practice](https://www.rfc-editor.org/rfc/rfc9700.html#section-2.1)

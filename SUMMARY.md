@@ -33,6 +33,7 @@
   * [OS Injection](web/vulnerabilities/os-injection.md)
   * [PDF Injection](web/vulnerabilities/pdf-injection.md)
   * [Race Conditions](web/vulnerabilities/race-conditions.md)
+  * [SAML](web/vulnerabilities/saml.md)
   * [SQL Injection](web/vulnerabilities/sql-injection.md)
   * [Server-Side Template Injection (SSTI)](web/vulnerabilities/server-side-template-injection-ssti.md)
   * [Server-Side Request Forgery (SSRF)](web/vulnerabilities/server-side-request-forgery-ssrf.md)
