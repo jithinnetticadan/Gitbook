@@ -17,6 +17,26 @@
 
 ### Captured-Request Replay
 
+#### Native OAuth and Passkey Mutations
+
+* **OAuth callback:** deliver the callback through the [deep-link launch template](component-testing.md#deep-links-and-url-handling), using the observed scheme/host/path. Start a fresh login for each case; test wrong, omitted, duplicate and other-session `state` separately.
+    * ```text
+        demo://oauth/callback?code=REPLACE_UNUSED_CODE&state=wrong-state
+        demo://oauth/callback?code=REPLACE_UNUSED_CODE
+        demo://oauth/callback?code=REPLACE_UNUSED_CODE&state=REPLACE_CURRENT_STATE&state=wrong-state
+        ```
+* **PKCE token exchange (curl, Linux Bash / Windows PowerShell with curl.exe):** use an unused code bound to a known challenge. First send a different valid-length verifier; next obtain a fresh code and omit `code_verifier`; finally use the correct verifier as a control with another fresh code. Retain the real client authentication where required.
+    * ```text
+        curl -i 'https://auth.example/token' --data-urlencode 'grant_type=authorization_code' --data-urlencode 'client_id=REPLACE_CLIENT_ID' --data-urlencode 'redirect_uri=REPLACE_REGISTERED_CALLBACK' --data-urlencode 'code=REPLACE_UNUSED_CODE' --data-urlencode 'code_verifier=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        ```
+* **Code replay/binding:** redeem the same code twice; separately use a different registered callback or another client ID in the exchange. A used/expired code rejection does not establish that PKCE or redirect binding was validated.
+* **Confirm:** wrong verifier is rejected at the authorization server; wrong state is rejected by the client without creating/switching a session. A returned token or completed app login under the wrong binding is the meaningful failure. Full PKCE flow: [OAuth guide](../../../web/vulnerabilities/oauth-2.0.md#authorization-code-flow-with-pkce).
+* **ID/access tokens:** change `sub`, `aud`, `iss` or expiry without re-signing and submit at the actual backend token-consumer endpoint; then test a genuine token from another test client/account. Use [JWT payloads](../../../web/vulnerabilities/jwt-attacks.md). Tampered-token rejection establishes signature enforcement, not every claim check; wrong-audience/issuer tests need genuinely signed tokens with those values.
+* **Passkey assertion:** keep the captured `id`, `rawId`, `response.clientDataJSON`, `response.authenticatorData`, `response.signature` and `response.userHandle` together initially. Submit it twice; submit it after challenge expiry; and submit A's assertion to B's active login transaction. Start a fresh challenge for each independent case.
+* **Passkey field isolation:** swap only `id`/`rawId` with B's known credential ID, then separately change the claimed account/user handle. Confirm the authenticated account from the response, not the user-selected account label. Challenge/origin/RP-hash/user-verification changes covered by the signature require a test authenticator that signs that variant; editing signed bytes alone only tests signature rejection.
+
+#### Protected API and Refresh Requests
+
 * **Host Bash/curl:** use the captured URL and authentication format; compare the response body and record ownership.
     * ```bash
         curl -i --proxy 'http://127.0.0.1:8080' --cacert '<burp-ca.pem>' 'https://<api-host>/<owned-record-path>' -H 'Authorization: Bearer <account-A-access-token>'
@@ -101,22 +121,64 @@
 
 <table><thead><tr><th width="170">Observation Point</th><th>Record</th><th>Check</th></tr></thead><tbody><tr><td><code>SecretKeySpec</code>, KDF, or key import</td><td>Origin, derivation parameters, scope/lifetime, and caller</td><td>Trace bytes back to constants, storage, generation, or network; unchanged bytes alone do not prove hardcoding.</td></tr><tr><td><code>KeyGenerator</code>, <code>KeyPairGenerator</code>, Keystore</td><td>Provider, alias, purposes, auth policy, backing</td><td>Whether key export/use is possible under the stated attacker capability.</td></tr><tr><td><code>Cipher.getInstance</code>, <code>init</code>, <code>update</code>, <code>doFinal</code></td><td>Transformation, operation, key identity, IV/nonce, AAD, input/output</td><td>Same-key nonce reuse, integrity validation, mode misuse, and error handling in the actual flow.</td></tr><tr><td><code>SecureRandom</code> / other RNG</td><td>Generator, seeding and security-sensitive use</td><td>Repeatability is a clue, not proof of predictability; assess entropy and use.</td></tr><tr><td>Encoders / hashes</td><td>Base64/hex/compression/digest and downstream use</td><td>Encoding is not encryption; a weak digest used for a cache key is not equivalent to password hashing.</td></tr></tbody></table>
 
-* **Template scope:** metadata for `Cipher.doFinal(byte[])` only; no key/plaintext dumps.
-* **Not covered:** streaming/no-argument overloads or native crypto.
+* **Template scope:** observe `Cipher.init` overloads, Keystore alias retrieval and `doFinal(byte[])`. Logs key fingerprints/aliases, not raw keys or plaintext. **Not covered:** streaming/no-argument `doFinal`, native crypto, or complete AAD tracing.
 * **Run:** Frida CLI script/REPL using the [attach/spawn commands](objection-and-runtime-instrumentation.md#attach-or-spawn); custom agents need the [Java bridge setup](java-and-native-instrumentation.md#custom-agent-setup).
   * ```javascript
     Java.perform(function () {
         const Cipher = Java.use('javax.crypto.Cipher');
+        const Key = Java.use('java.security.Key');
+        const KeyStore = Java.use('java.security.KeyStore');
+        const System = Java.use('java.lang.System');
+        const Digest = Java.use('java.security.MessageDigest');
+        const aliases = new Map();
+        const hex = bytes => bytes === null ? null : Array.from(bytes,
+            value => ('0' + (value & 255).toString(16)).slice(-2)).join('');
+        const keyLookup = KeyStore.getKey.overload('java.lang.String', '[C');
+        keyLookup.implementation = function (alias, password) {
+            const key = keyLookup.call(this, alias, password);
+            if (key !== null) aliases.set(String(System.identityHashCode(key)), String(alias));
+            return key;
+        };
+        for (const initialize of Cipher.init.overloads) {
+            initialize.implementation = function () {
+                const args = Array.from(arguments);
+                const result = initialize.call(this, ...args);
+                try {
+                    let keyTag = 'certificate/other';
+                    if (args[1] !== null && Key.class.isInstance(args[1])) {
+                        const key = Java.cast(args[1], Key);
+                        const encoded = key.getEncoded();
+                        keyTag = encoded === null
+                            ? 'alias:' + (aliases.get(String(System.identityHashCode(key))) || 'unresolved')
+                            : 'sha256:' + hex(Digest.getInstance('SHA-256').digest(encoded));
+                    }
+                    console.log(JSON.stringify({ event: 'init', cipher: System.identityHashCode(this),
+                        algorithm: String(this.getAlgorithm()), operation: args[0],
+                        key: keyTag, iv: hex(this.getIV()) }));
+                } catch (error) { console.log('Crypto metadata unavailable: ' + error); }
+                return result;
+            };
+        }
         const doFinal = Cipher.doFinal.overload('[B');
         doFinal.implementation = function (input) {
             const output = doFinal.call(this, input);
-            console.log(this.getAlgorithm().toString() +
+            console.log('cipher=' + System.identityHashCode(this) + ' ' + this.getAlgorithm() +
                 ' inputBytes=' + (input === null ? 0 : input.length) +
                 ' outputBytes=' + (output === null ? 0 : output.length));
             return output;
         };
     });
     ```
+* **Nonce/IV reuse:** perform two different marker encryptions, then repeat after restart/account switch. Compare `operation=1` (encryption), algorithm, key tag and IV. Same-key/same-nonce reuse in GCM/CTR is a flaw; repeated decryptions (`operation=2`) naturally reuse the stored nonce. For CBC, test IV unpredictability as well as repetition.
+* **Unresolved alias:** attach before key retrieval or trace the actual key-generation/import path. An unresolved/nonexportable tag does not establish that two operations use the same key; equal aliases across different installs/accounts also need key-lifecycle confirmation.
+* **Integrity mutation (Node.js REPL, Windows / Linux):** copy the actual Base64 ciphertext field, change one ciphertext byte while retaining length/encoding, then put the result back in the same captured request or local test record. If the field contains a version/IV/tag envelope, select a byte in the ciphertext portion rather than blindly editing its header.
+    * ```javascript
+        const ciphertext = Buffer.from('REPLACE_BASE64_CIPHERTEXT', 'base64');
+        const offset = 0;
+        ciphertext[offset] ^= 1;
+        console.log(ciphertext.toString('base64'));
+        ```
+* **Confirm integrity failure:** altered data is accepted as authentic and changes a protected value/action. A parse error, rejected authentication tag, or app crash is not accepted tampering. For an oracle, compare valid padding, invalid padding and valid-padding/invalid-content variants and demonstrate a repeatable observable distinction; one generic error is insufficient.
 * Correlate cipher instances, `init` parameters, and consumers with synthetic test data.
 * Capture the values needed to trace key provenance and compare repeated operations.
 * Compare repeated operations under the **same key**, app restarts, and account changes.
@@ -124,4 +186,36 @@
 * `getEncoded()` returning null may indicate a non-exportable key, not an analysis failure.
 * Note key-access prerequisites and whether an attacker controls the messages.
 * Plaintext in memory during legitimate use is not itself a cryptographic break; assess retention/exposure with [local data lifecycle testing](local-data-logs-and-privacy.md).
+
+### Password-Derived Keys
+
+* **Frida Java script:** observe `SecretKeyFactory.generateSecret(KeySpec)` when the input is `PBEKeySpec`. Trigger the actual encrypted-record/login flow; native KDFs and other spec types require their own observed implementation.
+    * ```javascript
+        Java.perform(function () {
+            const Factory = Java.use('javax.crypto.SecretKeyFactory');
+            const Spec = Java.use('javax.crypto.spec.PBEKeySpec');
+            const Digest = Java.use('java.security.MessageDigest');
+            const hex = bytes => bytes === null ? null : Array.from(bytes,
+                value => (value & 255).toString(16).padStart(2, '0')).join('');
+            const generate = Factory.generateSecret.overload('java.security.spec.KeySpec');
+            generate.implementation = function (input) {
+                let record = null;
+                if (input !== null && Spec.class.isInstance(input)) {
+                    const spec = Java.cast(input, Spec);
+                    record = { algorithm: String(this.getAlgorithm()), salt: hex(spec.getSalt()),
+                        iterations: spec.getIterationCount(), keyBits: spec.getKeyLength() };
+                }
+                const key = generate.call(this, input);
+                if (record !== null) {
+                    const encoded = key.getEncoded();
+                    record.keyHash = encoded === null ? null : hex(Digest.getInstance('SHA-256').digest(encoded));
+                    console.log(JSON.stringify(record));
+                }
+                return key;
+            };
+        });
+        ```
+* **Comparison:** create two independent records/accounts with the same test password; compare salt, iterations, PRF in the algorithm name, key length and key fingerprint. Change the password and repeat; compare the fingerprint with the key used by the cipher hook above. A null salt/zero count may identify a password-only spec, so trace the provider's final derivation rather than assuming those are the complete parameters.
+* **Flaws to establish:** one fixed salt across independently stored password records; inadequate work factor for an exposed offline-verification target; or a key derived only from public device identifiers/constants. Trace the identifier/constant into the actual KDF input; do not infer it from repeated output alone.
+* **Confirm offline exposure:** obtain the actual test record/envelope through the documented storage path and reproduce its derivation/decryption with the known test password and observed parameters. This connects the weak parameters to protected data; a KDF API hit alone is not a demonstrated cryptographic failure.
 * **Related:** [Java and Native Instrumentation](java-and-native-instrumentation.md) | [Component Testing](component-testing.md).

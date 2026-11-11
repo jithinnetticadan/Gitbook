@@ -57,6 +57,76 @@
 * SQLite: use the read-only queries under [File and Database Inspection](#file-and-database-inspection).
 * BinaryCookiesReader: `pip install binarycookiesreader`.
 
+### File Protection: Attribute and Read Probe
+
+* **Physical device, app context:** use the [Frida script-loading workflow](runtime-instrumentation.md#objection-session) in the process owning the file. Set the current container path for a known marker file; run the probe unlocked, then while locked where the app can execute. A suspended process producing no output is not a denied file read.
+  * ```javascript
+    function probeFileProtection() {
+      ObjC.schedule(ObjC.mainQueue, function () {
+        const path = '/var/mobile/Containers/Data/Application/REPLACE_UUID/Documents/protection-marker.txt';
+        const manager = ObjC.classes.NSFileManager.defaultManager();
+        const attributes = manager.attributesOfItemAtPath_error_(path, ptr(0));
+        const protection = attributes === null ? 'attributes unavailable'
+          : String(attributes.objectForKey_('NSFileProtectionKey'));
+        const data = ObjC.classes.NSData.dataWithContentsOfFile_(path);
+        console.log(JSON.stringify({ protection: protection,
+          readable: data !== null, bytes: data === null ? 0 : Number(data.length()) }));
+      });
+    }
+    probeFileProtection();
+    ```
+* In the Frida CLI REPL call `probeFileProtection()` after each state transition. Reopen the file on every probe; a descriptor retained before locking tests a different behavior.
+
+| Observed class | Comparison | Expected behavior to check |
+| --- | --- | --- |
+| `NSFileProtectionComplete` | Unlocked versus locked, after protection keys become unavailable | New opens fail while locked. |
+| `NSFileProtectionCompleteUnlessOpen` | Retained descriptor versus fresh open after lock | Existing open file may remain usable; that is not equivalent to a fresh read being allowed. |
+| `NSFileProtectionCompleteUntilFirstUserAuthentication` | Reboot-before-first-unlock versus lock-after-first-unlock | Access after the first unlock can remain available while locked. |
+| `NSFileProtectionNone` | Same marker, sensitive file and app requirement | No app-file protection class; device/storage encryption is a separate layer. |
+
+* **Confirm:** the actual sensitive file's protection is weaker than its required availability and a fresh app-context read succeeds in that prohibited state. An attribute string alone or a privileged SSH/root read does not prove an ordinary app can read another app's files. Simulator/VM results do not establish physical-device key protection.
+
+### Keychain: Query One Item Without a Prompt
+
+* **Find selectors:** use the existing Keychain inspection commands to obtain the exact class/service/account/access group. This generic-password probe runs as the app and must match its actual item. Change the class/query for internet-password or key items; include the observed access group or synchronizable selector where required.
+  * ```javascript
+    function probeKeychain() {
+      ObjC.schedule(ObjC.mainQueue, function () {
+        const constant = name => {
+          const address = Module.findGlobalExportByName(name);
+          if (address === null) throw new Error('Missing Security constant: ' + name);
+          return new ObjC.Object(address.readPointer());
+        };
+        const query = ObjC.classes.NSMutableDictionary.dictionary();
+        query.setObject_forKey_(constant('kSecClassGenericPassword'), constant('kSecClass'));
+        query.setObject_forKey_('REPLACE_SERVICE', constant('kSecAttrService'));
+        query.setObject_forKey_('REPLACE_ACCOUNT', constant('kSecAttrAccount'));
+        query.setObject_forKey_(ObjC.classes.NSNumber.numberWithBool_(true), constant('kSecReturnData'));
+        query.setObject_forKey_(constant('kSecUseAuthenticationUIFail'), constant('kSecUseAuthenticationUI'));
+        const copy = new NativeFunction(Module.findGlobalExportByName('SecItemCopyMatching'),
+          'int', ['pointer', 'pointer']);
+        const release = new NativeFunction(Module.findGlobalExportByName('CFRelease'), 'void', ['pointer']);
+        const output = Memory.alloc(Process.pointerSize);
+        output.writePointer(ptr(0));
+        const status = copy(query.handle, output);
+        console.log('SecItemCopyMatching status=' + status + '; dataReturned=' + !output.readPointer().isNull());
+        if (!output.readPointer().isNull()) release(output.readPointer());
+      });
+    }
+    probeKeychain();
+    ```
+* **States:** establish the exact item is readable unlocked; rerun `probeKeychain()` while locked, after logout, and after the app's authentication window expires. After reboot, test before first unlock only with a process that can actually execute in that state; otherwise mark that case untested.
+* **Interpret:** `0` = success; `-25300` = no matching item; `-25308` = interaction not allowed; `-25293` = authentication failed. A wrong service/access group producing "not found" is not evidence that lock protection works.
+* **Authentication:** for an item intended to require fresh user presence, a successful no-prompt query after cancellation/expiry is a lead. Check any intentionally reusable `LAContext`/authentication window and perform the actual protected operation. A background refresh token intentionally readable after first unlock has a different requirement.
+* **Nonexportable keys:** query/use the key reference and actual signing/decryption operation; failing to export raw key bytes is expected and does not prove auth-bound use works.
+* **Lifecycle:** after logout/account switch, use retained credentials through the [API replay tests](traffic-analysis-and-tls.md#captured-request-replay). A stale item proves retention, not that the backend still accepts it.
+
+### Pasteboard, Snapshots, and Account Residue
+
+* Put a unique marker into a sensitive field, exercise copy/share/background, then use the existing pasteboard/screenshot/log commands. Read clipboard data from a separate test app as well as from the target; distinguish permission prompts and permitted user actions from unsolicited exposure.
+* Open a sensitive screen, background the app and inspect its app-switcher preview; compare the preview with a deliberate screenshot, which is a different surface. Repeat after logout and account switch.
+* Query a known A record in copied preferences/databases after switching to B and reopening the app. Confirm B can actually display/use A's data, or that retained credentials authorize a fresh A request, rather than reporting every leftover cache byte as live access.
+
 ## Legacy Tools
 
 * [iRET](https://github.com/S3Jensen/iRET), [Cycript](https://www.cycript.org/) (inspection/injection/foreign-function calls), [QuickTime](https://support.apple.com/downloads/quicktime) (recording).

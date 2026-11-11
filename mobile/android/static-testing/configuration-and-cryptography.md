@@ -6,6 +6,7 @@
   grep -rnE 'MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' &#x3C;decompiled-directory>
   grep -rnE 'byte\[\] *(key|iv)[A-Za-z0-9_]* *=|IvParameterSpec\(|SecretKeySpec\(' &#x3C;decompiled-directory>
   grep -rn 'new Random(' &#x3C;decompiled-directory>
+  grep -rn 'PBEKeySpec\|PBKDF2\|SecretKeyFactory' &#x3C;decompiled-directory>
   </code></pre>
 * Plain `Cipher.getInstance("AES")` commonly defaults to ECB on Android; ECB leaks structure and has no IV.
 * MD5/SHA-1 are weak for passwords and signatures; they may be acceptable for non-security checksums.
@@ -31,7 +32,6 @@
 ## Signing and Trust Boundaries
 
 * Inspect v1/v2/v3 verification and signer identity with `apksigner`; v4 uses a separate incremental-install signature artifact and is not a replacement for APK authenticity verification.
-  * `apksigner verify --verbose --print-certs <app.apk>`
 * **Janus (CVE-2017-13156) triage:** compare signing schemes with the actual device build/patch level.
   * ```bash
     apksigner verify --verbose --print-certs '<app.apk>'
@@ -49,7 +49,7 @@
 
 | Candidate                          | Trace / Validate                                                                                    | Avoid This Shortcut                                                                                                                                                  |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PBKDF2 / password-derived key      | PRF, work factor, random per-record salt, password entropy, key length, and attacker offline access | Use current algorithm-specific guidance and device performance budgets; one fixed iteration threshold is not valid for every KDF.                                    |
+| PBKDF2 / password-derived key      | Run the [KDF parameter hook](../dynamic-testing/authentication-and-cryptography.md#password-derived-keys); compare independent records and the actual cipher key | Assess PRF/work factor/salt and real offline exposure; one fixed iteration threshold is not valid for every KDF. |
 | Static salt                        | Whether passwords can share precomputation or produce equal derived values                          | Salt reuse weakens isolation but does not eliminate all KDF work.                                                                                                    |
 | CBC IV / GCM or CTR nonce          | IV unpredictability where required; nonce uniqueness under the same key                             | Repeated values under different keys are not the same as same-key nonce reuse.                                                                                       |
 | Device-identifier key derivation   | IMEI, Android ID, MAC, timestamps, embedded material                                                | Identifiers are not secret entropy; trace the complete derivation rather than assuming a secure KDF fixes a predictable input.                                       |
@@ -59,4 +59,13 @@
 | Keystore / StrongBox               | Key purposes, exportability, authentication policy, verified security level                         | Missing StrongBox is not automatically a finding; evaluate the required protection and device support.                                                               |
 
 * Validate findings with [runtime cryptographic data-flow testing](../dynamic-testing/authentication-and-cryptography.md#trace-cryptographic-data-flow).
+* **Windows PowerShell, cryptography/TLS candidate search:**
+  * ```powershell
+    $patterns = @('Cipher\.getInstance|MessageDigest\.getInstance|IvParameterSpec|SecretKeySpec|new Random\(|PBEKeySpec|PBKDF2|SecretKeyFactory',
+      'checkServerTrusted|ALLOW_ALL_HOSTNAME_VERIFIER|HostnameVerifier|onReceivedSslError|CertificatePinner',
+      'http://|cleartextTrafficPermitted|<pin-set')
+    Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt,*.xml |
+      Select-String -Pattern $patterns
+    ```
+* **Follow-through:** use the runtime hook's encryption-only key/IV comparison for GCM/CTR nonce reuse, ciphertext mutation for integrity, and actual [TLS validation comparisons](../dynamic-testing/network-traffic-and-tls.md) for permissive trust code. A search result is the entry point, not the completed test.
 * Reference: [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).

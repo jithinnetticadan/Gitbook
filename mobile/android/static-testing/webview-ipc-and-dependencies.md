@@ -4,7 +4,7 @@
 
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rn 'addJavascriptInterface\|setJavaScriptEnabled(true)' &#x3C;decompiled-directory>
   grep -rn 'setAllowFileAccess(true)\|setAllowUniversalAccessFromFileURLs(true)\|setAllowFileAccessFromFileURLs(true)' &#x3C;decompiled-directory>
-  grep -rn 'loadUrl(\|loadData(\|evaluateJavascript(' &#x3C;decompiled-directory>
+  grep -rn 'loadUrl(\|loadData(\|loadDataWithBaseURL(\|evaluateJavascript(' &#x3C;decompiled-directory>
   </code></pre>
 * `addJavascriptInterface`: annotation-limited exposure requires Android **and target API 17+**; legacy configurations expose more methods. Test the actual device/WebView.
 * The object is available to **all frames**, without a calling-origin parameter; inspect attacker-controlled pages/iframes and exposed methods. [Bridge behavior](https://developer.android.com/privacy-and-security/risks/insecure-webview-native-bridges).
@@ -13,22 +13,31 @@
 * **TLS-error search command:** [TLS and pinning patterns](configuration-and-cryptography.md).
 * Trace what URLs reach `loadUrl` (intent extras, deep links, server data) and whether the page origin is validated.
 
-#### WebView Boundaries Beyond JavaScript Enablement
+* **Windows PowerShell equivalents, decompiled source:** these searches locate candidates; select the matching runtime test below for each result.
+  * ```powershell
+    $patterns = @(
+      'addJavascriptInterface|addWebMessageListener|postWebMessage|setJavaScriptEnabled\(true\)',
+      'setAllowFileAccess|setAllowUniversalAccessFromFileURLs|setAllowFileAccessFromFileURLs',
+      'loadUrl\(|loadData\(|loadDataWithBaseURL\(|evaluateJavascript\(',
+      'shouldOverrideUrlLoading|shouldInterceptRequest|onReceivedSslError',
+      'setMixedContentMode|onPermissionRequest|onShowFileChooser|setWebContentsDebuggingEnabled'
+    )
+    Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt,*.js |
+      Select-String -Pattern $patterns
+    ```
 
-| Lead                                                                | Static Review / Runtime Check                                                               | Qualification                                                                                                                                                        |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `evaluateJavascript`, `loadUrl("javascript:...")`, `onPageFinished` | Trace interpolation of untrusted values into executable script; use harmless markers        | Loading an attacker URL and injecting script into a trusted origin are different impacts.                                                                            |
-| `shouldOverrideUrlLoading`                                          | Validate parsed scheme, host, port, path, redirects, and external-intent handling           | String prefix/substring allowlists can accept unintended hosts; test actual parser behavior.                                                                         |
-| Mixed content / file access                                         | `setMixedContentMode`, file/content URL settings, local-to-remote access                    | Confirm an attacker-controlled resource is loaded and can reach sensitive data; settings alone are not a completed exploit.                                          |
-| `shouldInterceptRequest` / `WebResourceResponse`                    | Resource selection, URL normalization, MIME/encoding, cache keys, synthetic response origin | Test crafted in-scope URLs and offline/restart behavior; prove persistent poisoning or unintended resource disclosure.                                               |
-| Geolocation / media permission callbacks                            | Origin, requested resource, Android permission, user consent                                | A blanket grant is a lead; distinguish WebView-origin consent from OS-level permission.                                                                              |
-| File chooser / capture                                              | Returned content URI, grants, MIME, source app, destination origin                          | Use a companion provider and harmless file to test upload disclosure; filesystem reach alone is not proof of cross-origin theft.                                     |
-| Cookies / web storage                                               | Domain/path, Secure/HttpOnly/SameSite, logout, account isolation, separate data directories | Cookies can be shared within the app's WebView profile, not globally across unrelated apps. JavaScript cannot read HttpOnly cookies merely because a bridge exists.  |
-| Bridge reflection / third-party script                              | Allowed native methods/arguments and code running in frames/page origin                     | Included scripts run in the page context; iframes may be same-origin or cross-origin. `addJavascriptInterface` is exposed to both. Check actual frame/bridge access. |
-| Remote debugging                                                    | Actual enabled setting, release behavior, authorized ADB/transport access                   | Being on the same Wi-Fi alone does not normally grant Chrome inspection access.                                                                                      |
-| Legacy bridge exposure                                              | Device WebView/provider version, Android/target SDK, annotated/exposed methods              | Historic pre-API-17 reflection attacks require the affected configuration; do not generalize them to modern annotated bridges.                                       |
+| Search hit | Run next | Confirm vulnerability |
+| --- | --- | --- |
+| URL parameter reaches `loadUrl` | [URL variants](../dynamic-testing/component-testing.md#untrusted-navigation-and-url-allowlists) | Unintended origin reaches privileged app WebView. |
+| Native bridge/message channel | [Controlled-page bridge PoC](../dynamic-testing/component-testing.md#native-bridge-from-untrusted-content) | Untrusted frame invokes unintended protected native operation. |
+| String enters HTML/script | [Injection markers](../dynamic-testing/component-testing.md#script-injection-into-a-trusted-page) | Marker executes in the trusted origin. |
+| File/mixed-content settings, cookies | [File/session probes](../dynamic-testing/component-testing.md#file-access-mixed-content-and-session-isolation) | Actual file read, script execution or cross-account credential use. |
+| `shouldInterceptRequest` / `WebResourceResponse` | [Resource/cache probes](../dynamic-testing/component-testing.md#resource-interception-and-cache-boundaries) | URL/MIME/cache mapping discloses a file or serves attacker-influenced/private content across the intended boundary. |
+| Geolocation / `onPermissionRequest` | [Origin/frame permission page](../dynamic-testing/component-testing.md#geolocation-camera-and-microphone-grants) | Unintended origin obtains actual location/media access, not merely an OS permission. |
+| `onShowFileChooser` / capture results | [Chooser callback probe](../dynamic-testing/component-testing.md#file-chooser-destination-and-grants) | Marker file is delivered to the wrong page/origin or beyond the user's grant. |
+| Provider query/path concatenation | [Provider payloads](../dynamic-testing/advanced-ipc-and-providers.md#provider-injection-and-file-traversal) | Argument changes query logic or reads outside the exposed root. |
 
-* Establish attacker reachability with the [WebView runtime workflow](../dynamic-testing/component-testing.md#webview-runtime-checks).
+* **Debugging:** test the unmodified release configuration with the [runtime inspection workflow](../dynamic-testing/component-testing.md#webview-runtime-checks). Enabling debugging through instrumentation is not release exposure; same-Wi-Fi access alone does not grant ADB inspection.
 
 ## Content Provider SQL Injection
 
@@ -65,23 +74,93 @@
 
 ## Third-Party Dependencies (SCA)
 
-* With source: run `./gradlew dependencies` and an SCA scanner such as OWASP Dependency-Check or OSV-Scanner on build files/lockfiles.
+* **Source project, Linux Bash:** obtain the actual release dependency configuration, then scan supported manifests/lockfiles with [OSV-Scanner V2](https://google.github.io/osv-scanner/usage/).
+  * ```bash
+    ./gradlew :app:dependencies --configuration releaseRuntimeClasspath
+    osv-scanner scan source -r . --format json --output-file osv-results.json
+    ```
+* **Windows PowerShell:** use `.\gradlew.bat :app:dependencies --configuration releaseRuntimeClasspath`; the OSV command is unchanged. Replace the module/configuration for the real flavor. Gradle console output is not itself an OSV lockfile; check extracted package coverage and use a supported SBOM/export if necessary.
+* **[OWASP Dependency-Check CLI](https://jeremylong.github.io/DependencyCheck/dependency-check-cli/index.html) alternative:** install the CLI and its supported Java runtime; scan resolved dependency JAR/AAR artifacts or other analyzer-supported files. Raw APK/DEX scanning alone is not a reliable complete dependency inventory. Initial database updates may require the selected release's NVD/API configuration.
+  * **Linux Bash:**
+    * ```bash
+      dependency-check.sh --project 'Android-app' --scan '<dependency-artifact-directory>' --format HTML --out './dependency-check-report'
+      ```
+  * **Windows PowerShell:**
+    * ```powershell
+      dependency-check.bat --project 'Android-app' --scan '<dependency-artifact-directory>' --format HTML --out './dependency-check-report'
+      ```
+* **Interpret:** compare each advisory's detected package/version with the resolved dependency graph and actual feature/configuration. Scanner findings identify affected-component candidates; use the reachability checks below to establish a testable vulnerable path.
+* **APK metadata, Linux Bash:**
+  * ```bash
+    unzip -l '<app.apk>' | grep -E 'META-INF/.*(pom.properties|\.version|MANIFEST.MF)'
+    unzip -p '<app.apk>' 'META-INF/maven/*/*/pom.properties'
+    ```
+* **Windows PowerShell, inspect the matching ZIP entries:**
+  * ```powershell
+    $archive = [IO.Compression.ZipFile]::OpenRead((Resolve-Path '<app.apk>'))
+    try {
+      foreach ($entry in ($archive.Entries | Where-Object {
+        $_.FullName -match '^META-INF/.*(pom\.properties|\.version|MANIFEST\.MF)$'
+      })) {
+        $reader = [IO.StreamReader]::new($entry.Open())
+        try { [pscustomobject]@{ Entry = $entry.FullName; Text = $reader.ReadToEnd() } }
+        finally { $reader.Dispose() }
+      }
+    } finally { $archive.Dispose() }
+    ```
 * APK only: collect library versions from `META-INF/*.version`, `META-INF/maven/**/pom.properties`, version constants, package names, and MobSF output. Match versions against vulnerability databases.
+* **APK-only SBOM example:** put only evidence-backed components into `app-bom.json`. This Jackson coordinate is an example of a versioned Maven component, not a claim that the target ships it; replace it with the package/version actually recovered.
+  * ```json
+    {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [{
+        "type": "library",
+        "group": "com.fasterxml.jackson.core",
+        "name": "jackson-databind",
+        "version": "2.9.8",
+        "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.8"
+      }]
+    }
+    ```
+* **[Trivy](https://trivy.dev/latest/docs/target/sbom/) installed, same command on Linux / Windows:**
+  * ```text
+    trivy sbom --format json --output sca-results.json app-bom.json
+    ```
+* **Reachability example:** for a Jackson deserialization advisory, locate the actual `ObjectMapper` configuration and `readValue` call, trace whether external input reaches it, and compare the advisory's required version/type/polymorphic configuration. A packaged old version is component exposure; an advisory-specific reproducer reaching the affected parser is stronger exploit evidence. Retain the package/version/advisory match even when runtime reachability remains unknown.
 * Record library/version evidence, advisory ID, affected configuration, and observed or unknown reachability. Distinguish a vulnerable-component/policy finding from a demonstrated exploitable path; a package-name match alone is not reliable version identification.
 * Include transitive AndroidX/Jetpack, HTTP, image/media, JSON/parser, WebView-wrapper, payment, and analytics SDKs as relevant. Renaming/shading or backported fixes can invalidate a simple version match. APKiD is primarily a fingerprinting aid, not complete SCA.
 * With source, obtain the resolved dependency graph and use a scanner-supported lockfile/SBOM/export rather than assuming every scanner parses every Gradle format. APK-only version evidence may remain uncertain; state that limit.
 
 ## Quick Triage
 
-* **Prerequisites:** JADX and Apktool output; review every search result manually.
-
-* ```sh
-  SRC=<decompiled-directory>
-  MANIFEST=<decoded-directory>/AndroidManifest.xml
-  grep -rniE 'api[_-]?key|secret|password|BEGIN (RSA |EC )?PRIVATE KEY' "$SRC"
-  grep -nE 'allowBackup|dataExtractionRules|fullBackupContent|debuggable|usesCleartextTraffic|networkSecurityConfig' "$MANIFEST"
-  grep -rnE 'Cipher\.getInstance\("(DES|RC4|AES/ECB|AES")|MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' "$SRC"
-  grep -n 'android:exported="true"' "$MANIFEST"
-  grep -rn 'addJavascriptInterface\|onReceivedSslError\|checkServerTrusted' "$SRC"
-  grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' "$SRC"
-  ```
+* **Input:** JADX source and Apktool decoded resources. Keep this sequence together for a quick first pass; use the resulting paths/line numbers to inspect the actual call sites.
+* **Linux Bash:**
+  * ```bash
+    SRC='<decompiled-directory>'
+    MANIFEST='<decoded-directory>/AndroidManifest.xml'
+    grep -rniE 'api[_-]?key|secret|password|BEGIN (RSA |EC )?PRIVATE KEY' "$SRC"
+    grep -nE 'allowBackup|dataExtractionRules|fullBackupContent|debuggable|usesCleartextTraffic|networkSecurityConfig' "$MANIFEST"
+    grep -rnE 'Cipher\.getInstance\("(DES|DESede|RC4|ARCFOUR|AES/ECB|AES")|MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' "$SRC"
+    grep -n 'android:exported="true"' "$MANIFEST"
+    grep -rn 'addJavascriptInterface\|onReceivedSslError\|checkServerTrusted' "$SRC"
+    grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' "$SRC"
+    ```
+* **Windows PowerShell equivalent:**
+  * ```powershell
+    $source = '<decompiled-directory>'
+    $manifest = Join-Path '<decoded-directory>' 'AndroidManifest.xml'
+    $sourceFiles = Get-ChildItem -LiteralPath $source -Recurse -File
+    Select-String -LiteralPath $sourceFiles.FullName -Pattern @(
+      'api[_-]?key|secret|password|BEGIN (RSA |EC )?PRIVATE KEY',
+      'Cipher\.getInstance\("(DES|DESede|RC4|ARCFOUR|AES/ECB|AES")|MessageDigest\.getInstance\("(MD5|SHA-?1)"\)',
+      'addJavascriptInterface|onReceivedSslError|checkServerTrusted',
+      'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com'
+    )
+    Select-String -LiteralPath $manifest -Pattern @(
+      'allowBackup|dataExtractionRules|fullBackupContent|debuggable|usesCleartextTraffic|networkSecurityConfig',
+      'android:exported="true"'
+    )
+    ```
+* **Next:** inspect matched values and consumers, then run the relevant [secrets/cloud](secrets-and-cloud.md), [component](../dynamic-testing/component-testing.md), [crypto](../dynamic-testing/authentication-and-cryptography.md#trace-cryptographic-data-flow), or [WebView](../dynamic-testing/component-testing.md#webview-runtime-checks) test. A string/flag match alone is a lead, not confirmation of the flaw.

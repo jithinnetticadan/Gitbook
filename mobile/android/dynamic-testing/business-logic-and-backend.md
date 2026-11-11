@@ -13,6 +13,48 @@
 
 ## Request Signing and Replay
 
+### Purchase, Receipt, and Local-Gate Recipes
+
+* **Checkout:** in the actual sandbox request, change one observed field at a time. These are individual field substitutions, not complete requests; keep SKU, account and other fields unchanged for the price/range tests.
+	* ```json
+		{"unitPrice": 0.01}
+		```
+	* ```json
+		{"quantity": -1}
+		```
+	* ```json
+		{"currency": "REPLACE_DIFFERENT_SUPPORTED_CURRENCY"}
+		```
+* **Confirm:** inspect the resulting order total, entitlement and provider transaction, not just an echoed request value. Server recalculation/rejection is expected; a free/underpriced completed sandbox entitlement establishes the flaw.
+* **Receipt binding:** submit A's genuine sandbox purchase token once as A, then unchanged as B; separately substitute only the product ID. Repeat the original token after first redemption and after a provider-confirmed refund/cancellation. Keep package/store/environment fields consistent unless testing them individually.
+	* ```json
+		{"purchaseToken":"REPLACE_A_SANDBOX_TOKEN","productId":"REPLACE_PRODUCT_ID"}
+		```
+* **Confirm:** B receives A's entitlement, a token for a cheaper product grants another product, or the same purchase grants a nonrepeatable entitlement twice. A token accepted while the order remains pending is meaningful only if the protected entitlement is already usable.
+* **Local gate:** locate the real Boolean-returning method and signature, then use a targeted Frida return override; substitute an existing entitlement operation, not a fictional API.
+	* ```javascript
+		Java.perform(function () {
+		    const Gate = Java.use('REPLACE_GATE_CLASS');
+		    const check = Gate.REPLACE_BOOLEAN_METHOD.overload();
+		    check.implementation = function () { return true; };
+		});
+		```
+* **Confirm:** perform the protected action after the hook. An unlocked menu with a denied backend operation proves only a local UI gate was bypassed; an offline feature can still have a real local entitlement boundary.
+
+### Signed-Request Mutation Matrix
+
+* Use the existing [request replay template](authentication-and-cryptography.md#captured-request-replay). For each row, begin with a new valid control request and keep its signature unchanged unless the test specifically obtains a new signature.
+
+| Mutation | Test | Confirm |
+| --- | --- | --- |
+| Body | Change one amount/object/account field after signing | Server accepts a changed protected action despite the mismatched body. |
+| Path/query | Substitute B's known object ID after signing | Signature is not bound to the selected resource and authorization also permits the cross-account action. |
+| Identity | Use A's signed request with B's session, then reverse | Unintended identity/transaction association; not merely B receiving B's data. |
+| Freshness | Replay exactly, then replay beyond the accepted timestamp window | Nonrepeatable state change commits again or a stated expiry is bypassed. |
+| Idempotency | Repeat with the same key; then change only the key | Compare committed operations; changing a client key must not bypass purchase/receipt uniqueness. |
+
+* A MAC/checksum that is intentionally only corruption detection need not enforce authentication. Determine the signature's actual contract before interpreting the result.
+
 * **Replay:** use the [captured JSON request template](authentication-and-cryptography.md#captured-request-replay) for each observed checkout, receipt, balance, or feature endpoint; edit its actual fields rather than generic guessed names.
 * **Offline/network transitions, ADB:** run each state separately and repeat the same app operation.
 	* ```bash

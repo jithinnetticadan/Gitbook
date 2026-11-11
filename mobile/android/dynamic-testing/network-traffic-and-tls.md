@@ -35,6 +35,68 @@
 
 ## Match the Validation Implementation
 
+### Client Certificate Validation Matrix
+
+* Use the original release app without `sslpinning disable`, trust-manager replacement or SSL-error hooks. Trigger the same uncached request in each case and observe whether the app receives a response; a server-only `openssl` scan does not test the app's verifier.
+
+| Presented certificate | Isolate this check | Meaningful failure |
+| --- | --- | --- |
+| Proxy certificate from a CA absent from app/device trust | Keep the request host correct; verify the app is not a debug/user-CA-trusting configuration | App completes the sensitive request through an untrusted chain. |
+| Trusted lab chain, SAN for a different hostname | Trust the lab CA through the intended test configuration; keep the app's requested hostname unchanged | App accepts a certificate whose SAN does not match that hostname. |
+| Trusted lab chain with expired/not-yet-valid leaf | Keep hostname valid and device time correct | App accepts the invalid validity period. |
+| Valid trusted chain but different public key | Keep hostname, validity and chain valid; use only for a documented pinned endpoint | App accepts a key outside the active intended pin set. |
+
+* Use a lab proxy/endpoint that can present each certificate; changing only the HTTP `Host` header does not change TLS hostname validation. If pinning rejects a test before hostname/date verification, that result does not independently prove those lower-level checks.
+* **WebView:** navigate to the invalid-certificate endpoint through the real app route and observe `onReceivedSslError`; continuing with no user decision through `proceed()` confirms that path. Do not enable a bypass hook before testing the original behavior.
+* **HTTP fallback:** cause that same HTTPS operation to fail validation and check whether it retries over `http://` with the original authentication/body. A public HTTP redirect alone is not sensitive cleartext fallback.
+
+#### Generate and Present Test Certificates
+
+* **Shared Android/iOS lab, PowerShell 7 + OpenSSL 3 on Windows/Linux/macOS:** run in a new working directory. Replace `lab-api.example.test` with the hostname the app will actually request before generating the files. The recipe creates a valid control and wrong-host/expired/future leaves under the same CA/key, isolating one validation property at a time.
+  * ```powershell
+    New-Item -ItemType Directory -Path tls-lab -ErrorAction Stop | Out-Null
+    Set-Location tls-lab
+    New-Item -ItemType Directory -Path lab-issued | Out-Null
+    [IO.File]::WriteAllText((Join-Path $PWD 'lab-index.txt'), '', [Text.Encoding]::ASCII)
+    [IO.File]::WriteAllText((Join-Path $PWD 'lab-serial.txt'), "1000`n", [Text.Encoding]::ASCII)
+    $configuration = @(
+      '[ca]', 'default_ca=lab', '[lab]', 'database=./lab-index.txt',
+      'new_certs_dir=./lab-issued', 'serial=./lab-serial.txt', 'certificate=./lab-ca.crt',
+      'private_key=./lab-ca.key', 'default_md=sha256', 'default_days=7',
+      'policy=lab_policy', 'unique_subject=no', 'x509_extensions=lab_leaf',
+      '[lab_policy]', 'commonName=supplied', '[lab_leaf]',
+      'basicConstraints=critical,CA:FALSE', 'keyUsage=critical,digitalSignature,keyEncipherment',
+      'extendedKeyUsage=serverAuth', 'subjectAltName=DNS:lab-api.example.test'
+    ) -join "`n"
+    [IO.File]::WriteAllText((Join-Path $PWD 'lab-ca.cnf'), $configuration, [Text.Encoding]::ASCII)
+    [IO.File]::WriteAllText((Join-Path $PWD 'lab-wrong.cnf'),
+      $configuration.Replace('DNS:lab-api.example.test', 'DNS:wrong-host.example.test'), [Text.Encoding]::ASCII)
+    openssl req -x509 -newkey rsa:2048 -noenc -keyout lab-ca.key -out lab-ca.crt -days 30 -subj '/CN=Mobile TLS Lab CA' -addext 'basicConstraints=critical,CA:TRUE' -addext 'keyUsage=critical,keyCertSign,cRLSign'
+    openssl req -new -newkey rsa:2048 -noenc -keyout lab-server.key -out lab-server.csr -subj '/CN=lab-api.example.test'
+    openssl ca -batch -config lab-ca.cnf -in lab-server.csr -out valid.crt -notext
+    openssl ca -batch -config lab-wrong.cnf -in lab-server.csr -out wrong-host.crt -notext
+    $now = [DateTimeOffset]::UtcNow
+    $pastStart = $now.AddDays(-3).ToString('yyMMddHHmmssZ')
+    $pastEnd = $now.AddDays(-1).ToString('yyMMddHHmmssZ')
+    $futureStart = $now.AddDays(1).ToString('yyMMddHHmmssZ')
+    $futureEnd = $now.AddDays(3).ToString('yyMMddHHmmssZ')
+    openssl ca -batch -config lab-ca.cnf -in lab-server.csr -out expired.crt -startdate $pastStart -enddate $pastEnd -notext
+    openssl ca -batch -config lab-ca.cnf -in lab-server.csr -out future.crt -startdate $futureStart -enddate $futureEnd -notext
+    ```
+* **Verify the fixtures (same PowerShell session):** only `valid.crt` should pass for the requested hostname/current time; the other three should fail for hostname or validity, not chain signature.
+  * ```powershell
+    foreach ($leaf in @('valid.crt', 'wrong-host.crt', 'expired.crt', 'future.crt')) {
+      openssl verify -CAfile lab-ca.crt -verify_hostname lab-api.example.test $leaf
+    }
+    ```
+* **Serve one certificate (unchanged in Bash / PowerShell):** use another terminal in `tls-lab`; replace `valid.crt` with one variant per run. `-www` provides a TLS/HTTP control, not a replica of the production API.
+  * ```text
+    openssl s_server -accept 8443 -cert valid.crt -key lab-server.key -www
+    ```
+* **Connect the actual app:** point its real configurable URL/WebView input to `https://lab-api.example.test:8443`, and resolve that name to the device-reachable lab host through test DNS. If the app has a fixed host/port, use matching lab DNS/routing/proxy forwarding; DNS alone does not remap port 443 to 8443. A browser-only connection tests the browser, not the app.
+* **Trust comparison:** first leave `lab-ca.crt` untrusted. For hostname/date isolation, install/allow that CA through the intended test trust path and verify `valid.crt` works before testing the other leaves. Android user-CA policy and iOS full trust still apply. Keep hostname, app request and device time unchanged; do not install the leaves as independent trust anchors.
+* **Observe:** correlate the app's TLS result with the listener handshake/request. An application JSON error after a completed handshake differs from certificate rejection. A pin mismatch may block every lab leaf; it does not independently establish that hostname/date validation was exercised.
+
 <table><thead><tr><th width="122.9998779296875">Implementation</th><th>Identify and Test</th><th>Common Limitation</th></tr></thead><tbody><tr><td>Java/Kotlin with OkHttp</td><td>Locate the actual <code>CertificatePinner</code> class and executing overload; correlate its host argument with the failing domain.</td><td>Versions, obfuscation, shaded packages, and independent SDK clients change hook targets.</td></tr><tr><td>Custom trust manager / Conscrypt</td><td>Inspect the concrete <code>checkServerTrusted</code> implementation and observed call stack.</td><td>An interface hook or generic Conscrypt script is not a universal bypass.</td></tr><tr><td>Network Security Config</td><td>Resolve the manifest's configuration resource, matching domain, trust anchors, and <code>&#x3C;pin-set></code>.</td><td>Configuration presence does not prove every networking stack honors it.</td></tr><tr><td>WebView</td><td>Identify the actual <code>WebViewClient</code> and SSL error path separately.</td><td>Test-only <code>SslErrorHandler.proceed()</code> changes validation, not other app traffic; never treat it as remediation.</td></tr><tr><td>Flutter</td><td>Identify the actual Dart HTTP package/adapter, Cronet client, or platform channel.</td><td><code>libflutter.so</code> does not prove all requests use its native TLS; offsets vary by build/ABI.</td></tr><tr><td>React Native</td><td>Trace JS calls into the executing platform client or custom module.</td><td>OkHttp is common, not guaranteed; Hermes/architecture changes affect analysis.</td></tr><tr><td>Cordova / Ionic</td><td>Separate WebView XHR/fetch from native HTTP plugins such as advanced-http.</td><td>Hooking WebView validation does not necessarily affect a native plugin.</td></tr><tr><td>Unity</td><td>Identify UnityWebRequest, managed HTTP, or a plugin and Mono versus IL2CPP.</td><td>Do not assume OkHttp; managed assembly/IL2CPP tooling must match the build.</td></tr><tr><td>Xamarin / .NET MAUI</td><td>Identify the managed certificate callback and selected native/managed HTTP handler.</td><td>AOT and framework versions affect visibility and hook selection.</td></tr><tr><td>Native TLS / Cronet</td><td>Locate the loaded library and verification path; inspect UDP/QUIC when applicable.</td><td>Java hooks may miss it; use build-specific native analysis, not copied offsets.</td></tr></tbody></table>
 
 ## Protocol and Endpoint Checks

@@ -58,11 +58,38 @@
 2. Compare the original, a rebuilt/re-signed control with no intended logic change, and the targeted patch. Packaging/resource/signature problems  must be separated from anti-tampering.
 3. Trace the actual certificate comparison. Older code may use `GET_SIGNATURES` / `PackageInfo.signatures`; newer code uses `GET_SIGNING_CERTIFICATES` / `signingInfo`. Key rotation and multiple signers affect the comparison.
 4. Confirm whether the app exits locally, hides a feature, or receives a server rejection. A UI change does not bypass backend attestation.
-5. For Play Integrity, assess server verification, expected app identity, freshness/replay controls, and binding to the intended request/session. Standard and classic request flows differ; evaluate the implemented flow, not just a client Boolean.
+5. Test the actual backend integrity consumer using the matrix below; a local Boolean does not represent the backend verdict.
 
 * Android normally rejects updates signed with unrelated keys; `adb install -r` does not bypass this check.
 * Uninstalling may remove data and keys.
 * Re-signing can legitimately change app identity, signature permissions, App Links, and backend integrations.
+
+## Play Integrity: Backend Binding and Replay
+
+* **Baseline:** identify the actual integrity token field/header and protected action. Obtain a genuine token while performing action A; keep its request, session and action identifiers together. Use the existing [JSON request replay command](authentication-and-cryptography.md#protected-api-and-refresh-requests), not a fabricated Google decode response.
+* **Missing/invalid token inputs:** remove the field, then try these values independently with an otherwise valid protected request.
+  * ```json
+    {"integrityToken":""}
+    ```
+  * ```json
+    {"integrityToken":"not-an-integrity-token"}
+    ```
+* **Binding body template:** replace names with the captured schema. Keep A's genuine token while changing only the protected order/object or amount to the B test transaction.
+  * ```json
+    {"orderId":"REPLACE_B_TEST_ORDER","amount":1,"integrityToken":"REPLACE_GENUINE_TOKEN_FOR_A"}
+    ```
+
+| Variant | Request mutation | Confirm |
+| --- | --- | --- |
+| Content binding | Change amount/object after token issuance; retain original token | Protected action succeeds although the decoded `requestHash` or classic challenge is not bound to that action. |
+| Session binding | Submit A's token using B's session and B's test action | A token minted for another intended session/action is accepted contrary to the binding contract. |
+| Replay | Resend the exact token/request after the first committed one-time action | A second forbidden state change commits; repeated reads or idempotent acknowledgements do not establish this. |
+| Freshness | Delay submission beyond the server's allowed age; use a fresh control separately | A stale token still authorizes a freshness-sensitive operation. |
+| Verdict enforcement | Use owner-configured test responses for failed/unrecognized app/device verdicts | The protected backend action proceeds despite a verdict the policy is intended to reject. |
+
+* **Standard requests:** the backend must compare the verified `requestDetails.requestHash` with its own canonical action data. Editing a client-supplied `requestHash` field is not a valid signature forgery; test whether the server recomputes rather than trusts that echo. Google's automatic replay protection may produce cleared verdicts on repeated decoding; check how the backend handles that result.
+* **Classic requests:** start separate server challenges for A/B, submit the genuine token for challenge A to B, then reuse A's consumed challenge. Validate the server-issued nonce, intended session/action, age and consumption policy.
+* **Confirm the flaw:** record the committed action with the invalid/mismatched verified input. A successful Google token decode alone proves neither app authorization nor correct backend binding. Expected package/signing/version and verdict policies require backend verification or owner-configured tests; they cannot be demonstrated by editing the opaque token text.
 
 ## Framework-Specific Defense Leads
 

@@ -21,3 +21,13 @@
 * [ ] Trace value use/impact; public identifiers are not automatically secrets.
 * [ ] Review plist/`NSUserDefaults`, SQLite/Core Data, Keychain, logs, caches, and backups.
 * [ ] Confirm storage behavior during [dynamic testing](../dynamic-testing/data-storage-and-privacy.md).
+
+## Search Result to Test
+
+| Static result | Concrete runtime check | Confirm |
+| --- | --- | --- |
+| ATS exception / custom trust code | [Certificate variants](../dynamic-testing/traffic-analysis-and-tls.md#original-app-tls-negative-tests) | Original app accepts an invalid certificate or sends the sensitive operation over HTTP. |
+| File protection selector / stored marker | [File attribute/read probe](../dynamic-testing/data-storage-and-privacy.md#file-protection-attribute-and-read-probe) | Fresh read works in a device state prohibited by the file's required protection. |
+| Keychain accessibility/access control | [No-prompt item query](../dynamic-testing/data-storage-and-privacy.md#keychain-query-one-item-without-a-prompt) | The actual item or protected key operation is usable without required authentication. |
+| URL scheme / WebView handler | [Route and bridge payloads](../dynamic-testing/client-side-testing.md) | External input reaches protected data/native behavior, not just a screen. |
+| Embedded token/key | [API identity/ownership comparisons](../dynamic-testing/traffic-analysis-and-tls.md#captured-request-replay) | Extracted credential grants unintended protected access; public SDK identifiers may be expected. |

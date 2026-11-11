@@ -96,14 +96,53 @@
 
 <table><thead><tr><th width="143.0001220703125">Lead</th><th>Inspect / Test</th><th>Interpretation</th></tr></thead><tbody><tr><td>ELF hardening</td><td>Executable stack/segments, relocation protections, stack guards, compiler defenses</td><td>Interpret PIE/shared-object and symbol evidence correctly. Missing hardening raises exploitability concerns but is not proof of a memory-corruption bug.</td></tr><tr><td>Unsafe C/C++ operations</td><td>Copies, length arithmetic, formatting strings, allocation/free lifetime</td><td>Trace externally controlled buffers/lengths to the actual native function. Imports alone are insufficient.</td></tr><tr><td>JNI boundary</td><td>Byte-array lengths, string encoding, object/reference lifetime, exceptions, thread attachment</td><td>Match the real signature and marshaling path; JNI names may be dynamically registered.</td></tr><tr><td>Library search/loading</td><td><code>dlopen</code>, <code>System.load</code>, extracted/downloaded libraries, writable directories</td><td>Prove control of the loaded path or contents; verify authenticity and rollback checks.</td></tr><tr><td>Native secrets / debug material</td><td>Symbols, embedded keys, debug paths, logs, signing routines</td><td>Debug symbols aid analysis but are not automatically a disclosure finding; establish exposed information or authority.</td></tr></tbody></table>
 
-* **Fuzzing prerequisites:** authorization, isolated parser/JNI entry point, reproducible harness, small seed corpus, time/memory limits, and disposable data.
-* With source, prefer an existing engine such as libFuzzer and a compatible NDK/sanitizer build.
-* **Existing libFuzzer harness on a matching test device:** use the built executable and its known corpus; this is not a harness generator for arbitrary JNI methods.
-    * ```bash
-        adb push '<parser-fuzzer>' /data/local/tmp/parser-fuzzer
-        adb push '<seed-corpus-directory>' /data/local/tmp/parser-corpus
-        adb shell chmod 755 /data/local/tmp/parser-fuzzer
-        adb shell /data/local/tmp/parser-fuzzer /data/local/tmp/parser-corpus -runs=100 -max_len=4096 -timeout=2 -rss_limit_mb=256
+### Build a Parser Harness
+
+* **Input:** parser source and a known valid record. Isolate a byte-buffer adapter with the real ownership/initialization contract; the example assumes `extern "C" int parse_record(const uint8_t*, size_t)` in `parser.cpp`. Replace that declaration/call with the actual API. A JNI method expecting `JNIEnv*`/Java objects cannot be called with a guessed byte-buffer signature.
+* **`harness.cpp`:** libFuzzer supplies input generation and crash reproduction; the harness invokes the actual parser and preserves its normal rejection behavior.
+    * ```cpp
+        #include <cstddef>
+        #include <cstdint>
+
+        extern "C" int parse_record(const uint8_t* data, size_t length);
+
+        extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t length) {
+                if (length > 4096) return 0;
+                parse_record(data, length);
+                return 0;
+        }
         ```
+* **Linux host + installed Android NDK, ARM64 Android API 26+:** set `ANDROID_NDK_HOME` to the actual NDK root. Compile the parser itself with sanitizer/coverage instrumentation; merely linking an uninstrumented vendor `.so` limits what ASan/libFuzzer can observe.
+    * ```bash
+        CXX="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+        "$CXX" --target=aarch64-linux-android26 -g -O1 -fno-omit-frame-pointer -fsanitize=fuzzer,address -static-libstdc++ harness.cpp parser.cpp -o parser-fuzzer
+        RESOURCE_DIR="$("$CXX" -print-resource-dir)"
+        adb push "$RESOURCE_DIR/lib/linux/libclang_rt.asan-aarch64-android.so" /data/local/tmp/
+        mkdir -p seed-corpus
+        cp known-valid-record.bin seed-corpus/seed
+        ```
+* **Windows PowerShell + installed NDK equivalent:**
+    * ```powershell
+        $compiler = Join-Path $env:ANDROID_NDK_HOME 'toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe'
+        & $compiler --target=aarch64-linux-android26 -g -O1 -fno-omit-frame-pointer '-fsanitize=fuzzer,address' -static-libstdc++ harness.cpp parser.cpp -o parser-fuzzer
+        $resourceDirectory = & $compiler -print-resource-dir
+        adb push (Join-Path $resourceDirectory 'lib/linux/libclang_rt.asan-aarch64-android.so') /data/local/tmp/
+        New-Item -ItemType Directory -Path seed-corpus -Force | Out-Null
+        Copy-Item known-valid-record.bin seed-corpus/seed
+        ```
+* **Device run, same commands on Linux / Windows:** match the device ABI and API; ASan runtime locations depend on the selected NDK, so verify that the generated runtime path exists. For macOS hosts select the NDK's `darwin-x86_64` prebuilt directory instead.
+    * ```text
+        adb push parser-fuzzer /data/local/tmp/parser-fuzzer
+        adb push seed-corpus /data/local/tmp/parser-corpus
+        adb shell chmod 755 /data/local/tmp/parser-fuzzer
+        adb shell "cd /data/local/tmp && LD_LIBRARY_PATH=/data/local/tmp ASAN_OPTIONS=detect_leaks=0 ./parser-fuzzer parser-corpus -runs=100 -max_len=4096 -timeout=2 -rss_limit_mb=256 -artifact_prefix=/data/local/tmp/"
+        ```
+* **Reproduce one artifact:** pull the emitted `crash-*`/`timeout-*` filename, keep it under a stable test name, then run that single input through the same build. A name is emitted only if a failure occurs.
+    * ```text
+        adb pull /data/local/tmp/REPLACE_EMITTED_ARTIFACT ./reproducer.bin
+        adb push reproducer.bin /data/local/tmp/reproducer.bin
+        adb shell "cd /data/local/tmp && LD_LIBRARY_PATH=/data/local/tmp ASAN_OPTIONS=detect_leaks=0 ./parser-fuzzer reproducer.bin -runs=1"
+        ```
+* **Confirm:** the same input produces the same sanitizer fault in the actual parser. A deliberate parser error, missing runtime/library, bad adapter ABI or harness crash before parsing is not a target memory-corruption finding. Binary-only/JNI-only targets need a compatible initialized runtime harness; this source adapter is not a universal `.so` fuzzer.
 * Preserve crashing input, build/ABI, sanitizer/tombstone details, and a minimized reproducer.
 * Distinguish harness errors, normal parse rejection, local denial of service, and exploitable corruption.

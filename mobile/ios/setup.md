@@ -3,7 +3,7 @@
 ## Host Tools
 
 * macOS + Xcode/Command Line Tools for Apple binary tools; full Xcode for development/signing and the source-built VM workflow.
-* [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) - automated static analysis.
+* [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) - automated static analysis. iOS dynamic-analysis availability depends on the selected MobSF release, supported device/service and environment; check its current documentation rather than assuming Android dynamic workflows also work on iOS. Use the Frida/Objection and proxy recipes here when that integration is unavailable.
 * `otool` and [MachOView](https://sourceforge.net/projects/machoview/) - inspect Mach-O headers, load commands, and symbols. `otool` is provided by Xcode/Apple Command Line Tools.
 * [class-dump](http://stevenygard.com/projects/class-dump/) - Objective-C interfaces. Legacy `class-dump-z` is not automatically interchangeable.
 * [Hopper](https://www.hopperapp.com/), [Ghidra](https://github.com/NationalSecurityAgency/ghidra/), and [IDA Free](https://hex-rays.com/ida-free) - disassembly and reverse engineering.
@@ -255,6 +255,7 @@
     objection --help
     objection start --help
     ```
+  * Use the host `frida --version` printed above to select the matching server release; `frida-tools` and Objection have separate version numbers.
 * Install the same exact server version through Sileo or Frida releases. Server architecture/bootstrap must match the guest/device.
 * **Matching 17.9.0 server, in the VM's SSH session:**
   * ```bash
