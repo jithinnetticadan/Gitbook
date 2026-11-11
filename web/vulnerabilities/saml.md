@@ -20,7 +20,7 @@
 
 ## Quick Test Order
 
-* [Signature Validation](#signature-validation) -> [Certificate Trust](#certificate-trust) -> [XML Signature Wrapping](#xml-signature-wrapping) -> [Replay and Request Correlation](#replay-and-request-correlation) -> [Audience, Recipient, and Time](#audience-recipient-and-time) -> [Identity and Tenant Mapping](#identity-and-tenant-mapping) -> [RelayState and Login CSRF](#relaystate-and-login-csrf) -> [XML Parser Tests](#xml-parser-tests).
+* [Signature Validation](saml.md#signature-validation) -> [Certificate Trust](saml.md#certificate-trust) -> [XML Signature Wrapping](saml.md#xml-signature-wrapping) -> [Replay and Request Correlation](saml.md#replay-and-request-correlation) -> [Audience, Recipient, and Time](saml.md#audience-recipient-and-time) -> [Identity and Tenant Mapping](saml.md#identity-and-tenant-mapping) -> [RelayState and Login CSRF](saml.md#relaystate-and-login-csrf) -> [XML Parser Tests](saml.md#xml-parser-tests).
 * **Result check for every login test:** use a session without an existing SP login, then check the resulting account ID, tenant & one protected operation. An ACS `200`, redirect, or unchanged logged-in page alone does not demonstrate acceptance.
 * **Signature dependency:** modifying a signed claim invalidates its digest. For semantic tests such as audience/time validation, use a test IdP trusted by the SP to issue the variant, or an exposed unsigned field. Rejection at signature verification does not establish that the semantic check works.
 
@@ -28,11 +28,11 @@
 
 * **SAML Raider (Burp extension)** -> Install from `Extensions` -> `BApp Store` -> `SAML Raider`. Its message editor decodes supported bindings, removes signatures, signs assertions/messages, inserts XSW variants & generates XXE/XSLT payloads. Its certificate manager creates/clones certificates and imports certificates/private keys.
 * **Fast XSW run:** start each variant from the original response, not the previous mutated result. Configure the XSW match/replace mapping with the exact original `NameID` or consumed attribute text and the test identity/role. Select `XSW1` through `XSW8` as applicable and apply the variant. Inspect which copy changed before submitting; without an identity change, an accepted wrapper does not demonstrate impersonation.
-* **Signature exclusion:** use Raider's signature removal actions, then change the consumed identity. See [Signature Validation](#signature-validation) for response/assertion/both variants.
-* **Certificate substitution:** create/clone a certificate with a key you control, change the identity, then sign the assertion/message with that key. Cloning the public certificate alone does not reproduce the IdP's private key. See [Certificate Trust](#certificate-trust).
+* **Signature exclusion:** use Raider's signature removal actions, then change the consumed identity. See [Signature Validation](saml.md#signature-validation) for response/assertion/both variants.
+* **Certificate substitution:** create/clone a certificate with a key you control, change the identity, then sign the assertion/message with that key. Cloning the public certificate alone does not reproduce the IdP's private key. See [Certificate Trust](saml.md#certificate-trust).
 * **Burp Comparer** -> Compare the decoded original/mutated XML to locate the moved signed element, changed IDs & unsigned identity. Compare resulting sessions/account identifiers separately; matching HTTP status codes do not establish the same authentication result.
 * **SAML-tracer (browser extension, optional)** -> Inspect decoded SAML messages and browser flow transitions; useful for checking the SP/IdP/ACS relationship. It is not a signature-bypass or XSW generation tool.
-* **XXE/XSLT generation:** Raider includes these payload actions, but choose the parser-specific test rather than running every action blindly. Use raw mode for [XXE](#external-entity-resolution) so the extension does not parse/rewrite the payload first.
+* **XXE/XSLT generation:** Raider includes these payload actions, but choose the parser-specific test rather than running every action blindly. Use raw mode for [XXE](saml.md#external-entity-resolution) so the extension does not parse/rewrite the payload first.
 * **Repeatability:** if the previous attempt consumed the assertion/request ID, use a fresh equivalent response for the next variant. Otherwise replay protection or expiry can mask whether the wrapping mutation worked.
 
 ## Signature Validation
@@ -55,7 +55,7 @@
 
 * **Embedded certificate substitution:** generate a key/certificate, change A's identity to B, sign the changed assertion/response with that key, and embed the certificate in `ds:KeyInfo/ds:X509Data/ds:X509Certificate`. Re-sign each required layer, assertion first if the response also signs it.
 * **OpenSSL 3.x installed; same commands on Linux Bash / Windows PowerShell:**
-  * ```text
+  * ```
     openssl req -x509 -newkey rsa:2048 -keyout saml-test.key -out saml-test.crt -sha256 -days 7 -noenc -subj "/CN=saml-test"
     openssl pkey -in saml-test.key -traditional -out saml-test-rsa.key
     ```
@@ -69,16 +69,7 @@
 * **Pick the signed layer:** `XSW1`/`XSW2` target response signatures; `XSW3`-`XSW8` target assertion signatures. If both layers are signed, an outer signature can reject an otherwise applicable assertion-wrapping mutation.
 * **SAML Raider variants:** these numbers identify the extension's implementations, not an exhaustive taxonomy of all wrapping attacks. "Original" below means the original identity content retained as the signature reference target; in some variants the signature element is relocated outside that target.
 
-| Variant | Baseline | Structure generated / identity to change |
-| --- | --- | --- |
-| `XSW1` | Response signed | Original response content is nested inside the outer `Signature`; outer response gets a new ID and the modified identity. The reference still targets the nested original response ID. |
-| `XSW2` | Response signed | Original response content is inserted before the outer `Signature`; outer response gets a new ID and the modified identity. Tests nested-response selection versus signature reference resolution. |
-| `XSW3` | Assertion signed | Unsigned modified assertion with a new ID is inserted before the original signed assertion. Tests first-assertion selection. |
-| `XSW4` | Assertion signed | Original signed assertion is moved inside an unsigned modified assertion with a new ID. Tests outer assertion consumption versus nested signature validation. |
-| `XSW5` | Assertion signed | Original assertion content, without its signature child, is appended after the modified assertion. The signature remains on the modified assertion, which gets a new ID, but references the original content's ID. |
-| `XSW6` | Assertion signed | Original assertion content, without its signature child, is placed inside the modified assertion's `Signature`. Modified assertion gets a new ID; the reference targets the nested original content. |
-| `XSW7` | Assertion signed | Unsigned modified assertion is placed in an `Extensions` wrapper before the original signed assertion. The generated clone retains the original ID, also probing duplicate-ID resolution. |
-| `XSW8` | Assertion signed | Original assertion content, without its signature child, is placed in an `Object` wrapper inside the modified assertion's `Signature`. The generated copies retain the same ID, probing duplicate-ID resolution and signature-object traversal. |
+<table><thead><tr><th width="76">Variant</th><th width="101">Baseline</th><th>Structure generated / identity to change</th></tr></thead><tbody><tr><td><code>XSW1</code></td><td>Response signed</td><td>Original response content is nested inside the outer <code>Signature</code>; outer response gets a new ID and the modified identity. The reference still targets the nested original response ID.</td></tr><tr><td><code>XSW2</code></td><td>Response signed</td><td>Original response content is inserted before the outer <code>Signature</code>; outer response gets a new ID and the modified identity. Tests nested-response selection versus signature reference resolution.</td></tr><tr><td><code>XSW3</code></td><td>Assertion signed</td><td>Unsigned modified assertion with a new ID is inserted before the original signed assertion. Tests first-assertion selection.</td></tr><tr><td><code>XSW4</code></td><td>Assertion signed</td><td>Original signed assertion is moved inside an unsigned modified assertion with a new ID. Tests outer assertion consumption versus nested signature validation.</td></tr><tr><td><code>XSW5</code></td><td>Assertion signed</td><td>Original assertion content, without its signature child, is appended after the modified assertion. The signature remains on the modified assertion, which gets a new ID, but references the original content's ID.</td></tr><tr><td><code>XSW6</code></td><td>Assertion signed</td><td>Original assertion content, without its signature child, is placed inside the modified assertion's <code>Signature</code>. Modified assertion gets a new ID; the reference targets the nested original content.</td></tr><tr><td><code>XSW7</code></td><td>Assertion signed</td><td>Unsigned modified assertion is placed in an <code>Extensions</code> wrapper before the original signed assertion. The generated clone retains the original ID, also probing duplicate-ID resolution.</td></tr><tr><td><code>XSW8</code></td><td>Assertion signed</td><td>Original assertion content, without its signature child, is placed in an <code>Object</code> wrapper inside the modified assertion's <code>Signature</code>. The generated copies retain the same ID, probing duplicate-ID resolution and signature-object traversal.</td></tr></tbody></table>
 
 * **Assertion-signed baseline:** retain the original signed assertion unchanged with its original ID and signature reference. Add a second, unsigned assertion with a new ID and B's identity. Try it before and after the signed assertion; then test the nesting/wrapper variants above.
 * **Generate all eight payloads from a real response (PowerShell 7, Windows / Linux):** save the decoded original as `response.xml`; change the two identity values below. The generator changes exact matches in `NameID` and email attributes; replace the email attribute name in the XPath with the actual consumed attribute name if different. No IdP private key is needed for wrapping.
@@ -174,7 +165,7 @@
 * **Response-signed baseline:** adding children normally breaks the response signature. Use wrapping variants that retain the referenced signed response subtree while exposing a separate application-consumed node; do not treat a broken outer signature as a working XSW PoC.
 * **ID confusion:** duplicate an assertion's `ID` on a second assertion, then reverse element order. Separately test alternate parser-recognized ID attributes such as `xml:id`. Preserve the original signed subtree; some variants will fail schema/signature validation and are parser-dependent.
 * **Wrapper/namespace variants:** inspect generated `Extensions`/`Object` namespaces and try schema-appropriate `samlp:Extensions` / `ds:Object` placements where relevant. These are structural mutations, not interchangeable tags; namespace changes and moved ancestor context can change canonicalization and break the digest.
-* **Duplicate attributes are a separate parser/mapping test:** see [Identity and Tenant Mapping](#identity-and-tenant-mapping). They become XSW only when the consumed identity is outside the content actually protected by the validated signature.
+* **Duplicate attributes are a separate parser/mapping test:** see [Identity and Tenant Mapping](saml.md#identity-and-tenant-mapping). They become XSW only when the consumed identity is outside the content actually protected by the validated signature.
 * **Confirm:** the signature still validates for A's original element, but the SP session or authorization uses B's unsigned identity/role. An XML error or a second assertion ignored by the SP is not a bypass.
 
 ## Replay and Request Correlation
@@ -183,7 +174,7 @@
 * **Cross-session response:** start SP login transactions A and B in separate browser sessions. Deliver A's unused response to B's callback transaction without changing the signed XML. Keep B's flow cookie/RelayState, then try A's RelayState separately.
 * **Correlation fields:** with a trusted test IdP, issue separate responses with missing, random, already-consumed, or other-session `InResponseTo`. Test both the response and bearer `SubjectConfirmationData` fields; one correct field may mask an unchecked second field.
 * **Request ID examples:** replace the real request ID with each value in independently signed variants.
-  * ```text
+  * ```
     _nonexistent-request
     _already-consumed-request
     _request-from-session-b
@@ -216,7 +207,7 @@
     </saml:AudienceRestriction>
     ```
 * **Destination/Recipient:** test the wrong ACS host, wrong tenant ACS path, HTTP instead of HTTPS, and missing values independently. Include the `Destination` on the response and `Recipient` on bearer `SubjectConfirmationData`.
-  * ```text
+  * ```
     https://other-sp.example/saml/acs
     https://sp.example/tenant-b/saml/acs
     http://sp.example/saml/acs
@@ -262,7 +253,7 @@
 ### RelayState Redirects
 
 * Replace only `RelayState` in a valid ACS submission; test each candidate separately. If the application uses opaque state rather than a URL, swap state values between transactions instead of assuming URL interpretation.
-  * ```text
+  * ```
     https://callback.example/saml-relay-probe
     //callback.example/saml-relay-probe
     https://sp.example@callback.example/saml-relay-probe
