@@ -147,7 +147,6 @@
     frida-ps -Uai
     fridump3 -u -s -o ./memory-capture "<running-process-name>"
     ```
-* **Linux Bash:** `grep -RniF '<test-marker>' './memory-capture'`. **Windows PowerShell:** `Get-ChildItem './memory-capture' -Recurse -File | Select-String -SimpleMatch '<test-marker>'`.
 {% endtab %}
 {% tab title="Grapefruit" %}
 * **Host terminal:** start the installed interface and select the running app.
@@ -156,6 +155,21 @@
     igf
     ```
 * Use the memory scanner to search the marker in the selected process and inspect the matching region.
+{% endtab %}
+{% endtabs %}
+
+* **Search a Fridump3 capture for the test marker:**
+
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  grep -RniF '<test-marker>' './memory-capture'
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  Get-ChildItem './memory-capture' -Recurse -File | Select-String -SimpleMatch '<test-marker>'
+  ```
 {% endtab %}
 {% endtabs %}
 

@@ -22,13 +22,25 @@
 
 ## Logs
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb logcat -c
-  adb logcat | grep '&#x3C;search-term>'
-  adb shell pidof &#x3C;package-name>
-  adb logcat --pid=&#x3C;pid-from-previous-command>
-  </code></pre>
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  adb logcat -c
+  adb logcat | grep '<search-term>'
+  adb shell pidof '<package-name>'
+  adb logcat --pid='<pid-from-previous-command>'
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  adb logcat -c
+  adb logcat | Select-String -SimpleMatch '<search-term>'
+  adb shell pidof '<package-name>'
+  adb logcat --pid='<pid-from-previous-command>'
+  ```
+{% endtab %}
+{% endtabs %}
 * Refresh PID after app restart; avoid brittle `ps | awk | grep` filters.
-* Windows: use `findstr` or Android Studio Logcat.
 
 ## Follow Sensitive Data Through Its Lifecycle
 
@@ -44,14 +56,12 @@
 
 {% tabs %}
 {% tab title="ADB run-as" %}
-* **Debuggable app, host Bash:** confirm `run-as` identity, inspect one file, or export the private directory as a binary tar stream.
+* **Debuggable app:** confirm `run-as` identity and inspect one file. These ADB shell commands are the same on Linux and Windows.
   * ```bash
     adb shell run-as '<package-name>' id
     adb shell run-as '<package-name>' ls -la
     adb shell run-as '<package-name>' cat 'shared_prefs/<preferences-file>.xml'
-    adb exec-out run-as '<package-name>' tar -cf - . > app-data.tar
     ```
-* **Windows PowerShell:** inspect text with the same `adb shell run-as` commands above. For binary `adb exec-out` redirection use PowerShell 7.4+; earlier versions can use `cmd.exe /c` for the binary stream.
 {% endtab %}
 
 {% tab title="ADB root" %}
@@ -105,12 +115,44 @@
 {% endtab %}
 {% endtabs %}
 
-* Extract each app state into a separate host directory and compare the same paths; close/quiesce database writers before acquisition.
-  * ```bash
-    mkdir -p before
-    tar -xf app-data.tar -C before
-    diff -ru before after
+* Export a debuggable app's private directory as a binary tar stream:
+
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  adb exec-out run-as '<package-name>' tar -cf - . > app-data.tar
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* **PowerShell 7.4+:** native output redirection preserves the binary stream.
+  * ```powershell
+    adb exec-out run-as '<package-name>' tar -cf - . > app-data.tar
     ```
+{% endtab %}
+{% endtabs %}
+
+* Extract each app state into a separate host directory and compare the same paths; close/quiesce database writers before acquisition.
+
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  mkdir -p before
+  tar -xf app-data.tar -C before
+  diff -ru before after
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  New-Item -ItemType Directory -Path './before' -Force | Out-Null
+  tar.exe -xf app-data.tar -C './before'
+  $beforeRoot = (Resolve-Path './before').Path
+  $afterRoot = (Resolve-Path './after').Path
+  $beforeFiles = Get-ChildItem $beforeRoot -Recurse -File | ForEach-Object { [pscustomobject]@{ Path = $_.FullName.Substring($beforeRoot.Length); Hash = (Get-FileHash -LiteralPath $_.FullName).Hash } }
+  $afterFiles = Get-ChildItem $afterRoot -Recurse -File | ForEach-Object { [pscustomobject]@{ Path = $_.FullName.Substring($afterRoot.Length); Hash = (Get-FileHash -LiteralPath $_.FullName).Hash } }
+  Compare-Object $beforeFiles $afterFiles -Property Path, Hash
+  ```
+{% endtab %}
+{% endtabs %}
 
 1. Resolve the correct user/profile and paths using `env`, package details, or Device File Explorer. `/data/data` is commonly an alias for user 0; do not assume that user for every installation.
 2. Prefer an app-supported SQLite snapshot/backup or quiesce the app before copying. A live database copied without its matching `-wal` and `-shm` files can be incomplete/inconsistent.

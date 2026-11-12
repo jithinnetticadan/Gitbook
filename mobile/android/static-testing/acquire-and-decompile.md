@@ -20,25 +20,27 @@
 
 {% tabs %}
 {% tab title="JADX" %}
-* **Linux Bash / Windows PowerShell:** open the APK and search its classes, manifest and resources.
+* **Linux / Windows, same command:** open the APK and search its classes, manifest and resources.
   * ```text
     jadx-gui '<app.apk>'
     ```
 * Follow the observed class/caller into the code deciding the relevant security check. Decompiled Java/Kotlin-like output may differ from the actual bytecode.
 {% endtab %}
 {% tab title="Apktool" %}
-* **Linux Bash / Windows PowerShell:** decode resources and SMALI into the path used by the static searches and patching recipes.
+* **Linux / Windows, same command:** decode resources and SMALI into the path used by the static searches and patching recipes.
   * ```text
     apktool d '<app.apk>' -o '<decoded-directory>'
     ```
 * Inspect `AndroidManifest.xml`, `res/`, `assets/` and all `smali*` directories; this is not Java decompilation.
 {% endtab %}
-{% tab title="dex2jar + JD-GUI" %}
-* **Linux Bash:** convert the APK's DEX and open the resulting JAR in JD-GUI.
+{% tab title="Linux" %}
+* Convert the APK's DEX and open the resulting JAR in JD-GUI.
   * ```text
     d2j-dex2jar.sh '<app.apk>'
     ```
-* **Windows PowerShell:**
+* This converts DEX to Java bytecode, not original source. Resource/SMALI checks still need the appropriate decoded artifacts.
+{% endtab %}
+{% tab title="Windows" %}
   * ```powershell
     .\d2j-dex2jar.bat '<app.apk>'
     ```

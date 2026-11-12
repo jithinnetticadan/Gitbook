@@ -2,12 +2,28 @@
 
 ## Cryptography Patterns
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rnE 'Cipher\.getInstance\("(DES|DESede|RC4|ARCFOUR|Blowfish|AES/ECB|AES")' &#x3C;decompiled-directory>
-  grep -rnE 'MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' &#x3C;decompiled-directory>
-  grep -rnE 'byte\[\] *(key|iv)[A-Za-z0-9_]* *=|IvParameterSpec\(|SecretKeySpec\(' &#x3C;decompiled-directory>
-  grep -rn 'new Random(' &#x3C;decompiled-directory>
-  grep -rn 'PBEKeySpec\|PBKDF2\|SecretKeyFactory' &#x3C;decompiled-directory>
-  </code></pre>
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  grep -rnE 'Cipher\.getInstance\("(DES|DESede|RC4|ARCFOUR|Blowfish|AES/ECB|AES")' '<decompiled-directory>'
+  grep -rnE 'MessageDigest\.getInstance\("(MD5|SHA-?1)"\)' '<decompiled-directory>'
+  grep -rnE 'byte\[\] *(key|iv)[A-Za-z0-9_]* *=|IvParameterSpec\(|SecretKeySpec\(' '<decompiled-directory>'
+  grep -rn 'new Random(' '<decompiled-directory>'
+  grep -rn 'PBEKeySpec\|PBKDF2\|SecretKeyFactory' '<decompiled-directory>'
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  $patterns = @('Cipher\.getInstance|MessageDigest\.getInstance|IvParameterSpec|SecretKeySpec|new Random\(|PBEKeySpec|PBKDF2|SecretKeyFactory',
+    'checkServerTrusted|ALLOW_ALL_HOSTNAME_VERIFIER|HostnameVerifier|onReceivedSslError|CertificatePinner',
+    'http://|cleartextTrafficPermitted|<pin-set')
+  Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt,*.xml |
+    Select-String -Pattern $patterns
+  Get-ChildItem -LiteralPath '<decoded-directory>/res/xml' -Recurse -File -Filter '*.xml' |
+    Select-String -Pattern 'cleartextTrafficPermitted|<pin-set'
+  ```
+{% endtab %}
+{% endtabs %}
 * Plain `Cipher.getInstance("AES")` commonly defaults to ECB on Android; ECB leaks structure and has no IV.
 * MD5/SHA-1 are weak for passwords and signatures; they may be acceptable for non-security checksums.
 * Embedded secret keys are recoverable; prefer suitable Keystore-backed keys. IVs/nonces need not be secret, but must meet the algorithm's unpredictability/uniqueness requirements.
@@ -15,15 +31,28 @@
 
 ## TLS,  Cleartext Patterns & Certificate Pinning
 
-* Search: `grep -R -n 'SecretKeySpec' <decompiled-directory>`; also inspect `SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER` and `java.util.Random`.
+* Inspect `SecretKeySpec`, `SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER`, and `java.util.Random` alongside the TLS candidates in the search below.
 * `SecretKeySpec` is not inherently weak; check algorithm, key source, mode, IV/nonce, and use.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rn -A4 'checkServerTrusted' &#x3C;decompiled-directory>
-  grep -rn 'ALLOW_ALL_HOSTNAME_VERIFIER\|HostnameVerifier' &#x3C;decompiled-directory>
-  grep -rn -A3 'onReceivedSslError' &#x3C;decompiled-directory> | grep 'proceed()'
-  grep -rn 'CertificatePinner' &#x3C;decompiled-directory>
-  grep -rn '"http://' &#x3C;decompiled-directory> | grep -v 'schemas.android.com\|w3.org'
-  grep -rniE 'cleartextTrafficPermitted|&#x3C;pin-set' &#x3C;decoded-directory>/res/xml/
-  </code></pre>
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  grep -rn -A4 'checkServerTrusted' '<decompiled-directory>'
+  grep -rn 'ALLOW_ALL_HOSTNAME_VERIFIER\|HostnameVerifier' '<decompiled-directory>'
+  grep -rn -A3 'onReceivedSslError' '<decompiled-directory>' | grep 'proceed()'
+  grep -rn 'CertificatePinner' '<decompiled-directory>'
+  grep -rn '"http://' '<decompiled-directory>' | grep -v 'schemas.android.com\|w3.org'
+  grep -rniE 'cleartextTrafficPermitted|<pin-set' '<decoded-directory>/res/xml/'
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  $source = Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt,*.xml
+  Select-String -LiteralPath $source.FullName -Pattern 'checkServerTrusted|ALLOW_ALL_HOSTNAME_VERIFIER|HostnameVerifier|onReceivedSslError|CertificatePinner|"http://' -Context 0,4
+  Get-ChildItem -LiteralPath '<decoded-directory>/res/xml' -Recurse -File -Filter '*.xml' |
+    Select-String -Pattern 'cleartextTrafficPermitted|<pin-set'
+  ```
+{% endtab %}
+{% endtabs %}
 * An empty `checkServerTrusted()`, an allow-all hostname verifier, or a WebView calling `proceed()` on SSL errors is a lead. Establish which validation is bypassed, whether that implementation is used for sensitive traffic, and the attacker/impact before treating it as exploitable.
 * Missing certificate pinning is a hardening gap, not automatically a vulnerability. Check `CertificatePinner`, `<pin-set>`, and custom trust managers.
 * Inspect `usesCleartextTraffic`, per-domain/base `cleartextTrafficPermitted`, and `http://` endpoints.
@@ -59,13 +88,5 @@
 | Keystore / StrongBox               | Key purposes, exportability, authentication policy, verified security level                         | Missing StrongBox is not automatically a finding; evaluate the required protection and device support.                                                               |
 
 * Validate findings with [runtime cryptographic data-flow testing](../dynamic-testing/authentication-and-cryptography.md#trace-cryptographic-data-flow).
-* **Windows PowerShell, cryptography/TLS candidate search:**
-  * ```powershell
-    $patterns = @('Cipher\.getInstance|MessageDigest\.getInstance|IvParameterSpec|SecretKeySpec|new Random\(|PBEKeySpec|PBKDF2|SecretKeyFactory',
-      'checkServerTrusted|ALLOW_ALL_HOSTNAME_VERIFIER|HostnameVerifier|onReceivedSslError|CertificatePinner',
-      'http://|cleartextTrafficPermitted|<pin-set')
-    Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt,*.xml |
-      Select-String -Pattern $patterns
-    ```
 * **Follow-through:** use the runtime hook's encryption-only key/IV comparison for GCM/CTR nonce reuse, ciphertext mutation for integrity, and actual [TLS validation comparisons](../dynamic-testing/network-traffic-and-tls.md) for permissive trust code. A search result is the entry point, not the completed test.
 * Reference: [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).

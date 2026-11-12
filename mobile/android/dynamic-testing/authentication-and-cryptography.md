@@ -25,10 +25,20 @@
         demo://oauth/callback?code=REPLACE_UNUSED_CODE
         demo://oauth/callback?code=REPLACE_UNUSED_CODE&state=REPLACE_CURRENT_STATE&state=wrong-state
         ```
-* **PKCE token exchange (curl, Linux Bash / Windows PowerShell with curl.exe):** use an unused code bound to a known challenge. First send a different valid-length verifier; next obtain a fresh code and omit `code_verifier`; finally use the correct verifier as a control with another fresh code. Retain the real client authentication where required.
-    * ```text
-        curl -i 'https://auth.example/token' --data-urlencode 'grant_type=authorization_code' --data-urlencode 'client_id=REPLACE_CLIENT_ID' --data-urlencode 'redirect_uri=REPLACE_REGISTERED_CALLBACK' --data-urlencode 'code=REPLACE_UNUSED_CODE' --data-urlencode 'code_verifier=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-        ```
+* **PKCE token exchange:** use an unused code bound to a known challenge. First send a different valid-length verifier; next obtain a fresh code and omit `code_verifier`; finally use the correct verifier as a control with another fresh code. Retain the real client authentication where required.
+
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+    curl -i 'https://auth.example/token' --data-urlencode 'grant_type=authorization_code' --data-urlencode 'client_id=REPLACE_CLIENT_ID' --data-urlencode 'redirect_uri=REPLACE_REGISTERED_CALLBACK' --data-urlencode 'code=REPLACE_UNUSED_CODE' --data-urlencode 'code_verifier=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+    ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+    curl.exe -i 'https://auth.example/token' --data-urlencode 'grant_type=authorization_code' --data-urlencode 'client_id=REPLACE_CLIENT_ID' --data-urlencode 'redirect_uri=REPLACE_REGISTERED_CALLBACK' --data-urlencode 'code=REPLACE_UNUSED_CODE' --data-urlencode 'code_verifier=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+    ```
+{% endtab %}
+{% endtabs %}
 * **Code replay/binding:** redeem the same code twice; separately use a different registered callback or another client ID in the exchange. A used/expired code rejection does not establish that PKCE or redirect binding was validated.
 * **Confirm:** wrong verifier is rejected at the authorization server; wrong state is rejected by the client without creating/switching a session. A returned token or completed app login under the wrong binding is the meaningful failure. Full PKCE flow: [OAuth guide](../../../web/vulnerabilities/oauth-2.0.md#authorization-code-flow-with-pkce).
 * **ID/access tokens:** change `sub`, `aud`, `iss` or expiry without re-signing and submit at the actual backend token-consumer endpoint; then test a genuine token from another test client/account. Use [JWT payloads](../../../web/vulnerabilities/jwt-attacks.md). Tampered-token rejection establishes signature enforcement, not every claim check; wrong-audience/issuer tests need genuinely signed tokens with those values.

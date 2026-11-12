@@ -165,7 +165,7 @@
     <input-method xmlns:android="http://schemas.android.com/apk/res/android"
         android:supportsSwitchingToNextInputMethod="true" />
     ```
-* **Build/install:** use the existing [companion commands](advanced-ipc-and-providers.md#intent-result-and-binder-boundaries). **Activate keyboard (Linux Bash / Windows PowerShell, unchanged):**
+* **Build/install:** use the existing [companion commands](advanced-ipc-and-providers.md#intent-result-and-binder-boundaries). **Activate keyboard (Linux / Windows, unchanged):**
   * ```text
     adb shell ime list -s
     adb shell ime enable com.example.ipcprobe/.ProbeKeyboard

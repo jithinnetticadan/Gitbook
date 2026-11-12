@@ -7,33 +7,35 @@
 
 {% tabs %}
 {% tab title="APKLeaks" %}
-* **Linux Bash / Windows PowerShell:** scan the APK directly; choose terminal output or the report variant.
+* **Linux / Windows, same command:** scan the APK directly; choose terminal output or the report variant.
   * ```text
     apkleaks -f '<app.apk>'
     apkleaks -f '<app.apk>' -o '<secrets-report.txt>'
     ```
 {% endtab %}
-{% tab title="grep / strings" %}
-* **Linux Bash:** scan JADX source and decoded native libraries.
+{% tab title="Linux" %}
+* Scan JADX source and decoded native libraries.
   * ```bash
     grep -rniE 'api[_-]?key|secret|token|password|AIza[0-9A-Za-z_-]{35}|BEGIN (RSA |EC )?PRIVATE KEY' '<decompiled-directory>'
     strings '<decoded-directory>'/lib/<abi>/*.so | grep -iE 'key|secret|token'
     grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' '<decompiled-directory>'
     ```
-* **Windows PowerShell:** search source files; use a Windows build of `strings.exe` from compatible binutils for native libraries.
+{% endtab %}
+{% tab title="Windows" %}
+* Search source files; use a Windows build of `strings.exe` from compatible binutils for native libraries.
   * ```powershell
     Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File | Select-String -Pattern 'api[_-]?key|secret|token|password|AIza[0-9A-Za-z_-]{35}|BEGIN (RSA |EC )?PRIVATE KEY|firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com'
     Get-ChildItem -LiteralPath '<decoded-directory>/lib/<abi>' -Filter '*.so' | ForEach-Object { & strings.exe $_.FullName | Select-String -Pattern 'key|secret|token' }
     ```
 {% endtab %}
 {% tab title="TruffleHog" %}
-* **Linux Bash / Windows PowerShell:** scan the extracted JADX/Apktool directory. This variant detects candidates without credential verification requests.
+* **Linux / Windows, same command:** scan the extracted JADX/Apktool directory. This variant detects candidates without credential verification requests.
   * ```text
     trufflehog filesystem '<decompiled-directory>' --no-verification
     ```
 {% endtab %}
 {% tab title="Gitleaks" %}
-* **Linux Bash / Windows PowerShell:** scan the extracted files rather than Git history.
+* **Linux / Windows, same command:** scan the extracted files rather than Git history.
   * ```text
     gitleaks dir -v '<decompiled-directory>'
     ```
@@ -56,7 +58,7 @@
 
 {% tabs %}
 {% tab title="cloud_enum" %}
-* **Linux Bash / Windows PowerShell:** from the [cloud_enum](https://github.com/initstring/cloud_enum) directory, install dependencies and enumerate cloud resources for the keyword.
+* **Linux / Windows, same commands:** from the [cloud_enum](https://github.com/initstring/cloud_enum) directory, install dependencies and enumerate cloud resources for the keyword.
   * ```text
     uv sync
     uv run cloud_enum -k '<app-or-organization-keyword>'
@@ -64,7 +66,7 @@
 * The default region lists cover a limited set of Azure and GCP regions; adjust them for the resources being tested.
 {% endtab %}
 {% tab title="firebaseEnum" %}
-* **Linux Bash / Windows PowerShell:** from the [firebaseEnum](https://github.com/Sambal0x/firebaseEnum) directory, install dependencies and search keyword-derived database names.
+* **Linux / Windows, same commands:** from the [firebaseEnum](https://github.com/Sambal0x/firebaseEnum) directory, install dependencies and search keyword-derived database names.
   * ```text
     python -m pip install -r requirements.txt
     python firebaseEnum.py -k '<app-or-organization-keyword>'

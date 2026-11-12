@@ -2,11 +2,25 @@
 
 ## Storage, Logging, and Screen-Protection Signals
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -rnE 'getSharedPreferences\(|openFileOutput\(|MODE_WORLD_(READABLE|WRITEABLE)|getExternalFilesDir|getExternalStorage' &#x3C;decompiled-directory>
-  grep -rniE 'Log\.(v|d|i|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)' &#x3C;decompiled-directory>
-  grep -rn 'FLAG_SECURE\|setFilterTouchesWhenObscured\|filterTouchesWhenObscured' &#x3C;decompiled-directory>
-  grep -rL 'FLAG_SECURE' --include='*Activity*.java' &#x3C;decompiled-directory>
-  </code></pre>
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  grep -rnE 'getSharedPreferences\(|openFileOutput\(|MODE_WORLD_(READABLE|WRITEABLE)|getExternalFilesDir|getExternalStorage' '<decompiled-directory>'
+  grep -rniE 'Log\.(v|d|i|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)' '<decompiled-directory>'
+  grep -rn 'FLAG_SECURE\|setFilterTouchesWhenObscured\|filterTouchesWhenObscured' '<decompiled-directory>'
+  grep -rL 'FLAG_SECURE' --include='*Activity*.java' '<decompiled-directory>'
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  $source = Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt
+  $source | Select-String -Pattern 'getSharedPreferences\(|openFileOutput\(|MODE_WORLD_(READABLE|WRITEABLE)|getExternalFilesDir|getExternalStorage|Log\.(v|d|i|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)|FLAG_SECURE|setFilterTouchesWhenObscured|filterTouchesWhenObscured'
+  Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Filter '*Activity*.java' |
+    Where-Object { -not (Select-String -LiteralPath $_.FullName -Pattern 'FLAG_SECURE' -Quiet) } |
+    Select-Object -ExpandProperty FullName
+  ```
+{% endtab %}
+{% endtabs %}
 * App-level plaintext and Android file-based encryption are different layers. Private preferences/files are normally UID-sandboxed, not world-readable. Assess actual access through a debuggable build, authorized root, backup, device state, or another demonstrated path before rating disclosure.
 * `MODE_WORLD_*` is unsupported on modern Android; its presence still marks legacy insecure storage code.
 * `run-as <package-name>` normally requires a debuggable app; that access does not prove access to a non-debuggable build.
@@ -14,14 +28,6 @@
 * `FLAG_SECURE` is per window. The last command only lists candidate Activities; check sensitive screens (PIN, OTP, payment, seed phrase) and any base Activity that sets it.
 * Overlay/tapjacking defenses: look for `filterTouchesWhenObscured` on sensitive confirmation views.
 
-* **Windows PowerShell, storage/logging candidates:**
-  * ```powershell
-    $patterns = @('getSharedPreferences\(|openFileOutput\(|MODE_WORLD_(READABLE|WRITEABLE)|getExternalFilesDir|getExternalStorage',
-      'Log\.(v|d|i|w|e)\(.*(token|password|passwd|pin|otp|ssn|auth|secret)',
-      'FLAG_SECURE|setFilterTouchesWhenObscured|filterTouchesWhenObscured')
-    Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt |
-      Select-String -Pattern $patterns
-    ```
 * **Turn a hit into a test:** place a unique marker in that actual feature, trigger the code, then use [file/log/screenshot commands](../dynamic-testing/local-data-logs-and-privacy.md). Compare login/logout/account switch. For obscured touches use the [overlay companion](../dynamic-testing/platform-and-version-specific-tests.md#obscured-touches); a missing flag by itself is not the result.
 
 ## Additional Storage Formats
@@ -32,15 +38,21 @@
 
 ## Code Review
 
-* **Locate the consumer, Linux Bash:**
-  * ```bash
-    grep -rnE 'Runtime\.getRuntime|ProcessBuilder|DexClassLoader|ObjectInputStream|enqueueUniqueWork|WorkManager' '<decompiled-directory>'
-    ```
-* **Windows PowerShell equivalent:**
-  * ```powershell
-    Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt |
-      Select-String -Pattern 'Runtime\.getRuntime|ProcessBuilder|DexClassLoader|ObjectInputStream|enqueueUniqueWork|WorkManager'
-    ```
+* Locate the consumer:
+
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  grep -rnE 'Runtime\.getRuntime|ProcessBuilder|DexClassLoader|ObjectInputStream|enqueueUniqueWork|WorkManager' '<decompiled-directory>'
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt |
+    Select-String -Pattern 'Runtime\.getRuntime|ProcessBuilder|DexClassLoader|ObjectInputStream|enqueueUniqueWork|WorkManager'
+  ```
+{% endtab %}
+{% endtabs %}
 * **Shell consumer only:** if external input enters an actual `sh -c` string, try `; echo client-logic-probe` at that input and observe the process/output. With direct `exec`/`ProcessBuilder` argument arrays it is usually a literal argument; test option/argument influence instead of assuming shell metacharacters execute.
 * **Delayed work:** queue A's marker operation, disconnect, log out/switch to B, then reconnect using the [network-transition commands](../dynamic-testing/business-logic-and-backend.md#request-signing-and-replay). Confirm whose credentials and records the worker uses when it actually runs.
 * **Local gate:** use the [targeted Boolean override](../dynamic-testing/business-logic-and-backend.md#purchase-receipt-and-local-gate-recipes), then perform the protected action; changing a flag without that action is incomplete.

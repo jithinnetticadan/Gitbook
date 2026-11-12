@@ -112,7 +112,9 @@
                 return 0;
         }
         ```
-* **Linux host + installed Android NDK, ARM64 Android API 26+:** set `ANDROID_NDK_HOME` to the actual NDK root. Compile the parser itself with sanitizer/coverage instrumentation; merely linking an uninstrumented vendor `.so` limits what ASan/libFuzzer can observe.
+{% tabs %}
+{% tab title="Linux" %}
+* **Installed Android NDK, ARM64 Android API 26+:** set `ANDROID_NDK_HOME` to the actual NDK root. Compile the parser itself with sanitizer/coverage instrumentation; merely linking an uninstrumented vendor `.so` limits what ASan/libFuzzer can observe.
     * ```bash
         CXX="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
         "$CXX" --target=aarch64-linux-android26 -g -O1 -fno-omit-frame-pointer -fsanitize=fuzzer,address -static-libstdc++ harness.cpp parser.cpp -o parser-fuzzer
@@ -121,7 +123,9 @@
         mkdir -p seed-corpus
         cp known-valid-record.bin seed-corpus/seed
         ```
-* **Windows PowerShell + installed NDK equivalent:**
+{% endtab %}
+{% tab title="Windows" %}
+* **Installed NDK equivalent:**
     * ```powershell
         $compiler = Join-Path $env:ANDROID_NDK_HOME 'toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe'
         & $compiler --target=aarch64-linux-android26 -g -O1 -fno-omit-frame-pointer '-fsanitize=fuzzer,address' -static-libstdc++ harness.cpp parser.cpp -o parser-fuzzer
@@ -130,6 +134,8 @@
         New-Item -ItemType Directory -Path seed-corpus -Force | Out-Null
         Copy-Item known-valid-record.bin seed-corpus/seed
         ```
+    {% endtab %}
+    {% endtabs %}
 * **Device run, same commands on Linux / Windows:** match the device ABI and API; ASan runtime locations depend on the selected NDK, so verify that the generated runtime path exists. For macOS hosts select the NDK's `darwin-x86_64` prebuilt directory instead.
     * ```text
         adb push parser-fuzzer /data/local/tmp/parser-fuzzer

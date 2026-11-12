@@ -4,7 +4,7 @@
 
 {% tabs %}
 {% tab title="apkanalyzer" %}
-* **Linux Bash / Windows PowerShell:** print the manifest and package/SDK/permission fields from the APK.
+* **Linux / Windows, same command:** print the manifest and package/SDK/permission fields from the APK.
   * ```bash
     apkanalyzer manifest print '<app.apk>'
     apkanalyzer manifest application-id '<app.apk>'
@@ -14,13 +14,13 @@
     ```
 {% endtab %}
 {% tab title="JADX" %}
-* **Linux Bash / Windows PowerShell:** open the APK and inspect the manifest and component classes.
+* **Linux / Windows, same command:** open the APK and inspect the manifest and component classes.
   * ```text
     jadx-gui '<app.apk>'
     ```
 {% endtab %}
 {% tab title="Apktool" %}
-* **Linux Bash / Windows PowerShell:** decode the manifest and resources, including XML referenced by the manifest.
+* **Linux / Windows, same command:** decode the manifest and resources, including XML referenced by the manifest.
   * ```text
     apktool d '<app.apk>' -o '<decoded-directory>'
     ```

@@ -159,8 +159,20 @@
 		    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
 		})
 		```
-* **Build/install:** use the existing companion [build and launch commands](#intent-result-and-binder-boundaries). On Windows PowerShell, replace `./gradlew installDebug` with `.\gradlew.bat installDebug`; ADB commands remain unchanged.
-* **ADB launch alternative (Linux Bash / Windows PowerShell, unchanged):** use an existing file URI accessible to the shell with permission to grant it onward. Replace MIME type, URI and consumer package with the observed import contract.
+* **Build/install:** use the existing companion [build and launch commands](#intent-result-and-binder-boundaries); the wrapper differs by host OS.
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+	./gradlew installDebug
+	```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+	.\gradlew.bat installDebug
+	```
+{% endtab %}
+{% endtabs %}
+* **ADB launch alternative:** the ADB command is unchanged on Linux and Windows. Use an existing file URI accessible to the shell with permission to grant it onward. Replace MIME type, URI and consumer package with the observed import contract.
 	* ```text
 		adb shell am start -a android.intent.action.SEND -t '<observed-mime-type>' --eu android.intent.extra.STREAM '<test-provider-content-uri>' --grant-read-uri-permission -p '<consumer-package>'
 		```
