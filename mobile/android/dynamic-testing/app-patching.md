@@ -23,7 +23,7 @@
   * **Original:** `if-nez v0, :blocked`
   * **Test patch:** `if-eqz v0, :blocked`
 * `if-eqz` branches on zero/null; `if-nez` branches on nonzero/non-null. Preserve the actual register/label; for an object-returning method, this tests nullness rather than a Boolean.
-* Rebuild, align, sign, and verify using [Manual Patching](#manual-patching), starting at step 4; Gadget injection is not required for this variant.
+* Rebuild, align, sign, and verify using [Manual Patching](app-patching.md#manual-patching), starting at step 4; Gadget injection is not required for this variant.
 * **Install and launch** on a test device without a differently signed copy of the package:
   * ```bash
     adb install '<aligned-test.apk>'
@@ -39,14 +39,14 @@
 3. Add the load call to an appropriate initialization path. Example SMALI:
    * <pre class="language-java" data-line-numbers><code class="lang-java">const-string v0, "frida-gadget"
       invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
-      </code></pre>
+     </code></pre>
 4. Rebuild, align, then sign the disposable test artifact; use current SDK Build Tools supporting `-P 16`:
    * <pre class="language-bash" data-line-numbers><code class="lang-bash">apktool b &#x3C;decoded-directory> -o &#x3C;unsigned-test.apk>
-      keytool -genkey -v -keystore &#x3C;test.keystore> -alias &#x3C;test-alias> -keyalg RSA -keysize 2048 -validity 10000
-      zipalign -P 16 -v 4 &#x3C;unsigned-test.apk> &#x3C;aligned-test.apk>
-      apksigner sign --ks &#x3C;test.keystore> --ks-key-alias &#x3C;test-alias> &#x3C;aligned-test.apk>
-      apksigner verify &#x3C;aligned-test.apk>
-      </code></pre>
+     keytool -genkey -v -keystore &#x3C;test.keystore> -alias &#x3C;test-alias> -keyalg RSA -keysize 2048 -validity 10000
+     zipalign -P 16 -v 4 &#x3C;unsigned-test.apk> &#x3C;aligned-test.apk>
+     apksigner sign --ks &#x3C;test.keystore> --ks-key-alias &#x3C;test-alias> &#x3C;aligned-test.apk>
+     apksigner verify &#x3C;aligned-test.apk>
+     </code></pre>
 
 * **Legacy 4 KiB-only alternative:** use instead of the alignment line above, before signing. Deprecated `-p` does not provide 16 KiB alignment.
   * ```bash

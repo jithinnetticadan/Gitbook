@@ -10,6 +10,7 @@
   grep -rnE 'loadUrl\(|loadData\(|loadDataWithBaseURL\(|evaluateJavascript\(|shouldOverrideUrlLoading|shouldInterceptRequest|onReceivedSslError|setMixedContentMode|onPermissionRequest|onShowFileChooser|setWebContentsDebuggingEnabled' '<decompiled-directory>'
   ```
 {% endtab %}
+
 {% tab title="Windows" %}
 * ```powershell
   $patterns = @(
@@ -22,23 +23,13 @@
   ```
 {% endtab %}
 {% endtabs %}
+
 * `addJavascriptInterface`: annotation-limited exposure requires Android **and target API 17+**; legacy configurations expose more methods. Test the actual device/WebView.
 * The object is available to **all frames**, without a calling-origin parameter; inspect attacker-controlled pages/iframes and exposed methods. [Bridge behavior](https://developer.android.com/privacy-and-security/risks/insecure-webview-native-bridges).
 * `setAllowFileAccess` defaults to `false` for target API 30+; file-URL cross-access settings default to `false` for target API 16+ on supported platforms. Check explicit overrides and WebView version.
 * `proceed()` in `onReceivedSslError` accepts invalid certificates.
 * **TLS-error search command:** [TLS and pinning patterns](configuration-and-cryptography.md).
-* Trace what URLs reach `loadUrl` (intent extras, deep links, server data) and whether the page origin is validated.
-| Search hit | Run next | Confirm vulnerability |
-| --- | --- | --- |
-| URL parameter reaches `loadUrl` | [URL variants](../dynamic-testing/component-testing.md#untrusted-navigation-and-url-allowlists) | Unintended origin reaches privileged app WebView. |
-| Native bridge/message channel | [Controlled-page bridge PoC](../dynamic-testing/component-testing.md#native-bridge-from-untrusted-content) | Untrusted frame invokes unintended protected native operation. |
-| String enters HTML/script | [Injection markers](../dynamic-testing/component-testing.md#script-injection-into-a-trusted-page) | Marker executes in the trusted origin. |
-| File/mixed-content settings, cookies | [File/session probes](../dynamic-testing/component-testing.md#file-access-mixed-content-and-session-isolation) | Actual file read, script execution or cross-account credential use. |
-| `shouldInterceptRequest` / `WebResourceResponse` | [Resource/cache probes](../dynamic-testing/component-testing.md#resource-interception-and-cache-boundaries) | URL/MIME/cache mapping discloses a file or serves attacker-influenced/private content across the intended boundary. |
-| Geolocation / `onPermissionRequest` | [Origin/frame permission page](../dynamic-testing/component-testing.md#geolocation-camera-and-microphone-grants) | Unintended origin obtains actual location/media access, not merely an OS permission. |
-| `onShowFileChooser` / capture results | [Chooser callback probe](../dynamic-testing/component-testing.md#file-chooser-destination-and-grants) | Marker file is delivered to the wrong page/origin or beyond the user's grant. |
-| Provider query/path concatenation | [Provider payloads](../dynamic-testing/advanced-ipc-and-providers.md#provider-injection-and-file-traversal) | Argument changes query logic or reads outside the exposed root. |
-
+* Trace what URLs reach `loadUrl` (intent extras, deep links, server data) and whether the page origin is validated. | Search hit | Run next | Confirm vulnerability | | --- | --- | --- | | URL parameter reaches `loadUrl` | [URL variants](../dynamic-testing/component-testing.md#untrusted-navigation-and-url-allowlists) | Unintended origin reaches privileged app WebView. | | Native bridge/message channel | [Controlled-page bridge PoC](../dynamic-testing/component-testing.md#native-bridge-from-untrusted-content) | Untrusted frame invokes unintended protected native operation. | | String enters HTML/script | [Injection markers](../dynamic-testing/component-testing.md#script-injection-into-a-trusted-page) | Marker executes in the trusted origin. | | File/mixed-content settings, cookies | [File/session probes](../dynamic-testing/component-testing.md#file-access-mixed-content-and-session-isolation) | Actual file read, script execution or cross-account credential use. | | `shouldInterceptRequest` / `WebResourceResponse` | [Resource/cache probes](../dynamic-testing/component-testing.md#resource-interception-and-cache-boundaries) | URL/MIME/cache mapping discloses a file or serves attacker-influenced/private content across the intended boundary. | | Geolocation / `onPermissionRequest` | [Origin/frame permission page](../dynamic-testing/component-testing.md#geolocation-camera-and-microphone-grants) | Unintended origin obtains actual location/media access, not merely an OS permission. | | `onShowFileChooser` / capture results | [Chooser callback probe](../dynamic-testing/component-testing.md#file-chooser-destination-and-grants) | Marker file is delivered to the wrong page/origin or beyond the user's grant. | | Provider query/path concatenation | [Provider payloads](../dynamic-testing/advanced-ipc-and-providers.md#provider-injection-and-file-traversal) | Argument changes query logic or reads outside the exposed root. |
 * **Debugging:** test the unmodified release configuration with the [runtime inspection workflow](../dynamic-testing/component-testing.md#webview-runtime-checks). Enabling debugging through instrumentation is not release exposure; same-Wi-Fi access alone does not grant ADB inspection.
 
 ## Content Provider SQL Injection
@@ -50,6 +41,7 @@
   grep -rn -A15 'public Cursor query' '<decompiled-directory>'
   ```
 {% endtab %}
+
 {% tab title="Windows" %}
 * ```powershell
   $source = Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt
@@ -58,6 +50,7 @@
   ```
 {% endtab %}
 {% endtabs %}
+
 * Look for string concatenation of `selection`, `sortOrder`, or intent/URI data into SQL instead of `?` placeholders and `selectionArgs`.
 * Exposure depends on the provider being exported or granting URI permissions. Confirm at runtime: [Component Testing](../dynamic-testing/component-testing.md).
 
@@ -70,6 +63,7 @@
   grep -rnE 'path="\."|path="/"|<root-path' '<decoded-directory>/res/xml/'
   ```
 {% endtab %}
+
 {% tab title="Windows" %}
 * ```powershell
   Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt |
@@ -79,6 +73,7 @@
   ```
 {% endtab %}
 {% endtabs %}
+
 * Check whether `../` sequences in filenames from intents, deep links, or URIs are rejected after canonicalization.
 * Overly broad `FileProvider` paths (for example `<external-path path="."/>` or `<root-path>`) can expose more files than intended. Check `android:exported="false"` and `android:grantUriPermissions` on the provider.
 
@@ -91,6 +86,7 @@
   grep -rnE 'getIntent\(\)\.getData\(\)|getQueryParameter\(|getStringExtra\(' '<decompiled-directory>'
   ```
 {% endtab %}
+
 {% tab title="Windows" %}
 * ```powershell
   Select-String -LiteralPath '<decoded-directory>/AndroidManifest.xml' -Pattern 'android:scheme' -Context 0,6
@@ -99,18 +95,28 @@
   ```
 {% endtab %}
 {% endtabs %}
+
 * Treat deep-link parameters as untrusted external input from any app or link.
 * Flag tokens, redirect URLs, or identifiers accepted without server-side validation (auto-login, WebView loading, authorization decisions).
 * Verify App Links (`autoVerify`, `assetlinks.json`) where used; custom schemes can be claimed by other apps.
 
 ## PendingIntent Mutability
 
+* A `PendingIntent` allows another component to perform an action later **with the creating app's authority**.
+  * `FLAG_IMMUTABLE` → recipient cannot modify the Intent. **Preferred when mutation isn't required.**
+  * `FLAG_MUTABLE` → recipient can supply/modify permitted Intent information.
+* **Attack Flow:**
+  * Bank App creates mutable `PendingIntent` → exposes/passes it via Intent/Bundle/IPC → Attacker App obtains it → calls `send()` with modified data → action executes under the Bank App's authority.
+* On Android 12+, apps targeting API 31+ must specify `FLAG_IMMUTABLE` or `FLAG_MUTABLE`. Older behavior defaults to mutable unless a supported immutable flag is set (`FLAG_IMMUTABLE`: API 23+).
+* Risk is highest with mutable PendingIntents wrapping empty or implicit Intents, which another app may fill in. Check the base Intent's component, action, and extras.
+
 {% tabs %}
 {% tab title="Linux" %}
-* ```bash
+- ```bash
   grep -rnE 'PendingIntent\.get(Activity|Activities|Broadcast|Service|ForegroundService)' '<decompiled-directory>' | grep -v 'FLAG_IMMUTABLE'
   ```
 {% endtab %}
+
 {% tab title="Windows" %}
 * ```powershell
   Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File -Include *.java,*.kt |
@@ -119,8 +125,6 @@
   ```
 {% endtab %}
 {% endtabs %}
-* On Android 12+, apps targeting API 31+ must specify `FLAG_IMMUTABLE` or `FLAG_MUTABLE`. Older behavior defaults to mutable unless a supported immutable flag is set (`FLAG_IMMUTABLE`: API 23+).
-* Risk is highest with mutable PendingIntents wrapping empty or implicit Intents, which another app may fill in. Check the base Intent's component, action, and extras.
 
 ## Third-Party Dependencies (SCA)
 
@@ -128,16 +132,17 @@
 
 {% tabs %}
 {% tab title="Linux" %}
-* **[OSV-Scanner V2](https://google.github.io/osv-scanner/usage/):** obtain the release dependency configuration and scan supported manifests/lockfiles.
+- [**OSV-Scanner V2**](https://google.github.io/osv-scanner/usage/)**:** obtain the release dependency configuration and scan supported manifests/lockfiles.
   * ```bash
     ./gradlew :app:dependencies --configuration releaseRuntimeClasspath
     osv-scanner scan source -r . --format json --output-file osv-results.json
     ```
-* **[OWASP Dependency-Check CLI](https://jeremylong.org/DependencyCheck/dependency-check-cli/index.html):** scan resolved dependency JAR/AAR artifacts or other supported files; APK/DEX scanning alone is not a complete dependency inventory.
+- [**OWASP Dependency-Check CLI**](https://jeremylong.org/DependencyCheck/dependency-check-cli/index.html)**:** scan resolved dependency JAR/AAR artifacts or other supported files; APK/DEX scanning alone is not a complete dependency inventory.
   * ```bash
     dependency-check.sh --project 'Android-app' --scan '<dependency-artifact-directory>' --format HTML --out './dependency-check-report'
     ```
 {% endtab %}
+
 {% tab title="Windows" %}
 * **OSV-Scanner V2:** use the Windows Gradle wrapper; the scanner command is unchanged.
   * ```powershell
@@ -152,19 +157,21 @@
 {% endtabs %}
 
 * Replace the Gradle module/configuration with the real flavor. Gradle console output is not itself an OSV lockfile; use a supported manifest/lockfile or SBOM and check package coverage.
-* **[Trivy](https://trivy.dev/latest/docs/target/sbom/):** same command on Linux and Windows; first create or obtain `app-bom.json`.
-  * ```text
+* [**Trivy**](https://trivy.dev/latest/docs/target/sbom/)**:** same command on Linux and Windows; first create or obtain `app-bom.json`.
+  * ```
     trivy sbom --format json --output sca-results.json app-bom.json
     ```
 * An SBOM containing only APK metadata covers only identified components; it is not an exhaustive dependency graph.
 * **Interpret:** compare each advisory's detected package/version with the resolved dependency graph and actual feature/configuration. Scanner findings identify affected-component candidates; use the reachability checks below to establish a testable vulnerable path.
+
 {% tabs %}
 {% tab title="Linux" %}
-* ```bash
+- ```bash
   unzip -l '<app.apk>' | grep -E 'META-INF/.*(pom.properties|\.version|MANIFEST.MF)'
   unzip -p '<app.apk>' 'META-INF/maven/*/*/pom.properties'
   ```
 {% endtab %}
+
 {% tab title="Windows" %}
 * ```powershell
   $archive = [IO.Compression.ZipFile]::OpenRead((Resolve-Path '<app.apk>'))
@@ -180,6 +187,7 @@
   ```
 {% endtab %}
 {% endtabs %}
+
 * APK only: collect library versions from `META-INF/*.version`, `META-INF/maven/**/pom.properties`, version constants, package names, and MobSF output. Match versions against vulnerability databases.
 * **APK-only SBOM example:** put only evidence-backed components into `app-bom.json`. This Jackson coordinate is an example of a versioned Maven component, not a claim that the target ships it; replace it with the package/version actually recovered.
   * ```json
@@ -207,7 +215,7 @@
 
 {% tabs %}
 {% tab title="Linux" %}
-* ```bash
+- ```bash
   SRC='<decompiled-directory>'
   MANIFEST='<decoded-directory>/AndroidManifest.xml'
   grep -rniE 'api[_-]?key|secret|password|BEGIN (RSA |EC )?PRIVATE KEY' "$SRC"
@@ -218,6 +226,7 @@
   grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' "$SRC"
   ```
 {% endtab %}
+
 {% tab title="Windows" %}
 * ```powershell
   $source = '<decompiled-directory>'
@@ -236,4 +245,5 @@
   ```
 {% endtab %}
 {% endtabs %}
-* **Next:** inspect matched values and consumers, then run the relevant [secrets/cloud](secrets-and-cloud.md), [component](../dynamic-testing/component-testing.md), [crypto](../dynamic-testing/authentication-and-cryptography.md#trace-cryptographic-data-flow), or [WebView](../dynamic-testing/component-testing.md#webview-runtime-checks) test. A string/flag match alone is not confirmation of the flaw.
+
+\* \*\*Next:\*\* inspect matched values and consumers, then run the relevant \[secrets/cloud]\(secrets-and-cloud.md), \[component]\(../dynamic-testing/component-testing.md), \[crypto]\(../dynamic-testing/authentication-and-cryptography.md#trace-cryptographic-data-flow), or \[WebView]\(../dynamic-testing/component-testing.md#webview-runtime-checks) test. A string/flag match alone is not confirmation of the flaw.
