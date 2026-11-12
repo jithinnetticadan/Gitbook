@@ -9,6 +9,21 @@
 
 ## File and Database Inspection
 
+### Non-Jailbroken Container Access with worse_finder
+
+* [worse_finder](https://github.com/melvinsh/worse_finder) uses the [worse_query](https://github.com/forcequitOS/worse_query) container-manager sandbox escape to browse and export app and App Group containers without a jailbreak. The project reports support for iOS 26 and 27; verify the exact device build against current project information. Some paths can remain inaccessible because of data protection or other restrictions.
+* **Build prerequisites:** macOS, Xcode 27, a physical device, and a signing team/profile that permits an App Group entitlement. In the project's Xcode target, select the team, add an App Group under Signing & Capabilities, and set the same group in `worse_finder/worse_finder.entitlements`. The default bundle identifier is a placeholder; use one provisioned for the team. A signer/profile that strips or cannot provision the App Group will not work.
+* **macOS Terminal:** after configuring signing, build into the shown output directory and install using the selected device UDID.
+  * ```bash
+    git clone https://github.com/melvinsh/worse_finder.git
+    cd worse_finder
+    xcrun devicectl list devices
+    xcodebuild -project worse_finder.xcodeproj -target worse_finder -configuration Debug -sdk iphoneos -allowProvisioningUpdates SYMROOT=./build build
+    xcrun devicectl device install app --device '<device-udid>' build/Debug-iphoneos/worse_finder.app
+    ```
+* Open worse_finder on the device, select the target app, inspect its data container and App Groups, and export the relevant container as ZIP. Exports are written to worse_finder's Documents for sharing through Files or AirDrop. The built-in web server is an alternative on port `8080`; it uses plain HTTP, including for its generated passphrase.
+* Inspect exported preferences, databases and caches using the commands below. Compare login/logout/account states and whether the recovered test credentials still work. Container access does not imply access to other apps' Keychain items or bypass every locked-file protection; distinguish this OS-level escape from exposure to an ordinary sandboxed app.
+
 * **Physical device with configured SSH:** copy the known container path to the host before offline inspection.
   * ```bash
     scp -r '<ssh-user>@<device-ip>:<resolved-data-container>/Library/Preferences' './device-preferences'
