@@ -1,6 +1,5 @@
 # Android
 
-* **Basic runtime tests:** [ADB/component prerequisites](dynamic-testing/component-testing.md#adb-probes-and-caller-identity); Frida/root are not universally required.
 * **Instrumentation:** use [Device and Frida Setup](setup.md#device-and-frida-setup), including exact client/server/Gadget version matching.
 
 ## Quick Context
@@ -8,10 +7,6 @@
 * ART (older Android: Dalvik); OS sandbox and separate app UIDs.
 * Cross-app checks: activities, services, receivers, providers.
 * Root aids inspection; it does not prove an app access-control flaw.
-* Paths:&#x20;
-  * `/data/app/<package>`
-  * `/data/data/<package>`
-  * `/sdcard/Android/data/<package>`
 * XSS applies to web content/WebViews, not ordinary native screens. Also assess server-side request effects.
 
 ## Testing Guides
