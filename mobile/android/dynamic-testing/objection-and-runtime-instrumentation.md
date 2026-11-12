@@ -50,7 +50,33 @@
 
 <table><thead><tr><th width="155">Option/Mode</th><th>Use</th></tr></thead><tbody><tr><td><code>--name</code></td><td>Attach by process name; spawn by package ID. Gadget may expose a different name.</td></tr><tr><td>Global options</td><td><code>--name</code>, <code>--serial</code>, <code>--spawn</code>, <code>--no-pause</code> go <strong>before</strong> <code>start</code>/<code>run</code>.</td></tr><tr><td>Startup options</td><td><code>--startup-command</code>, <code>--startup-script</code> go <strong>after</strong> <code>start</code>; check <code>objection start --help</code>.</td></tr><tr><td><code>--no-pause</code></td><td>Immediate resume; omit when early hooks need a paused spawn.</td></tr><tr><td><code>run</code></td><td>One-shot execution; do not assume hooks persist after exit. Use <code>start</code> for monitoring.</td></tr></tbody></table>
 {% endtab %}
+{% tab title="RMS" %}
+* **Host, installed RMS:** verify the running Frida server and start RMS; open `http://127.0.0.1:5491/` and select the target package in the device/app screen.
+  * ```text
+    frida-ps -U
+    rms
+    ```
+* Use the class dump and hook/trace view to select the observed class and method, then exercise the app action. RMS uses Frida in the target process; its API Monitor is Android-only. The upstream notes recommend one connected device and Chrome for its web UI.
+{% endtab %}
+{% tab title="House" %}
+* **Legacy House checkout, host terminal:** with its compatible Python/Frida dependencies installed and server running, start the UI on the port shown. Check [upstream compatibility](https://github.com/nccgroup/house); it was tested with older Frida versions.
+  * ```text
+    frida-ps -U
+    python app.py 8000
+    ```
+* Open `http://127.0.0.1:8000/`, select the target and use Enumeration for loaded classes/methods, then the hook/tracing view for the observed method. A Frida/Python version mismatch may block this alternative.
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Installed Grapefruit, host terminal:** current upstream `igf` requires Node.js 22.18+ and a compatible device Frida server. Open the local UI and choose the target process.
+  * ```text
+    frida-ps -U
+    igf
+    ```
+* Use the class/method inspector or runtime hooking view to trace the same observed method. Grapefruit is an inspection interface; do not assume it supplies a universal pinning or root-detection bypass.
+{% endtab %}
 {% endtabs %}
+
+* **Result:** trigger the same app action, verify the selected hook or trace fires, and compare its observed result with the uninstrumented control. GUI tools share Frida's target-process context; they do not prove an unprivileged external app can call an exported component.
 
 ## Classes and Hooks
 
@@ -92,8 +118,45 @@
 * Alternative memory tool: [fridump3](https://github.com/rootbsd/fridump3/).
 * Review [CodeShare](https://codeshare.frida.re/) scripts, bypass success depends on app/version.
 * Flutter: [reFlutter](https://github.com/ptswarm/reFlutter) for compatible instrumentation/traffic workflows.
-* [RMS-Runtime-Mobile-Security](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security): classes, arguments/returns, components, API monitoring, scripts.
+* [RMS-Runtime-Mobile-Security](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security): classes, arguments/returns, components, API monitoring, scripts; select its tab in [Attach or Spawn](#attach-or-spawn).
 * MobSF: configure a compatible dynamic-analysis environment first.
 * Use [Java and Native Instrumentation](java-and-native-instrumentation.md) for observational scripts, overload/classloader diagnosis, and JNI/native hooks.
 * Identify the actual check before running root/pinning commands.
 * Syntax source: [Objection command registry](https://github.com/sensepost/objection/blob/master/objection/console/commands.py); confirm against your installed release.
+
+## Runtime Memory Search
+
+* Exercise the relevant login/payment flow with a unique test marker, then search the running app's memory for that marker and any associated credential value.
+
+{% tabs %}
+{% tab title="Objection" %}
+* **Host terminal:** attach to the running app.
+  * ```text
+    frida-ps -Uai
+    objection --name '<process-name>' start
+    ```
+* **Objection console:** search the marker or dump accessible app memory.
+  * ```text
+    memory search <test-marker> --string
+    memory dump all <output-file>.dmp
+    ```
+{% endtab %}
+{% tab title="fridump3" %}
+* **Host, Frida 17+ compatible [fridump3.1](https://github.com/Xenorf/fridump3.1):** use the running process name and search the extracted strings for the marker.
+  * ```text
+    frida-ps -Uai
+    fridump3 -u -s -o ./memory-capture "<running-process-name>"
+    ```
+* **Linux Bash:** `grep -RniF '<test-marker>' './memory-capture'`. **Windows PowerShell:** `Get-ChildItem './memory-capture' -Recurse -File | Select-String -SimpleMatch '<test-marker>'`.
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Host terminal:** start the installed interface and select the running app.
+  * ```text
+    frida-ps -Uai
+    igf
+    ```
+* Use the memory scanner to search the marker in the selected process and inspect the matching region.
+{% endtab %}
+{% endtabs %}
+
+* Repeat the relevant operation after logout or expiry. A marker present during normal use is a lead; determine whether a retained credential remains usable and what access is needed to read the process.

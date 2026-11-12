@@ -9,6 +9,8 @@
 
 ### Binary Protections
 
+{% tabs %}
+{% tab title="otool" %}
 * Run on macOS; interpret indicators in context:
   * <pre class="language-bash" data-line-numbers><code class="lang-bash">otool -hv &#x3C;app-binary> | grep PIE
     otool -I -v &#x3C;app-binary> | grep stack_chk
@@ -16,6 +18,27 @@
     otool -arch all -Vl &#x3C;app-binary> | grep -A5 LC_ENCRYPT
     otool -l &#x3C;app-binary> | grep -A4 LC_ENCRYPTION_INFO
     </code></pre>
+{% endtab %}
+{% tab title="radare2 / rabin2" %}
+* **Host terminal:** inspect Mach-O information and imported symbols in the selected binary.
+  * ```text
+    rabin2 -I '<app-binary>'
+    rabin2 -i '<app-binary>'
+    ```
+* Inspect the PIE/canary and Objective-C symbols in the output. For encryption state, inspect the Mach-O load command with `otool` in the adjacent tab; tool versions may report different fields.
+{% endtab %}
+{% tab title="MobSF" %}
+* Upload the IPA to a compatible MobSF instance and inspect its static binary-analysis indicators and underlying executable. Use the actual build/distribution context when interpreting them.
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Mac terminal:** with the app and compatible Frida connection available, start the installed interface.
+  * ```bash
+    frida-ps -Uai
+    igf
+    ```
+* Select the running app and inspect its iOS security-analysis view for PIE, ARC, canary and encryption indicators. This is runtime inspection of the selected build.
+{% endtab %}
+{% endtabs %}
 
 <table><thead><tr><th width="121">Check</th><th width="284.0001220703125">Indicator</th><th>Limitation</th></tr></thead><tbody><tr><td>PIE</td><td>Supports address randomization.</td><td>Not proof of overall binary security.</td></tr><tr><td>Canaries</td><td><code>stack_chk_guard</code>, <code>stack_chk_fail</code>.</td><td>Checks some stack corruption at return; not all code.</td></tr><tr><td>ARC</td><td><code>_objc_release</code>.</td><td>Reference-lifetime management, not complete memory safety.</td></tr><tr><td>Encryption</td><td><code>cryptid=1</code> encrypted; <code>0</code> unencrypted.</td><td>Development/decrypted copies need not be App Store-encrypted.</td></tr></tbody></table>
 

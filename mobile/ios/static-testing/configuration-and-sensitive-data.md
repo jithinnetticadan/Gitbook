@@ -11,6 +11,26 @@
 		strings '<app-binary>' | grep -iE 'https?://|password|api[_-]?key|secret|token'
 		```
 * **ATS and privacy descriptions:** inspect the printed plist for `NSAppTransportSecurity`, exception domains, and permission usage strings. Distribution builds may omit an embedded provisioning profile.
+* **Extracted-app secret scanners:** select either tool for the same `.app` bundle used above. Inspect the matching file and consuming code to determine whether the value grants unintended access.
+
+{% tabs %}
+{% tab title="TruffleHog" %}
+* **macOS Terminal:**
+	* ```bash
+		trufflehog filesystem '<Application.app>' --no-verification
+		```
+{% endtab %}
+{% tab title="Gitleaks" %}
+* **macOS Terminal:**
+	* ```bash
+		gitleaks dir -v '<Application.app>'
+		```
+{% endtab %}
+{% tab title="MobSF" %}
+* Upload the acquired IPA to a compatible MobSF instance; inspect the static findings and bundle files for the actual key/endpoint and its use.
+{% endtab %}
+{% endtabs %}
+
 * **Data protection and backup APIs:** inspect binary selectors/strings, then exercise the corresponding file operation at runtime.
 	* ```bash
 		strings '<app-binary>' | grep -E 'NSFileProtection|NSURLIsExcludedFromBackupKey|kSecAttrAccessible|kSecAttrAccessGroup|kSecAttrSynchronizable'

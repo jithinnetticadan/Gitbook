@@ -2,7 +2,9 @@
 
 ## Manifest and Component Review
 
-* Inspect `AndroidManifest.xml` in JADX and Apktool:
+{% tabs %}
+{% tab title="apkanalyzer" %}
+* **Linux Bash / Windows PowerShell:** print the manifest and package/SDK/permission fields from the APK.
   * ```bash
     apkanalyzer manifest print '<app.apk>'
     apkanalyzer manifest application-id '<app.apk>'
@@ -10,6 +12,33 @@
     apkanalyzer manifest target-sdk '<app.apk>'
     apkanalyzer manifest permissions '<app.apk>'
     ```
+{% endtab %}
+{% tab title="JADX" %}
+* **Linux Bash / Windows PowerShell:** open the APK and inspect the manifest and component classes.
+  * ```text
+    jadx-gui '<app.apk>'
+    ```
+{% endtab %}
+{% tab title="Apktool" %}
+* **Linux Bash / Windows PowerShell:** decode the manifest and resources, including XML referenced by the manifest.
+  * ```text
+    apktool d '<app.apk>' -o '<decoded-directory>'
+    ```
+* Inspect `<decoded-directory>/AndroidManifest.xml` and the referenced files under `res/xml/`.
+{% endtab %}
+{% tab title="MobSF" %}
+* Upload the acquired APK to a compatible MobSF instance; inspect the static manifest/component results and the referenced manifest attributes.
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Host terminal:** start the installed interface with the device's Frida server running.
+  * ```text
+    frida-ps -U
+    igf
+    ```
+* Select the app and inspect its manifest/component browser. Use [external-caller tests](../dynamic-testing/component-testing.md#runtime-component-testing) for protected operations.
+{% endtab %}
+{% endtabs %}
+
 * `minSdkVersion`, target SDK, permissions, application settings, activities, services, receivers, and providers.
 * `android:exported`, component permissions, intent filters, deep links, and sensitive-action authorization. Intent filters are **not authentication**.
 * Debug, backup, cleartext, and `android:networkSecurityConfig` settings. Check production behavior.

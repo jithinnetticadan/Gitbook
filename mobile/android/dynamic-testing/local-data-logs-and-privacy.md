@@ -42,6 +42,8 @@
 
 ## File and Database Inspection
 
+{% tabs %}
+{% tab title="ADB run-as" %}
 * **Debuggable app, host Bash:** confirm `run-as` identity, inspect one file, or export the private directory as a binary tar stream.
   * ```bash
     adb shell run-as '<package-name>' id
@@ -49,6 +51,60 @@
     adb shell run-as '<package-name>' cat 'shared_prefs/<preferences-file>.xml'
     adb exec-out run-as '<package-name>' tar -cf - . > app-data.tar
     ```
+* **Windows PowerShell:** inspect text with the same `adb shell run-as` commands above. For binary `adb exec-out` redirection use PowerShell 7.4+; earlier versions can use `cmd.exe /c` for the binary stream.
+{% endtab %}
+
+{% tab title="ADB root" %}
+* **Root-capable adbd:** run on the host; the package path below is for Android user 0.
+  * ```text
+    adb root
+    adb shell am force-stop '<package-name>'
+    adb pull '/data/user/0/<package-name>/databases' ./test-databases
+    adb pull '/data/user/0/<package-name>/shared_prefs' ./test-shared-prefs
+    ```
+* For production images using `su`, use a root-assisted export. Keep the matching database WAL/SHM sidecars for a consistent SQLite copy.
+{% endtab %}
+
+{% tab title="Objection" %}
+* **Host terminal:** attach to the running app with a working Frida connection.
+  * ```text
+    frida-ps -Uai
+    objection --name '<process-name>' start
+    ```
+* **Objection console:** locate app files and inspect/download the selected preferences or database.
+  * ```text
+    env
+    filesystem cat <path-to-file>
+    filesystem download <path-to-file>
+    sqlite connect <database-file>
+    ```
+{% endtab %}
+
+{% tab title="Grapefruit" %}
+* **Host terminal:** start the installed interface with the device's Frida server running.
+  * ```text
+    frida-ps -Uai
+    igf
+    ```
+* Select the app, then use its filesystem browser or SQLite inspector to inspect the actual preferences/database path and test marker. Access is in the instrumented app's context.
+{% endtab %}
+
+{% tab title="Android Studio" %}
+* Open Device Explorer for the selected device, navigate to the app's data directory and inspect/export its preferences or databases. File access depends on the device and app configuration.
+{% endtab %}
+{% tab title="AndroidSpect" %}
+* On the rooted device, open AndroidSpect and start its server. Select the target app in the browser dashboard; use **Files**, **SharedPreferences**, or **SQLite** to inspect the relevant path and marker. The app displays the dashboard address and password.
+* **Emulator, host terminal:**
+  * ```text
+    adb forward tcp:8008 tcp:8008
+    ```
+* Open `https://localhost:8008/` and select the target. AndroidSpect reads through its root context.
+{% endtab %}
+{% tab title="Inspeckage" %}
+* In a compatible Xposed environment, select the target app in Inspeckage and use its Shared Preferences, SQLite or filesystem views/hooks while triggering the relevant app action.
+{% endtab %}
+{% endtabs %}
+
 * Extract each app state into a separate host directory and compare the same paths; close/quiesce database writers before acquisition.
   * ```bash
     mkdir -p before
@@ -59,14 +115,6 @@
 1. Resolve the correct user/profile and paths using `env`, package details, or Device File Explorer. `/data/data` is commonly an alias for user 0; do not assume that user for every installation.
 2. Prefer an app-supported SQLite snapshot/backup or quiesce the app before copying. A live database copied without its matching `-wal` and `-shm` files can be incomplete/inconsistent.
 3. Use Device File Explorer, `adb pull` with appropriate device access, or a binary-safe export. Standard `adbd` cannot read private app data merely because `su` is installed. `run-as` generally requires a debuggable app; its failure does not prove all storage is protected.
-
-* **Root-capable adbd:** use the [root startup command](../setup.md#start-frida-server) first.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell am force-stop &#x3C;package-name>
-  adb pull /data/user/0/&#x3C;package-name>/databases ./test-databases
-  adb pull /data/user/0/&#x3C;package-name>/shared_prefs ./test-shared-prefs
-  </code></pre>
-* Copy the relevant database directory with its WAL/SHM sidecars intact.
-* For production images using `su`, use a controlled root-assisted export.
 
 ## Screenshots, Clipboard, and Input Surfaces
 

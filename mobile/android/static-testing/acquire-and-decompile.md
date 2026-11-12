@@ -16,17 +16,44 @@
 
 ## Decompile and Inspect
 
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">jadx-gui &#x3C;app.apk>
-  apktool d &#x3C;app.apk> -o &#x3C;decoded-directory>
-  </code></pre>
-* Compare JADX code with Apktool resources/SMALI; resolve obfuscation or tool differences.
-* Inspect `.so` native libraries separately.
-* Optional DEX-to-JAR and string scanning:
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">d2j-dex2jar.sh &#x3C;app.apk>
-  </code></pre>
+* Use the acquired APK and its relevant splits; select an interface below to inspect code or resources. These outputs differ: use Apktool's decoded SMALI/resources when a test needs them, even if another tool is preferred for reading code.
+
+{% tabs %}
+{% tab title="JADX" %}
+* **Linux Bash / Windows PowerShell:** open the APK and search its classes, manifest and resources.
+  * ```text
+    jadx-gui '<app.apk>'
+    ```
+* Follow the observed class/caller into the code deciding the relevant security check. Decompiled Java/Kotlin-like output may differ from the actual bytecode.
+{% endtab %}
+{% tab title="Apktool" %}
+* **Linux Bash / Windows PowerShell:** decode resources and SMALI into the path used by the static searches and patching recipes.
+  * ```text
+    apktool d '<app.apk>' -o '<decoded-directory>'
+    ```
+* Inspect `AndroidManifest.xml`, `res/`, `assets/` and all `smali*` directories; this is not Java decompilation.
+{% endtab %}
+{% tab title="dex2jar + JD-GUI" %}
+* **Linux Bash:** convert the APK's DEX and open the resulting JAR in JD-GUI.
+  * ```text
+    d2j-dex2jar.sh '<app.apk>'
+    ```
+* **Windows PowerShell:**
+  * ```powershell
+    .\d2j-dex2jar.bat '<app.apk>'
+    ```
+* This converts DEX to Java bytecode, not original source. Resource/SMALI checks still need the appropriate decoded artifacts.
+{% endtab %}
+{% tab title="MobSF" %}
+* Upload the acquired APK to a running compatible MobSF instance; open the static analysis result and inspect the decompiled source/manifest and the actual call sites behind each finding. Scanner output alone is a lead, not proof of reachability.
+{% endtab %}
+{% tab title="GDA" %}
+* **Windows GUI:** open the APK in [GDA](https://github.com/charles2gan/GDA-android-reversing-Tool); search the relevant class/string and inspect its callers and SMALI view. Compare suspicious decompiler output with actual bytecode.
+{% endtab %}
+{% endtabs %}
+
+* Compare JADX code with Apktool resources/SMALI; resolve obfuscation or tool differences. Inspect `.so` native libraries separately.
 * **APKLeaks:** use the [secret-scanning command](secrets-and-cloud.md#secrets-cloud-configuration-and-endpoints).
-* Open the generated JAR in JD-GUI. dex2jar converts DEX to Java bytecode, not original source.
-* MobSF: inspect decompiled code/SMALI; validate automated findings manually.
 * Use [#automated-tools](./#automated-tools "mention") as well.
 
 ### Compiled Resources and Packaged Configuration

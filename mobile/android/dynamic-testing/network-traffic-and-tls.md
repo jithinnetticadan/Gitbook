@@ -2,19 +2,60 @@
 
 ## Proxy Setup
 
+{% tabs %}
+{% tab title="Burp Suite" %}
 1. Bind Burp to the device-reachable lab IP/port.
 2. Set the device proxy and install the CA: [Android Burp guide](https://portswigger.net/support/configuring-an-android-device-to-work-with-burp).
 3. Use DER where required; `.cer` renaming does not change encoding/trust. User-CA acceptance depends on OS/app policy.
 4. Test API authentication, authorization, sensitive data, and server-side behavior.
 5. If pinning blocks testing, use the [Objection pinning startup variant](objection-and-runtime-instrumentation.md#attach-or-spawn), a reviewed Frida script, or a patched test build.
+{% endtab %}
+{% tab title="mitmproxy" %}
+1. **Host terminal:** start the installed proxy; use the host's device-reachable IP and this port in the Android proxy settings.
+   * ```text
+     mitmproxy --listen-host 0.0.0.0 --listen-port 8080
+     ```
+2. With the device using that proxy, open `http://mitm.it` on the device and install the Android CA. The app must trust that CA for its HTTPS stack.
+3. Trigger the observed app request and inspect the resulting flow in mitmproxy. The same authorization and input mutations in the testing notes apply to that request.
+{% endtab %}
+{% tab title="Proxyman" %}
+1. Start Proxyman, enable its external-device proxy listener, and set the Android device proxy to the host IP/listener port displayed by Proxyman.
+2. Use Proxyman's Android certificate installation instructions to install/trust its CA for the target stack and enable SSL proxying for the observed host.
+3. Trigger the app request and inspect it in Proxyman. App trust and pinning still determine whether the body can be read.
+{% endtab %}
+{% endtabs %}
 
 * Trusted CA and pinning are separate checks.
 * Android 7+ apps targeting API 24+ do not trust user-installed CAs by default. Use an authorized test trust configuration/device setup; installing the CA alone may not allow interception.
-* Alternatives: [Proxyman](https://proxyman.io/), HTTP Canary (including Flutter attempts); verify platform/TLS compatibility.
+* HTTP Canary is an additional legacy option (including Flutter attempts); check platform/TLS compatibility.
 * Setup: [MobSF Dynamic Analyzer](https://mobsf.github.io/docs/#/dynamic_analyzer), [Frida Android](https://frida.re/docs/android/).
 * Optional/legacy: [CuckooDroid](https://github.com/idanr1986/cuckoo-droid) sandboxing, [BlueStacks](https://www.bluestacks.com/) emulator, [RMS](https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security), [Ghost](https://github.com/EntySec/Ghost). Verify maintenance/root behavior.
 * [Objection session and startup commands](objection-and-runtime-instrumentation.md#attach-or-spawn).
-* For flutter apps,  [FlutterTap](https://github.com/script-or-script/FlutterTap)
+
+### Flutter Traffic Routing and TLS
+
+* Use the option matching the app's executing HTTP/TLS stack. Configure a device-reachable listener from the proxy tabs above.
+
+{% tabs %}
+{% tab title="FlutterTap" %}
+* Install the [FlutterTap](https://github.com/script-or-script/FlutterTap) Zygisk module and manager on a compatible rooted device. In its manager, grant root, set the listener IP/port, enable the module and select the target package.
+* For Burp, enable **Support invisible proxying** on the listener. Restart the selected app so its new process receives the hooks.
+  * ```text
+    adb shell am force-stop '<package-name>'
+    adb shell monkey -p '<package-name>' -c android.intent.category.LAUNCHER 1
+    adb logcat -s FlutterTap:V
+    ```
+* Trigger the network operation and inspect the listener. The log identifies whether the module selected the process and installed the Flutter TLS/routing hooks.
+{% endtab %}
+{% tab title="Targeted Frida" %}
+* Identify the actual Flutter/native or platform-client verifier and use a script matching that implementation/build. Set the device proxy where the selected client honors it.
+  * ```text
+    adb shell settings put global http_proxy '<proxy-ip>:8080'
+    frida -U -f '<package-name>' -l '<matching-tls-hook.js>'
+    ```
+* Trigger the same network operation and inspect the listener. Hooking one client does not configure proxy routing for a different client.
+{% endtab %}
+{% endtabs %}
 
 ## Establish Network Visibility
 

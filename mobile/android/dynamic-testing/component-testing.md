@@ -64,21 +64,58 @@
 
 * **Map:** full class name, permissions, filters, extras, data URIs.
 * **Trace:** `onCreate` / `onNewIntent`; note activity reuse.
+
+{% tabs %}
+{% tab title="ADB" %}
+* **Linux Bash / Windows PowerShell:** inspect the installed package's activities, filters, permissions and enabled/exported state.
+  * ```text
+    adb shell dumpsys package "<package-name>"
+    ```
+{% endtab %}
+{% tab title="Drozer" %}
+* **Drozer console:**
 * <pre class="language-text" data-line-numbers><code class="lang-text">run app.activity.info -a &#x3C;package-name>
   </code></pre>
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Host terminal:** start the installed interface with the device's Frida server running.
+  * ```text
+    frida-ps -U
+    igf
+    ```
+* Select the app, then use its manifest/component browser to inspect activities, filters and permissions. Its Intent builder can launch the observed component with the actual extras; this runs through instrumentation, not an ordinary independent caller.
+{% endtab %}
+{% tab title="AndroidSpect" %}
+* Open the AndroidSpect app on the rooted device and start its server. Select the target app in its browser dashboard, then open **Components** and filter for exported activities. The displayed server address and password are provided by the app.
+* **Emulator, host terminal:** forward the dashboard port and open `https://localhost:8008/`.
+  * ```text
+    adb forward tcp:8008 tcp:8008
+    ```
+{% endtab %}
+{% tab title="Inspeckage" %}
+* With a compatible Xposed environment and Inspeckage enabled, select the target in its interface and inspect the activities and their export/permission details. Use its activity action for an in-process launch; use an external caller below when testing exported access.
+{% endtab %}
+{% endtabs %}
+* Use the ADB or Drozer launch below to assess external-caller access; a launch originating inside the instrumented app does not establish that an unprivileged app can reach the same component.
 
 ### Test Direct Access and Inputs
 
+{% tabs %}
+{% tab title="ADB" %}
 * **ADB:** bare launch, extra input. Types: `--es` string, `--ei` integer, `--ez` Boolean.
   * ```bash
     adb shell am start -n "<package-name>/<fully-qualified-activity-name>"
     adb shell am start -W -n "<package-name>/<activity-name>" --es "<extra-name>" "<test-value>"
     ```
+  {% endtab %}
+  {% tab title="Drozer" %}
 * **Drozer:** bare launch, extra, or supported data URI.
   * <pre class="language-text" data-line-numbers><code class="lang-text">run app.activity.start --component &#x3C;package-name> &#x3C;activity-name>
     run app.activity.start --component &#x3C;package-name> &#x3C;activity-name> --extra string &#x3C;extra-name> &#x3C;test-value>
     run app.activity.start --component &#x3C;package-name> &#x3C;activity-name> --data-uri &#x3C;authorized-test-uri>
     </code></pre>
+  {% endtab %}
+  {% endtabs %}
 * **States:** logged out, expired session, owned accounts/roles A/B.
 * **Inputs:** missing extra, different owned ID, short invalid value; vary one at a time.
 * **Lifecycle:** fresh launch versus existing task (`onCreate` / `onNewIntent`).
@@ -105,14 +142,22 @@
 
 ### Test a Started Service
 
-* **Baseline:** trigger normally, then repeat the same harmless input below.
+* Trigger the legitimate action first, then repeat the same harmless input with one of these callers.
+
+{% tabs %}
+{% tab title="ADB" %}
+* **Shell caller:**
   * ```bash
     adb shell am startservice -n "<package-name>/<service-name>" --es "<extra-name>" "<test-value>"
     ```
+{% endtab %}
+{% tab title="Drozer" %}
 * **Drozer:** compare agent versus shell access.
   * ```bash
     run app.service.start --component <package-name> <service-name> --extra string <extra-name> <test-value>    
     ```
+{% endtab %}
+{% endtabs %}
 * **Vary:** missing/malformed inputs, unauthorized account/object; disposable state only.
 * **Blocked delivery:** check OS background/foreground restrictions separately from authorization.
 * Foreground start requires a compatible notification/lifecycle; do not switch blindly.
@@ -154,10 +199,18 @@
 
 ### Test Unauthorized Sending
 
+{% tabs %}
+{% tab title="ADB" %}
 * **Explicit ADB:** manifest receiver, observed action, harmless extras.
   * ```bash
     adb shell am broadcast -n "<package-name>/<receiver-name>" -a "<observed-action>" --es "<extra-name>" "<test-value>"
     ```
+* **Package-targeted ADB:** runtime receiver must be registered with a matching filter; class targeting may not work.
+  * ```bash
+    adb shell am broadcast -a "<observed-action>" -p "<package-name>" --es "<extra-name>" "<test-value>"
+    ```
+{% endtab %}
+{% tab title="Drozer" %}
 * **Explicit Drozer:** do not grant the permission being tested.
   * ```bash
     run app.broadcast.send --component <package-name> <receiver-name> --action <observed-action> --extra string <extra-name> <test-value>
@@ -166,10 +219,8 @@
   * ```bash
     run app.broadcast.send --action <intent-name> --extra string <parameter> <test-value>
     ```
-* **Package-targeted ADB:** runtime receiver must be registered with a matching filter; class targeting may not work.
-  * ```bash
-    adb shell am broadcast -a "<observed-action>" -p "<package-name>" --es "<extra-name>" "<test-value>"
-    ```
+{% endtab %}
+{% endtabs %}
 * **Vary:** missing/wrong-type extras, owned-record IDs; check authorization before side effects.
 * Protected broadcasts/sender restrictions can block injection; record the restriction, do not bypass it.
 
@@ -206,14 +257,21 @@
 
 ### Test Scoped Reads
 
+{% tabs %}
+{% tab title="ADB" %}
 * **ADB:** numeric test ID; adapt schema and shell quoting.
   * ```bash
     adb shell content query --uri "<content-uri>" --projection "<known-column>" --where "<id-column>=<numeric-test-record-id>"
     ```
+  {% endtab %}
+  {% tab title="Drozer" %}
 * **Drozer:** scoped columns/record; compare unauthorized caller and owned accounts A/B.
   * ```bash
     run app.provider.query <content-uri> --projection <known-column> --selection "<id-column>=?" --selection-args <owned-record-id>
     ```
+  {% endtab %}
+  {% endtabs %}
+  * **Caller:** the ADB query uses the shell UID; Drozer uses the agent's UID. Compare permissions and URI grants before interpreting different results.
 * **Minimal query/columns:** owned item URI or small disposable dataset only; unfiltered collections may return all rows.
   * <pre class="language-text" data-line-numbers><code class="lang-text">run app.provider.query &#x3C;content-uri>
     run app.provider.columns &#x3C;content-uri>

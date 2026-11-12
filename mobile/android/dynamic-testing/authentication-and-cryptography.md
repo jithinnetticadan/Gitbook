@@ -66,7 +66,8 @@
 
 ## Biometrics and Auth-Bound Keystore
 
-* **Inside Objection:** [Keystore commands](objection-and-runtime-instrumentation.md#keystore-and-device-checks). For concrete callback implementations, use the [class/method watcher](objection-and-runtime-instrumentation.md#classes-and-hooks) with the observed callback class.
+{% tabs %}
+{% tab title="Frida" %}
 * **Frida Java script:** enumerate key policy in the current app UID; Android 6+ for `KeyInfo`, Android 12+ for `getSecurityLevel()`.
   * ```javascript
     Java.perform(function () {
@@ -97,6 +98,30 @@
         }
     });
     ```
+{% endtab %}
+{% tab title="Objection" %}
+* **Host terminal:** attach to the app with a working Frida connection.
+    * ```text
+        frida-ps -Uai
+        objection --name '<process-name>' start
+        ```
+* **Objection console:** list and inspect the app's key aliases/policies and watch their use.
+    * ```text
+        android keystore list
+        android keystore detail
+        android keystore watch
+        ```
+* For the actual biometric callback, use the [class/method watcher](objection-and-runtime-instrumentation.md#classes-and-hooks) with the observed callback class.
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Host terminal:** start the installed interface with the device's Frida server running.
+    * ```text
+        frida-ps -Uai
+        igf
+        ```
+* Select the app, open its Android Keystore view, and inspect the relevant alias, key attributes and authentication policy.
+{% endtab %}
+{% endtabs %}
 
 1. Identify the concrete AndroidX/platform `BiometricPrompt` callback or legacy fingerprint path. Observe success, failure, cancellation, fallback, and exception handling without replacing them initially.
 2. Trace whether the operation uses a `CryptoObject` containing a `Cipher`, `Signature`, or `Mac`, or a time-window-based auth-bound key. Missing `CryptoObject` alone does not prove a bypass.

@@ -74,12 +74,18 @@
 
 ## Third-Party Dependencies (SCA)
 
+* Select a scanner according to the available input: supported source manifests/lockfiles for OSV, resolved artifacts for Dependency-Check, or a supported SBOM for Trivy. For APK-only version evidence and an SBOM example, use the commands immediately below the tabs.
+
+{% tabs %}
+{% tab title="OSV-Scanner" %}
 * **Source project, Linux Bash:** obtain the actual release dependency configuration, then scan supported manifests/lockfiles with [OSV-Scanner V2](https://google.github.io/osv-scanner/usage/).
   * ```bash
     ./gradlew :app:dependencies --configuration releaseRuntimeClasspath
     osv-scanner scan source -r . --format json --output-file osv-results.json
     ```
 * **Windows PowerShell:** use `.\gradlew.bat :app:dependencies --configuration releaseRuntimeClasspath`; the OSV command is unchanged. Replace the module/configuration for the real flavor. Gradle console output is not itself an OSV lockfile; check extracted package coverage and use a supported SBOM/export if necessary.
+{% endtab %}
+{% tab title="Dependency-Check" %}
 * **[OWASP Dependency-Check CLI](https://jeremylong.github.io/DependencyCheck/dependency-check-cli/index.html) alternative:** install the CLI and its supported Java runtime; scan resolved dependency JAR/AAR artifacts or other analyzer-supported files. Raw APK/DEX scanning alone is not a reliable complete dependency inventory. Initial database updates may require the selected release's NVD/API configuration.
   * **Linux Bash:**
     * ```bash
@@ -89,6 +95,16 @@
     * ```powershell
       dependency-check.bat --project 'Android-app' --scan '<dependency-artifact-directory>' --format HTML --out './dependency-check-report'
       ```
+{% endtab %}
+{% tab title="Trivy SBOM" %}
+* **[Trivy](https://trivy.dev/latest/docs/target/sbom/) installed, same command on Linux / Windows:** first create or obtain `app-bom.json`; the evidence-backed example below the tabs shows the expected input.
+  * ```text
+    trivy sbom --format json --output sca-results.json app-bom.json
+    ```
+* An SBOM containing only APK metadata covers only the components that were actually identified; it is not an exhaustive dependency graph.
+{% endtab %}
+{% endtabs %}
+
 * **Interpret:** compare each advisory's detected package/version with the resolved dependency graph and actual feature/configuration. Scanner findings identify affected-component candidates; use the reachability checks below to establish a testable vulnerable path.
 * **APK metadata, Linux Bash:**
   * ```bash
@@ -123,10 +139,6 @@
         "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.8"
       }]
     }
-    ```
-* **[Trivy](https://trivy.dev/latest/docs/target/sbom/) installed, same command on Linux / Windows:**
-  * ```text
-    trivy sbom --format json --output sca-results.json app-bom.json
     ```
 * **Reachability example:** for a Jackson deserialization advisory, locate the actual `ObjectMapper` configuration and `readValue` call, trace whether external input reaches it, and compare the advisory's required version/type/polymorphic configuration. A packaged old version is component exposure; an advisory-specific reproducer reaching the affected parser is stronger exploit evidence. Retain the package/version/advisory match even when runtime reachability remains unknown.
 * Record library/version evidence, advisory ID, affected configuration, and observed or unknown reachability. Distinguish a vulnerable-component/policy finding from a demonstrated exploitable path; a package-name match alone is not reliable version identification.

@@ -2,6 +2,8 @@
 
 ## Proxy Setup
 
+{% tabs %}
+{% tab title="Burp Suite" %}
 1. Bind Burp to the device-reachable lab host IP/port.
 2. Set the iPhone Wi-Fi proxy to that address. `127.0.0.1` on the phone is **not the proxy host**.
 3. Open `http://burp`; install the CA under VPN & Device Management.
@@ -9,6 +11,21 @@
 5. Test API authentication, authorization, inputs, sensitive data, and server behavior.
 6. Confirm the app's CA trust separately from pinning.
 7. Follow the current [PortSwigger iOS proxy setup](https://portswigger.net/burp/documentation/desktop/mobile/config-ios-device)
+{% endtab %}
+{% tab title="mitmproxy" %}
+1. **Mac terminal:** start the installed proxy; use the Mac's device-reachable IP and this port in iPhone Wi-Fi proxy settings.
+	 * ```bash
+		 mitmproxy --listen-host 0.0.0.0 --listen-port 8080
+		 ```
+2. On the device, open `http://mitm.it` through the proxy and install the iOS CA profile. Enable its full trust under General > About > Certificate Trust Settings.
+3. Trigger the app request and inspect the flow in mitmproxy; the app's trust/pinning implementation determines whether HTTPS content is visible.
+{% endtab %}
+{% tab title="Proxyman" %}
+1. Start Proxyman, enable its external-device proxy listener, and set the iPhone's Wi-Fi proxy to the Mac IP/listener port displayed by Proxyman.
+2. Use Proxyman's iOS certificate instructions to install its CA profile and enable full trust in Certificate Trust Settings. Enable SSL proxying for the observed host.
+3. Trigger the app request and inspect it in Proxyman; the app's trust/pinning implementation determines whether HTTPS content is visible.
+{% endtab %}
+{% endtabs %}
 
 ## Pinning Checks
 

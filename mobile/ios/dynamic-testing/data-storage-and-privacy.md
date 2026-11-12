@@ -9,6 +9,8 @@
 
 ## File and Database Inspection
 
+{% tabs %}
+{% tab title="worse_finder" %}
 ### Non-Jailbroken Container Access with worse_finder
 
 * [worse_finder](https://github.com/melvinsh/worse_finder) uses the [worse_query](https://github.com/forcequitOS/worse_query) container-manager sandbox escape to browse and export app and App Group containers without a jailbreak. The project reports support for iOS 26 and 27; verify the exact device build against current project information. Some paths can remain inaccessible because of data protection or other restrictions.
@@ -23,14 +25,18 @@
     ```
 * Open worse_finder on the device, select the target app, inspect its data container and App Groups, and export the relevant container as ZIP. Exports are written to worse_finder's Documents for sharing through Files or AirDrop. The built-in web server is an alternative on port `8080`; it uses plain HTTP, including for its generated passphrase.
 * Inspect exported preferences, databases and caches using the commands below. Compare login/logout/account states and whether the recovered test credentials still work. Container access does not imply access to other apps' Keychain items or bypass every locked-file protection; distinguish this OS-level escape from exposure to an ordinary sandboxed app.
+{% endtab %}
 
+{% tab title="SSH / SFTP" %}
 * **Physical device with configured SSH:** copy the known container path to the host before offline inspection.
   * ```bash
     scp -r '<ssh-user>@<device-ip>:<resolved-data-container>/Library/Preferences' './device-preferences'
     scp -r '<ssh-user>@<device-ip>:<resolved-data-container>/Library/Application Support/<database-directory>' './device-databases'
     ```
 * Paths with spaces require quoting supported by the installed SCP/SFTP implementation; transfer a consistent database/sidecar set.
+{% endtab %}
 
+{% tab title="Simulator" %}
 * **macOS Simulator:** resolve the data container, inspect files, and query a copied database.
   * ```bash
     xcrun simctl get_app_container booted '<bundle-id>' data
@@ -40,6 +46,35 @@
     sqlite3 -readonly '<database-copy.db>' '.tables'
     sqlite3 -readonly '<database-copy.db>' 'SELECT * FROM <known-table> LIMIT 10;'
     ```
+{% endtab %}
+
+{% tab title="Objection" %}
+* **Mac terminal:** attach to the running app with a working Frida connection.
+  * ```bash
+    frida-ps -Uai
+    objection --name '<app-process-name>' start
+    ```
+* **Objection console:** obtain the app's container paths and inspect/download the target file or query its database.
+  * ```text
+    env
+    filesystem cat <path-to-file>
+    filesystem download <path-to-file>
+    sqlite connect <database-file>
+    ios nsuserdefaults get
+    ```
+* These commands run in the attached app's context; the app's entitlements and file-access state determine which items it can read.
+{% endtab %}
+
+{% tab title="Grapefruit" %}
+* **Mac terminal:** start the installed Grapefruit interface with a compatible Frida connection; its current upstream release requires Node.js 22.18+.
+  * ```bash
+    frida-ps -Uai
+    igf
+    ```
+* Select the app in the local UI, open its filesystem browser or SQLite inspector, then navigate to the observed preferences/database path and inspect the relevant test value. The app process and its available access determine the results.
+{% endtab %}
+{% endtabs %}
+
 * **Compare storage across login/logout/account switch:** acquire each state into its own directory, then compare the same files.
   * ```bash
     diff -ru '<before-directory>' '<after-directory>'
@@ -66,9 +101,37 @@
 
 ## Keychain and Cookies
 
-* **Objection Keychain dump:** app-entitled access groups and current item accessibility/authentication policy.
-* [Keychain-Dumper](https://github.com/ptoomey3/Keychain-Dumper): create `/tmp/keychain`; transfer a compatible `keychain_dumper` via SFTP.
-* In device SSH: `./keychain_dumper > keychain.txt`
+{% tabs %}
+{% tab title="Objection" %}
+* **Mac terminal:** attach to the running app with a working Frida connection.
+  * ```bash
+    frida-ps -Uai
+    objection --name '<app-process-name>' start
+    ```
+* **Objection console:** inspect Keychain items accessible under the app's entitlements and the current device state.
+  * ```text
+    ios keychain dump
+    ```
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Mac terminal:** start the installed interface with the device's Frida server running.
+  * ```bash
+    frida-ps -Uai
+    igf
+    ```
+* Select the app, then open its Keychain view and inspect the relevant item's access group, accessibility attributes and data under the current app/device context.
+{% endtab %}
+{% tab title="Keychain-Dumper" %}
+* **Jailbroken device SSH:** transfer a compatible [Keychain-Dumper](https://github.com/ptoomey3/Keychain-Dumper) binary via SFTP and use its required entitlements; create the output directory before running.
+  * ```bash
+    mkdir -p /tmp/keychain
+    ./keychain_dumper > keychain.txt
+    ```
+* The dumper's entitlements and device configuration determine its access; this is not the same caller context as the app.
+{% endtab %}
+{% endtabs %}
+
+* Inspect the relevant item's accessibility/authentication policy, then use the [no-prompt query](#keychain-query-one-item-without-a-prompt) to test whether the actual item is usable in the relevant state.
 * SQLite: use the read-only queries under [File and Database Inspection](#file-and-database-inspection).
 * BinaryCookiesReader: `pip install binarycookiesreader`.
 

@@ -4,16 +4,75 @@
 
 * Search: `api`, `id`, `password`, `username`, `.com`, `aws`, `gcp`, `azure`, `http`, `https`, `secret`, `key`.
 * Locations: `res/values/strings.xml`, code, JSON/configuration, assets, native libraries.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">apkleaks -f &#x3C;app.apk>
-  apkleaks -f &#x3C;app.apk> -o &#x3C;secrets-report.txt>
-  grep -rniE 'api[_-]?key|secret|token|password|AIza[0-9A-Za-z_-]{35}|BEGIN (RSA |EC )?PRIVATE KEY' &#x3C;decompiled-directory>
-  strings &#x3C;decoded-directory>/lib/&#x3C;abi>/*.so | grep -iE 'key|secret|token'
+
+{% tabs %}
+{% tab title="APKLeaks" %}
+* **Linux Bash / Windows PowerShell:** scan the APK directly; choose terminal output or the report variant.
+  * ```text
+    apkleaks -f '<app.apk>'
+    apkleaks -f '<app.apk>' -o '<secrets-report.txt>'
+    ```
+{% endtab %}
+{% tab title="grep / strings" %}
+* **Linux Bash:** scan JADX source and decoded native libraries.
+  * ```bash
+    grep -rniE 'api[_-]?key|secret|token|password|AIza[0-9A-Za-z_-]{35}|BEGIN (RSA |EC )?PRIVATE KEY' '<decompiled-directory>'
+    strings '<decoded-directory>'/lib/<abi>/*.so | grep -iE 'key|secret|token'
+    grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' '<decompiled-directory>'
+    ```
+* **Windows PowerShell:** search source files; use a Windows build of `strings.exe` from compatible binutils for native libraries.
+  * ```powershell
+    Get-ChildItem -LiteralPath '<decompiled-directory>' -Recurse -File | Select-String -Pattern 'api[_-]?key|secret|token|password|AIza[0-9A-Za-z_-]{35}|BEGIN (RSA |EC )?PRIVATE KEY|firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com'
+    Get-ChildItem -LiteralPath '<decoded-directory>/lib/<abi>' -Filter '*.so' | ForEach-Object { & strings.exe $_.FullName | Select-String -Pattern 'key|secret|token' }
+    ```
+{% endtab %}
+{% tab title="TruffleHog" %}
+* **Linux Bash / Windows PowerShell:** scan the extracted JADX/Apktool directory. This variant detects candidates without credential verification requests.
+  * ```text
+    trufflehog filesystem '<decompiled-directory>' --no-verification
+    ```
+{% endtab %}
+{% tab title="Gitleaks" %}
+* **Linux Bash / Windows PowerShell:** scan the extracted files rather than Git history.
+  * ```text
+    gitleaks dir -v '<decompiled-directory>'
+    ```
+{% endtab %}
+{% tab title="MobSF" %}
+* Upload the acquired APK to a running compatible MobSF instance; inspect the static findings and extracted source/resources for the actual key, endpoint and consuming call site.
+{% endtab %}
+{% endtabs %}
+
+* **Native libraries and endpoints:** if using an automated scanner, run the manual searches below as needed for `.so` strings and packaged cloud hosts.
+* <pre class="language-bash" data-line-numbers><code class="lang-bash">strings &#x3C;decoded-directory>/lib/&#x3C;abi>/*.so | grep -iE 'key|secret|token'
   grep -rniE 'firebaseio\.com|firebasestorage\.googleapis\.com|amazonaws\.com' &#x3C;decompiled-directory>
   </code></pre>
 * Secrets also hide in native `.so` libraries, not just Java/Kotlin code.
 * `AIza...` matches are Google API keys. Many are restricted client identifiers.
-* [cloud\_enum](https://github.com/initstring/cloud_enum) can identify cloud assets.
-* [firebaseEnum](https://github.com/Sambal0x/firebaseEnum) can help assess Firebase exposure.
+
+### Keyword-Based Cloud Discovery
+
+* Use an app or organization keyword to discover candidate hosts; confirm the relevant endpoint and access using the product-specific tests below.
+
+{% tabs %}
+{% tab title="cloud_enum" %}
+* **Linux Bash / Windows PowerShell:** from the [cloud_enum](https://github.com/initstring/cloud_enum) directory, install dependencies and enumerate cloud resources for the keyword.
+  * ```text
+    uv sync
+    uv run cloud_enum -k '<app-or-organization-keyword>'
+    ```
+* The default region lists cover a limited set of Azure and GCP regions; adjust them for the resources being tested.
+{% endtab %}
+{% tab title="firebaseEnum" %}
+* **Linux Bash / Windows PowerShell:** from the [firebaseEnum](https://github.com/Sambal0x/firebaseEnum) directory, install dependencies and search keyword-derived database names.
+  * ```text
+    python -m pip install -r requirements.txt
+    python firebaseEnum.py -k '<app-or-organization-keyword>'
+    ```
+* This checks the root of generated `firebaseio.com` database names; regional `firebasedatabase.app` hosts and path-specific rules require the RTDB test below.
+{% endtab %}
+{% endtabs %}
+
 * Use the [AWS CLI](https://aws.amazon.com/cli/) only with an authorized profile, e.g. `aws configure --profile <assessment-name>`.
 * Firebase Realtime Database:&#x20;
   * `https://<database>.firebaseio.com/<test-path>.json`&#x20;

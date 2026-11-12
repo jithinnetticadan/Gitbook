@@ -8,26 +8,59 @@
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida --version
   python -m pip show frida frida-tools objection
   frida-ps -Uai
-  frida -U -n &#x3C;app-process-name>
+  </code></pre>
+
+{% tabs %}
+{% tab title="Frida" %}
+* **Mac terminal:** attach or trace the observed selector in the running process.
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">frida -U -n &#x3C;app-process-name>
   frida-trace -U -m '*[NSURLRequest *]' &#x3C;app-process-name>
-  objection --name &#x3C;app-process-name> start
   </code></pre>
 * **Attach and load one of the Frida scripts below:** put the selected script in the specified host file, then trigger its target app flow.
   * ```bash
     frida -U -n '<app-process-name>' -l '<hook.js>'
     ```
+{% endtab %}
+{% tab title="Objection" %}
+* **Mac terminal:** start the session by process name or use a bundle ID for spawn.
+  * <pre class="language-bash" data-line-numbers><code class="lang-bash">objection --name &#x3C;app-process-name> start
+    objection version
+    objection --help
+    objection start --help
+    objection --name &#x3C;bundle-id> --spawn start
+    objection --serial &#x3C;device-serial> --name &#x3C;app-process-name> start
+    objection --local --name &#x3C;simulator-process-name> start
+    objection --name &#x3C;app-process-name> start --startup-script &#x3C;script.js>
+    objection --name &#x3C;app-process-name> run 'ios info binary'
+    </code></pre>
+* **Objection console:** find and watch the actual class/selector used by the app.
+  * ```text
+    ios hooking list classes
+    ios hooking list class_methods <class-name>
+    ios hooking watch '-[<class-name> <selector:>]' --dump-args --dump-return --dump-backtrace
+    ```
+{% endtab %}
+{% tab title="RMS" %}
+* **Mac terminal:** start the installed RMS interface with the device's Frida server running.
+  * ```bash
+    frida-ps -U
+    rms
+    ```
+* Open `http://127.0.0.1:5491/`, choose the app and use its class/method dump and hook/trace views for the observed selector. RMS uses Frida in the app process.
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Mac terminal:** start the installed Grapefruit interface with a compatible Frida connection; current upstream requires Node.js 22.18+.
+  * ```bash
+    frida-ps -U
+    igf
+    ```
+* Select the app, then inspect its Objective-C classes/methods and trace the observed selector in the runtime-hooking view.
+{% endtab %}
+{% endtabs %}
+
 * Objective-C selectors: `-` instance method, `+` class method.
 * Find identifiers: `frida-ps -Uai | grep '<app-name-fragment>'`.
 * Attach by process name; spawn by bundle ID. Gadget may expose a different target name.
-* <pre class="language-bash" data-line-numbers><code class="lang-bash">objection version
-  objection --help
-  objection start --help
-  objection --name &#x3C;bundle-id> --spawn start
-  objection --serial &#x3C;device-serial> --name &#x3C;app-process-name> start
-  objection --local --name &#x3C;simulator-process-name> start
-  objection --name &#x3C;app-process-name> start --startup-script &#x3C;script.js>
-  objection --name &#x3C;app-process-name> run 'ios info binary'
-  </code></pre>
 
 <table><thead><tr><th width="153.0001220703125">Option/Mode</th><th>Use</th></tr></thead><tbody><tr><td>Global flags</td><td><code>--name</code>, <code>--serial</code>, <code>--local</code>, <code>--spawn</code>, <code>--no-pause</code> go <strong>before</strong> <code>start</code>/<code>run</code>.</td></tr><tr><td>Startup flags</td><td>Go <strong>after</strong> <code>start</code>; verify <code>objection start --help</code>.</td></tr><tr><td><code>--local</code></td><td>iOS Simulator, not a physical device; compatible instrumentation required.</td></tr><tr><td><code>--no-pause</code></td><td>Immediate resume; omit for early hooks needing a paused spawn.</td></tr><tr><td><code>run</code></td><td>One-shot; do not assume hooks survive exit. Use <code>start</code> for monitoring.</td></tr></tbody></table>
 
@@ -67,7 +100,19 @@
 
 ## Cryptographic Parameters and Tampering
 
-* **Objection quick view:** run `ios monitor crypto`, trigger two encryptions of different test markers, and correlate the calls with the stored/transmitted field. It covers supported CommonCrypto functions, not all CryptoKit/Swift/native implementations.
+{% tabs %}
+{% tab title="Objection" %}
+* **Mac terminal:** attach to the running app with a working Frida connection.
+  * ```bash
+    frida-ps -Uai
+    objection --name '<app-process-name>' start
+    ```
+* **Objection console:** monitor supported CommonCrypto calls while exercising the test operation.
+  * ```text
+    ios monitor crypto
+    ```
+{% endtab %}
+{% tab title="Frida" %}
 * **Frida CLI:** load this script through the session workflow above. It observes one-shot `CCCrypt` and `CCKeyDerivationPBKDF`; it does not cover streaming `CCCryptor*` or CryptoKit. Key/salt fingerprints identify repeated inputs without printing raw keys/passwords.
   * ```javascript
     const hex = address => Array.from(new Uint8Array(address.readByteArray(32)),
@@ -113,6 +158,18 @@
       }
     });
     ```
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Mac terminal:** start the installed interface with the device's Frida server running.
+  * ```bash
+    frida-ps -Uai
+    igf
+    ```
+* Select the app, open its cryptographic API monitoring view and trigger the operation. Record the observed algorithm, parameters and output associated with the actual test field.
+{% endtab %}
+{% endtabs %}
+
+* Trigger two encryptions of different test markers and correlate the calls with the stored/transmitted field. Objection's monitor covers supported CommonCrypto calls; the Frida script's scope is stated in its tab.
 * **Interpret:** `CCCrypt` operation `0` encrypts, `1` decrypts; algorithm `0` is AES. Options bit `2` means ECB; without it the one-shot AES API uses CBC, and a null IV means zero bytes. Compare successful encryption calls only; repeated decryption naturally reuses the saved IV. PKCS#7 padding is options bit `1`, not authentication.
 * **KDF test:** create two independent records/accounts with the same test password. Compare salt hashes, PRF, rounds and output length; then repeat with a different password. Equal per-record salts indicate reuse, but iteration adequacy needs the actual algorithm, offline exposure and current password-KDF guidance. A SHA-256 key fingerprint changing does not establish a strong derivation.
 * **Ciphertext mutation, Node.js REPL on macOS:** select an offset inside the ciphertext portion of the actual Base64 envelope, not its IV/version/tag header; send/store the changed field through the same flow.
@@ -153,6 +210,24 @@
 * **Confirm:** after the forced callback, perform the same protected export/read/payment/signing operation. A screen transition alone is only a UI-gate bypass. If Keychain/SEP use still requires authentication, record that enforced boundary rather than claiming hardware-key bypass.
 * **Key-bound flow:** `evaluateAccessControl`/`SecKey`/Keychain ACL paths may not invoke this selector. Use the [no-prompt Keychain test](data-storage-and-privacy.md#keychain-query-one-item-without-a-prompt), inspect the actual key access-control flags, and compare the real signing/decryption result after cancellation/expiry. Repeat enrollment/fallback changes only against the item's configured policy.
 
+## Runtime Memory Search
+
+* Exercise the relevant login/payment flow with a unique test marker, then search the running app's memory for that marker and associated credential values.
+
+{% tabs %}
+{% tab title="Objection" %}
+* **Mac terminal:** attach to the running process.
+  * ```bash
+    frida-ps -Uai
+    objection --name '<app-process-name>' start
+    ```
+* **Objection console:**
+  * ```text
+    memory search <test-marker> --string
+    memory dump all <output-file>.dmp
+    ```
+{% endtab %}
+{% tab title="fridump3" %}
 ### Optional fridump3 Memory Capture
 
 * **Prerequisite:** [host tool setup](../setup.md#host-frida-and-objection), Frida 17+, running target app.
@@ -170,7 +245,22 @@
     ```
 
 * Use the process name, not the bundle ID. `-s` extracts strings; `-o` selects the output directory. [CLI reference](https://github.com/Xenorf/fridump3.1).
-* Exercise the target flow before capture; search generated strings for the test value.
+* **macOS Terminal:** search generated strings for the test value.
+  * ```bash
+    grep -RniF '<test-marker>' './memory-capture'
+    ```
+{% endtab %}
+{% tab title="Grapefruit" %}
+* **Mac terminal:** start the installed interface and select the running app.
+  * ```bash
+    frida-ps -Uai
+    igf
+    ```
+* Use the memory scanner to search the marker in the selected process and inspect the matching region.
+{% endtab %}
+{% endtabs %}
+
+* Repeat after logout or expiry; determine whether a retained credential remains usable and what access is needed to read the process.
 
 ### Startup Hooks
 
