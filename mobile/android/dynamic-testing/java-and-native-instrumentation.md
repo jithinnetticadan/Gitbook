@@ -28,7 +28,7 @@
 ## Observe Without Changing Behavior
 
 * **Required signature:** observed `login(String, String)` overload.
-* Template behavior: call the original once, return its result, and avoid logging passwords/tokens.
+* **Frida JavaScript hook:** run in a Frida session attached to the target app. Call the original once, return its result, and avoid logging passwords/tokens.
   * ```javascript
     Java.perform(function () {
         const LoginManager = Java.use('com.example.auth.LoginManager');
@@ -64,6 +64,7 @@
 * `Process.enumerateModules()` lists modules even when the target function is not exported.
 * The template handles already-loaded and later-loaded libraries.
 * Replace the illustrative symbol with one present in the target build.
+* **Frida JavaScript hook:** save this on the host as a `.js` file and load it with the [Frida attach/spawn command](objection-and-runtime-instrumentation.md#attach-or-spawn), or paste it into the attached Frida REPL. Replace the module and export with those found in the target build.
   * ```javascript
     const moduleObserver = Process.attachModuleObserver({
         onAdded(module) {

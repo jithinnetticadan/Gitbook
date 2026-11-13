@@ -28,7 +28,7 @@
 * `FLAG_SECURE` is per window. The last command only lists candidate Activities; check sensitive screens (PIN, OTP, payment, seed phrase) and any base Activity that sets it.
 * Overlay/tapjacking defenses: look for `filterTouchesWhenObscured` on sensitive confirmation views.
 
-* **Turn a hit into a test:** place a unique marker in that actual feature, trigger the code, then use [file/log/screenshot commands](../dynamic-testing/local-data-logs-and-privacy.md). Compare login/logout/account switch. For obscured touches use the [overlay companion](../dynamic-testing/platform-and-version-specific-tests.md#obscured-touches); a missing flag by itself is not the result.
+* **Turn a hit into a test:** use the marker-driven [focused storage test flow](../dynamic-testing/local-data-logs-and-privacy.md#focused-test-flow). For obscured-touch findings use the [overlay test](../dynamic-testing/platform-and-version-specific-tests.md#obscured-touches); a missing flag by itself is not the result.
 
 ## Additional Storage Formats
 

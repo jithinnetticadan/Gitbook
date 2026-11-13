@@ -9,7 +9,7 @@
 
 ## Observe a Root-Check Input
 
-* Template behavior: log selected file probes and preserve original results; adapt paths from observed code.
+* **Frida JavaScript hook:** save this on the host as a `.js` file and load it with the [Frida attach/spawn command](objection-and-runtime-instrumentation.md#attach-or-spawn), or paste it into the attached Frida REPL. It logs selected file probes and preserves the original results; adapt paths from observed code.
   * ```javascript
     Java.perform(function () {
         const File = Java.use('java.io.File');

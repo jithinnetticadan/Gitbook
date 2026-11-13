@@ -115,6 +115,7 @@
   android heap print methods &#x3C;instance-hashcode>
   sqlite connect &#x3C;database-file>
   </code></pre>
+* `android ui FLAG_SECURE false` is an analysis-only override: it disables the protection in the instrumented run and cannot establish the original app's screenshot behavior. Test the unmodified app with the [capture and recents workflow](platform-and-version-specific-tests.md#autofill-sms-and-capture-transitions).
 * Alternative memory tool: [fridump3](https://github.com/rootbsd/fridump3/).
 * Review [CodeShare](https://codeshare.frida.re/) scripts, bypass success depends on app/version.
 * Flutter: [reFlutter](https://github.com/ptswarm/reFlutter) for compatible instrumentation/traffic workflows.

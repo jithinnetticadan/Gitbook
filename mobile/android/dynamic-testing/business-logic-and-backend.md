@@ -31,7 +31,7 @@
 		{"purchaseToken":"REPLACE_A_SANDBOX_TOKEN","productId":"REPLACE_PRODUCT_ID"}
 		```
 * **Confirm:** B receives A's entitlement, a token for a cheaper product grants another product, or the same purchase grants a nonrepeatable entitlement twice. A token accepted while the order remains pending is meaningful only if the protected entitlement is already usable.
-* **Local gate:** locate the real Boolean-returning method and signature, then use a targeted Frida return override; substitute an existing entitlement operation, not a fictional API.
+* **Local gate, Frida JavaScript hook:** after attaching to the app with the [Frida CLI](objection-and-runtime-instrumentation.md#attach-or-spawn), run this hook with the observed Boolean-returning class/method signature. Substitute an existing entitlement operation, not a fictional API.
 	* ```javascript
 		Java.perform(function () {
 		    const Gate = Java.use('REPLACE_GATE_CLASS');

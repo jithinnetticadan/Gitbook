@@ -12,7 +12,7 @@
 
 1. Choose one sensitive value or action and create distinct test markers for accounts A and B. Record the normal stored value, log output, screen state, and protected-operation result.
 2. Trigger the real feature that creates or consumes the value. Inspect app-owned files/databases with [File and Database Inspection](#file-and-database-inspection); inspect logs, screenshots, clipboard and keyboard surfaces in the sections below.
-3. Repeat after logout, account switch, background/resume, process restart, and the relevant lock/unlock or backup/restore transition. Record whether the marker remains and which caller/access context can read or use it.
+3. Use the applicable transitions in [Follow Sensitive Data Through Its Lifecycle](#follow-sensitive-data-through-its-lifecycle). For each state, repeat the same feature and marker, then record whether it remains and which caller/access context can read or use it.
 4. For a local role/state value, establish the protected operation under account A, change only that app-owned value using the actual prefs/database field, restart or retrigger the feature, then repeat the same operation. Confirm a flaw only if a protected action/data result succeeds contrary to the server's authorization policy; a changed label or enabled button alone is not sufficient.
 
 * Backup/restore: use [Backup and Restore Validation](#backup-and-restore-validation), then open the restored app and test the known marker and authentication state.
@@ -161,7 +161,7 @@
 ## Screenshots, Clipboard, and Input Surfaces
 
 * Test sensitive screens unmodified before disabling `FLAG_SECURE`.
-* Check ordinary screenshots, recent-task previews, and permitted screen capture; compare instrumented runs separately.
+* Capture an ordinary screenshot of the sensitive marker with the app unmodified. For recent-task previews, lock/background transitions, MediaProjection and cancellation, use the [platform-specific capture test](platform-and-version-specific-tests.md#autofill-sms-and-capture-transitions).
 * <pre class="language-bash" data-line-numbers><code class="lang-bash">adb shell screencap -p /sdcard/lab-screen.png
   adb pull /sdcard/lab-screen.png .
   </code></pre>

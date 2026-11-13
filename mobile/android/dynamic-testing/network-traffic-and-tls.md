@@ -8,7 +8,7 @@
 2. Set the device proxy and install the CA: [Android Burp guide](https://portswigger.net/support/configuring-an-android-device-to-work-with-burp).
 3. Use DER where required; `.cer` renaming does not change encoding/trust. User-CA acceptance depends on OS/app policy.
 4. Test API authentication, authorization, sensitive data, and server-side behavior.
-5. If pinning blocks testing, use the [Objection pinning startup variant](objection-and-runtime-instrumentation.md#attach-or-spawn), a reviewed Frida script, or a patched test build.
+5. If pinning blocks testing, use the [Objection pinning startup variant](objection-and-runtime-instrumentation.md#attach-or-spawn), a targeted Frida JavaScript hook loaded into the app using the [Frida attach/spawn workflow](objection-and-runtime-instrumentation.md#attach-or-spawn), or a patched test build.
 {% endtab %}
 {% tab title="mitmproxy" %}
 1. **Host terminal:** start the installed proxy; use the host's device-reachable IP and this port in the Android proxy settings.
