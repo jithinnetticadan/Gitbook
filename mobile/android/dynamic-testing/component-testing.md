@@ -52,7 +52,7 @@
     </code></pre>
 * **Drozer console:** run all `run`/`help` commands here.
 * Component `info -u` includes non-exported candidates.
-  * <pre class="language-text" data-line-numbers><code class="lang-text">run app.package.attacksurface &#x3C;package-name>
+  * <pre data-line-numbers><code>run app.package.attacksurface &#x3C;package-name>
     run app.package.manifest &#x3C;package-name>
     run app.package.debuggable
     help intents
@@ -67,35 +67,40 @@
 
 {% tabs %}
 {% tab title="ADB" %}
-* **Linux Bash / Windows PowerShell:** inspect the installed package's activities, filters, permissions and enabled/exported state.
-  * ```text
+- **Linux Bash / Windows PowerShell:** inspect the installed package's activities, filters, permissions and enabled/exported state.
+  * ```
     adb shell dumpsys package "<package-name>"
     ```
 {% endtab %}
+
 {% tab title="Drozer" %}
 * **Drozer console:**
-* <pre class="language-text" data-line-numbers><code class="lang-text">run app.activity.info -a &#x3C;package-name>
+* <pre data-line-numbers><code>run app.activity.info -a &#x3C;package-name>
   </code></pre>
 {% endtab %}
+
 {% tab title="Grapefruit" %}
 * **Host terminal:** start the installed interface with the device's Frida server running.
-  * ```text
+  * ```
     frida-ps -U
     igf
     ```
 * Select the app, then use its manifest/component browser to inspect activities, filters and permissions. Its Intent builder can launch the observed component with the actual extras; this runs through instrumentation, not an ordinary independent caller.
 {% endtab %}
+
 {% tab title="AndroidSpect" %}
 * Open the AndroidSpect app on the rooted device and start its server. Select the target app in its browser dashboard, then open **Components** and filter for exported activities. The displayed server address and password are provided by the app.
 * **Emulator, host terminal:** forward the dashboard port and open `https://localhost:8008/`.
-  * ```text
+  * ```
     adb forward tcp:8008 tcp:8008
     ```
 {% endtab %}
+
 {% tab title="Inspeckage" %}
 * With a compatible Xposed environment and Inspeckage enabled, select the target in its interface and inspect the activities and their export/permission details. Use its activity action for an in-process launch; use an external caller below when testing exported access.
 {% endtab %}
 {% endtabs %}
+
 * Use the ADB or Drozer launch below to assess external-caller access; a launch originating inside the instrumented app does not establish that an unprivileged app can reach the same component.
 
 ### Test Direct Access and Inputs
@@ -107,15 +112,17 @@
     adb shell am start -n "<package-name>/<fully-qualified-activity-name>"
     adb shell am start -W -n "<package-name>/<activity-name>" --es "<extra-name>" "<test-value>"
     ```
-  {% endtab %}
-  {% tab title="Drozer" %}
+{% endtab %}
+
+{% tab title="Drozer" %}
 * **Drozer:** bare launch, extra, or supported data URI.
-  * <pre class="language-text" data-line-numbers><code class="lang-text">run app.activity.start --component &#x3C;package-name> &#x3C;activity-name>
+  * <pre data-line-numbers><code>run app.activity.start --component &#x3C;package-name> &#x3C;activity-name>
     run app.activity.start --component &#x3C;package-name> &#x3C;activity-name> --extra string &#x3C;extra-name> &#x3C;test-value>
     run app.activity.start --component &#x3C;package-name> &#x3C;activity-name> --data-uri &#x3C;authorized-test-uri>
     </code></pre>
-  {% endtab %}
-  {% endtabs %}
+{% endtab %}
+{% endtabs %}
+
 * **States:** logged out, expired session, owned accounts/roles A/B.
 * **Inputs:** missing extra, different owned ID, short invalid value; vary one at a time.
 * **Lifecycle:** fresh launch versus existing task (`onCreate` / `onNewIntent`).
@@ -136,7 +143,7 @@
 * **Started:** `onStartCommand` inputs. **Bound:** `onBind` and returned interface.
 * **Messenger:** `Handler.handleMessage`; accepted `what`, `arg1`, `arg2`, Bundle fields/types.
 * **AIDL/Binder:** methods, types, callbacks, caller checks; not interchangeable with Messenger.
-* <pre class="language-text" data-line-numbers><code class="lang-text">run app.service.info -a &#x3C;package-name>
+* <pre data-line-numbers><code>run app.service.info -a &#x3C;package-name>
   help app.service.send
   </code></pre>
 
@@ -146,11 +153,12 @@
 
 {% tabs %}
 {% tab title="ADB" %}
-* **Shell caller:**
+- **Shell caller:**
   * ```bash
     adb shell am startservice -n "<package-name>/<service-name>" --es "<extra-name>" "<test-value>"
     ```
 {% endtab %}
+
 {% tab title="Drozer" %}
 * **Drozer:** compare agent versus shell access.
   * ```bash
@@ -158,6 +166,7 @@
     ```
 {% endtab %}
 {% endtabs %}
+
 * **Vary:** missing/malformed inputs, unauthorized account/object; disposable state only.
 * **Blocked delivery:** check OS background/foreground restrictions separately from authorization.
 * Foreground start requires a compatible notification/lifecycle; do not switch blindly.
@@ -193,7 +202,7 @@
 * **Map:** class, actions, data/categories, export state, sender permissions, registration lifetime.
 * **Runtime:** inspect `registerReceiver` flags/permissions; keep the required feature open.
 * **Baseline:** legitimate event with synthetic data; record action/outgoing broadcast.
-* <pre class="language-text" data-line-numbers><code class="lang-text">run app.broadcast.info -a &#x3C;package-name>
+* <pre data-line-numbers><code>run app.broadcast.info -a &#x3C;package-name>
   run app.broadcast.info -a &#x3C;package-name> -i
   </code></pre>
 
@@ -210,6 +219,7 @@
     adb shell am broadcast -a "<observed-action>" -p "<package-name>" --es "<extra-name>" "<test-value>"
     ```
 {% endtab %}
+
 {% tab title="Drozer" %}
 * **Explicit Drozer:** do not grant the permission being tested.
   * ```bash
@@ -221,6 +231,7 @@
     ```
 {% endtab %}
 {% endtabs %}
+
 * **Vary:** missing/wrong-type extras, owned-record IDs; check authorization before side effects.
 * Protected broadcasts/sender restrictions can block injection; record the restriction, do not bypass it.
 
@@ -251,7 +262,7 @@
 * **Map:** authority/routes, operations, export state, read/write/path permissions, grants.
 * **Trace:** URI matcher and query/file handlers; authority alone is not a valid route.
 * **Baseline:** create test record/file normally; record URI/ID and authorized behavior.
-* <pre class="language-text" data-line-numbers><code class="lang-text">run app.provider.info -a &#x3C;package-name>
+* <pre data-line-numbers><code>run app.provider.info -a &#x3C;package-name>
   run app.provider.finduri &#x3C;package-name>
   </code></pre>
 
@@ -263,17 +274,20 @@
   * ```bash
     adb shell content query --uri "<content-uri>" --projection "<known-column>" --where "<id-column>=<numeric-test-record-id>"
     ```
-  {% endtab %}
-  {% tab title="Drozer" %}
+{% endtab %}
+
+{% tab title="Drozer" %}
 * **Drozer:** scoped columns/record; compare unauthorized caller and owned accounts A/B.
   * ```bash
     run app.provider.query <content-uri> --projection <known-column> --selection "<id-column>=?" --selection-args <owned-record-id>
     ```
-  {% endtab %}
-  {% endtabs %}
-  * **Caller:** the ADB query uses the shell UID; Drozer uses the agent's UID. Compare permissions and URI grants before interpreting different results.
+{% endtab %}
+{% endtabs %}
+
+\* \*\*Caller:\*\* the ADB query uses the shell UID; Drozer uses the agent's UID. Compare permissions and URI grants before interpreting different results.
+
 * **Minimal query/columns:** owned item URI or small disposable dataset only; unfiltered collections may return all rows.
-  * <pre class="language-text" data-line-numbers><code class="lang-text">run app.provider.query &#x3C;content-uri>
+  * <pre data-line-numbers><code>run app.provider.query &#x3C;content-uri>
     run app.provider.columns &#x3C;content-uri>
     </code></pre>
 * **Columns:** metadata query. Check installed module availability.
@@ -286,7 +300,7 @@
 
 * **Write inputs:** known columns/types and the test record's URI/ID.
 * **Insert:** valid synthetic data; record returned URI/ID for update/delete.
-  * <pre class="language-text" data-line-numbers><code class="lang-text">run app.provider.insert &#x3C;content-uri> --string &#x3C;column> &#x3C;test-value>
+  * <pre data-line-numbers><code>run app.provider.insert &#x3C;content-uri> --string &#x3C;column> &#x3C;test-value>
     run app.provider.update &#x3C;content-uri> --selection "&#x3C;id-column>=?" --selection-args &#x3C;owned-record-id> --string &#x3C;column> &#x3C;replacement-value>
     run app.provider.delete &#x3C;content-uri> --selection "&#x3C;id-column>=?" --selection-args &#x3C;owned-record-id>
     </code></pre>
@@ -341,13 +355,13 @@
 * **States:** logged out, accounts A/B, post-logout, expired session; verify reached data/action.
 * **Login/reset:** one-time codes, state/session binding, redirects, PKCE.
 * **Concrete route mutations:** replace the scheme/host/path/field with the actual route; deliver through the launch templates above. With A logged in, use B's known record; repeat logged out. For duplicate IDs, reverse their order too.
-  * ```text
+  * ```
     demo://records/view?id=REPLACE_B_RECORD_ID
     demo://records/view?id=REPLACE_A_RECORD_ID&id=REPLACE_B_RECORD_ID
     demo://records/view?id=
     demo://records/view?id=REPLACE_A_RECORD_ID&redirect=https%3A%2F%2Fprobe.example%2Flink-marker
     ```
-* **Confirm:** protected B content/action is available under A or logged out, or an unintended redirect receives a sensitive callback. A screen opening or parser accepting duplicate parameters is not itself an authorization failure. For link-to-WebView routing, use the [WebView payloads](#untrusted-navigation-and-url-allowlists).
+* **Confirm:** protected B content/action is available under A or logged out, or an unintended redirect receives a sensitive callback. A screen opening or parser accepting duplicate parameters is not itself an authorization failure. For link-to-WebView routing, use the [WebView payloads](component-testing.md#untrusted-navigation-and-url-allowlists).
 * **Association:** inspect `https://<authorized-host>/.well-known/assetlinks.json`.
 * **Match:** relation, `android_app`, package, SHA-256 app-signing fingerprints against the installed build.
 * **Certificates:** compare using `apksigner verify --print-certs`; upload signer may differ, re-signing can change verification.
@@ -363,7 +377,7 @@
 #### Untrusted Navigation and URL Allowlists
 
 * **Find the input:** trace the observed deep-link/Intent extra to `loadUrl` or `loadDataWithBaseURL`; record the allowed host and actual parameter name. Set the destination to a page you control, then try these host/parser variants. Replace `trusted.example` with the real allowed host and `probe.example` with your test host.
-  * ```text
+  * ```
     https://probe.example/webview.html
     https://trusted.example.probe.example/webview.html
     https://trusted.example@probe.example/webview.html
@@ -371,7 +385,7 @@
     http://trusted.example/
     ```
 * **Launch template (Linux Bash / Windows PowerShell, unchanged):** encode the entire destination as the observed query parameter value. This example route must be replaced with the app's route; a guessed route opening nothing is not a negative result.
-  * ```text
+  * ```
     adb shell "am start -W -a android.intent.action.VIEW -d 'demo://web?url=https%3A%2F%2Fprobe.example%2Fwebview.html' -p com.example.app"
     ```
 * **Redirect variant:** use an allowed-host route that actually redirects to the test page. Compare the initial URL and final `location.origin`; test navigation after the initial load too.
@@ -402,7 +416,7 @@
   * ```html
     <img src=x onerror="document.documentElement.dataset.webviewProbe=location.origin">
     ```
-  * ```text
+  * ```
     ';document.documentElement.dataset.webviewProbe=location.origin;//
     ```
 * **Check the page after the app processes the input:**
@@ -437,13 +451,7 @@
          value.trim().startsWith('REPLACE_SESSION_COOKIE=')) });
     ```
 
-| Attribute | Test | Confirm |
-| --- | --- | --- |
-| Domain | Open a controlled sibling host beneath the configured parent domain; inspect its received Cookie header | A sensitive cookie reaches a sibling origin outside the intended trust boundary. Host-only cookies should not be sent there. |
-| Path | Request an actual sibling route outside the intended cookie path; inspect the outgoing Cookie header | Cookie is sent outside its configured/intended scope. Path is routing scope, not isolation from hostile JavaScript elsewhere on the same origin. |
-| Secure | Open the matching `http://` host/path, if HTTP is reachable, and inspect the request | Authentication cookie is transmitted over cleartext; a missing flag alone does not establish a reachable transmission. |
-| HttpOnly | Run the console probe in the cookie's matching host/path | Actual authentication cookie is JavaScript-readable where the policy requires HttpOnly; native privileged cookie access does not prove a page-JavaScript bypass. |
-| SameSite | Submit a cross-site POST from a controlled different-site page to the real reversible test action | Cookie is attached and the action succeeds without the intended CSRF check. Different origins can still be same-site; top-level GET with Lax cookies can be expected. |
+<table><thead><tr><th width="98">Attribute</th><th width="280">Test</th><th>Confirm</th></tr></thead><tbody><tr><td>Domain</td><td>Open a controlled sibling host beneath the configured parent domain; inspect its received Cookie header</td><td>A sensitive cookie reaches a sibling origin outside the intended trust boundary. Host-only cookies should not be sent there.</td></tr><tr><td>Path</td><td>Request an actual sibling route outside the intended cookie path; inspect the outgoing Cookie header</td><td>Cookie is sent outside its configured/intended scope. Path is routing scope, not isolation from hostile JavaScript elsewhere on the same origin.</td></tr><tr><td>Secure</td><td>Open the matching <code>http://</code> host/path, if HTTP is reachable, and inspect the request</td><td>Authentication cookie is transmitted over cleartext; a missing flag alone does not establish a reachable transmission.</td></tr><tr><td>HttpOnly</td><td>Run the console probe in the cookie's matching host/path</td><td>Actual authentication cookie is JavaScript-readable where the policy requires HttpOnly; native privileged cookie access does not prove a page-JavaScript bypass.</td></tr><tr><td>SameSite</td><td>Submit a cross-site POST from a controlled different-site page to the real reversible test action</td><td>Cookie is attached and the action succeeds without the intended CSRF check. Different origins can still be same-site; top-level GET with Lax cookies can be expected.</td></tr></tbody></table>
 
 * **Cross-site POST PoC:** replace the endpoint and form fields with the actual test action; serve from a different site, not just another port/subdomain. Check both request Cookie and the committed test-state change; `SameSite=None; Secure` may be intentional when independent CSRF protection exists.
   * ```html
@@ -466,12 +474,12 @@
        cookieMarker: document.cookie.includes('webview_profile_probe=account-A') });
     ```
 * **Check the implementation:** map process/profile ownership, `WebView.setDataDirectorySuffix` where used (API 28+, process-wide and set before WebView initialization), and cookie/DOM-storage lifecycle. It is not a per-WebView account-switch API. Repeat the app's normal restart/logout transition without changing its storage configuration through a hook.
-* **Confirm:** a surface intended to be isolated can use A's actual credentials or read A's private data. Marker crossover identifies a shared store; it does not alone establish unauthorized access. Existing logout/API checks remain in [File Access, Mixed Content, and Session Isolation](#file-access-mixed-content-and-session-isolation).
+* **Confirm:** a surface intended to be isolated can use A's actual credentials or read A's private data. Marker crossover identifies a shared store; it does not alone establish unauthorized access. Existing logout/API checks remain in [File Access, Mixed Content, and Session Isolation](component-testing.md#file-access-mixed-content-and-session-isolation).
 
 #### Third-Party Script in a Trusted Page
 
 * An attacker-controlled external JavaScript dependency executes with the trusted page's origin and can use its readable data/native bridge. A classic `<script src>` executes in the including document's context, not in an isolated frame belonging to the script host.
-* Serve this as the actual external dependency through a demonstrated controllable asset or owner-provided fixture; keep the top-level trusted page URL unchanged. It sets only a marker. Then use the existing [bridge test](#native-bridge-from-untrusted-content) for the observed native operation from this script context.
+* Serve this as the actual external dependency through a demonstrated controllable asset or owner-provided fixture; keep the top-level trusted page URL unchanged. It sets only a marker. Then use the existing [bridge test](component-testing.md#native-bridge-from-untrusted-content) for the observed native operation from this script context.
   * ```javascript
     document.documentElement.dataset.thirdPartyProbe = JSON.stringify({
       page: location.href, executionOrigin: location.origin,
@@ -484,7 +492,7 @@
 #### Resource Interception and Cache Boundaries
 
 * **Map the actual rule:** locate `shouldInterceptRequest`/`WebResourceResponse`, its accepted host/path, and the file/cache key it selects. For a route mapping `/assets/<name>` to local files, test these path suffixes; substitute a real marker outside the intended asset root but readable by the app.
-  * ```text
+  * ```
     /assets/../files/webview-marker.txt
     /assets/%2e%2e%2ffiles%2fwebview-marker.txt
     /assets/..%252ffiles%252fwebview-marker.txt
@@ -548,7 +556,6 @@
     ```
 * For a custom result/provider flow, use the [companion file provider](advanced-ipc-and-providers.md#dirty-stream-untrusted-provider-metadata) with its normal filename and marker changed to `file-chooser-probe`; return only the observed MIME/URI contract. Trace `onShowFileChooser` result routing and URI grants.
 * **Confirm:** a page receives a file not selected/authorized for it, or a stale chooser callback delivers the marker to the wrong origin after navigation. A page reading the file deliberately selected for that page is expected.
-
 * Static candidates: [WebView, IPC, and Dependency Checks](../static-testing/webview-ipc-and-dependencies.md).
 * References: [App Link verification](https://developer.android.com/training/app-links/verify-android-applinks), [WebView debugging](https://developer.chrome.com/docs/devtools/remote-debugging/webviews/).
 
