@@ -40,7 +40,7 @@
 
 ### Notification Visibility
 
-* **Companion app, Kotlin:** send a target notification containing `notification-probe` in its normal test workflow, then observe whether this listener sees the marker. It logs only whether the marker is present.
+* **Companion service, Kotlin:** add this class to a separate Android test app, replace `REPLACE_TARGET_PACKAGE` with the target package, and register it in the companion manifest below. The listener observes target-app notifications; it does not create one.
   * ```kotlin
     package com.example.ipcprobe
 
@@ -65,12 +65,17 @@
       </intent-filter>
     </service>
     ```
+* **Trigger and observe:** install the companion, enable its `ProbeNotifications` service in notification-listener settings, and use the target's notification-producing feature with the marker `notification-probe`. Watch the host terminal while the event arrives:
+  * ```text
+    adb logcat -s PrivacyProbe:I
+    ```
+* `markerVisible=true` means the enabled listener received the marker; `false` means this event did not contain it in the inspected text fields. No log can mean no event or listener registration/delivery failure; verify the notification and selected listener before interpreting it.
 * **Compare:** unlocked, locked, app logged out, notification replaced/removed. Separately inspect the lock-screen preview with private/public visibility settings.
 * **Confirm:** content violates the intended notification/lock-screen privacy requirement. User-granted listener access to ordinary notification text is expected; modern OS redaction may suppress sensitive OTP content independently of the app.
 
 ### Obscured Touches
 
-* **Companion manifest, outside application:** declare `android.permission.SYSTEM_ALERT_WINDOW`; use the overlay-settings command above to grant it to the companion.
+* **Companion manifest, outside application:** declare `android.permission.SYSTEM_ALERT_WINDOW`. Substitute the companion package into the overlay-settings command above and grant the companion permission; granting the target app permission does not enable the companion overlay.
 * **Companion Activity, Android 8+ Kotlin:** position the translucent marker rectangle over the target's test confirmation button. Pixel coordinates/size must match the test device. A separate lifecycle handler should retain/remove the view as the companion's UI requires.
   * ```kotlin
     check(android.provider.Settings.canDrawOverlays(this))
@@ -92,6 +97,7 @@
     }
     windowManager.addView(overlay, parameters)
     ```
+* **Trigger:** build/install the companion, grant its overlay permission, and run the code from its Activity after the grant. Open the target's synthetic confirmation screen, align the overlay with its button, then tap the button and inspect the resulting operation.
 * **Compare:** the same confirmation without overlay, with overlap, and with the overlay beside the button. Observe the actual operation and, where instrumented, `MotionEvent.FLAG_WINDOW_IS_OBSCURED` / `FLAG_WINDOW_IS_PARTIALLY_OBSCURED`.
 * **Confirm:** a sensitive action accepts a delivered obscured touch contrary to the intended requirement. Android's untrusted-touch opacity rules or a hidden overlay can prevent delivery; a blocked tap alone does not establish that the app filters obscured events. This tests overlay input, not TapTrap/task-animation attacks.
 
@@ -129,6 +135,7 @@
         android:canRetrieveWindowContent="true"
         android:notificationTimeout="100" />
     ```
+* **Trigger and observe:** build/install the companion with the service and resource above, enable its `ProbeAccessibility` service in Accessibility settings, then enter `accessibility-probe` into the target's test fields. Read `eventMarker`, `treeMarker` and `password` using `adb logcat -s PrivacyProbe:I` on the host. No output is inconclusive until the service is enabled and events are delivered.
 * **Confirm:** clear sensitive marker text or an action appears where the app's required masking/authentication policy should prevent it. An explicitly enabled service seeing ordinary UI content is expected; report the actual sensitive field/state rather than accessibility support itself.
 * **Companion keyboard, separate Kotlin file (API 26+):** observes field metadata and marker visibility; the button inserts only a test marker. It is not a full keyboard implementation.
   * ```kotlin
@@ -171,6 +178,7 @@
     adb shell ime enable com.example.ipcprobe/.ProbeKeyboard
     adb shell ime set com.example.ipcprobe/.ProbeKeyboard
     ```
+* **Trigger and observe:** focus each target field and tap the companion keyboard's **Insert test marker** button. Read `inputType`, `noLearning` and `markerVisible` using `adb logcat -s PrivacyProbe:I` on the host; `markerVisible` refers only to the marker inserted by this test keyboard.
 * Compare login/password/PIN/payment fields with an ordinary text field. Inspect the observed `inputType` variation and no-learning flag against the intended keyboard policy. The chosen IME receiving text the user types is normal; a plaintext/misclassified sensitive field or prohibited retained/suggested marker needs a concrete result. A missing no-learning flag alone does not demonstrate stored keyboard history.
 
 * **Autofill:** save separate credentials for A and B in the selected test autofill provider. Open login, account switch and embedded-web login; compare the offered credential's package/domain and target field. A credential suggested/filled into a different untrusted origin or account boundary needs an actual fill/disclosure result, not just a label mismatch.

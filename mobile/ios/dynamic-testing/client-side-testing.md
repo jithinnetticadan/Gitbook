@@ -52,7 +52,7 @@
 ### Native Bridge from Untrusted Content
 
 * **Map:** actual handler name, body schema, native dispatch, allowed origins, `frameInfo.isMainFrame`/`securityOrigin` checks, and registration content world. Object enumeration may not reveal every handler; an isolated-world handler may not be callable from page JavaScript.
-* **Host this page at the controlled URL:** replace handler/action/ID with the observed read-only or marker operation. A normal handler has no synchronous return value; inspect its callback or native/API effect.
+* **Prepare the controlled page:** put this HTML in `webview.html` on the test host. Replace the handler, action and ID with the app's actual message schema and a read-only or marker operation. This is page JavaScript, not a Frida script.
 	* ```html
 		<!doctype html>
 		<meta charset="utf-8">
@@ -67,6 +67,28 @@
 		} catch (error) { result.textContent = String(error); }
 		</script>
 		```
+* **Serve the page:** in a host terminal, start the server from the directory containing `webview.html`.
+
+{% tabs %}
+{% tab title="macOS / Linux" %}
+* ```bash
+  python3 -m http.server 8000 --bind 0.0.0.0
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  python -m http.server 8000 --bind 0.0.0.0
+  ```
+{% endtab %}
+{% endtabs %}
+
+* The test URL is `http://<host-ip>:8000/webview.html`; use an address reachable from the device. If ATS or the app requires HTTPS, serve the same page from a reachable HTTPS host with a certificate trusted by the device/app.
+* **Load through the app:** use the real custom/Universal Link, URL parameter, redirect, or in-app content source traced above. For a Simulator route that accepts a URL parameter, substitute the actual scheme, route, parameter and host IP:
+	* ```bash
+		xcrun simctl openurl booted 'demo://web?url=http%3A%2F%2F<host-ip>%3A8000%2Fwebview.html'
+		```
+* For a physical device, deliver the actual route through Safari or a companion app; test Universal Links from a tappable link. A guessed route, a server request, or opening the page in Safari alone does not establish that the target app's WKWebView loaded it. Where inspection is available, confirm the final URL in Safari Web Inspector's target-app WebView.
+* **Observe the message:** when the page loads with JavaScript enabled, its inline script automatically calls `postMessage`; no separate Frida command is required. The displayed `Message submitted` text only confirms the JavaScript call. Inspect the actual callback, native operation or API result to determine whether the handler accepted it. If the handler is absent or rejects the message, check the registered content world, frame/origin policy and actual schema before interpreting the result.
 * **Frame variant:** embed `<iframe src="https://probe.example/webview.html"></iframe>` in a reachable page; verify whether the handler accepts a subframe message independently of top-level navigation policy.
 * **Confirm:** untrusted origin/frame causes an unintended sensitive native operation or protected response. A displayed "submitted" marker only confirms that JavaScript sent the message, not that native code accepted it.
 
@@ -87,7 +109,7 @@
 
 ### File Read Scope and Session Isolation
 
-* **File scope:** inspect `loadFileURL:allowingReadAccessToURL:`. From an attacker-controlled local HTML page reachable through the app, request a known marker file outside the intended page directory but inside the app's sandbox. Substitute the current container UUID/path.
+* **File scope:** inspect `loadFileURL:allowingReadAccessToURL:` and trace which actual import, download or other app feature supplies the local HTML file. Create a known marker outside the intended page directory but inside the app's readable container using the available [file-access workflow](data-storage-and-privacy.md#file-and-database-inspection). Put this JavaScript inside the test HTML page, replace the container UUID/path, and deliver that file through the app's real input; the script runs when that local page loads.
 	* ```javascript
 		const request = new XMLHttpRequest();
 		request.onload = () => { document.body.textContent = request.responseText; };
@@ -95,6 +117,7 @@
 		request.open('GET', 'file:///var/mobile/Containers/Data/Application/REPLACE_UUID/Documents/webview-marker.txt');
 		request.send();
 		```
+* **Observe:** open the feature that loads the supplied local file in the target WKWebView and inspect the page text or, where available, Safari Web Inspector. A manually injected file or inspector-only execution can help diagnose read scope, but does not establish that an attacker can supply or trigger the page through the app.
 * **Confirm:** the untrusted local page reads the known marker outside its intended read scope. An HTTPS page failing to read `file://` does not test the local page's configured read-access scope.
 * **Session:** log in as A, load a protected WebView route, log out, then revisit and repeat its protected request. Switch to B and request A's known object. Inspect the actual `WKWebsiteDataStore` used; test persistent/nonpersistent stores separately where the app uses both.
 * **Confirm:** protected A data or a new request authenticated as A remains available to B/post-logout. Distinguish stale displayed content from live credential reuse; HttpOnly cookies need not be JavaScript-readable to authenticate requests.
@@ -118,7 +141,7 @@
 | HttpOnly | Run the console probe on the matching host/path | Sensitive session cookie is page-JavaScript-readable despite the required HttpOnly policy; native app access is a separate capability. |
 | SameSite | Submit the actual test action as a cross-site POST | Cookie is sent and the protected action commits without required CSRF protection; different-origin is not always different-site. |
 
-* **Cross-site form PoC:** serve from a different site, substitute the actual endpoint/field, and verify the resulting action rather than only the page response. Lax cookies on top-level GET and `None; Secure` with separate CSRF defenses can be legitimate.
+* **Cross-site form PoC:** save this HTML on a controlled different site, substitute the actual endpoint/field, and load it through the app's real WebView route using the [page-hosting and delivery steps](#native-bridge-from-untrusted-content). While the target session is active, submit the form and inspect the outgoing Cookie header and resulting target state; a different port or sibling subdomain may still be same-site. Lax cookies on top-level GET and `None; Secure` with separate CSRF defenses can be legitimate.
 	* ```html
 		<form method="post" action="https://trusted.example/REPLACE_TEST_ACTION">
 		  <input name="REPLACE_FIELD" value="cookie-probe">
@@ -129,7 +152,7 @@
 ### WKWebView Data-Store Separation
 
 * Surfaces intended to isolate accounts/private browsing reuse A's website data or authenticated identity. Ordinary WKWebViews deliberately sharing a data store may legitimately share cookies; unrelated apps do not all use one global WebView store.
-* Set these markers in A's WKWebView, then read at the same origin in B's supposedly isolated surface/private view. Repeat an actual protected request for A's known record.
+* In A's inspectable WKWebView at the target origin, run the first block in its Safari Web Inspector console to set markers. Open the same origin in B's supposedly isolated surface/private view, select that WKWebView in the inspector, and run the second block there. Repeat an actual protected request for A's known record.
 	* ```javascript
 		localStorage.setItem('webview-profile-probe', 'account-A');
 		document.cookie = 'webview_profile_probe=account-A; Path=/; Secure; SameSite=Lax';
@@ -156,7 +179,7 @@
 
 ### Media Permissions and File Chooser
 
-* **Controlled HTTPS page:** test trusted/untrusted origins and subframes. For WKWebView, map media-capture/geolocation decisions to the app's delegate and OS TCC grants; support varies with OS/WebKit and capture API.
+* **Controlled HTTPS page:** save the HTML below on a device-reachable HTTPS host and load it through the app's actual URL input using the [page-hosting and delivery steps](#native-bridge-from-untrusted-content). Test trusted/untrusted origins and subframes. For WKWebView, map media-capture/geolocation decisions to the app's delegate and OS TCC grants; support varies with OS/WebKit and capture API.
 	* ```html
 		<!doctype html>
 		<meta charset="utf-8">
@@ -185,6 +208,7 @@
 		});
 		</script>
 		```
+* **Trigger and observe:** in the target's WKWebView, tap Camera, Microphone and Location separately, then use the file picker to select a known text file containing `file-chooser-probe`. Read the page result and inspect the actual stream/location or selected-file delivery. Repeat with the relevant OS TCC grant denied, and test a reachable subframe separately. Opening the page only in Safari does not exercise the app's WKWebView delegates.
 * **Media result:** an unintended origin/frame obtains an actual stream/location without the required per-origin decision. Repeat with app TCC access denied. A successful OS grant or a supported API by itself is not a flaw.
 * **Chooser result:** select the known marker, then compare Cancel and navigation while the picker is open. Confirm a file is delivered to an unintended origin/stale completion handler; deliberately selecting a file for the requesting page is expected.
 * **Custom scheme/cache:** for apps using `WKURLSchemeHandler`, trace its actual scheme-to-file mapping, then try `../`, `%2e%2e%2f` and double-encoded path segments against a known marker outside the mapped root. Switch A to B and repeat the same private route online/offline/restart; confirm an unintended file or A's private cached response reaches B. There is no universal handler for intercepting arbitrary HTTPS requests in WKWebView.

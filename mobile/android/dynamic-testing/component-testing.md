@@ -397,7 +397,7 @@
 * A JavaScript bridge exposes app methods to page scripts. If an attacker can make the app load attacker-controlled content, that content can call exposed methods; `addJavascriptInterface` is available to every frame.
 * **1. Map the bridge:** in JADX, find each `addJavascriptInterface` call, record the object name and WebView receiving it, and list its `@JavascriptInterface` methods with argument/return types. For `WebMessageListener`/ports, record the allowed origin, channel name and message schema.
 * **2. Select a harmless probe:** choose an exposed method that returns a known value or performs a reversible marker action. Record the expected result from the intended app flow; do not substitute a guessed `Android` object or method.
-* **3. Prepare the controlled page:** host this page at the controlled URL used in [Untrusted Navigation](#untrusted-navigation-and-url-allowlists). Replace the bridge, method, and argument with the actual names and signature.
+* **3. Prepare the controlled page:** place this HTML in `webview.html` on the test host. Replace the bridge, method, and argument with the actual `addJavascriptInterface` names and signature; this example is not a Frida script or a `WebMessageListener` message.
   * ```html
     <!doctype html>
     <meta charset="utf-8">
@@ -410,9 +410,29 @@
     } catch (error) { result.textContent = String(error); }
     </script>
     ```
-* **4. Reach it through the app:** use the real deep link, remote-content field, redirect, or other input that causes the tested WebView to load the controlled page. Record the final page origin in `chrome://inspect`; opening the page directly in Chrome does not exercise the app bridge.
-* **5. Invoke it:** let the page call the selected method. Confirm the returned marker in the page and the corresponding native-side effect. If the method returns `void`, `undefined` is expected; verify the marker action instead.
-* **6. Test frame exposure:** load the controlled page as `<iframe src="https://probe.example/webview.html"></iframe>` inside attacker-controlled content that the app can reach. Verify the child frame invokes the same method; `addJavascriptInterface` is exposed to frames too.
+* **4. Serve the page:** from the host terminal, in the directory containing `webview.html`, start a server. Replace `<host-ip>` below with an address reachable from the device; `127.0.0.1` on a physical device refers to the device itself.
+
+{% tabs %}
+{% tab title="Linux" %}
+  * ```bash
+    python3 -m http.server 8000 --bind 0.0.0.0
+    ```
+{% endtab %}
+{% tab title="Windows" %}
+  * ```powershell
+    python -m http.server 8000 --bind 0.0.0.0
+    ```
+{% endtab %}
+{% endtabs %}
+
+* The example URL is `http://<host-ip>:8000/webview.html`. For an Android emulator, `10.0.2.2` normally reaches the host loopback interface. If the app requires HTTPS or blocks cleartext, serve the same page from a device-reachable HTTPS host with a certificate the app trusts; an HTTP load failure alone does not establish that the bridge is protected.
+* **5. Load it in the app:** trigger the app's actual deep link, URL extra, redirect, or remote-content feature that supplies a URL to this WebView. For a route that accepts a URL query parameter, adapt this host-terminal example to the real scheme, route, parameter and package:
+  * ```text
+    adb shell "am start -W -a android.intent.action.VIEW -d 'demo://web?url=http%3A%2F%2F<host-ip>%3A8000%2Fwebview.html' -p com.example.app"
+    ```
+* Replace `<host-ip>`, `demo://web`, `url`, and `com.example.app` with the actual values. Use the appropriate Intent extra instead if the app reads an extra rather than a query parameter; a guessed route is not a test of the app's real entry point. Confirm the server receives the request and, when inspection is available, `chrome://inspect` shows the controlled URL in the target app's WebView. A server request or a Chrome browser visit alone does not establish that the privileged WebView loaded it.
+* **6. Observe the call:** when the WebView loads the page with JavaScript enabled, the inline `<script>` runs automatically and calls `window[bridge][method]`; there is no separate Frida or console command to invoke it. Read the page's result or inspect the corresponding native-side marker action. If the method returns `void`, `undefined` is expected; verify the action instead. A missing bridge/method, disabled JavaScript, or a call before bridge registration requires checking the actual WebView, signature, and registration timing; it is not by itself a negative result.
+* **7. Test frame exposure:** load the controlled page as `<iframe src="https://probe.example/webview.html"></iframe>` inside attacker-controlled content that the app can reach. Verify the child frame invokes the same method; `addJavascriptInterface` is exposed to frames too.
 * **Confirm a flaw:** attacker-controlled content is reachable in the privileged WebView and the call returns protected data, performs an unintended protected action, or crosses an account boundary. A public/intended bridge action or a call made only from DevTools is not sufficient. Record the triggering input, final origin/frame, method, returned value or effect, and account state.
 
 #### Script Injection into a Trusted Page
@@ -425,7 +445,7 @@
   * ```
     ';document.documentElement.dataset.webviewProbe=location.origin;//
     ```
-* **Check the page after the app processes the input:**
+* **Check the page:** after supplying the payload through the actual input and letting the app render it, open the target WebView's console through `chrome://inspect` and evaluate:
   * ```javascript
     document.documentElement.dataset.webviewProbe;
     ```
@@ -434,7 +454,7 @@
 #### File Access, Mixed Content, and Session Isolation
 
 * **Attack path:** untrusted content loaded by the app reads a file beyond its intended scope, injects active HTTP content into an HTTPS page, or reuses another account's WebView credentials.
-* **Local-page file-read probe:** from an attacker-reachable `file://` page, run the following against a known marker file in the app's readable storage; use the resolved path, not another app's sandbox. A hosted HTTPS page and a local file page exercise different access settings.
+* **Local-page file-read probe:** trace how the app imports, downloads, or otherwise loads a `file://` HTML page into the WebView. Create a known marker outside the intended page directory but in the app's readable storage using [file inspection](local-data-logs-and-privacy.md#file-and-database-inspection). Put this JavaScript in the test HTML, substitute the resolved marker path, and deliver the page through that actual app input; a hosted HTTPS page and a local file page exercise different access settings.
   * ```javascript
     const request = new XMLHttpRequest();
     request.onload = () => { document.body.textContent = request.responseText; };
@@ -442,6 +462,7 @@
     request.open('GET', 'file:///data/user/0/com.example.app/files/webview-marker.txt');
     request.send();
     ```
+* **Observe:** open the feature that loads the supplied local page in the target WebView; read its displayed result or inspect it in `chrome://inspect` when available. Injecting the file manually or running only in DevTools can diagnose behavior but does not establish attacker control of the page.
 * **Confirm file exposure:** the controlled page displays the known marker from outside its intended read boundary. A permissive setting, failed fetch, or file loaded directly by the app does not demonstrate cross-file access.
 * **Mixed content:** add `<script src="http://probe.example/webview-marker.js"></script>` to a reachable HTTPS page; serve `document.documentElement.dataset.mixedProbe='loaded';` from that HTTP URL. Confirm execution and whether the resource's content can be influenced in the tested network model.
 * **Session test:** log in as A, open a protected WebView route, log out, then revisit that route and repeat its protected request. Log in as B and revisit A's known record. Separate stale rendered content from a new response authorized with retained A credentials.
@@ -460,7 +481,7 @@
 
 <table><thead><tr><th width="98">Attribute</th><th width="280">Test</th><th>Confirm</th></tr></thead><tbody><tr><td>Domain</td><td>Open a controlled sibling host beneath the configured parent domain; inspect its received Cookie header</td><td>A sensitive cookie reaches a sibling origin outside the intended trust boundary. Host-only cookies should not be sent there.</td></tr><tr><td>Path</td><td>Request an actual sibling route outside the intended cookie path; inspect the outgoing Cookie header</td><td>Cookie is sent outside its configured/intended scope. Path is routing scope, not isolation from hostile JavaScript elsewhere on the same origin.</td></tr><tr><td>Secure</td><td>Open the matching <code>http://</code> host/path, if HTTP is reachable, and inspect the request</td><td>Authentication cookie is transmitted over cleartext; a missing flag alone does not establish a reachable transmission.</td></tr><tr><td>HttpOnly</td><td>Run the console probe in the cookie's matching host/path</td><td>Actual authentication cookie is JavaScript-readable where the policy requires HttpOnly; native privileged cookie access does not prove a page-JavaScript bypass.</td></tr><tr><td>SameSite</td><td>Submit a cross-site POST from a controlled different-site page to the real reversible test action</td><td>Cookie is attached and the action succeeds without the intended CSRF check. Different origins can still be same-site; top-level GET with Lax cookies can be expected.</td></tr></tbody></table>
 
-* **Cross-site POST PoC:** replace the endpoint and form fields with the actual test action; serve from a different site, not just another port/subdomain. Check both request Cookie and the committed test-state change; `SameSite=None; Secure` may be intentional when independent CSRF protection exists.
+* **Cross-site POST PoC:** replace the endpoint and form fields with the actual test action; serve this HTML from a different site, not just another port/subdomain. Load it in the target WebView through the actual input using the [page-hosting and delivery steps](#native-bridge-from-untrusted-content), while the target session is active, then submit the form. Check both the outgoing Cookie header and committed test-state change; `SameSite=None; Secure` may be intentional when independent CSRF protection exists.
   * ```html
     <form method="post" action="https://trusted.example/REPLACE_TEST_ACTION">
       <input name="REPLACE_FIELD" value="cookie-probe">
@@ -471,7 +492,7 @@
 #### WebView Profile and Account Boundaries
 
 * WebViews intended to have separate identities reuse another account's cookies, DOM storage or authenticated state. Shared storage between ordinary WebViews in one app profile is not automatically a flaw, and it is not global sharing across unrelated apps.
-* In A's WebView at the target origin, set profile markers; then open that same origin in the supposedly isolated browser/profile/account-B surface and inspect them using the second command. Also repeat a protected request for A's known object.
+* In A's inspectable WebView at the target origin, run the first block in its `chrome://inspect` console to set profile markers. Open the same origin in the supposedly isolated browser/profile/account-B surface, select that WebView in the inspector, and run the second block there. Also repeat a protected request for A's known object.
   * ```javascript
     localStorage.setItem('webview-profile-probe', 'account-A');
     document.cookie = 'webview_profile_probe=account-A; Path=/; Secure; SameSite=Lax';
@@ -505,7 +526,7 @@
     /assets/..%252ffiles%252fwebview-marker.txt
     /assets/webview-marker.txt?path=../files/webview-marker.txt
     ```
-* **Read probe in the actual page context:** replace the URL with the mapped route. Inspect the final response and marker; if CORS prevents JavaScript reading, also distinguish that browser restriction from what the native interceptor actually returned.
+* **Read probe in the actual page context:** replace the URL with the mapped route and run the block in the target WebView's `chrome://inspect` console, or include it in a page delivered through the app's real input. Inspect the final response and marker; if CORS prevents JavaScript reading, also distinguish that browser restriction from what the native interceptor actually returned. An inspector-only call does not establish attacker reachability.
   * ```javascript
     fetch('https://trusted.example/assets/REPLACE_CANDIDATE_PATH', { cache: 'no-store' })
       .then(response => response.text())
@@ -517,7 +538,7 @@
 
 #### Geolocation, Camera, and Microphone Grants
 
-* **Host on the controlled HTTPS origin:** load it through the real navigation entry point; tap each button. Compare the trusted origin, an untrusted top-level origin and an iframe delegated with `allow="geolocation; camera; microphone"`. Test app OS permissions granted and denied separately.
+* **Host on the controlled HTTPS origin:** save this HTML on a device-reachable HTTPS host and load it through the app's real navigation entry point using the [page-hosting and delivery steps](#native-bridge-from-untrusted-content). Tap each button and read the page result; compare the trusted origin, an untrusted top-level origin and an iframe delegated with `allow="geolocation; camera; microphone"`. Test app OS permissions granted and denied separately.
   * ```html
     <!doctype html>
     <meta charset="utf-8">
@@ -545,7 +566,7 @@
 
 #### File Chooser Destination and Grants
 
-* **Hosted-page probe:** use a known `file-chooser-probe` marker file. Compare ordinary selection, Cancel, a page navigation while the chooser is open, and the app's capture/provider variant.
+* **Hosted-page probe:** save this HTML on a device-reachable host and load it through the app's real input using the [page-hosting and delivery steps](#native-bridge-from-untrusted-content). Tap the file input in the target WebView, select a known text file containing `file-chooser-probe`, and inspect the page result. Compare ordinary selection, Cancel, a page navigation while the chooser is open, and the app's capture/provider variant.
   * ```html
     <!doctype html>
     <meta charset="utf-8">

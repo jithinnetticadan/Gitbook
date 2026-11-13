@@ -10,6 +10,7 @@
 
 ## Intent, Result, and Binder Boundaries
 
+* **Companion setup:** in Android Studio create a Kotlin **Empty Views Activity** project with package `com.example.ipcprobe` and an AndroidX `ComponentActivity`/`AppCompatActivity`. Use its generated launcher Activity as the test Activity and keep it exported for ADB launch. Place the selected snippet in its Activity source; do not add these snippets to the target app. If using a different package, update the component names, manifest entries and provider authority consistently. Android 11+ package-visibility rules may require a matching `<queries>` declaration when the companion queries or resolves the target.
 * **Companion Activity, Kotlin:** send a nested explicit Intent using the forwarding component and extra name found in the target code. Place this in the companion Activity's `onCreate` after `super.onCreate(...)`.
 	* ```kotlin
 		val destination = android.content.Intent().setComponent(
@@ -19,10 +20,25 @@
 				.putExtra("<observed-nested-intent-extra>", destination)
 		startActivity(forwarded)
 		```
-* **Host terminal, existing companion project:** build/install, then start its exported test Activity. Compare direct access using the [activity launch templates](component-testing.md#test-direct-access-and-inputs).
-	* ```bash
-		./gradlew installDebug
+* **Build/install:** from the companion project root, run the matching host command.
+
+{% tabs %}
+{% tab title="Linux" %}
+* ```bash
+  ./gradlew installDebug
+  ```
+{% endtab %}
+{% tab title="Windows" %}
+* ```powershell
+  .\gradlew.bat installDebug
+  ```
+{% endtab %}
+{% endtabs %}
+
+* **Launch and observe, host terminal:** substitute the installed companion package and Activity. Inspect `IPCProbe` Logcat output for result callbacks and provider probes; compare direct target access with the [activity launch templates](component-testing.md#test-direct-access-and-inputs).
+	* ```text
 		adb shell am start -n '<companion-package>/<test-activity>'
+		adb logcat -s IPCProbe:I
 		```
 * **Activity results, AndroidX companion Activity property:** register before the Activity is started; launch the observed flow from `onCreate` or a test button.
 	* ```kotlin
@@ -41,7 +57,7 @@
 
 ### PendingIntent Fill-In and Replay
 
-* **Input:** obtain the actual target-created `PendingIntent` through the exposed callback/result/share flow. Creating a token in your companion only tests your companion. Add the snippet to the companion Activity that receives the token, in `onCreate()` or the callback handling that result; use that Activity's incoming `intent`, the actual extra name, and a destination of the same component type as the token (activity/service/broadcast).
+* **Input:** obtain the actual target-created `PendingIntent` through the exposed callback/result/share flow. Creating a token in your companion only tests your companion. Add the snippet to the receiving companion Activity's `onCreate()` when the token arrives in its launch Intent. For an Activity result, read the token from `result.data` in the result callback instead of the Activity's launch `intent`; for a later `onNewIntent` delivery, use its Intent argument. Substitute the actual extra name and a destination of the same component type as the token (activity/service/broadcast).
 	* ```kotlin
 		val token = intent.getParcelableExtra<android.app.PendingIntent>("REPLACE_TOKEN_EXTRA")
 		    ?: error("Target PendingIntent missing")

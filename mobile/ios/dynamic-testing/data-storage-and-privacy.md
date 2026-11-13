@@ -79,10 +79,17 @@
   * ```bash
     diff -ru '<before-directory>' '<after-directory>'
     ```
-* **Simulator runtime state and screenshots:**
+* **Simulator process restart:** terminate and relaunch the target, then navigate to the sensitive screen with the test marker.
   * ```bash
     xcrun simctl terminate booted '<bundle-id>'
+    xcrun simctl launch booted '<bundle-id>'
+    ```
+* **Simulator screenshot:** with that screen visible, capture and inspect the resulting image for the marker.
+  * ```bash
     xcrun simctl io booted screenshot '<screenshot.png>'
+    ```
+* **Simulator logs:** run this in another host terminal while triggering the target feature; stop the stream with Ctrl+C.
+  * ```bash
     xcrun simctl spawn booted log stream --style compact --predicate 'process == "<app-process-name>"'
     ```
 * **Simulator pasteboard:**
@@ -166,7 +173,7 @@
 
 ### Keychain: Query One Item Without a Prompt
 
-* **Find selectors:** use the existing Keychain inspection commands to obtain the exact class/service/account/access group. This generic-password probe runs as the app and must match its actual item. Change the class/query for internet-password or key items; include the observed access group or synchronizable selector where required.
+* **Find selectors:** use the existing Keychain inspection commands to obtain the exact class/service/account/access group. This generic-password probe runs as the app and must match its actual item. Change the class/query for internet-password or key items; include the observed access group or synchronizable selector where required. Save the block as a host `.js` file and load it into the target process using the [Frida script-loading command](runtime-instrumentation.md#objection-session); call `probeKeychain()` in that same Frida REPL after each state transition.
   * ```javascript
     function probeKeychain() {
       ObjC.schedule(ObjC.mainQueue, function () {
