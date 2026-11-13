@@ -26,6 +26,7 @@
 
 * `addJavascriptInterface`: annotation-limited exposure requires Android **and target API 17+**; legacy configurations expose more methods. Test the actual device/WebView.
 * The object is available to **all frames**, without a calling-origin parameter; inspect attacker-controlled pages/iframes and exposed methods. [Bridge behavior](https://developer.android.com/privacy-and-security/risks/insecure-webview-native-bridges).
+* **Attack path:** an attacker-controlled URL or page reaches the app's WebView and invokes an exposed native method; a source hit alone is not a flaw. Follow the [bridge test steps](../dynamic-testing/component-testing.md#native-bridge-from-untrusted-content) and confirm app reachability plus an unintended protected result or action.
 * `setAllowFileAccess` defaults to `false` for target API 30+; file-URL cross-access settings default to `false` for target API 16+ on supported platforms. Check explicit overrides and WebView version.
 * `proceed()` in `onReceivedSslError` accepts invalid certificates.
 * **TLS-error search command:** [TLS and pinning patterns](configuration-and-cryptography.md).
@@ -53,6 +54,7 @@
 
 * Look for string concatenation of `selection`, `sortOrder`, or intent/URI data into SQL instead of `?` placeholders and `selectionArgs`.
 * Exposure depends on the provider being exported or granting URI permissions. Confirm at runtime: [Component Testing](../dynamic-testing/component-testing.md).
+* **Attack path:** a malicious app supplies crafted query arguments to an exposed provider; verify whether the actual query returns a protected marker row or performs an unintended operation using the [provider injection steps](../dynamic-testing/advanced-ipc-and-providers.md#provider-injection-and-file-traversal). A concatenation hit alone is not proof.
 
 ## Path Traversal and FileProvider
 
@@ -76,6 +78,7 @@
 
 * Check whether `../` sequences in filenames from intents, deep links, or URIs are rejected after canonicalization.
 * Overly broad `FileProvider` paths (for example `<external-path path="."/>` or `<root-path>`) can expose more files than intended. Check `android:exported="false"` and `android:grantUriPermissions` on the provider.
+* **Attack path:** an external caller controls a URI/path that the app resolves to a file outside its shared root; place a known marker outside that root and follow the [provider file-route test](../dynamic-testing/advanced-ipc-and-providers.md#provider-injection-and-file-traversal). Confirm the caller reads that marker.
 
 ## Deep Links and URL Handling
 
@@ -99,6 +102,7 @@
 * Treat deep-link parameters as untrusted external input from any app or link.
 * Flag tokens, redirect URLs, or identifiers accepted without server-side validation (auto-login, WebView loading, authorization decisions).
 * Verify App Links (`autoVerify`, `assetlinks.json`) where used; custom schemes can be claimed by other apps.
+* **Attack path:** another app or link supplies a crafted route/identifier to reach a protected screen or action; exercise the real handler with logged-out and A/B test accounts using [deep-link runtime tests](../dynamic-testing/component-testing.md#deep-links-and-url-handling). Confirm protected data or an action, not merely screen navigation.
 
 ## PendingIntent Mutability
 
@@ -109,6 +113,7 @@
   * Bank App creates mutable `PendingIntent` → exposes/passes it via Intent/Bundle/IPC → Attacker App obtains it → calls `send()` with modified data → action executes under the Bank App's authority.
 * On Android 12+, apps targeting API 31+ must specify `FLAG_IMMUTABLE` or `FLAG_MUTABLE`. Older behavior defaults to mutable unless a supported immutable flag is set (`FLAG_IMMUTABLE`: API 23+).
 * Risk is highest with mutable PendingIntents wrapping empty or implicit Intents, which another app may fill in. Check the base Intent's component, action, and extras.
+* **Test:** obtain the target-created token through the real result/share/IPC flow; change one fill-in field at a time, then replay that same token after use or logout. Confirm an unintended protected action or record, not merely a successful `send()`. Follow the [PendingIntent fill-in and replay steps](../dynamic-testing/advanced-ipc-and-providers.md#pendingintent-fill-in-and-replay).
 
 {% tabs %}
 {% tab title="Linux" %}

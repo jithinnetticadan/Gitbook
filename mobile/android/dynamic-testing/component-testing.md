@@ -376,7 +376,8 @@
 
 #### Untrusted Navigation and URL Allowlists
 
-* **Find the input:** trace the observed deep-link/Intent extra to `loadUrl` or `loadDataWithBaseURL`; record the allowed host and actual parameter name. Set the destination to a page you control, then try these host/parser variants. Replace `trusted.example` with the real allowed host and `probe.example` with your test host.
+* **Attack path:** a malicious link, Intent extra, redirect, or remote-content value supplies a destination that bypasses the app's expected-host check and loads inside its privileged WebView.
+* **Find the input:** inspect the app's `VIEW` intent filters for its scheme/host, then trace `getIntent().getData()`, `getStringExtra()`, or `getQueryParameter()` to `loadUrl` or `loadDataWithBaseURL`. Record the actual route, URL parameter, and allowed host. If the URL comes from an in-app remote-content field instead, use that normal feature to supply the destination. Replace `trusted.example` with the real allowed host and `probe.example` with your test host.
   * ```
     https://probe.example/webview.html
     https://trusted.example.probe.example/webview.html
@@ -384,7 +385,7 @@
     https://probe.example/?next=https://trusted.example/
     http://trusted.example/
     ```
-* **Launch template (Linux Bash / Windows PowerShell, unchanged):** encode the entire destination as the observed query parameter value. This example route must be replaced with the app's route; a guessed route opening nothing is not a negative result.
+* **Launch template (Linux Bash / Windows PowerShell, unchanged):** replace `demo://web` with the app's actual scheme/host/path, `url` with the observed parameter name, and `com.example.app` with the installed package ID. URL-encode the controlled page URL as that one parameter value; the host must be reachable from the device. If there is no externally reachable route, use the app's actual in-app URL input. Loading the page directly in Chrome does not test app reachability, and a guessed route opening nothing is not a negative result.
   * ```
     adb shell "am start -W -a android.intent.action.VIEW -d 'demo://web?url=https%3A%2F%2Fprobe.example%2Fwebview.html' -p com.example.app"
     ```
@@ -393,8 +394,10 @@
 
 #### Native Bridge from Untrusted Content
 
-* **Identify:** in JADX, map the `addJavascriptInterface` object name to its `@JavascriptInterface` methods and argument types. Use the actual method, not an assumed `Android` object. For `WebMessageListener`/ports, use the app's registered channel and message schema instead.
-* **Host this page at the controlled URL above:** replace the bridge/method and string argument with a known read-only or marker operation. Methods with other argument counts/types require that actual signature.
+* A JavaScript bridge exposes app methods to page scripts. If an attacker can make the app load attacker-controlled content, that content can call exposed methods; `addJavascriptInterface` is available to every frame.
+* **1. Map the bridge:** in JADX, find each `addJavascriptInterface` call, record the object name and WebView receiving it, and list its `@JavascriptInterface` methods with argument/return types. For `WebMessageListener`/ports, record the allowed origin, channel name and message schema.
+* **2. Select a harmless probe:** choose an exposed method that returns a known value or performs a reversible marker action. Record the expected result from the intended app flow; do not substitute a guessed `Android` object or method.
+* **3. Prepare the controlled page:** host this page at the controlled URL used in [Untrusted Navigation](#untrusted-navigation-and-url-allowlists). Replace the bridge, method, and argument with the actual names and signature.
   * ```html
     <!doctype html>
     <meta charset="utf-8">
@@ -407,11 +410,14 @@
     } catch (error) { result.textContent = String(error); }
     </script>
     ```
-* **Frame variant:** embed the test page as `<iframe src="https://probe.example/webview.html"></iframe>` in a page reachable through the app. A JavaScript interface is exposed to frames too; verify the method runs from the frame, not just the top-level page.
-* **Confirm:** untrusted content invokes an unintended sensitive native operation, receives a protected value, or crosses account boundaries. A bridge that only performs its intended public action is not automatically vulnerable. DevTools invocation alone proves method behavior, not attacker reachability.
+* **4. Reach it through the app:** use the real deep link, remote-content field, redirect, or other input that causes the tested WebView to load the controlled page. Record the final page origin in `chrome://inspect`; opening the page directly in Chrome does not exercise the app bridge.
+* **5. Invoke it:** let the page call the selected method. Confirm the returned marker in the page and the corresponding native-side effect. If the method returns `void`, `undefined` is expected; verify the marker action instead.
+* **6. Test frame exposure:** load the controlled page as `<iframe src="https://probe.example/webview.html"></iframe>` inside attacker-controlled content that the app can reach. Verify the child frame invokes the same method; `addJavascriptInterface` is exposed to frames too.
+* **Confirm a flaw:** attacker-controlled content is reachable in the privileged WebView and the call returns protected data, performs an unintended protected action, or crosses an account boundary. A public/intended bridge action or a call made only from DevTools is not sufficient. Record the triggering input, final origin/frame, method, returned value or effect, and account state.
 
 #### Script Injection into a Trusted Page
 
+* **Attack path:** attacker-controlled text reaches an HTML or JavaScript sink without context-appropriate encoding, so the injected script runs with the trusted page's origin and access.
 * **HTML sink:** supply the marker below through the actual rendered search/name/message parameter. **JavaScript string sink:** use the second payload only where the value is interpolated into a single-quoted JavaScript string; adapt the delimiter to the observed code.
   * ```html
     <img src=x onerror="document.documentElement.dataset.webviewProbe=location.origin">
@@ -427,6 +433,7 @@
 
 #### File Access, Mixed Content, and Session Isolation
 
+* **Attack path:** untrusted content loaded by the app reads a file beyond its intended scope, injects active HTTP content into an HTTPS page, or reuses another account's WebView credentials.
 * **Local-page file-read probe:** from an attacker-reachable `file://` page, run the following against a known marker file in the app's readable storage; use the resolved path, not another app's sandbox. A hosted HTTPS page and a local file page exercise different access settings.
   * ```javascript
     const request = new XMLHttpRequest();

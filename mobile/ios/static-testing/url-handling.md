@@ -13,19 +13,18 @@
     ```
 * Compare app identifiers and allowed components/paths with the installed build; registered custom schemes are not ownership verification.
 
-* [ ] Validate caller, scheme, host, path, parameters, and authorization.
-* [ ] Review custom schemes, universal links, and inter-app requests.
-* [ ] Inspect handlers:
-* [ ] `application:didFinishLaunchingWithOptions:` and `application:willFinishLaunchingWithOptions:`.
-* [ ] `application:openURL:options:` and scene-based URL handling.
-* [ ] `openURL:options:completionHandler:` call sites.
-* [ ] **Input:** extracted app bundle for the following search.
+* **Review handlers:** `application:didFinishLaunchingWithOptions:`, `application:willFinishLaunchingWithOptions:`, `application:openURL:options:`, scene-based URL handling, and `openURL:options:completionHandler:` call sites.
+* **Input:** extracted app bundle for the following search.
 
 - <pre class="language-bash" data-line-numbers><code class="lang-bash">grep -R -nE 'open.*options.*completionHandler|openURL\(|://' &#x3C;Application.app>
   grep -R -n 'mt-encrypted-file://' &#x3C;Application.app>
   rabin2 -zzq &#x3C;app-binary> | grep -i openurl
   </code></pre>
-- Test untrusted callers for sensitive actions/data disclosure; require user confirmation where appropriate.
+### Runtime Verification
+
+1. Select a registered custom scheme or Universal Link and trace its handler to the screen/action and parameters it consumes.
+2. Launch the exact route with a valid test record, then repeat with a missing value, duplicate A/B identifiers, an untrusted redirect, and no active session. Use the [Simulator and device launch steps](../dynamic-testing/client-side-testing.md#deep-links-and-url-handling); on a physical device, tap the Universal Link from Safari or a companion app.
+3. Confirm account A cannot read or act on B's record, and a logged-out user cannot invoke the protected action. A handler firing, screen opening, or external-browser launch alone is not a vulnerability.
 - `sourceApplication` identifies a caller, not authorization by itself.
 - `mt-encrypted-file://` is app-specific, not universal.
 - Check deprecated APIs: [UIKit documentation](https://developer.apple.com/documentation/uikit).

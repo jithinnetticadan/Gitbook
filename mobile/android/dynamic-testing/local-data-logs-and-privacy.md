@@ -8,17 +8,17 @@
     SELECT * FROM &#x3C;test_table> LIMIT 10;
     </code></pre>
 
-- [ ] `.tables` is a SQLite CLI command, not SQL.
-- [ ] Use approved test keyboards/clipboard observers; OS restrictions apply.
-- [ ] Check the following storage and privacy surfaces:
-- [ ] Sensitive logs, [clipboard monitoring](objection-and-runtime-instrumentation.md#clipboard-screenshots-memory-and-sqlite), keyboard data, screenshots/`FLAG_SECURE`.
-- [ ] Backup exposure using an OS-supported workflow.
-- [ ] Local role/state tampering; verify server authorization.
-- [ ] SQL injection using non-destructive test records.
-- [ ] Biometrics: success/failure callbacks and exception handling; verify key/server protections independently.
-- [ ] Biometric scripts: [Keystore Audit](https://github.com/ReversecLabs/android-keystore-audit/tree/master/frida-scripts).
-- [ ] Targeted examples: [callback bypass](https://github.com/ReversecLabs/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass.js), [exception bypass](https://github.com/ReversecLabs/android-keystore-audit/blob/master/frida-scripts/fingerprint-bypass-via-exception-handling.js).
-- [ ] UI bypass does not prove hardware-key/server bypass; validate the operation with the [biometric and auth-bound Keystore workflow](authentication-and-cryptography.md#biometrics-and-auth-bound-keystore).
+## Focused Test Flow
+
+1. Choose one sensitive value or action and create distinct test markers for accounts A and B. Record the normal stored value, log output, screen state, and protected-operation result.
+2. Trigger the real feature that creates or consumes the value. Inspect app-owned files/databases with [File and Database Inspection](#file-and-database-inspection); inspect logs, screenshots, clipboard and keyboard surfaces in the sections below.
+3. Repeat after logout, account switch, background/resume, process restart, and the relevant lock/unlock or backup/restore transition. Record whether the marker remains and which caller/access context can read or use it.
+4. For a local role/state value, establish the protected operation under account A, change only that app-owned value using the actual prefs/database field, restart or retrigger the feature, then repeat the same operation. Confirm a flaw only if a protected action/data result succeeds contrary to the server's authorization policy; a changed label or enabled button alone is not sufficient.
+
+* Backup/restore: use [Backup and Restore Validation](#backup-and-restore-validation), then open the restored app and test the known marker and authentication state.
+* Provider SQL injection: use the concrete [selection-argument and file-route tests](advanced-ipc-and-providers.md#provider-injection-and-file-traversal).
+* Biometric callback/key checks: follow [Biometrics and Auth-Bound Keystore](authentication-and-cryptography.md#biometrics-and-auth-bound-keystore), then perform the protected decrypt/sign/action after each failed, canceled, or expired authentication case.
+* Keyboard and obscured-touch checks: use the [companion keyboard](platform-and-version-specific-tests.md) and [obscured-touch steps](platform-and-version-specific-tests.md#obscured-touches); confirm actual sensitive text exposure or an accepted protected action, not merely a missing flag.
 
 ## Logs
 
