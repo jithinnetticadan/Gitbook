@@ -31,4 +31,5 @@
 * C:\inetpub\logs\LogFiles\W3SVC1\\
 * C:\inetpub\wwwroot\web.config
 * C:\Windows\System32\drivers\etc\hosts
+* C:\xampp\apache\logs\\
 
