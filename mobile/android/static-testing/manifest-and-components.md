@@ -44,11 +44,6 @@
 {% endtabs %}
 
 * `minSdkVersion`, target SDK, permissions, application settings, activities, services, receivers, and providers.
-* `android:exported`, component permissions, intent filters, deep links, and sensitive-action authorization. Intent filters are **not authentication**.
-* Debug, backup, cleartext, and `android:networkSecurityConfig` settings. Check production behavior.
-* Content provider authorities, exported status, path permissions, and query/update behavior.
-* Dangerous permissions and whether each is necessary for app functionality.
-* References: [Android manifest introduction](https://developer.android.com/guide/topics/manifest/manifest-intro), [Android permissions](https://developer.android.com/reference/android/Manifest.permission), and [Android security overview](https://source.android.com/docs/security/overview/app-security).
 * Example settings:
   * ```xml
     <!-- AndroidManifest.xml: example application attributes -->
