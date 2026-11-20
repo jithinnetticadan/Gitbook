@@ -61,7 +61,29 @@
     	</domain-config>
     </network-security-config>
     ```
-* Also inspect backup/data-extraction rules and OS behavior.
+### Defaults When Attributes Are Omitted
+
+* Evaluate the **merged release manifest**, referenced XML, target SDK, and device API. An absent attribute is not necessarily `false`; an explicit value or inherited policy can override a default.
+
+| Attribute / setting | Default when omitted | Validation |
+| ------------------- | -------------------- | ---------- |
+| `android:debuggable` | `false`. | Confirm the installed release build; `true` enables debugging. |
+| `android:allowBackup` | `true`. Auto Backup applies when both the app target and device are API 23+. | Check cloud backup and device transfer separately, backup rules, and the data actually included. `true` alone does not establish exposure. |
+| `android:fullBackupContent` / `android:dataExtractionRules` | No custom rules file. Eligible Auto Backup includes most app files by default; cache, code-cache, and no-backup directories are excluded. | Resolve the XML when present; `fullBackupContent="false"` disables full backup under the legacy rules. Check the rules applicable to the device and target SDK. |
+| `android:usesCleartextTraffic` | Target API 27 or lower: `true`; target API 28+: `false` on platforms applying the policy. Introduced in API 23. | On API 24+, a Network Security Config overrides this attribute; it is ignored for apps targeting API 38+. Check the effective domain policy and actual traffic. |
+| `android:networkSecurityConfig` | No custom config. On API 24+, the platform base policy uses the cleartext defaults above and trusts system CAs; user-added CAs are also trusted by default for target API 23 or lower. | Inspect referenced `base-config`, `domain-config`, trust anchors, and `debug-overrides`; domain settings inherit unspecified values from the enclosing config or base config. |
+| `android:exported` for activities, activity aliases, services, and manifest receivers | Intent filter present: `true`; no intent filter: `false`. For target API 31+ on Android 12+, a component with an intent filter must declare the attribute or installation fails. | Inspect each component and its filters, inherited/component permissions, and installed state. |
+| `android:exported` for providers | On device API 16 or lower, providers behave as exported. On API 17+, default is `true` for target API 16 or lower and `false` for target API 17+. | Review read/write and path permissions and temporary URI grants; an unexported provider can still grant specific URI access. |
+| Component `android:permission` | Activities, services, and receivers inherit `<application android:permission>`; if neither sets one, no manifest permission protects the component. An activity alias without its own permission does not inherit the target activity's permission. | For aliases and providers, check their own permissions; for providers also check `readPermission`, `writePermission`, path permissions, and URI grants. Permission checks do not replace application authorization. |
+| Provider `android:grantUriPermissions` | `false`; individual `<grant-uri-permission>` paths can still permit temporary grants. | Inspect grant flags, allowed paths, and actual caller access. |
+| Custom `<permission android:protectionLevel>` | `normal`. | A requesting app is normally granted it at install; check the defining package and actual caller grants. |
+| `android:enabled` / `android:directBootAware` | Application and component `enabled` default to `true`; component `directBootAware` defaults to `false`. | Application and component must both be enabled; also check installed state and device-protected storage. |
+| `android:allowTaskReparenting` / activity `launchMode` / `taskAffinity` | Reparenting: `false`, inherited from application unless overridden. Launch mode: `standard`. Affinity: application affinity, normally the package name. | Check activity overrides and actual task behavior. |
+| `android:extractNativeLibs` | Depends on `minSdkVersion` and Android Gradle Plugin version; no single fixed default. | Inspect the release APK's native libraries and installed behavior. |
+| `minSdkVersion` / `targetSdkVersion` | Minimum defaults to API `1`; target defaults to the minimum. | Read the packaged APK's values; build tooling can populate or override source-manifest values. |
+
+* **Network policy:** domain settings can permit cleartext even when another domain denies it. Platform policy is best-effort: raw sockets and some third-party stacks may not enforce it. The example above denies cleartext only for `example.com` and its subdomains, not globally.
+* **Source references:** [application attributes](https://developer.android.com/guide/topics/manifest/application-element), [provider attributes](https://developer.android.com/guide/topics/manifest/provider-element), [permission protection levels](https://developer.android.com/guide/topics/manifest/permission-element), [SDK defaults](https://developer.android.com/guide/topics/manifest/uses-sdk-element), and [network security configuration](https://developer.android.com/privacy-and-security/security-config).
 
 ### Exported Components, Backup, and Debug Triage
 
@@ -70,11 +92,13 @@
   grep -n 'android:exported="true"' <decoded-directory>/AndroidManifest.xml
   grep -nE 'android:(allowBackup|dataExtractionRules|fullBackupContent|debuggable|usesCleartextTraffic|networkSecurityConfig)' <decoded-directory>/AndroidManifest.xml
   ```
-* Export defaults depend on component type and target/platform version. Activities, services, and receivers historically derive defaults from intent filters; providers have different defaults (notably target API 16 versus 17+).&#x20;
-* Apps targeting API 31+ must explicitly set `android:exported` on activities, services, and receivers with intent filters. Inspect the installed package rather than treating one rule as universal.
+* **Installed package and device API:** inspect the relevant component sections and effective flags, not only explicit `exported="true"` matches.
+  * ```bash
+    adb shell dumpsys package '<package-name>'
+    adb shell getprop ro.build.version.sdk
+    ```
 * For each exported hit, check for `android:permission` (providers: `readPermission`/`writePermission`/`grantUriPermissions`) and for authorization in code. Multi-line `grep -B` pipelines are unreliable; review each hit.
-* **`android:allowBackup` defaults to `true`**. Inspect referenced XML rules: `dataExtractionRules` for Android 12+ with target API 31+; `fullBackupContent` on older devices or for apps targeting API 30 or lower.
-* Check cloud backup and device transfer separately; some manufacturers permit transfer despite `allowBackup=false`. [Backup rules](https://developer.android.com/identity/data/autobackup).
+* **Backup rules:** inspect `dataExtractionRules` on Android 12+ with target API 31+, or `fullBackupContent` on older devices or for target API 30 or lower. Some manufacturers permit device transfer despite `allowBackup=false`. [Backup rules](https://developer.android.com/identity/data/autobackup).
 * On Android 12+, `adb backup` excludes data from apps targeting API 31+ unless debuggable; command availability and older-device behavior vary.
 * `android:debuggable="true"` in a release build allows JDWP attach. Check [run-as identity and private-file access](../dynamic-testing/local-data-logs-and-privacy.md#file-and-database-inspection) on the installed build.
 * Validate exported components at runtime: [Component Testing](../dynamic-testing/component-testing.md).
