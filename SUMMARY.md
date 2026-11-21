@@ -112,6 +112,7 @@
   * [AV/EDR/Firewall Bypass](network/exploitation/av-edr-bypass.md)
   * [Client-Side Attacks](network/exploitation/client-side-attacks/README.md)
     * [Microsoft Office Macros](network/exploitation/client-side-attacks/office-macros.md)
+    * [Script and Executable Backdooring](network/exploitation/client-side-attacks/script-and-executable-backdooring.md)
     * [Windows Library Files](network/exploitation/client-side-attacks/windows-library-files.md)
   * [Code Obfuscation](network/exploitation/code-obfuscation.md)
   * [Credentials Harvesting](network/exploitation/credentials-harvesting/README.md)
