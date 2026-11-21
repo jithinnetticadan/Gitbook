@@ -122,7 +122,7 @@
     * [Password Spraying, Stuffing, and Defaults](network/exploitation/credential-attacks/password-spraying-stuffing-and-defaults.md)
     * [User Enumeration](network/exploitation/credential-attacks/user-enumeration.md)
   * [Metasploit Framework](network/exploitation/metasploit-framework.md)
-  * [Microsoft Word Macros](network/exploitation/office-macros.md)
+  * [Microsoft Office Macros](network/exploitation/office-macros.md)
   * [Windows Library Files](network/exploitation/windows-library-files.md)
   * [Payload Transfer](network/exploitation/payload-transfer/README.md)
     * [Windows](network/exploitation/payload-transfer/windows.md)
